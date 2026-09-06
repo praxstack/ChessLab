@@ -56,4 +56,4 @@ Rebuilding the dossier requires Python 3.10+ and Pandoc. Reading the generated H
 
 The `design/` directory preserves the mockup gallery, direct frame study, settings inventory, 150 extracted frames and compressed recording. Open `design/index.html` or `design/frame-study.html`; rebuild with `python3 design/build.py` and check with `python3 design/check.py`. The supplied screenshot ZIP remains in `references/`. These archives explain the visual direction; they are not runtime evidence.
 
-The server's Stockfish installation is separate from this repository. See [the engine decision](docs/adr/0001-server-chess-engine.md) for licensing and operational boundaries. Repository publication and public hosting are separate delivery steps.
+The server's Stockfish installation is separate from this repository. See [the engine decision](docs/adr/0001-server-chess-engine.md) for licensing and operational boundaries. The source and research are pushed to the [private ChessLab repository](https://github.com/praxstack/ChessLab). Public hosting remains separate and unfinished.

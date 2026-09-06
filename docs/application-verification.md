@@ -1,12 +1,12 @@
-# Application verification — 7 September 2026
+# Application verification, 7 September 2026
 
 This is evidence for the first bot/coach stage, not a claim of complete Chess.com parity or deployment. The controlling change is `build-coach-web-platform`. The earlier research archive commit is `993a24e`.
 
 ## Automated results
 
-- `npm test`: 20 tests passed, zero failures (7.96 seconds). Eleven engine checks use native Stockfish 19 or deliberate failure executables; four server integration checks cover accounts, ownership, revisions, persistence, study validation, save failures and learning progress; five frontend state checks cover legal notation, promotion, nested history, return anchors and study limits.
+- `npm test`: 20 tests passed, zero failures, in 7.96 seconds. Eleven engine checks use native Stockfish 19 or deliberate failure executables; four server integration checks cover accounts, ownership, revisions, persistence, study validation, save failures and learning progress; five frontend state checks cover legal notation, promotion, nested history, return anchors and study limits.
 - `just test`: setup helper self-test and the then-current 19 application tests passed. One additional castling/en-passant test was subsequently added and the complete 20-test application suite passed. Same-host cross-scheme origin rejection was added to the existing account test.
-- `npm run build`: passed. Built JavaScript is 275.90 KB (86.59 KB gzip), CSS 34.67 KB (8.69 KB gzip). No engine executable or weights are included in these browser assets.
+- `npm run build`: passed. Built JavaScript is 275.90 KB, or 86.59 KB gzip. CSS is 34.67 KB, or 8.69 KB gzip. No engine executable or weights are included in these browser assets.
 - OpenSpec strict validation: both changes passed. Structural validation is separate from runtime evidence.
 - `just check`: fails on the pre-existing shared `gstack-cso` entrypoint hash drift. The manifest was not changed to conceal it. Git whitespace checks passed independently.
 
@@ -25,7 +25,7 @@ The Codex in-app browser exercised the actual server at `http://127.0.0.1:8770`,
 - Changed coordinates, analysis time and candidate count; verified persisted coordinates after reload and the new 300 ms/two-line engine review.
 - Started as Black, observed the coach's first White move, played e5, received its next reply, and resigned into review.
 - Used saved-game navigation at 320 px width. Checked 390 px and 320 px layouts with no horizontal document overflow, and visually inspected the 1440 px desktop board/review layout.
-- Compared before a selected move and inspected candidate arrows. Corrected the evaluation display so the board, rail and score use the same shown position.
+- Played the move-history sequence through to its end; compared before a selected move and inspected candidate arrows. Corrected the evaluation display so the board, rail and score use the same shown position.
 
 ## Bugs corrected during integration
 
@@ -37,8 +37,8 @@ The two frontend response-race fixes were reviewed and built, with server confli
 
 `scripts/check_app_browser.cjs` is a runnable isolated browser smoke behind `just e2e`. Its syntax passed, but the script itself was not executed: browser interaction in this run used the available CUA tool. The observed browser checks above are separate evidence. Drag-and-drop, sound playback, comprehensive accessibility, other browsers and real phone hardware have not received full manual validation. Click and typed move entry were exercised.
 
-The rewritten HTML dossier is generated and checked separately. Its older browser receipts remain historical and do not attest to this application.
+The rewritten HTML dossier passed generation and integrity checks: 10 chapters, 55 full document pages, 1,521 local links and complete source/output hashes. Its portable ZIP was rebuilt. The design archive also passed its 27-page/651-link/17-image-receipt check. The browser URL policy blocked opening the new local file report page, so no fresh visual report check is claimed; no alternate route was used. Older browser receipts remain historical and do not attest to this application.
 
 ## Delivery boundary
 
-The private repository at [praxstack/ChessLab](https://github.com/praxstack/ChessLab) was created and its `isPrivate: true` setting was read back. Commit/push verification is reported after the final source and dossier checks. Public hosting, actual human multiplayer, billing, unrestricted conversational coaching and a full curriculum remain unfinished. The local production server is the demonstrated runtime.
+The private repository at [praxstack/ChessLab](https://github.com/praxstack/ChessLab) was created and its `isPrivate: true` setting was read back. Application commit `b169e9e6af887dfe6b286a7607cebaa9900b93d0` was pushed to `main`; `git ls-remote` returned that same hash and GitHub reported the private default branch as `main`. This delivery-note update follows that verified application commit. Public hosting, actual human multiplayer, billing, unrestricted conversational coaching and a full curriculum remain unfinished. The local production server is the demonstrated runtime.

@@ -16,7 +16,7 @@ Open the [local application](http://127.0.0.1:8770) while its server is running.
 
 The broader platform is unfinished. There is no human matchmaking, rated ladder, tournament system, social platform, extensive lesson library, subscription checkout or public deployment. Bot levels are not calibrated human ratings. The coach is engine-backed evidence text, not unrestricted conversational AI; questions currently remain learner notes. Saved variations are stored in SQLite and are not included in PGN export.
 
-The original branching conversation remains the intended differentiation. Reproducing familiar board and review interactions gives us a concrete foundation, but it does not establish educational quality or a business advantage.
+The original branching conversation remains the intended differentiation. I would judge the next iteration by watching a learner finish a bot game, review one mistake and explain the missed idea without outside help. The current functional checks do not answer that question.
 
 ## Current evidence
 

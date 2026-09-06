@@ -9,4 +9,4 @@
 
 ## 3. Delivery
 - [x] 3.1 CP-001 through CP-006 Run application, server and browser checks on the integrated build; record actual results and unresolved limits without counting report/setup checks as product behavior.
-- [ ] 3.2 CP-007 Document startup, dependencies, architecture and staged platform scope; commit and push to a private GitHub repository, then verify privacy and remote HEAD.
+- [x] 3.2 CP-007 Document startup, dependencies, architecture and staged platform scope; commit and push to a private GitHub repository, then verify privacy and remote HEAD.
