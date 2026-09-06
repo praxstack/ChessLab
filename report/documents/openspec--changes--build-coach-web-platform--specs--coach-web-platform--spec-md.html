@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Spec · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/build-coach-web-platform/specs/coach-web-platform/spec.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/build-coach-web-platform/specs/coach-web-platform/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/build-coach-web-platform/specs/coach-web-platform/spec.md<br>SHA-256: fcdf2d0c2e8fe556d194f5249962df22d630691455a0157e36e2753969a9da64</p><h3 id="purpose">Purpose</h3>
+<p>Provide a usable browser chess platform centered on coach and bot play, grounded review, saved studies and introductory learning without downloading an engine to the browser.</p>
+<h3 id="added-requirements">ADDED Requirements</h3>
+<h4 id="requirement-cp-001-legal-bot-games">Requirement: CP-001 Legal bot games</h4>
+<p>The system SHALL let a user start as either color against five labeled bot levels, submit legal moves including promotion/castling/en-passant, receive a legal server-engine reply, resign and recognize terminal results. It MUST reject illegal, out-of-turn and stale game updates without altering history.</p>
+<h5 id="scenario-bot-game-and-stale-move">Scenario: Bot game and stale move</h5>
+<ul>
+<li><strong>WHEN</strong> a signed-in user plays a legal move then resubmits the old revision</li>
+<li><strong>THEN</strong> one move is preserved and the stale request is rejected; the opponent reply respects side to move.</li>
+</ul>
+<h4 id="requirement-cp-002-server-analysis-and-evidence">Requirement: CP-002 Server analysis and evidence</h4>
+<p>The system SHALL run a real server engine with bounded time, concurrency and candidate count, retain move history and report identity/search limits. It SHALL explain verified checks/captures/material and distinguish estimates from forced outcomes. It MUST not download engine binaries or model weights to the browser or advertise unavailable engines as working.</p>
+<h5 id="scenario-analysis-and-engine-failure">Scenario: Analysis and engine failure</h5>
+<ul>
+<li><strong>WHEN</strong> a position is analyzed or the engine is unavailable</li>
+<li><strong>THEN</strong> legal continuations and perspective-consistent scores are returned, or an explicit recoverable error is shown without fabricated results.</li>
+</ul>
+<h4 id="requirement-cp-003-review-and-variations">Requirement: CP-003 Review and variations</h4>
+<p>The system SHALL support PGN import/export, selecting each actual move, next/previous/start/end, autoplay, candidate arrows, explanations, temporary nested legal variations and return to the original review node. Mainline and stored branch questions MUST remain distinct. Invalid imports MUST preserve existing games.</p>
+<h5 id="scenario-alternative-round-trip">Scenario: Alternative round trip</h5>
+<ul>
+<li><strong>WHEN</strong> a learner explores an alternative, continues it, saves, reloads and returns</li>
+<li><strong>THEN</strong> the original game and branch history remain intact and the selected position agrees with its explanation.</li>
+</ul>
+<h4 id="requirement-cp-004-accounts-and-persistence">Requirement: CP-004 Accounts and persistence</h4>
+<p>The system SHALL persist accounts, isolated saved games and learning progress; hash passwords and session secrets; reject unauthorized game access and cross-origin mutations; bound input sizes; and return actionable save errors.</p>
+<h5 id="scenario-isolation-and-reload">Scenario: Isolation and reload</h5>
+<ul>
+<li><strong>WHEN</strong> a second account attempts to read or update another user's game</li>
+<li><strong>THEN</strong> access is rejected, while the owner can reload their saved moves and studies.</li>
+</ul>
+<h4 id="requirement-cp-005-usable-recorded-layout-interface">Requirement: CP-005 Usable recorded-layout interface</h4>
+<p>The system SHALL present a large interactive board, contextual coach/review panel, move list, navigation and functional settings. It SHALL provide click/drag and typed move entry, visible focus, text feedback, legal markers, promotion choice, board orientation, coordinates and reduced motion. Unsupported settings MUST be identified rather than presented as functional.</p>
+<h5 id="scenario-keyboard-and-settings">Scenario: Keyboard and settings</h5>
+<ul>
+<li><strong>WHEN</strong> a learner enters a legal move without dragging and changes board/analysis preferences</li>
+<li><strong>THEN</strong> the move and supported settings take effect, survive reload and remain usable at a narrow viewport.</li>
+</ul>
+<h4 id="requirement-cp-006-introductory-lessons-and-puzzles">Requirement: CP-006 Introductory lessons and puzzles</h4>
+<p>The system SHALL provide original labeled introductory lessons and legal puzzles, validate answers server-side and save completion only after a correct answer. A small initial catalog MUST not be described as Chess.com's full content library.</p>
+<h5 id="scenario-wrong-then-correct-answer">Scenario: Wrong then correct answer</h5>
+<ul>
+<li><strong>WHEN</strong> a user submits an incorrect puzzle move and then its correct solution</li>
+<li><strong>THEN</strong> incorrect work earns no completion and correct work updates that user's progress.</li>
+</ul>
+<h4 id="requirement-cp-007-private-repository-delivery-and-honest-status">Requirement: CP-007 Private repository delivery and honest status</h4>
+<p>The system SHALL include setup/run instructions and runnable application checks, commit the implementation and push to a verified private GitHub repository. It MUST distinguish local functionality, unimplemented broader platform features, model limitations and deployment status. Billing and actual human multiplayer SHALL remain deferred in this first bot/coach stage per the user.</p>
+<h5 id="scenario-delivery-verification">Scenario: Delivery verification</h5>
+<ul>
+<li><strong>WHEN</strong> the first build is delivered</li>
+<li><strong>THEN</strong> repository privacy and pushed commit are verified and the user can run the documented application; no public deployment is implied.</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Proposal · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Proposal</h1><p class="lede">openspec/changes/build-coach-web-platform/proposal.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Proposal"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/build-coach-web-platform/proposal.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/build-coach-web-platform/proposal.md<br>SHA-256: 22d561da0ec8d99a0d1a53ea479ca3e7df07ec1b01a7745169cb570b68f9c8fa</p><h3 id="why">Why</h3>
+<p>The user changed direction on 7 September 2026: establish a usable Chess.com-like web platform before layering on the branching conversational tutor. Their latest clarification makes coach/bot play the first build and explicitly defers actual human players. The full platform remains the roadmap, not a claim that this first build matches Chess.com's complete service.</p>
+<h3 id="what-changes">What Changes</h3>
+<ul>
+<li>Build a real blue-themed ChessLab web application with bot game setup, legal play, promotion, resign/restart, guided server-engine review, alternate lines and return, PGN import/export, saved games and settings.</li>
+<li>Add local-server accounts with isolated saved games and original introductory lessons and puzzles with progress. No copied Chess.com logos, personas, proprietary assets or course content.</li>
+<li>Use native server-side Stockfish. The browser receives positions and results, never engine WASM or model weights. Difficulty levels are uncalibrated bot settings, not promised human Elo.</li>
+<li>Keep evidence-derived coach explanations distinct from an unrestricted conversational AI. Show engine errors, bounded search metadata, and honest loading states.</li>
+<li>Keep billing activation and prices pending the user's answer. Human multiplayer, public matchmaking, large course/puzzle catalogs, and public deployment remain later platform stages.</li>
+<li>Publish the verified code and existing research archive to a private GitHub repository as explicitly requested.</li>
+</ul>
+<h3 id="capabilities">Capabilities</h3>
+<h4 id="new-capabilities">New Capabilities</h4>
+<ul>
+<li><code>coach-web-platform</code>: accounts, legal bot play, server analysis, review/variations, saved games, settings, introductory learning content and private-repository delivery.</li>
+</ul>
+<h4 id="modified-capabilities">Modified Capabilities</h4>
+<p>None. The earlier <code>explore-one-mistake</code> proposal remains historical draft material. Its browser-worker approach and PGN-first sequence are superseded for this build by the user's latest direction, not silently treated as accepted requirements.</p>
+<h3 id="impact">Impact</h3>
+<p>One Node server, a React web interface, chess.js legality, native Stockfish UCI, and a local SQLite database. Application dependencies and documentation are added; research artifacts remain intact. GitHub publication is private and is not public hosting. The original long-term branching tutor objective is preserved. Subscription decisions require user configuration and will not be presented as working payments without it.</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

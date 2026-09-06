@@ -1,3 +1,9 @@
+## Update: 7 September 2026
+
+A bot/coach application has since been implemented, and the original archive was committed as `993a24e`. See the [current application chapter](application.md) for working behavior and verification. The following sections document the earlier setup and HTML-report runs, including failures that occurred then.
+
+## Historical record
+
 ## The short status
 
 The earlier run completed repository preparation and planning. This run creates the HTML research dossier. Neither run implements the chess tutor. No customer outcomes, revenue, deployment or application end-to-end results are established.

@@ -1,3 +1,9 @@
+## Update: 7 September 2026
+
+The user has deferred billing until after the platform is built. No paid plans or checkout are implemented. The prices and economics below are historical research and planning scenarios, not adopted product prices.
+
+## Historical record
+
 ## Price the resolved confusion
 
 There is no ChessLab price today because there is no released product or payment experiment. The tables below separate current reference prices, historical research prices, and my proposed tests. Currency figures stay in their original currency; no exchange-rate conversion is implied.

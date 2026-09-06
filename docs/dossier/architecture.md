@@ -1,3 +1,9 @@
+## Update: 7 September 2026
+
+The current implementation uses React, a Node server, SQLite and native server-side Stockfish. See [ADR 0001](../adr/0001-server-chess-engine.md) and the [application guide](../application.md). The alternatives and recommendations below belong to the earlier research stage.
+
+## Historical record
+
 ## Keep chess authority separate from explanation
 
 An established rules library owns legal moves and state. Stockfish supplies search results with stated limits. Deterministic extraction supplies inspectable facts about captures, material and supported piece relationships. A language model can explain those facts; it must not invent missing board evidence.

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>0001 Server Chess Engine · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>0001 Server Chess Engine</h1><p class="lede">docs/adr/0001-server-chess-engine.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="0001 Server Chess Engine"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/docs/adr/0001-server-chess-engine.md" download>Download original file ↗</a></div><p class="source-meta">docs/adr/0001-server-chess-engine.md<br>SHA-256: 67710b5109113ccda30e7eba18f2c1cd2ca193e4a5e882d3453f7d6b50442aa8</p><h2 id="adr-0001-run-stockfish-on-the-server">ADR 0001: run Stockfish on the server</h2>
+<p>Status: accepted for the bot and coach platform build on 7 September 2026.</p>
+<h3 id="decision">Decision</h3>
+<p>Use native Stockfish as a server subprocess through UCI. The user explicitly requested the web platform with bot and coach play first, without a browser engine or model download. The available development engine is Stockfish 19. The application reports the engine identity it actually starts rather than assuming every installation has that version.</p>
+<p>chess.js validates and replays full move histories. The server checks actual-game ownership, turns and revisions. Analysis receives the history from the initial position so repetition and other history-dependent rules are not reduced to a bare FEN. Search time and candidate count are bounded. Engine work has bounded concurrency and timeout handling.</p>
+<p>The browser receives legal moves, candidate continuations, scores and evidence. It renders the board and keeps temporary exploration separate from the saved actual game. Stockfish is the only supported analysis engine in this build. Unavailable proprietary engines are not presented as choices.</p>
+<h3 id="why-this-fits-the-current-build">Why this fits the current build</h3>
+<p>One Node server and an installed native engine are enough to support local bot play and position review. This avoids transferring an engine binary or neural weights to every browser. It also keeps actual-game validation and analysis on the same server.</p>
+<p>The earlier <code>explore-one-mistake</code> draft considered a browser worker and a PGN-first experiment. The new <code>build-coach-web-platform</code> change records the user's later direction. This decision does not remove the full branching tutor objective.</p>
+<h3 id="consequences">Consequences</h3>
+<p>The server must have a working Stockfish executable. Missing engines and failed searches are visible errors. Bot settings are uncalibrated practice levels, not human ratings. Scores and classifications are estimates at stated limits. The coach explains deterministic evidence; it does not claim conversational language-model reasoning.</p>
+<p>A single native engine service is a local baseline. Public hosting, capacity, monitoring and recovery are separate work. The browser does not provide offline engine play when the server is unavailable.</p>
+<h3 id="distribution-and-license">Distribution and license</h3>
+<p>Stockfish is an external prerequisite and is not bundled in the repository or browser assets. Install it through the official project or a package manager such as Homebrew. Stockfish is distributed under GPLv3. Its license and source obligations need review before distributing an engine binary or a package that includes it. Installing an external executable does not choose a license for ChessLab's own code or the preserved research archive.</p>
+<p>References: <a href="https://stockfishchess.org/" rel="noreferrer noopener">Stockfish project</a>, <a href="https://github.com/official-stockfish/Stockfish" rel="noreferrer noopener">official source and license</a>, <a href="https://www.gnu.org/licenses/gpl-3.0.html" rel="noreferrer noopener">GNU GPL version 3</a>.</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav><a href="#adr-0001-run-stockfish-on-the-server">ADR 0001: run Stockfish on the server</a></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

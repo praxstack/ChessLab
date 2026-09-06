@@ -13,14 +13,14 @@
 <aside class="sidebar" aria-label="Dossier navigation">
 <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
 <button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
-<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
 <div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
 </aside>
 <div class="workspace">
 <header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
 <main id="main" tabindex="-1">
 <header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>HTML dossier generator</h1><p class="lede">scripts/build_report.py</p></header>
-<div class="reading-layout"><article class="prose" aria-label="HTML dossier generator"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/build_report.py" download>Download original file ↗</a></div><p class="source-meta">scripts/build_report.py<br>SHA-256: abb4c527f5d638a6b936c2e17d41465f68b5164315c11f21ea75c1ff572d6ec8</p><pre><code>&quot;&quot;&quot;Generate the portable ChessLab dossier from project sources; requires Pandoc.&quot;&quot;&quot;
+<div class="reading-layout"><article class="prose" aria-label="HTML dossier generator"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/build_report.py" download>Download original file ↗</a></div><p class="source-meta">scripts/build_report.py<br>SHA-256: 5c2b8b94b95ee253b7b012fcc3f326dd2c09cd835cbcdf05293e579463e3000d</p><pre><code>&quot;&quot;&quot;Generate the portable ChessLab dossier from project sources; requires Pandoc.&quot;&quot;&quot;
 import argparse
 import hashlib
 import html
@@ -45,7 +45,8 @@ CHAPTERS = [
  (&#x27;pricing&#x27;,&#x27;Pricing &amp; economics&#x27;,&#x27;↗&#x27;,&#x27;Earn a place in the study budget.&#x27;,&#x27;Current reference prices, historical research, and transparent experiments.&#x27;,&#x27;pricing&#x27;),
  (&#x27;investor&#x27;,&#x27;Investor memo&#x27;,&#x27;♜&#x27;,&#x27;What would change my mind?&#x27;,&#x27;An angel-investor view of the opportunity, the missing evidence and the next useful milestone.&#x27;,&#x27;investor&#x27;),
  (&#x27;architecture&#x27;,&#x27;Architecture&#x27;,&#x27;⌘&#x27;,&#x27;Trust starts with the position.&#x27;,&#x27;Rules, engine evidence, explanations and the smallest credible implementation.&#x27;,&#x27;architecture&#x27;),
- (&#x27;delivery&#x27;,&#x27;Work &amp; readiness&#x27;,&#x27;✓&#x27;,&#x27;Prepared is not yet built.&#x27;,&#x27;A factual account of the setup run, this report run, and what remains incomplete.&#x27;,&#x27;delivery&#x27;),
+ (&#x27;application&#x27;,&#x27;Working application&#x27;,&#x27;♞&#x27;,&#x27;Play. Review. Explore.&#x27;,&#x27;The current bot and coach web build, its verification and the platform work ahead.&#x27;,&#x27;application&#x27;),
+ (&#x27;delivery&#x27;,&#x27;Work &amp; readiness&#x27;,&#x27;✓&#x27;,&#x27;A record of the work.&#x27;,&#x27;Historical setup and report receipts, with the current application status kept separate.&#x27;,&#x27;delivery&#x27;),
  (&#x27;discussion&#x27;,&#x27;Conversation&#x27;,&#x27;↳&#x27;,&#x27;The question behind the project.&#x27;,&#x27;The original confusion, the expanding vision, the research request and the project discussion.&#x27;,&#x27;discussion&#x27;),
  (&#x27;library&#x27;,&#x27;Document library&#x27;,&#x27;▤&#x27;,&#x27;The complete reading room.&#x27;,&#x27;Original research and every project document, with full reading pages and downloads.&#x27;,&#x27;library&#x27;),
 ]
@@ -227,7 +228,7 @@ def build():
         output=OUT/&#x27;documents&#x27;/doc_name(path); output.write_text(render_page(title,&#x27;Document library&#x27;,notice+content,toc,&#x27;library&#x27;,&#x27;..&#x27;,str(rel),doc=True)); outputs.append(output)
     outputs += [p for p in (OUT/&#x27;assets&#x27;).iterdir() if p.is_file()]
     inputs={p.relative_to(ROOT).as_posix():digest(p.read_bytes()) for p in files}
-    manifest={&#x27;edition&#x27;:&#x27;2026-09-05&#x27;,&#x27;generator&#x27;:&#x27;scripts/build_report.py&#x27;,&#x27;document_count&#x27;:len(files),&#x27;chapter_count&#x27;:len(CHAPTERS),&#x27;source_hashes&#x27;:inputs,&#x27;output_hashes&#x27;:{p.relative_to(OUT).as_posix():digest(p.read_bytes()) for p in sorted(outputs)}}
+    manifest={&#x27;edition&#x27;:&#x27;2026-09-07&#x27;,&#x27;generator&#x27;:&#x27;scripts/build_report.py&#x27;,&#x27;document_count&#x27;:len(files),&#x27;chapter_count&#x27;:len(CHAPTERS),&#x27;source_hashes&#x27;:inputs,&#x27;output_hashes&#x27;:{p.relative_to(OUT).as_posix():digest(p.read_bytes()) for p in sorted(outputs)}}
     (OUT/&#x27;manifest.json&#x27;).write_text(json.dumps(manifest,indent=2)+&#x27;\n&#x27;)
     print(f&#x27;Built {len(CHAPTERS)} chapters and {len(files)} full document pages in {OUT}&#x27;)
 
@@ -288,6 +289,6 @@ if __name__==&#x27;__main__&#x27;:
 </code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
 
 </main>
-<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Snapshot: September 5, 2026</span></footer>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
 </div>
 </body></html>

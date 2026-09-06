@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Application · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Application</h1><p class="lede">docs/dossier/application.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Application"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/docs/dossier/application.md" download>Download original file ↗</a></div><p class="source-meta">docs/dossier/application.md<br>SHA-256: 058fa7c06a7404f6934576ccac5dbedff226117e52430989056b49ba01c08a15</p><h3 id="the-platform-comes-first">The platform comes first</h3>
+<p>The user changed the sequence: build a usable Chess.com-style web platform, starting with bot and coach play, then add ChessLab's conversational differentiation. Actual human multiplayer follows the first bot/coach stage. Billing is last. This build follows that direction; it does not claim complete Chess.com parity.</p>
+<h3 id="what-can-be-used">What can be used</h3>
+<ul>
+<li>Play White or Black against five Stockfish practice levels through a large blue board, using clicks, dragging or typed moves.</li>
+<li>Review individual moves with engine estimates, legal candidate lines, capture explanations and material consequences. Compare before the selected move to see its candidate arrows.</li>
+<li>Explore both sides of a separate line, nest another variation, save a question with its branch, and return to the original game.</li>
+<li>Save accounts, games, variations, lesson completions and puzzle completions on the same server. Import a legal PGN and export the actual game.</li>
+<li>Use six original introductory lessons and six puzzles. Change orientation, coordinates, legal markers, sounds, playback and bounded analysis preferences.</li>
+</ul>
+<p>Open the <a href="http://127.0.0.1:8770" rel="noreferrer noopener">local application</a> while its server is running. The HTML research archive itself does not run the game. The <a href="../documents/docs--application-md.html">application guide</a> contains installation, startup and backup instructions; <a href="../documents/docs--adr--0001-server-chess-engine-md.html">ADR 0001</a> explains server-side Stockfish. No engine binary or neural weights are downloaded to the browser.</p>
+<h3 id="what-remains">What remains</h3>
+<p>The broader platform is unfinished. There is no human matchmaking, rated ladder, tournament system, social platform, extensive lesson library, subscription checkout or public deployment. Bot levels are not calibrated human ratings. The coach is engine-backed evidence text, not unrestricted conversational AI; questions currently remain learner notes. Saved variations are stored in SQLite and are not included in PGN export.</p>
+<p>The original branching conversation remains the intended differentiation. Reproducing familiar board and review interactions gives us a concrete foundation, but it does not establish educational quality or a business advantage.</p>
+<h3 id="current-evidence">Current evidence</h3>
+<p>See the <a href="../documents/docs--application-verification-md.html">application verification record</a>. It separates automated tests, observed browser behavior, unexecuted checks and unresolved tooling drift. Research-site checks are not product tests.</p>
+<p>The source repository is <a href="https://github.com/praxstack/ChessLab" rel="noreferrer noopener">ChessLab on GitHub</a>; access is private. Its creation, commit and push are separate delivery events recorded in the verification note.</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

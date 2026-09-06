@@ -1,0 +1,24 @@
+{
+  "name": "chesslab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env server/index.mjs",
+    "start": "NODE_ENV=production node --env-file-if-exists=.env server/index.mjs",
+    "build": "vite build",
+    "test": "node --test server/*.test.mjs web/src/*.test.js"
+  },
+  "dependencies": {
+    "chess.js": "^1.4.0",
+    "express": "^5.2.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "vite": "^8.2.2"
+  }
+}

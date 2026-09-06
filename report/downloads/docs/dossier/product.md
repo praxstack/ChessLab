@@ -1,3 +1,9 @@
+## Update: 7 September 2026
+
+The user subsequently authorized a platform-first build, starting with bot/coach play. Human multiplayer follows that stage; billing is last. The [current application chapter](application.md) records the implemented baseline. The original tutor vision below remains the longer-term objective.
+
+## Historical record
+
 ## The experience we are trying to build
 
 The user wants to play against an AI with selectable difficulty, inspect every move, and question the examiner repeatedly. “What if I moved this piece?” must lead to a real alternative. “What if the opponent refused the capture?” must allow a different reply. A question inside that alternative must remain connected to the right position. Returning to the actual game must feel effortless.

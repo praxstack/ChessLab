@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Application Verification · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Application Verification</h1><p class="lede">docs/application-verification.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Application Verification"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/docs/application-verification.md" download>Download original file ↗</a></div><p class="source-meta">docs/application-verification.md<br>SHA-256: b5c690781dded6d57e2dc0e797a258404911c646e66ab161dd251fdfca9ae8e5</p><h2 id="application-verification--7-september-2026">Application verification — 7 September 2026</h2>
+<p>This is evidence for the first bot/coach stage, not a claim of complete Chess.com parity or deployment. The controlling change is <code>build-coach-web-platform</code>. The earlier research archive commit is <code>993a24e</code>.</p>
+<h3 id="automated-results">Automated results</h3>
+<ul>
+<li><code>npm test</code>: 20 tests passed, zero failures (7.96 seconds). Eleven engine checks use native Stockfish 19 or deliberate failure executables; four server integration checks cover accounts, ownership, revisions, persistence, study validation, save failures and learning progress; five frontend state checks cover legal notation, promotion, nested history, return anchors and study limits.</li>
+<li><code>just test</code>: setup helper self-test and the then-current 19 application tests passed. One additional castling/en-passant test was subsequently added and the complete 20-test application suite passed. Same-host cross-scheme origin rejection was added to the existing account test.</li>
+<li><code>npm run build</code>: passed. Built JavaScript is 275.90 KB (86.59 KB gzip), CSS 34.67 KB (8.69 KB gzip). No engine executable or weights are included in these browser assets.</li>
+<li>OpenSpec strict validation: both changes passed. Structural validation is separate from runtime evidence.</li>
+<li><code>just check</code>: fails on the pre-existing shared <code>gstack-cso</code> entrypoint hash drift. The manifest was not changed to conceal it. Git whitespace checks passed independently.</li>
+</ul>
+<p>The deliberate read-only database test prints a save error and then verifies that the earlier study survives. This is an expected failure-path test, not a hidden passing write.</p>
+<h3 id="observed-browser-behavior">Observed browser behavior</h3>
+<p>The Codex in-app browser exercised the actual server at <code>http://127.0.0.1:8770</code>, first in development and then with built production assets. The local test account and its data are ignored by Git.</p>
+<ul>
+<li>Created an account; started as White, entered e4 and received a real legal bot reply.</li>
+<li>Opened individual move review with actual Stockfish identity, estimates, sample lines and capture/material evidence.</li>
+<li>Created d4 as an alternative to the actual e4 game, nested Black's d5, saved a branch question, reloaded, and returned to the original ply-zero anchor. The actual e4 line remained intact.</li>
+<li>Rejected an invalid PGN while preserving the current game; imported a valid six-ply PGN and selected its moves for review. PGN export results and imported player names are also covered by server tests.</li>
+<li>Tried a wrong lesson answer, then the correct answer. Tried a legal wrong puzzle move, then captured the rook using board clicks. Correct progress survived a full server restart.</li>
+<li>Opened the promotion chooser and promoted to a queen; the puzzle completed and progress increased.</li>
+<li>Changed coordinates, analysis time and candidate count; verified persisted coordinates after reload and the new 300 ms/two-line engine review.</li>
+<li>Started as Black, observed the coach's first White move, played e5, received its next reply, and resigned into review.</li>
+<li>Used saved-game navigation at 320 px width. Checked 390 px and 320 px layouts with no horizontal document overflow, and visually inspected the 1440 px desktop board/review layout.</li>
+<li>Compared before a selected move and inspected candidate arrows. Corrected the evaluation display so the board, rail and score use the same shown position.</li>
+</ul>
+<h3 id="bugs-corrected-during-integration">Bugs corrected during integration</h3>
+<p>PGN headers/results were previously overwritten by an incorrect library call. The queen mate puzzle originally rejected other valid mating moves. Origin comparison originally omitted the scheme. Study saves originally allowed two-tab overwrites; separate draft revisions now protect them, including when a bot response contains a newer remote study. Late lesson/puzzle responses are ignored after navigation. Resignation saves pending study edits, unsaved edits trigger a browser unload warning, and additions beyond study size limits preserve the current draft.</p>
+<p>The two frontend response-race fixes were reviewed and built, with server conflict/ownership tests underneath them. Artificially delayed browser-response races were not replayed through a network interceptor in this run.</p>
+<h3 id="checks-not-claimed">Checks not claimed</h3>
+<p><code>scripts/check_app_browser.cjs</code> is a runnable isolated browser smoke behind <code>just e2e</code>. Its syntax passed, but the script itself was not executed: browser interaction in this run used the available CUA tool. The observed browser checks above are separate evidence. Drag-and-drop, sound playback, comprehensive accessibility, other browsers and real phone hardware have not received full manual validation. Click and typed move entry were exercised.</p>
+<p>The rewritten HTML dossier is generated and checked separately. Its older browser receipts remain historical and do not attest to this application.</p>
+<h3 id="delivery-boundary">Delivery boundary</h3>
+<p>The private repository at <a href="https://github.com/praxstack/ChessLab" rel="noreferrer noopener">praxstack/ChessLab</a> was created and its <code>isPrivate: true</code> setting was read back. Commit/push verification is reported after the final source and dossier checks. Public hosting, actual human multiplayer, billing, unrestricted conversational coaching and a full curriculum remain unfinished. The local production server is the demonstrated runtime.</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav><a href="#application-verification--7-september-2026">Application verification — 7 September 2026</a></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

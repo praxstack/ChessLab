@@ -18,3 +18,7 @@ __pycache__/
 # Local browser downloads, caches and provider diagnostics.
 .playwright-mcp/
 design/**/*.stderr.txt
+
+# Local application accounts, sessions and saved games.
+data/
+web/dist/

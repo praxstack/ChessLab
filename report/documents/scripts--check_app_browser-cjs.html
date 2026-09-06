@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Check App Browser · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Check App Browser</h1><p class="lede">scripts/check_app_browser.cjs</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Check App Browser"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/check_app_browser.cjs" download>Download original file ↗</a></div><p class="source-meta">scripts/check_app_browser.cjs<br>SHA-256: 4273b9498dc3d6479625ea8bd57bcea6f5a46b4145e2a42505d7ba66fb7bd252</p><pre><code>/* Run after `npm run build`; uses a fresh database and the real server engine. */
+const assert = require(&#x27;node:assert/strict&#x27;);
+const fs = require(&#x27;node:fs&#x27;);
+const path = require(&#x27;node:path&#x27;);
+const os = require(&#x27;node:os&#x27;);
+const { randomBytes } = require(&#x27;node:crypto&#x27;);
+const { pathToFileURL } = require(&#x27;node:url&#x27;);
+const express = require(&#x27;express&#x27;);
+const root = path.resolve(__dirname, &#x27;..&#x27;);
+const packageRoot = process.env.CHESSLAB_PLAYWRIGHT_ROOT || path.join(os.homedir(), &#x27;.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright&#x27;);
+const { chromium } = require(packageRoot);
+
+(async () =&gt; {
+  const dist = path.join(root, &#x27;web/dist&#x27;);
+  assert.ok(fs.existsSync(path.join(dist, &#x27;index.html&#x27;)), &#x27;Build the application first with npm run build.&#x27;);
+  const { createApp } = await import(pathToFileURL(path.join(root, &#x27;server/app.mjs&#x27;)));
+  const engine = await import(pathToFileURL(path.join(root, &#x27;server/engine.mjs&#x27;)));
+  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), &#x27;chesslab-browser-&#x27;));
+  let state, server, browser;
+  try {
+    state = createApp({ databasePath: path.join(temporary, &#x27;chesslab.sqlite&#x27;) });
+    state.app.use(express.static(dist));
+    server = state.app.listen(0, &#x27;127.0.0.1&#x27;);
+    await new Promise((resolve, reject) =&gt; { server.once(&#x27;listening&#x27;, resolve); server.once(&#x27;error&#x27;, reject); });
+    const base = `http://127.0.0.1:${server.address().port}`;
+    browser = await chromium.launch({ headless: true });
+    const context = await browser.newContext({ viewport: { width: 1440, height: 1050 }, reducedMotion: &#x27;reduce&#x27; });
+    const page = await context.newPage();
+    page.setDefaultTimeout(20000);
+    const pageErrors = [], badResponses = [], unexpectedRequests = [];
+    page.on(&#x27;pageerror&#x27;, error =&gt; pageErrors.push(error.message));
+    page.on(&#x27;response&#x27;, response =&gt; { if (response.status() &gt;= 400) badResponses.push(`${response.status()} ${new URL(response.url()).pathname}`); });
+    page.on(&#x27;request&#x27;, request =&gt; {
+      const url = new URL(request.url());
+      if (url.protocol.startsWith(&#x27;http&#x27;) &amp;&amp; (url.origin !== base || /\.(wasm|nnue|onnx|pt|pb)(\.|$)/i.test(url.pathname))) unexpectedRequests.push(request.url());
+    });
+    const responseFor = (route, method = &#x27;POST&#x27;) =&gt; page.waitForResponse(response =&gt; new URL(response.url()).pathname === route &amp;&amp; response.request().method() === method);
+    async function actionResponse(route, action, status = 200) {
+      const [response] = await Promise.all([responseFor(route), action()]);
+      assert.equal(response.status(), status, route);
+      return response.json();
+    }
+    const navigation = page.getByRole(&#x27;navigation&#x27;, { name: &#x27;Main navigation&#x27; });
+    const entry = page.getByLabel(&#x27;Enter a move in SAN or UCI&#x27;, { exact: true });
+    async function enterMove(value) {
+      await entry.fill(value);
+      await page.getByRole(&#x27;button&#x27;, { name: &#x27;Play entered move&#x27;, exact: true }).click();
+    }
+
+    await page.goto(base);
+    await page.getByText(&#x27;Coach online&#x27;, { exact: true }).waitFor();
+    await page.locator(&#x27;.account-button&#x27;).click();
+    const dialog = page.getByRole(&#x27;dialog&#x27;, { name: &#x27;Make this your workspace&#x27; });
+    await dialog.getByLabel(&#x27;Username&#x27;, { exact: true }).fill(&#x27;browser_smoke&#x27;);
+    await dialog.getByLabel(&#x27;Password&#x27;, { exact: true }).fill(randomBytes(24).toString(&#x27;hex&#x27;));
+    const account = await actionResponse(&#x27;/api/register&#x27;, () =&gt; dialog.getByRole(&#x27;button&#x27;, { name: &#x27;Create account&#x27;, exact: true }).click(), 201);
+    assert.equal(account.user.username, &#x27;browser_smoke&#x27;);
+    await dialog.waitFor({ state: &#x27;hidden&#x27; });
+    const cookie = (await context.cookies(base)).find(item =&gt; item.name === &#x27;chesslab_session&#x27;);
+    assert.ok(cookie?.httpOnly &amp;&amp; cookie.sameSite === &#x27;Strict&#x27;, &#x27;Session must be HttpOnly and SameSite=Strict.&#x27;);
+
+    await page.locator(&#x27;#bot-level&#x27;).selectOption(&#x27;1&#x27;);
+    const created = await actionResponse(&#x27;/api/games&#x27;, () =&gt; page.locator(&#x27;.welcome-panel&#x27;).getByRole(&#x27;button&#x27;, { name: &#x27;Play coach&#x27;, exact: true }).click(), 201);
+    const gameRoute = `/api/games/${created.game.id}`;
+    const humanResponse = responseFor(`${gameRoute}/move`);
+    const replied = await actionResponse(`${gameRoute}/bot`, () =&gt; enterMove(&#x27;e4&#x27;));
+    const human = await humanResponse;
+    assert.equal(human.status(), 200);
+    assert.deepEqual((await human.json()).game.moves, [&#x27;e2e4&#x27;]);
+    assert.equal(replied.game.moves.length, 2);
+    assert.equal(replied.game.moves[0], &#x27;e2e4&#x27;);
+    engine.replay(replied.game.moves, replied.game.initialFen);
+    await page.getByRole(&#x27;button&#x27;, { name: /^Move 1, black,/ }).waitFor();
+    await page.getByRole(&#x27;button&#x27;, { name: &#x27;e4, white pawn&#x27;, exact: true }).waitFor();
+
+    const review = await actionResponse(&#x27;/api/analyze&#x27;, () =&gt; page.locator(&#x27;.panel-tabs&#x27;).getByRole(&#x27;button&#x27;, { name: /^Review/ }).click());
+    assert.match(review.engine, /Stockfish/);
+    assert.ok(review.played &amp;&amp; review.lines.length);
+    await page.locator(&#x27;.coach-explanation&#x27;).waitFor();
+    assert.match(await page.locator(&#x27;.engine-receipt&#x27;).innerText(), /Stockfish/);
+    assert.match(await page.locator(&#x27;.coach-explanation&#x27;).innerText(), /sample|estimate/i);
+
+    const restoredResponse = responseFor(gameRoute, &#x27;GET&#x27;);
+    await page.reload();
+    const restored = await restoredResponse;
+    assert.equal(restored.status(), 200);
+    assert.deepEqual((await restored.json()).game.moves, replied.game.moves);
+    await page.getByRole(&#x27;button&#x27;, { name: &#x27;Move 1, white, e4&#x27;, exact: true }).waitFor();
+    await page.getByRole(&#x27;button&#x27;, { name: /^Move 1, black,/ }).waitFor();
+
+    await navigation.getByRole(&#x27;button&#x27;, { name: &#x27;Learn&#x27;, exact: true }).click();
+    await page.getByRole(&#x27;button&#x27;, { name: /Your king comes first/ }).click();
+    const wrongLesson = await actionResponse(&#x27;/api/lessons/safe-king/answer&#x27;, () =&gt; page.getByRole(&#x27;button&#x27;, { name: /Stay on e1 and pass/ }).click());
+    assert.equal(wrongLesson.correct, false);
+    assert.deepEqual(wrongLesson.progress.lessons, []);
+    await page.locator(&#x27;.learning-feedback.incorrect&#x27;).waitFor();
+    const rightLesson = await actionResponse(&#x27;/api/lessons/safe-king/answer&#x27;, () =&gt; page.getByRole(&#x27;button&#x27;, { name: /Kxe2, capturing the rook/ }).click());
+    assert.equal(rightLesson.correct, true);
+    assert.deepEqual(rightLesson.progress.lessons, [&#x27;safe-king&#x27;]);
+    await page.locator(&#x27;.learning-feedback.correct&#x27;).waitFor();
+
+    await navigation.getByRole(&#x27;button&#x27;, { name: &#x27;Puzzles&#x27;, exact: true }).click();
+    await page.getByRole(&#x27;button&#x27;, { name: /A rook left loose/ }).click();
+    const wrongPuzzle = await actionResponse(&#x27;/api/puzzles/take-the-rook/answer&#x27;, () =&gt; enterMove(&#x27;e1d1&#x27;));
+    assert.equal(wrongPuzzle.correct, false);
+    assert.deepEqual(wrongPuzzle.progress.puzzles, []);
+    await page.locator(&#x27;.learning-feedback.incorrect&#x27;).waitFor();
+    const rightPuzzle = await actionResponse(&#x27;/api/puzzles/take-the-rook/answer&#x27;, () =&gt; enterMove(&#x27;d3e4&#x27;));
+    assert.equal(rightPuzzle.complete, true);
+    assert.deepEqual(rightPuzzle.progress.puzzles, [&#x27;take-the-rook&#x27;]);
+    await page.locator(&#x27;.learning-feedback.correct&#x27;).waitFor();
+    assert.match(await page.locator(&#x27;.learning-feedback.correct&#x27;).innerText(), /Puzzle complete/);
+
+    const meResponse = responseFor(&#x27;/api/me&#x27;, &#x27;GET&#x27;);
+    await page.reload();
+    const me = await meResponse;
+    assert.equal(me.status(), 200);
+    assert.deepEqual((await me.json()).progress, { lessons: [&#x27;safe-king&#x27;], puzzles: [&#x27;take-the-rook&#x27;] });
+    await page.getByRole(&#x27;button&#x27;, { name: &#x27;Move 1, white, e4&#x27;, exact: true }).waitFor();
+    assert.deepEqual(pageErrors, [], &#x27;Browser JavaScript errors&#x27;);
+    assert.deepEqual(badResponses, [], &#x27;Unexpected failing HTTP responses&#x27;);
+    assert.deepEqual(unexpectedRequests, [], &#x27;No external resources or browser engine/model downloads&#x27;);
+    console.log(JSON.stringify({ status: &#x27;pass&#x27;, checkedAt: new Date().toISOString(), engine: review.engine, checks: [&#x27;register and session cookie&#x27;, &#x27;typed e4 and real legal bot reply&#x27;, &#x27;engine review shown&#x27;, &#x27;saved game restored after reload&#x27;, &#x27;wrong/right lesson answers&#x27;, &#x27;wrong/right puzzle moves&#x27;, &#x27;progress restored after reload&#x27;, &#x27;no page errors or unexpected HTTP/model requests&#x27;], limitations: [&#x27;Uses isolated temporary SQLite, not the user database&#x27;, &#x27;Does not establish deployment or cross-browser support&#x27;] }, null, 2));
+  } finally {
+    try { await browser?.close(); }
+    finally {
+      engine.closeEngine();
+      try {
+        if (server) { server.closeAllConnections(); await new Promise(resolve =&gt; server.close(resolve)); }
+      } finally {
+        try { state?.close(); }
+        finally { fs.rmSync(temporary, { recursive: true, force: true }); }
+      }
+    }
+  }
+})().catch(error =&gt; { console.error(error); process.exitCode = 1; });
+</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

@@ -15,7 +15,7 @@ const { chromium } = require(packageRoot);
   page.on('pageerror', error => errors.push(error.message));
   page.on('request', request => { if (/^https?:/.test(request.url())) requests.push(request.url()); });
   const base = 'file://' + path.join(root, 'report') + '/';
-  const chapters = ['index','product','market','pricing','investor','architecture','delivery','discussion','library'];
+  const chapters = ['index','product','market','pricing','investor','architecture','application','delivery','discussion','library'];
   const manifest = JSON.parse(fs.readFileSync(path.join(root, 'report/manifest.json')));
   const htmlPages = Object.keys(manifest.output_hashes).filter(p => p.endsWith('.html') && !p.startsWith('downloads/'));
   try {

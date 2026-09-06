@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Design · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Design</h1><p class="lede">openspec/changes/build-coach-web-platform/design.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Design"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/build-coach-web-platform/design.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/build-coach-web-platform/design.md<br>SHA-256: 0627d06696a030b80ebcfee783e0533f6b794e9924f2c62a6aa1985158f151d8</p><h3 id="context">Context</h3>
+<p>Archive baseline: commit 993a24e. User explicitly changed the product sequence on 7 September 2026, then clarified bot/coach before human multiplayer and billing last. This version records that instruction before implementation. Prior research, evaluator assumptions and draft remain preserved. The user requested implementation and private GitHub delivery in this session; planning-only skill wording does not remove that authorization.</p>
+<h3 id="goals--non-goals">Goals / Non-Goals</h3>
+<p>Build a functional recorded-layout web baseline: large board left, coach/review right, navigation rail, settings modal and move history. Preserve the future conversational tutor objective. No human matchmaking or billing in this first stage. No claim of full Chess.com platform/content parity. Stockfish is the available engine; unavailable proprietary engines are not fake selectable options.</p>
+<h3 id="decisions">Decisions</h3>
+<p>Use one Node 24+ Express server, React/Vite interface, chess.js legality and Node's built-in SQLite. Native Stockfish is a server subprocess; no WASM/model weights in web assets. SQLite stores users, sessions, games and progress. Passwords use salted scrypt, opaque hashed sessions use HttpOnly same-site cookies, mutations reject cross-origin requests, and every game lookup checks ownership. The server binds loopback by default. Internet deployment, TLS and operational hardening remain a distinct release task.</p>
+<p>The server owns actual bot games and validates every move and expected revision. The browser owns temporary variation trees attached to a saved game, saved through a validated study endpoint. It never overwrites the actual mainline when exploring. Review evaluates each selected position with full replay history and a bounded engine search; stale responses cannot overwrite the newly selected position. Deterministic evidence wording explains checks, captures, material and alternatives without pretending to be unrestricted LLM chat.</p>
+<p>Original lessons and puzzle solutions are authored and replay-validated. A small initial collection is labeled as such, not a copied full curriculum. Anonymous users can browse the interface; a local-server account saves games and progress. No email or external account provider is required.</p>
+<p>Visual direction: recorded Chess.com structural layout with ChessLab identity; midnight #101b2d rail, slate #1d2b42 surfaces, paper #e8eef8 text, blue #5d91ef action, board #dae5f2/#7996bb, amber #edba68 highlights. System body text, Georgia for restrained lesson headings, monospace move/evaluation numbers. The distinctive element is the large uninterrupted board aligned with a coach panel, not a marketing landing page. Click, drag, keyboard move entry, coordinates, arrows, promotion choice, sound toggle and reduced-motion support.</p>
+<h3 id="api-contract">API contract</h3>
+<p>All endpoints are same-origin JSON, errors <code>{error:string}</code>, game arrays use UCI moves. IDs are opaque strings. Auth responses <code>{user:{id,username}|null,progress:{lessons:string[],puzzles:string[]}}</code>.</p>
+<ul>
+<li>GET /api/status → <code>{engine:{available,name},billingEnabled:false}</code>.</li>
+<li>GET /api/me; POST /api/register and /api/login <code>{username,password}</code>; POST /api/logout.</li>
+<li>GET /api/games → <code>{games:Game[]}</code>; POST /api/games <code>{color:'w'|'b',level:1..5,title?}</code> → <code>{game}</code>.</li>
+<li>GET /api/games/:id → <code>{game}</code>; POST /api/games/:id/move <code>{move:UCI,revision}</code> → <code>{game}</code>; POST /api/games/:id/bot <code>{revision}</code> → <code>{game}</code>; POST /api/games/:id/resign <code>{revision}</code> → <code>{game}</code>.</li>
+<li>POST /api/import <code>{pgn}</code> → <code>{game}</code>. GET /api/games/:id/pgn returns PGN text. POST /api/games/:id/study <code>{study,studyRevision}</code> saves validated bounded JSON with legal history-bearing branches, without altering actual moves.</li>
+<li>Game <code>{id,title,color,level,moves:string[],initialFen:string|null,result:string|null,revision:number,createdAt:string,updatedAt:string,study:object|null,studyRevision:number,source:'bot'|'import'}</code>. Result is '1-0','0-1','1/2-1/2', or null. Imported games are review-only.</li>
+<li>POST /api/analyze <code>{moves:string[],initialFen?:string|null,movetime?:number,lines?:number,skill?:number,playedMove?:string}</code> → Analysis. <code>playedMove</code> is optional legal UCI at supplied position for a before/after review.</li>
+<li>Analysis <code>{engine,fen,turn:'w'|'b',bestmove:string|null,lines:[{move:string,moves:string[],san:string[],score:{type:'cp'|'mate',value:number},depth:number}],limits:{movetime,lines},facts:{inCheck,material:{white,black},legalMoves:number},explanation:string,played?:{move,san,classification,lossCp:number|null,explanation,afterScore:{type,value}|null}}</code>. Scores use White's perspective, not side-to-move. Terminal positions return no bestmove and empty lines.</li>
+<li>GET /api/learn → <code>{lessons:[{id,title,description,category,body:string[],fen,question,choices:string[]}],puzzles:[{id,title,theme,fen,side,hint}]}</code>. Do not disclose correct puzzle solutions in the catalog.</li>
+<li>POST /api/lessons/:id/answer <code>{choice:number}</code> → <code>{correct,explanation,progress}</code>. POST /api/puzzles/:id/answer <code>{moves:string[]}</code> → <code>{correct,complete,reply:string|null,explanation,progress}</code>. Validates sequence, supplies only next opponent reply after correct move. Wrong moves do not award completion.</li>
+</ul>
+<h3 id="risks--trade-offs">Risks / Trade-offs</h3>
+<p>One local server and bounded engine concurrency are a first platform baseline, not scalable public hosting. Account backup, abuse monitoring, password recovery, hosted multiplayer and billing are deferred explicitly. Engine evaluation is approximate and ratings are uncalibrated. Original learning content must be labeled introductory. Root archive 993a24e is the rollback pointer; application data lives in ignored data/ and is not deleted by code rollback.</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

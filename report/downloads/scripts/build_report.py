@@ -23,7 +23,8 @@ CHAPTERS = [
  ('pricing','Pricing & economics','↗','Earn a place in the study budget.','Current reference prices, historical research, and transparent experiments.','pricing'),
  ('investor','Investor memo','♜','What would change my mind?','An angel-investor view of the opportunity, the missing evidence and the next useful milestone.','investor'),
  ('architecture','Architecture','⌘','Trust starts with the position.','Rules, engine evidence, explanations and the smallest credible implementation.','architecture'),
- ('delivery','Work & readiness','✓','Prepared is not yet built.','A factual account of the setup run, this report run, and what remains incomplete.','delivery'),
+ ('application','Working application','♞','Play. Review. Explore.','The current bot and coach web build, its verification and the platform work ahead.','application'),
+ ('delivery','Work & readiness','✓','A record of the work.','Historical setup and report receipts, with the current application status kept separate.','delivery'),
  ('discussion','Conversation','↳','The question behind the project.','The original confusion, the expanding vision, the research request and the project discussion.','discussion'),
  ('library','Document library','▤','The complete reading room.','Original research and every project document, with full reading pages and downloads.','library'),
 ]
@@ -205,7 +206,7 @@ def build():
         output=OUT/'documents'/doc_name(path); output.write_text(render_page(title,'Document library',notice+content,toc,'library','..',str(rel),doc=True)); outputs.append(output)
     outputs += [p for p in (OUT/'assets').iterdir() if p.is_file()]
     inputs={p.relative_to(ROOT).as_posix():digest(p.read_bytes()) for p in files}
-    manifest={'edition':'2026-09-05','generator':'scripts/build_report.py','document_count':len(files),'chapter_count':len(CHAPTERS),'source_hashes':inputs,'output_hashes':{p.relative_to(OUT).as_posix():digest(p.read_bytes()) for p in sorted(outputs)}}
+    manifest={'edition':'2026-09-07','generator':'scripts/build_report.py','document_count':len(files),'chapter_count':len(CHAPTERS),'source_hashes':inputs,'output_hashes':{p.relative_to(OUT).as_posix():digest(p.read_bytes()) for p in sorted(outputs)}}
     (OUT/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     print(f'Built {len(CHAPTERS)} chapters and {len(files)} full document pages in {OUT}')
 

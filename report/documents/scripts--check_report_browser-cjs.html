@@ -13,14 +13,14 @@
 <aside class="sidebar" aria-label="Dossier navigation">
 <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
 <button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
-<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
 <div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
 </aside>
 <div class="workspace">
 <header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
 <main id="main" tabindex="-1">
 <header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Check Report Browser</h1><p class="lede">scripts/check_report_browser.cjs</p></header>
-<div class="reading-layout"><article class="prose" aria-label="Check Report Browser"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/check_report_browser.cjs" download>Download original file ↗</a></div><p class="source-meta">scripts/check_report_browser.cjs<br>SHA-256: 6e90055e141a78446b707f8b1064712ff6038bfc656f40d811faf29c45b83c93</p><pre><code>/* Check the reading site with the already-installed Playwright runtime. */
+<div class="reading-layout"><article class="prose" aria-label="Check Report Browser"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/check_report_browser.cjs" download>Download original file ↗</a></div><p class="source-meta">scripts/check_report_browser.cjs<br>SHA-256: 4eaa60c964392552be43e7d43d1787772065b1c790b8fbfbb9a6baeb3ce9377a</p><pre><code>/* Check the reading site with the already-installed Playwright runtime. */
 const assert = require(&#x27;node:assert/strict&#x27;);
 const fs = require(&#x27;node:fs&#x27;);
 const path = require(&#x27;node:path&#x27;);
@@ -37,7 +37,7 @@ const { chromium } = require(packageRoot);
   page.on(&#x27;pageerror&#x27;, error =&gt; errors.push(error.message));
   page.on(&#x27;request&#x27;, request =&gt; { if (/^https?:/.test(request.url())) requests.push(request.url()); });
   const base = &#x27;file://&#x27; + path.join(root, &#x27;report&#x27;) + &#x27;/&#x27;;
-  const chapters = [&#x27;index&#x27;,&#x27;product&#x27;,&#x27;market&#x27;,&#x27;pricing&#x27;,&#x27;investor&#x27;,&#x27;architecture&#x27;,&#x27;delivery&#x27;,&#x27;discussion&#x27;,&#x27;library&#x27;];
+  const chapters = [&#x27;index&#x27;,&#x27;product&#x27;,&#x27;market&#x27;,&#x27;pricing&#x27;,&#x27;investor&#x27;,&#x27;architecture&#x27;,&#x27;application&#x27;,&#x27;delivery&#x27;,&#x27;discussion&#x27;,&#x27;library&#x27;];
   const manifest = JSON.parse(fs.readFileSync(path.join(root, &#x27;report/manifest.json&#x27;)));
   const htmlPages = Object.keys(manifest.output_hashes).filter(p =&gt; p.endsWith(&#x27;.html&#x27;) &amp;&amp; !p.startsWith(&#x27;downloads/&#x27;));
   try {
@@ -119,6 +119,6 @@ const { chromium } = require(packageRoot);
 </code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
 
 </main>
-<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Snapshot: September 5, 2026</span></footer>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
 </div>
 </body></html>

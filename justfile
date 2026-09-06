@@ -14,10 +14,18 @@ check:
 
 test:
     python3 scripts/setup_skills.py --self-test
+    npm test
+
+app:
+    npm run dev
+
+app-check:
+    npm test
+    npm run build
 
 e2e:
-    @echo "No application exists yet; there is no product end-to-end test."
-    @exit 1
+    npm run build
+    node scripts/check_app_browser.cjs
 
 report:
     python3 scripts/build_report.py

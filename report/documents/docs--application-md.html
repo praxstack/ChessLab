@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Application · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Application</h1><p class="lede">docs/application.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Application"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/docs/application.md" download>Download original file ↗</a></div><p class="source-meta">docs/application.md<br>SHA-256: 0db1863b123891023b39f507fad61573be525edaf3fd32de56f45aade8a2910e</p><h2 id="running-chesslab">Running ChessLab</h2>
+<p>ChessLab is a local web application for bot play and review. The browser uses React and chess.js. One Node server validates games, runs native Stockfish, and stores accounts, games and learning progress in SQLite.</p>
+<h3 id="install-and-start">Install and start</h3>
+<p>Requirements are Node.js 24 or newer, npm, and a native Stockfish executable. Node's built-in SQLite is used; no separate database service is needed.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install stockfish</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> ci</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> .env.example .env</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">command</span> <span class="at">-v</span> stockfish</span></code></pre></div>
+<p>Set <code>STOCKFISH_PATH</code> in <code>.env</code> to the executable found by the last command. The example uses <code>/opt/homebrew/bin/stockfish</code>, the usual Apple Silicon Homebrew location. On another platform, install Stockfish from its official distribution or your package manager and set the actual path.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run dev</span></code></pre></div>
+<p>Open <a href="http://127.0.0.1:8770" rel="noreferrer noopener">http://127.0.0.1:8770</a>. Development mode serves the interface through Vite and uses the same server for API requests. <code>npm run dev</code> and <code>npm start</code> load <code>.env</code> when it exists. Environment variables supplied by the shell take precedence.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run build</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> start</span></code></pre></div>
+<p>Production mode serves <code>web/dist</code>. This is a local run command, not a public deployment. Stop the server with Ctrl-C before switching between development and production on the same port.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default in <code>.env.example</code></th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>STOCKFISH_PATH</code></td>
+<td><code>/opt/homebrew/bin/stockfish</code></td>
+<td>Native engine executable on the server</td>
+</tr>
+<tr>
+<td><code>HOST</code></td>
+<td><code>127.0.0.1</code></td>
+<td>Listen on loopback</td>
+</tr>
+<tr>
+<td><code>PORT</code></td>
+<td><code>8770</code></td>
+<td>HTTP port</td>
+</tr>
+<tr>
+<td><code>CHESSLAB_DB</code></td>
+<td><code>./data/chesslab.sqlite</code></td>
+<td>SQLite file, resolved from the working directory</td>
+</tr>
+<tr>
+<td><code>COOKIE_SECURE</code></td>
+<td><code>0</code></td>
+<td>Local HTTP cookie setting; HTTPS deployment needs <code>1</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Run commands from the repository root. Keep <code>.env</code> and <code>data/</code> out of Git. The repository ignores both.</p>
+<h3 id="play-and-review">Play and review</h3>
+<p>Choose White or Black and one of five practice levels, then select <strong>Play coach</strong>. An account is required to save a game. Usernames use 3 to 32 letters, digits, underscores or hyphens; passwords use 10 to 128 characters. Accounts work on this server only. There is no email provider, password recovery or cloud sync.</p>
+<p>Click a piece and destination, drag a piece, or enter SAN such as <code>Nf3</code> or UCI such as <code>g1f3</code> below the board. Promotion opens a piece choice. The server validates moves and rejects stale revisions. If the engine fails, your saved move remains available and the interface offers a retry when it is the coach's turn.</p>
+<p>Open <strong>Review</strong> or select a move in the history. The transport controls and left/right arrow keys step through positions. Review evaluates the position before the selected move and the played move. <strong>Compare before move</strong> shows the candidate arrows on their starting position. Scores use White's perspective. Search time, depth and engine identity accompany results.</p>
+<p><strong>Try a variation</strong> starts a separate legal line. Play either side, branch again, and write a question attached to that branch. Candidate continuations can also become variations. <strong>Save study</strong> saves the full histories and questions. <strong>Return to game</strong> restores the selected branch's original game anchor. The actual game moves remain separate. Save conflicts preserve the local draft and report that another tab changed the study.</p>
+<p>Use <strong>Import</strong> to paste a completed PGN or choose a file up to 50 KB. Invalid imports leave the current game intact. Imported games are review-only. <strong>Export PGN</strong> exports the actual game. Saved variations and questions remain in the study database; PGN export does not include them.</p>
+<p><strong>My games</strong> opens saved games and studies. Starting a new game or opening another game first saves pending study edits. Browser board and review preferences persist in local storage. Supported controls include orientation, coordinates, legal markers, last-move highlights, move sounds, arrows, playback pace, analysis time and candidate count.</p>
+<h3 id="practice-collection">Practice collection</h3>
+<p>The current catalog contains six original introductory lessons and six puzzles. It is a starter collection, not Chess.com's curriculum. Lesson answers and puzzle move sequences are checked on the server. Incorrect answers earn no completion. A puzzle reveals only the next opponent reply after a correct move, and completion is stored with the account.</p>
+<h3 id="back-up-your-data">Back up your data</h3>
+<p>Accounts, sessions, games, studies and learning progress live in the SQLite database. The default is <code>data/chesslab.sqlite</code>. SQLite can also create <code>chesslab.sqlite-wal</code> and <code>chesslab.sqlite-shm</code> beside it. Copying only the main file while the server is running can miss recent writes.</p>
+<p>For a simple complete backup, stop every ChessLab process using that database, then copy the entire <code>data/</code> directory to a private backup location. Preserve any companion files that remain. If <code>CHESSLAB_DB</code> points elsewhere, back up that database and its companion files instead. Restore while the server is stopped, using the same path or an updated <code>CHESSLAB_DB</code>. The backup contains account data and should not be published.</p>
+<p>Deleting <code>data/</code> discards accounts and saved work. Code rollback does not require deleting the database. The pre-application archive commit is <code>993a24e</code>; it is a source rollback reference, not a data backup.</p>
+<h3 id="checks-and-troubleshooting">Checks and troubleshooting</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">just</span> test</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">just</span> app-check</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">just</span> e2e</span></code></pre></div>
+<p><code>just test</code> includes the setup helper, server tests and frontend state tests. <code>just app-check</code> runs application checks and builds the browser assets. <code>just e2e</code> tests the built app with an isolated temporary database and browser. It uses an existing Playwright package, configurable through <code>CHESSLAB_PLAYWRIGHT_ROOT</code>; it does not install a browser for you. These checks are separate from the research site's <code>just report-test</code>.</p>
+<p>If the engine is unavailable, verify <code>STOCKFISH_PATH</code> and run the executable directly. A missing or failing engine produces an error; the application does not substitute a fabricated move or explanation. If port 8770 is already in use, stop the other server or set a different <code>PORT</code> and open that address. If production mode reports a missing build, run <code>npm run build</code>.</p>
+<p><code>just check</code> also checks agent skill hashes. The known <code>gstack-cso</code> source drift is a setup verification failure. Do not silently regenerate its stored hash to make the check pass. Review the changed installed entrypoint before updating the manifest.</p>
+<h3 id="current-limits">Current limits</h3>
+<p>Human multiplayer, billing and public hosting remain deferred. Five bot levels are uncalibrated Stockfish settings, not human Elo ratings. The coach uses deterministic evidence wording and engine estimates. It does not provide unrestricted language-model conversation. Questions are saved learner notes.</p>
+<p>A candidate continuation demonstrates a legal line at a bounded search. It does not prove that every reply is forced, and additional search can change a score or move classification. The app does not copy Chess.com's classification algorithm or claim its accuracy metrics. The current labels use estimated mover loss: 50 centipawns for inaccuracy, 150 for mistake and 300 for blunder. Short searches and mate scores require separate interpretation. The interface sends position histories to the local server; it downloads no engine binary, neural weights or model to the browser.</p>
+<p>This server supports a local baseline, with bounded engine work and SQLite persistence. Public use requires separate decisions and work for HTTPS, backups, password recovery, abuse handling and capacity. No learning effectiveness, demand, scale or public availability has been established by local application tests.</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav><a href="#running-chesslab">Running ChessLab</a></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

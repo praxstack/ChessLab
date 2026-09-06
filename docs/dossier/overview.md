@@ -1,3 +1,9 @@
+## Update: 7 September 2026
+
+The direction changed on 7 September 2026: build the familiar web platform first, with bot and coach play before human multiplayer and billing last. A local application now exists. See the [current application chapter](application.md) and [run guide](../application.md). The assessment and table below preserve the earlier research snapshot; they are not the current delivery state.
+
+## Historical record
+
 ## The project in one sentence
 
 ChessLab is a proposed chess tutor that lets a learner pause at any position, ask why a move fails, explore alternatives for both players, and return to the original game without losing the thread of the lesson.
