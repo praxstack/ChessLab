@@ -20,7 +20,7 @@
 <header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
 <main id="main" tabindex="-1">
 <header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Application</h1><p class="lede">docs/dossier/application.md</p></header>
-<div class="reading-layout"><article class="prose" aria-label="Application"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/docs/dossier/application.md" download>Download original file ↗</a></div><p class="source-meta">docs/dossier/application.md<br>SHA-256: 7ef55ac4677560672fe564ab69bde0236296cce09c12cd25350c4c928478bd6c</p><h3 id="the-platform-comes-first">The platform comes first</h3>
+<div class="reading-layout"><article class="prose" aria-label="Application"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/docs/dossier/application.md" download>Download original file ↗</a></div><p class="source-meta">docs/dossier/application.md<br>SHA-256: 41df1e709713004b62dbd5ebbb1f7bb9e78e51d6ca0e273dfaa049453c6eaf09</p><h3 id="the-platform-comes-first">The platform comes first</h3>
 <p>The user changed the sequence: build a usable Chess.com-style web platform, starting with bot and coach play, then add ChessLab's conversational differentiation. Actual human multiplayer follows the first bot/coach stage. Billing is last. This build follows that direction; it does not claim complete Chess.com parity.</p>
 <h3 id="what-can-be-used">What can be used</h3>
 <ul>
@@ -37,6 +37,9 @@
 <h3 id="current-evidence">Current evidence</h3>
 <p>See the <a href="../documents/docs--application-verification-md.html">application verification record</a>. It separates automated tests, observed browser behavior, unexecuted checks and unresolved tooling drift. Research-site checks are not product tests.</p>
 <p>The source repository is <a href="https://github.com/praxstack/ChessLab" rel="noreferrer noopener">ChessLab on GitHub</a>; access is private. Its creation, commit and push are separate delivery events recorded in the verification note.</p>
+<h3 id="follow-up-correction-engines-and-piece-assets">Follow-up correction: engines and piece assets</h3>
+<p>The user challenged the gap between a one-to-one bot clone and the smaller implementation. One engine is installed, Stockfish 19. All five bot levels are presets of that engine. None of the other engines mentioned in the research or recorded menus were integrated. The <a href="../documents/docs--application-md.html#engine-inventory-and-difficulty">application guide</a> now gives the exact difficulty mapping and move flow, and lists the missing bot-platform behaviors.</p>
+<p>The user also rejected the custom piece drawings. All twelve pieces now use the original images from Chess.com's standard analysis board, served from local files. The board retains its blue colors. This asset correction does not close the bot-personality or platform-parity gaps.</p>
 </article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
 
 </main>

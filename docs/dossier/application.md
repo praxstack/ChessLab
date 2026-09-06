@@ -23,3 +23,9 @@ The original branching conversation remains the intended differentiation. I woul
 See the [application verification record](../application-verification.md). It separates automated tests, observed browser behavior, unexecuted checks and unresolved tooling drift. Research-site checks are not product tests.
 
 The source repository is [ChessLab on GitHub](https://github.com/praxstack/ChessLab); access is private. Its creation, commit and push are separate delivery events recorded in the verification note.
+
+## Follow-up correction: engines and piece assets
+
+The user challenged the gap between a one-to-one bot clone and the smaller implementation. One engine is installed, Stockfish 19. All five bot levels are presets of that engine. None of the other engines mentioned in the research or recorded menus were integrated. The [application guide](../application.md#engine-inventory-and-difficulty) now gives the exact difficulty mapping and move flow, and lists the missing bot-platform behaviors.
+
+The user also rejected the custom piece drawings. All twelve pieces now use the original images from Chess.com's standard analysis board, served from local files. The board retains its blue colors. This asset correction does not close the bot-personality or platform-parity gaps.

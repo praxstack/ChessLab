@@ -42,3 +42,9 @@ The rewritten HTML dossier passed generation and integrity checks: 10 chapters, 
 ## Delivery boundary
 
 The private repository at [praxstack/ChessLab](https://github.com/praxstack/ChessLab) was created and its `isPrivate: true` setting was read back. Application commit `b169e9e6af887dfe6b286a7607cebaa9900b93d0` was pushed to `main`; `git ls-remote` returned that same hash and GitHub reported the private default branch as `main`. This delivery-note update follows that verified application commit. Public hosting, actual human multiplayer, billing, unrestricted conversational coaching and a full curriculum remain unfinished. The local production server is the demonstrated runtime.
+
+## Piece correction follow-up
+
+The browser's rendered Chess.com analysis-board backgrounds supplied the exact twelve source URLs. Download checks confirmed twelve 150 × 150 PNG files, totalling 93,344 bytes, with source hashes saved in `references/chesscom-piece-assets.json`. The custom SVG drawing paths and their color/shadow styles were removed. The shared piece renderer now uses those local files everywhere, including promotion choices. The bot difficulty label is explicit.
+
+The production build passed after this change. The running app showed all 32 occupied-board images loading at their original 150 px width, covering all twelve unique color/type assets, and no desktop horizontal overflow. The existing automated browser smoke now checks those images and uses the current difficulty label instead of an obsolete selector. That standalone browser script still has not been executed; the image check was observed through CUA.

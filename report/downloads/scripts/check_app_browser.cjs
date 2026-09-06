@@ -49,6 +49,8 @@ const { chromium } = require(packageRoot);
 
     await page.goto(base);
     await page.getByText('Coach online', { exact: true }).waitFor();
+    await page.waitForFunction(() => [...document.querySelectorAll('.board img.piece')].length === 32 && [...document.querySelectorAll('.board img.piece')].every(image => image.complete && image.naturalWidth === 150));
+    assert.equal(new Set(await page.locator('.board img.piece').evaluateAll(images => images.map(image => new URL(image.src).pathname))).size, 12, 'All twelve piece images load on the starting board');
     await page.locator('.account-button').click();
     const dialog = page.getByRole('dialog', { name: 'Make this your workspace' });
     await dialog.getByLabel('Username', { exact: true }).fill('browser_smoke');
@@ -59,7 +61,7 @@ const { chromium } = require(packageRoot);
     const cookie = (await context.cookies(base)).find(item => item.name === 'chesslab_session');
     assert.ok(cookie?.httpOnly && cookie.sameSite === 'Strict', 'Session must be HttpOnly and SameSite=Strict.');
 
-    await page.locator('#bot-level').selectOption('1');
+    await page.getByRole('combobox', { name: 'BOT DIFFICULTY', exact: true }).selectOption('1');
     const created = await actionResponse('/api/games', () => page.locator('.welcome-panel').getByRole('button', { name: 'Play coach', exact: true }).click(), 201);
     const gameRoute = `/api/games/${created.game.id}`;
     const humanResponse = responseFor(`${gameRoute}/move`);

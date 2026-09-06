@@ -2,14 +2,7 @@ import React from 'react';
 
 const names = {p:'pawn',n:'knight',b:'bishop',r:'rook',q:'queen',k:'king'};
 export function Piece({type, color}) {
-  return <svg viewBox="0 0 80 80" className={`piece piece-${color}`} aria-hidden="true"><g strokeWidth="2.3" strokeLinejoin="round" strokeLinecap="round">
-    {type === 'p' && <><circle cx="40" cy="22" r="10"/><path d="M32 32h16l-2 11 5 12H29l5-12z"/><path d="M28 55h24l4 9H24z"/></>}
-    {type === 'r' && <><path d="M23 13h8v8h6v-8h7v8h6v-8h8v18l-7 5 2 21H28l2-21-7-5z"/><path d="M29 31h23M29 38h22M24 57h32l3 8H21z"/></>}
-    {type === 'b' && <><path d="M40 10c-7 9-17 15-17 26 0 8 7 11 17 11s17-3 17-11c0-11-10-17-17-26z"/><path d="M45 22l-8 13M31 47l-4 11h26l-4-11M26 58h28l5 7H21z"/><circle cx="40" cy="10" r="3"/></>}
-    {type === 'n' && <><path d="M53 56H25c1-11 11-19 19-27l-10 4-8 8-9-7 11-19 13-3 4-7 5 9c17 10 11 29 3 42z"/><path d="M43 18l-9 7M29 57h26l4 8H23z"/><circle cx="31" cy="26" r="1.5" className="piece-eye"/></>}
-    {type === 'q' && <><path d="M20 23l9 8 3-14 8 13 8-13 3 14 9-8-9 30H29z"/><circle cx="20" cy="21" r="4"/><circle cx="32" cy="15" r="4"/><circle cx="48" cy="15" r="4"/><circle cx="60" cy="21" r="4"/><path d="M28 53h24l3 5H25zM24 59h32l3 6H21z"/></>}
-    {type === 'k' && <><path d="M40 8v14M34 14h12" fill="none"/><path d="M40 26c-10-12-27-3-22 9l11 18h22l11-18c5-12-12-21-22-9z"/><path d="M40 26v18M28 53h24l3 5H25zM24 59h32l3 6H21z"/></>}
-  </g></svg>;
+  return <img src={`/pieces/chesscom/${color}${type}.png`} className="piece" width="150" height="150" alt="" aria-hidden="true" draggable={false}/>;
 }
 export default function Board({chess, orientation='w', selected, onSquare, onMove, enabled, settings, arrows=[], lastMove, label}) {
   const files = orientation === 'w' ? 'abcdefgh' : 'hgfedcba';

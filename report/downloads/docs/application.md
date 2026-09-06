@@ -52,6 +52,40 @@ Use **Import** to paste a completed PGN or choose a file up to 50 KB. Invalid im
 
 **My games** opens saved games and studies. Starting a new game or opening another game first saves pending study edits. Browser board and review preferences persist in local storage. Supported controls include orientation, coordinates, legal markers, last-move highlights, move sounds, arrows, playback pace, analysis time and candidate count.
 
+## Engine inventory and difficulty
+
+Exactly one engine was installed for this application: Stockfish 19, at `/opt/homebrew/bin/stockfish`. Its native executable includes its evaluation network. No other chess engine or separate model weights were installed or integrated. chess.js is a legal-move library, not another opponent engine.
+
+The recorded Chess.com settings mention Stockfish 16/18/Lite, Torch Human/4/Lite and Komodo Dragon. Research also discusses Maia versions, ChessCoach and AlphaZero work, plus products such as Fritz. Those references are not download receipts or working integrations.
+
+The five available levels are settings of the same Stockfish engine:
+
+| Bot difficulty | Stockfish skill | Search time per reply |
+| --- | ---: | ---: |
+| 1 · First steps | 0 | 80 ms |
+| 2 · Easygoing | 4 | 150 ms |
+| 3 · Club practice | 8 | 250 ms |
+| 4 · Challenging | 14 | 400 ms |
+| 5 · Full strength | 20 | 700 ms |
+
+These values have not been calibrated to human Elo. Full strength means skill 20 with a 700 ms search, not unlimited analysis. Lower Stockfish skill can select a weaker move, as described in its [official UCI documentation](https://official-stockfish.github.io/docs/stockfish-wiki/UCI-Protocol-and-Stockfish-Commands.html#skill-level).
+
+To play, choose **New game**, White or Black, and **Bot difficulty**, then **Start game**. On the initial screen the start button is **Play coach**. Create or sign into a local account when prompted. Click a piece and destination, drag, or type a move. Difficulty is chosen for a new game; the analysis settings do not change an existing opponent.
+
+For each turn, the browser submits your move. The server checks ownership, revision, turn and legality, then saves it. It starts native Stockfish, supplies the complete move history and the selected skill/time limit, validates the returned move and saves the reply. The browser shows the updated position. No language model chooses moves or generates free-form coaching here.
+
+## Difference from Chess.com's bot platform
+
+This is not a complete one-to-one bot-play clone. The current app has five generic fixed presets. It does not reproduce Chess.com's bot roster, personality behavior, adaptive strength, rating slider, time controls, bot chat, crowns or complete in-game assistance workflow. Reproducing those behaviors requires further implementation and testing; adding engine names to a selector would not do it.
+
+Chess.com's [current bot documentation](https://support.chess.com/en/articles/8614091-how-can-i-play-against-the-chess-com-bots) describes over 100 personalities powered by Komodo. Multiple named bots therefore do not imply a separately downloaded engine for each bot. This documentation is a provider claim, not access to its implementation or permission to use proprietary engine code.
+
+## Piece artwork correction
+
+At the user's request, the custom SVG pieces were replaced with the twelve original PNG images used by Chess.com's standard analysis board, theme ID `ejgfv`: pawn, knight, bishop, rook, queen and king, in both colors. Their URLs were read from the rendered [Chess.com analysis board](https://www.chess.com/analysis), then the files were downloaded without alteration. They are served locally from `web/public/pieces/chesscom/` and total 93,344 bytes. This is one complete piece set, not every Chess.com theme.
+
+`references/chesscom-piece-assets.json` records the source URLs, retrieval time, dimensions and SHA-256 hashes. These remain third-party Chess.com assets; no open-source redistribution license is asserted. The blue board remains. The difficulty label changed from “Choose your pace” to “Bot difficulty.”
+
 ## Practice collection
 
 The current catalog contains six original introductory lessons and six puzzles. It is a starter collection, not Chess.com's curriculum. Lesson answers and puzzle move sequences are checked on the server. Incorrect answers earn no completion. A puzzle reveals only the next opponent reply after a correct move, and completion is stored with the account.
