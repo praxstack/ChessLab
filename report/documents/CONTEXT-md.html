@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Product context and vocabulary · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Product context and vocabulary</h1><p class="lede">CONTEXT.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Product context and vocabulary"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/CONTEXT.md" download>Download original file ↗</a></div><p class="source-meta">CONTEXT.md<br>SHA-256: 9b59f6e7fab81fb694fa20fd4dbe588e3b2a2ffa9f1f54669055d26ec6fcf576</p><h2 id="product-context">Product context</h2>
+<p>Captured 2026-09-05 from the user's "Chess Tactic Explanation" conversation and supplied research. Product intent is distinct from the recommendations below.</p>
+<h3 id="intended-product">Intended product</h3>
+<p>The learner plays an AI opponent at a chosen difficulty. Every move can be revisited. At any position, the tutor explains the learner's mistake, a better move, the threats or defenses involved, and a continuation. The learner can challenge either player's response, explore alternatives inside alternatives, compare outcomes, and return to a saved position or the actual game.</p>
+<p>The board and explanation must agree. Arrows, highlighted pieces, capture sequences and material comparisons help explain the reasoning. Questions belong to the position and branch where they were asked. The tutor should support active calculation and learning rather than only reveal engine recommendations.</p>
+<h3 id="proposed-first-experiment">Proposed first experiment</h3>
+<p>Start with one completed PGN and the loop: select a confusing move, predict a reply, inspect a verified exchange, explore another reply, compare, return. This reduces the first build while preserving the full product intent. In-product AI games follow after this interaction works. A human-like opponent model is a separate later decision; weakening Stockfish does not establish a human rating.</p>
+<p>Candidate early users are adult improvers around 800–1600 online rapid who already review games and still do not understand the engine's recommendation. This audience and its willingness to pay are unvalidated.</p>
+<h3 id="domain-vocabulary">Domain vocabulary</h3>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actual game</td>
+<td>The preserved original move sequence, separate from explored alternatives.</td>
+</tr>
+<tr>
+<td>Snapshot</td>
+<td>A node with board state and the move history needed to reconstruct rule state. FEN alone does not preserve repetition history.</td>
+</tr>
+<tr>
+<td>Branch</td>
+<td>An alternative legal move sequence starting at a snapshot. It can contain further branches.</td>
+</tr>
+<tr>
+<td>Anchor</td>
+<td>The original node to which an exploration can return.</td>
+</tr>
+<tr>
+<td>Evidence</td>
+<td>Replayed legal moves, deterministic board facts, or an engine result with version and search limits.</td>
+</tr>
+<tr>
+<td>Explanation</td>
+<td>Text and board annotations attached to evidence at a particular node.</td>
+</tr>
+<tr>
+<td>Misunderstanding</td>
+<td>A learner's stated incorrect expectation, tested through a position or a related retry.</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="engineering-direction-pending-implementation-decisions">Engineering direction, pending implementation decisions</h3>
+<p>Use an existing rules library for legal state and Stockfish for search. A language model may explain supplied evidence; it must not invent legality, defenders, material, or continuations. Engine scores are estimates at stated search limits. Distinguish a demonstrated line from a forced outcome across all relevant defenses.</p>
+<p>A single web application with local persistence is the initial recommendation. No service decomposition, native applications, cloud synchronization, accounts, payments or model training is needed to test the core interaction. Do not merge history-bearing nodes just because their board positions match.</p>
+<p>Analyze completed games, study positions and this product's AI games. Do not build live assistance for external human games. Imported text is data, never agent or system instructions. Preserve import provenance and reject invalid moves without losing the current study.</p>
+<h3 id="open-decisions">Open decisions</h3>
+<p>The user has authorized repository and tooling setup and asked for an assessment. The implementation proposal, framework, hosting, business model, commercial license, pricing, target audience and experimental thresholds are not accepted decisions. Research market-size figures are scenarios, not validated demand. No performance or learning outcome is demonstrated yet.</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav><a href="#product-context">Product context</a></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Snapshot: September 5, 2026</span></footer>
+</div>
+</body></html>

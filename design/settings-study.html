@@ -1,0 +1,189 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Settings and visible options · ChessLab concepts</title><link rel="stylesheet" href="gallery.css"></head><body>
+<a class="skip" href="#main">Skip to content</a><header><a class="brand" href="index.html">♞ ChessLab <span>DESIGN STUDIES</span></a><nav aria-label="Main navigation"><a href="index.html">Mockups</a><a href="video.html">Recording</a><a href="frame-study.html" aria-current="page">Frame study</a><a href="findings.html">What we learned</a><a href="sources.html">Sources & limits</a></nav></header>
+<main id="main"><article class="prose"><h1 id="settings-transcribed-from-the-frames">Settings, transcribed from the frames</h1>
+<p><strong>26 visible controls across Engine, Interface → Review, and Board.</strong> Values below describe this recorded session. They are not recommendations, verified engine ratings, or an exhaustive inventory of every Chess.com setting. An unopened dropdown tells us its displayed value, not all its possible options.</p>
+<p><a href="frame-study.html">Frame study →</a> · <a href="screen-plan.html">Screen implications →</a></p>
+<h2 id="engine-three-distinct-scopes">Engine: three distinct scopes</h2>
+<p><a href="video/study/frames/0615.jpg"><img src="video/study/crops/0615.jpg" alt="10:15: engine settings grouped into Game Review, Analysis and Cloud" /></a></p>
+<table>
+<thead>
+<tr>
+<th>Scope / control</th>
+<th>Visible options or value</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Game Review / Chess Engine</td>
+<td>Open list: Stockfish; Torch Human. Torch Human selected.</td>
+<td><a href="video/study/frames/0626.jpg">10:26</a></td>
+</tr>
+<tr>
+<td>Game Review / Strength</td>
+<td>Fast (~1 sec, 3270 Rating); Standard (~5 sec, 3430 Rating); Deep (~20 sec, 3500 Rating); Maximum (~1 min 30 sec, 3560 Rating). Fast initially; Maximum displayed later.</td>
+<td><a href="video/study/frames/0628.jpg">10:28</a>, <a href="video/study/frames/0632.jpg">10:32</a></td>
+</tr>
+<tr>
+<td>Analysis / Chess Engine</td>
+<td>Stockfish 18 (108MB download); Stockfish 18 Lite (7MB download); Torch 4 (73MB download); Torch 4 Lite (6MB download); Engine Off. Lite initially; Stockfish 18 displayed later.</td>
+<td><a href="video/study/frames/0633.jpg">10:33</a>, <a href="video/study/frames/0637.jpg">10:37</a></td>
+</tr>
+<tr>
+<td>Analysis / Maximum Time</td>
+<td>3 sec; 5 sec; 10 sec; 20 sec; 30 sec; Unlimited. Initially 5 sec; later 10 sec.</td>
+<td><a href="video/study/frames/0638.jpg">10:38</a>, <a href="video/study/frames/0642.jpg">10:42</a></td>
+</tr>
+<tr>
+<td>Analysis / Number of Lines</td>
+<td>1, 2, 3, 4, 5. Initially 3; later 5.</td>
+<td><a href="video/study/frames/0640.jpg">10:40</a>, <a href="video/study/frames/0642.jpg">10:42</a></td>
+</tr>
+<tr>
+<td>Analysis / Threads</td>
+<td>Numeric stepper displaying 2. Minimum, maximum and resource impact not demonstrated.</td>
+<td><a href="video/study/frames/0642.jpg">10:42</a></td>
+</tr>
+<tr>
+<td>Cloud / Chess Engine</td>
+<td>Open list: Stockfish 16; Komodo Dragon. Stockfish 16 selected.</td>
+<td><a href="video/study/frames/0644.jpg">10:44</a></td>
+</tr>
+</tbody>
+</table>
+<p>The time/rating pairings above are labels in the recorded UI. They do not independently prove search speed, engine strength or the presence of any particular backend implementation. Selecting a value does not prove a download finished or that an earlier review was recomputed.</p>
+<p><a href="video/study/frames/0633.jpg"><img src="video/study/crops/0633.jpg" alt="10:33: available local analysis engines" /></a></p>
+<p><strong>For ChessLab:</strong> a simple “Analyze further” action can precede advanced controls for time and candidate count. Show progress, cancellation, engine version and the limits attached to a result when relevant. Keep opponent difficulty in game setup. Never imply that increasing analysis time raises the learner's rating or changes the opponent's behavior.</p>
+<h2 id="interface--review">Interface → Review</h2>
+<p><a href="video/study/frames/0620.jpg"><img src="video/study/crops/0620.jpg" alt="10:20: Review interface controls and their displayed values" /></a></p>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Visible value at 10:20</th>
+<th>What remains unknown</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Show Arrows</td>
+<td>Coach's Arrows</td>
+<td>Other dropdown choices were not opened.</td>
+</tr>
+<tr>
+<td>Highlight Key Moves For</td>
+<td>Both</td>
+<td>Other dropdown choices were not opened.</td>
+</tr>
+<tr>
+<td>Show Move Classification On Board</td>
+<td>On</td>
+<td>Classification algorithm not visible.</td>
+</tr>
+<tr>
+<td>Autoplay Show Moves</td>
+<td>On</td>
+<td>Exact triggers and interruption behavior not tested.</td>
+</tr>
+<tr>
+<td>Delay Between Moves</td>
+<td>1 second</td>
+<td>Other intervals not opened.</td>
+</tr>
+<tr>
+<td>Show Coach Avatar</td>
+<td>On</td>
+<td>Effect on layout not tested.</td>
+</tr>
+<tr>
+<td>Show Course Recommendations</td>
+<td>On</td>
+<td>Recommendation rules not visible.</td>
+</tr>
+<tr>
+<td>Skills</td>
+<td>On</td>
+<td>Full tracking and scoring rules not visible.</td>
+</tr>
+<tr>
+<td>Show Time Spent On Move</td>
+<td>Off</td>
+<td>Data availability and display behavior not tested.</td>
+</tr>
+</tbody>
+</table>
+<p>An Analysis subtab is visible beside Review, but its contents were not shown in the inspected settings sequence. I have not invented its controls.</p>
+<p><strong>For ChessLab:</strong> offer explanation detail, arrow visibility, animation pace and optional autoplay without overwhelming the learner. Our “try it yourself” flow should wait for a prediction before revealing a continuation. That is a proposal, not behavior established by these settings. Turning off an avatar should not remove the explanation.</p>
+<h2 id="board">Board</h2>
+<p><a href="video/study/frames/0617.jpg"><img src="video/study/crops/0617.jpg" alt="10:17: board appearance and interaction controls" /></a></p>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Displayed value at 10:17</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pieces</td>
+<td>Neo</td>
+</tr>
+<tr>
+<td>Board</td>
+<td>Green</td>
+</tr>
+<tr>
+<td>Sound Theme</td>
+<td>Default</td>
+</tr>
+<tr>
+<td>Coordinates</td>
+<td>Inside</td>
+</tr>
+<tr>
+<td>Piece Notation</td>
+<td>Figurine</td>
+</tr>
+<tr>
+<td>Move Classification Style</td>
+<td>Default</td>
+</tr>
+<tr>
+<td>Piece Animations</td>
+<td>Medium (default)</td>
+</tr>
+<tr>
+<td>Highlight Last Move</td>
+<td>On</td>
+</tr>
+<tr>
+<td>Play Sounds</td>
+<td>On</td>
+</tr>
+<tr>
+<td>Show Legal Moves</td>
+<td>On</td>
+</tr>
+</tbody>
+</table>
+<p>The first seven are closed selectors; the last three are toggles. Their complete option lists were not opened during this sequence. The screenshot supports recording the values above, not supplying a guessed theme catalog.</p>
+<p><strong>For ChessLab:</strong> retain the blue preference, readable coordinates and clear legal-move feedback. Include reduced motion, sufficient contrast, keyboard move entry and text alternatives as our accessibility requirements. These requirements are not claims that equivalent controls were observed here. Keep legal-move hints separately configurable from revealing a strategically good move.</p>
+<h2 id="prioritize-by-the-learners-question">Prioritize by the learner's question</h2>
+<table>
+<thead>
+<tr>
+<th>Put close to the board</th>
+<th>Keep in settings or advanced analysis</th>
+<th>Defer from the first experiment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ask; show one step; hide/reveal hint; arrows; return to anchor</td>
+<td>Coordinates; notation; sound; motion; explanation detail; analysis limits</td>
+<td>Persona catalog; multiple engine downloads; cloud-engine selector; course promotion</td>
+</tr>
+</tbody>
+</table>
+<p>The distinction is functional: the main study should help the learner understand a position. Configuration should support that task without becoming the task itself.</p>
+</article></main><footer><span>07 September 2026 · Grok Imagine × Gemini video research</span><span>Concept images. No playable chess application.</span></footer><script src="gallery.js"></script></body></html>

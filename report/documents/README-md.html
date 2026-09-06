@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>ChessLab project introduction · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>ChessLab project introduction</h1><p class="lede">README.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="ChessLab project introduction"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/README.md" download>Download original file ↗</a></div><p class="source-meta">README.md<br>SHA-256: d71d2d2845956ca9927cc5efe2c2c4ab0f030e3bae084bbd580b71aacd7a21c4</p><h2 id="chesslab">ChessLab</h2>
+<p>A chess tutor where learners can pause at a position, ask why, play alternatives for either side, compare the consequences, and return to their actual game.</p>
+<p>Status: project setup and research synthesis. There is no playable application yet.</p>
+<p>Start with <a href="../documents/CONTEXT-md.html">the product context</a>, <a href="../documents/docs--research--assessment-md.html">the research assessment</a>, and <a href="../documents/docs--agents--setup-md.html">the setup guide</a>.</p>
+<p>The first proposed experiment is a completed-game review: import a PGN, inspect one confusing move, explore a nested alternative, and return without losing the original line. Adjustable AI play remains part of the product vision. The first implementation proposal lives in <code>openspec/changes/</code> and is a draft for review.</p>
+<h3 id="project-commands">Project commands</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">just</span> setup   <span class="co"># Link already-installed skills into this checkout</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">just</span> check   <span class="co"># Check skill links, source entrypoint hashes, and OpenSpec artifacts</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">just</span> test    <span class="co"># Test the setup helper&#39;s non-destructive link behavior</span></span></code></pre></div>
+<p>Requires Python 3.10+, just, the installed skill sources listed in <code>skills.local.json</code>, and OpenSpec 1.12.0. Setup reuses local installations; it does not download dependencies. See the setup guide for other machines and agent-specific Gstack links.</p>
+<p>No remote repository, hosting, paid services, or application license has been selected. The supplied research is preserved with provenance in <code>docs/research/sources/</code>; it is reference material, not governing instructions.</p>
+<h3 id="html-research-dossier">HTML research dossier</h3>
+<p>Open <a href="../index.html">the HTML dossier</a> for the full research library, conversation, product direction, pricing, investor assessment and work record. The generated site works offline; unzip <code>ChessLab-dossier.zip</code> and open <code>index.html</code> to read a portable copy.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">just</span> report        <span class="co"># Rebuild HTML from project documents</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">just</span> report-check  <span class="co"># Verify source/output hashes and local links</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">just</span> report-test   <span class="co"># Check the reading site in Chromium</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">just</span> report-zip    <span class="co"># Verify and package the portable site</span></span></code></pre></div>
+<p>Rebuilding requires Python 3.10+ and Pandoc. Browser checks use Node.js and the existing Codex Playwright installation; set <code>CHESSLAB_PLAYWRIGHT_ROOT</code> to another installed Playwright package when needed. Reading the HTML requires no development dependencies. Report checks do not establish chess functionality or learning outcomes.</p>
+<h3 id="saved-design-and-video-research">Saved design and video research</h3>
+<p>The archive inventory is in <a href="../documents/docs--research--archive-index-md.html">the research archive index</a>. The existing <code>design/</code> directory contains the offline mockup gallery, direct frame study, settings inventory, screen recommendations, 150 extracted frames and compressed recording. Open <code>design/index.html</code> or <code>design/frame-study.html</code>; rebuild with <code>python3 design/build.py</code> and check with <code>python3 design/check.py</code>.</p>
+<p>The original supplied screenshot ZIP is preserved in <code>references/</code>. Both portable reading-site ZIPs are included in the repository. Generated concepts are discussion material; no playable application has been built.</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav><a href="#chesslab">ChessLab</a></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Snapshot: September 5, 2026</span></footer>
+</div>
+</body></html>

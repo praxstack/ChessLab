@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Repeatable skill-link setup helper · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Repeatable skill-link setup helper</h1><p class="lede">scripts/setup_skills.py</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Repeatable skill-link setup helper"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/setup_skills.py" download>Download original file ↗</a></div><p class="source-meta">scripts/setup_skills.py<br>SHA-256: 2c5f1b59489f8ad9a23ce2ac78e6922db73ff51e169349abe9fa042c43bce409</p><pre><code>&quot;&quot;&quot;Link this project&#x27;s selected local skills without changing installed sources.&quot;&quot;&quot;
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import tempfile
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def link(destination, source, check=False):
+    if destination.is_symlink() and destination.resolve() == source.resolve():
+        return
+    if destination.is_symlink() or destination.exists():
+        raise RuntimeError(f&quot;Refusing to replace existing path: {destination}&quot;)
+    if check:
+        raise RuntimeError(f&quot;Missing link: {destination}; run just setup&quot;)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    target = os.path.relpath(source, destination.parent) if source.is_relative_to(ROOT) else source
+    destination.symlink_to(target, target_is_directory=True)
+
+
+def self_test():
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        source = root / &quot;source&quot;
+        source.mkdir()
+        destination = root / &quot;link&quot;
+        link(destination, source)
+        link(destination, source, check=True)
+        for protected in (source, root / &quot;dangling&quot;):
+            if protected != source:
+                protected.symlink_to(root / &quot;missing&quot;)
+            try:
+                link(protected, source)
+            except RuntimeError:
+                pass
+            else:
+                raise AssertionError(&quot;Existing paths must be preserved&quot;)
+        try:
+            link(root / &quot;absent&quot;, source, check=True)
+        except RuntimeError:
+            pass
+        else:
+            raise AssertionError(&quot;Check mode must reject a missing link&quot;)
+        assert not (root / &quot;absent&quot;).exists()
+    print(&quot;PASS: link creation, idempotence, conflict preservation, read-only checks&quot;)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(&quot;--check&quot;, action=&quot;store_true&quot;)
+    parser.add_argument(&quot;--self-test&quot;, action=&quot;store_true&quot;)
+    args = parser.parse_args()
+    if args.self_test:
+        self_test()
+        return
+    manifest = json.loads((ROOT / &quot;skills.local.json&quot;).read_text())
+    links = []
+    for host, folder in ((&quot;codex&quot;, &quot;.agents&quot;), (&quot;claude&quot;, &quot;.claude&quot;)):
+        for item in manifest[&quot;common&quot;] + manifest[host]:
+            source = Path(item[&quot;source&quot;]).expanduser()
+            entrypoint = source / &quot;SKILL.md&quot;
+            if not entrypoint.is_file():
+                raise RuntimeError(f&quot;Missing installed skill: {entrypoint}&quot;)
+            if hashlib.sha256(entrypoint.read_bytes()).hexdigest() != item[&quot;skill_sha256&quot;]:
+                raise RuntimeError(f&quot;Skill changed since setup: {entrypoint}; review before updating the manifest&quot;)
+            links.append((ROOT / folder / &quot;skills&quot; / item[&quot;name&quot;], source))
+    links += [(ROOT / &quot;.codex/skills&quot;, ROOT / &quot;.agents/skills&quot;),
+              (ROOT / &quot;.cursor/skills&quot;, ROOT / &quot;.claude/skills&quot;)]
+    # Preflight every destination before creating any links.
+    for destination, source in links:
+        if destination.is_symlink() or destination.exists() or args.check:
+            link(destination, source, check=True)
+    for destination, source in links:
+        link(destination, source, check=args.check)
+    print(f&quot;PASS: {len(links) - 2} skill links and 2 agent directory mirrors; entrypoint hashes match&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Snapshot: September 5, 2026</span></footer>
+</div>
+</body></html>

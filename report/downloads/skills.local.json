@@ -1,0 +1,737 @@
+{
+  "captured": "2026-09-05",
+  "note": "Links to installed local snapshots; SHA-256 covers SKILL.md entrypoints only, not entire dependencies. Not a pinned upstream release or behavioral evaluation.",
+  "upstreams": {
+    "matt": "https://github.com/mattpocock/skills",
+    "gstack": "https://github.com/garrytan/gstack",
+    "clayunslop": "https://github.com/praxstack/clayunslop",
+    "openspec": "https://github.com/Fission-AI/OpenSpec",
+    "unslop": "local Pstack install"
+  },
+  "common": [
+    {
+      "name": "ask-matt",
+      "source": "~/.agents/skills/ask-matt",
+      "skill_sha256": "b25d86fb36b1d294eeead5d7db529f86135f9671f2afcd607579a63bb2213769"
+    },
+    {
+      "name": "diagnosing-bugs",
+      "source": "~/.agents/skills/diagnosing-bugs",
+      "skill_sha256": "77f3cf31bc99b2f49af943222526531fcc9fc41d047626d3640e875e85af3e84"
+    },
+    {
+      "name": "grill-with-docs",
+      "source": "~/.agents/skills/grill-with-docs",
+      "skill_sha256": "7de372c13488f1ee96cc11cd8907b56b6809cc93eef776eeddd37de6b6cbe3fe"
+    },
+    {
+      "name": "triage",
+      "source": "~/.agents/skills/triage",
+      "skill_sha256": "623a2ed692bdc77d2090e2a3dea3b627dd722ad3bbaca0be83aada75292c8fc4"
+    },
+    {
+      "name": "improve-codebase-architecture",
+      "source": "~/.agents/skills/improve-codebase-architecture",
+      "skill_sha256": "d1ac25511a936ff4250a48dbcefda363837d6bb9321b3cba73df99fa37270a75"
+    },
+    {
+      "name": "setup-matt-pocock-skills",
+      "source": "~/.agents/skills/setup-matt-pocock-skills",
+      "skill_sha256": "2bcd89e97777cdb705914424e39c97d5db524c8eb4eafac8120778a07774f0ec"
+    },
+    {
+      "name": "tdd",
+      "source": "~/.agents/skills/tdd",
+      "skill_sha256": "cb01f66bebfaa25fa1f88e6b7e769cd9fd9f35b1120b8563749820738814c927"
+    },
+    {
+      "name": "to-spec",
+      "source": "~/.agents/skills/to-spec",
+      "skill_sha256": "43ad9cf318e5e7d3d1fa360253a37021796dc87a0c2e595ad262661a10f85088"
+    },
+    {
+      "name": "to-tickets",
+      "source": "~/.agents/skills/to-tickets",
+      "skill_sha256": "5c9fba69845c2519b9b35b9af42ae5142c21f8ca15ac2123dc2722002c8058ae"
+    },
+    {
+      "name": "wayfinder",
+      "source": "~/.agents/skills/wayfinder",
+      "skill_sha256": "fee6e1d0c50f0e736b4ef8a599060c959afae904c9a97d82c97f049fcc3aa0f1"
+    },
+    {
+      "name": "implement",
+      "source": "~/.agents/skills/implement",
+      "skill_sha256": "6d3fd9e83b8f36e5213854779db49b256a457a7ebb4a503e53fa7dcff696adc3"
+    },
+    {
+      "name": "prototype",
+      "source": "~/.agents/skills/prototype",
+      "skill_sha256": "714de632d116bb73f65cdb5a882db15b9369a6713b9a47c0fad827848f0bfbe3"
+    },
+    {
+      "name": "research",
+      "source": "~/.agents/skills/research",
+      "skill_sha256": "985569f15739c713d6784887c3d186d4ef9ac85bec5ad9c068d25bf0739928e4"
+    },
+    {
+      "name": "domain-modeling",
+      "source": "~/.agents/skills/domain-modeling",
+      "skill_sha256": "327a2b50620e2fd70abc6893cd6965e76b20f8d0adb0dc2c8d5eb3845efb643e"
+    },
+    {
+      "name": "codebase-design",
+      "source": "~/.agents/skills/codebase-design",
+      "skill_sha256": "2c20617f87ec8af6a434859f381b2f061a69b530444e74eb39e78bb016a6d1e2"
+    },
+    {
+      "name": "code-review",
+      "source": "~/.agents/skills/code-review",
+      "skill_sha256": "47f4e52c21694def9c7c11cbfbf891ca35eac7a93e395797515be3c8a409ae50"
+    },
+    {
+      "name": "resolving-merge-conflicts",
+      "source": "~/.agents/skills/resolving-merge-conflicts",
+      "skill_sha256": "9d8114f8ef0b31f535a265fc05c364bd8cf2e2895a830040e06c22acb11f54b0"
+    },
+    {
+      "name": "grill-me",
+      "source": "~/.agents/skills/grill-me",
+      "skill_sha256": "caaf8b8de1684f96e26b28f3c29189db5c89cce4b73e1c93d86164f66ef88637"
+    },
+    {
+      "name": "grilling",
+      "source": "~/.agents/skills/grilling",
+      "skill_sha256": "10ff989e7498b23b5acb49d5048f11dcd906757d2f79c5cdf8a00001381296f2"
+    },
+    {
+      "name": "handoff",
+      "source": "~/.agents/skills/handoff",
+      "skill_sha256": "7c62de979fdc7ac32fb5ddb2146156c917f80ee070d30fadc9d40343c4b6ed25"
+    },
+    {
+      "name": "teach",
+      "source": "~/.agents/skills/teach",
+      "skill_sha256": "a32df9dcdfc0c4fdc1c98e1ed3940c5f56b84c1aa90ff60346f32b8b53915b43"
+    },
+    {
+      "name": "writing-great-skills",
+      "source": "~/.agents/skills/writing-great-skills",
+      "skill_sha256": "4d6ccbc3760b1bd4107c495a79872286ea69494003f3b0a719fc95b147457061"
+    },
+    {
+      "name": "unslop",
+      "source": "~/.agents/skills/unslop",
+      "skill_sha256": "2789ab80477b7e382292e4d7acca1057784df19713fffb74622ff0f83b2f3733"
+    },
+    {
+      "name": "clayunslop",
+      "source": "~/.agents/skills/clayunslop",
+      "skill_sha256": "a3cc240292a9effc6e5aead7d823f53df6cd6d73ec3ceb3e94e28656d1ccaa6d"
+    },
+    {
+      "name": "openspec-apply-change",
+      "source": "~/.agents/skills/openspec-apply-change",
+      "skill_sha256": "0cf1cb26935b55d83e240631500c8cee484a7b241c84a705387c0eeb88676ccf"
+    },
+    {
+      "name": "openspec-archive-change",
+      "source": "~/.agents/skills/openspec-archive-change",
+      "skill_sha256": "3ad0def4d299469fdfd5b05e4842284d65558e6b28710b5962f7f214d6153855"
+    },
+    {
+      "name": "openspec-bulk-archive-change",
+      "source": "~/.agents/skills/openspec-bulk-archive-change",
+      "skill_sha256": "2d962cb0e4e03ef8fc579d79c6444be64833bc2eac27c990ff1ad5d972297db5"
+    },
+    {
+      "name": "openspec-continue-change",
+      "source": "~/.agents/skills/openspec-continue-change",
+      "skill_sha256": "5120ec867288e4a117949e333f980f51df79e641739c9f4a23df6656311af920"
+    },
+    {
+      "name": "openspec-explore",
+      "source": "~/.agents/skills/openspec-explore",
+      "skill_sha256": "7e0281fc4f094dcced0c5469e7cbceba2dce9f113f22a4e34efcdce4315edf81"
+    },
+    {
+      "name": "openspec-ff-change",
+      "source": "~/.agents/skills/openspec-ff-change",
+      "skill_sha256": "457be39012799e11581e43185b679c54a50182f3a58453d17c5444a24ab53926"
+    },
+    {
+      "name": "openspec-new-change",
+      "source": "~/.agents/skills/openspec-new-change",
+      "skill_sha256": "0752814373e90dc368eb1f4c7fd4b15c3df1b26fa2d6a0e99232b15a29fe4f22"
+    },
+    {
+      "name": "openspec-onboard",
+      "source": "~/.agents/skills/openspec-onboard",
+      "skill_sha256": "927c1d099aabf8d46a9cee27790cf13edb48d03487cd9669f33fd0984b1e9296"
+    },
+    {
+      "name": "openspec-propose",
+      "source": "~/.agents/skills/openspec-propose",
+      "skill_sha256": "c0537ce311115878e7e0a04e6ff4fc6456056f21024079c228b6b24325e38613"
+    },
+    {
+      "name": "openspec-sync-specs",
+      "source": "~/.agents/skills/openspec-sync-specs",
+      "skill_sha256": "daf0e52b188a3010e1f494427eb6807fb61a68df653403759b2be54a3aa37e74"
+    },
+    {
+      "name": "openspec-update-change",
+      "source": "~/.agents/skills/openspec-update-change",
+      "skill_sha256": "f9e08302d75e873e9ca801211e6151e3f9b663ac6205903e7d79b6520cea30f5"
+    },
+    {
+      "name": "openspec-verify-change",
+      "source": "~/.agents/skills/openspec-verify-change",
+      "skill_sha256": "02a810d3fb265df77ec22891cef25f0510fe0f07b608d837ba361debced81840"
+    }
+  ],
+  "codex": [
+    {
+      "name": "gstack",
+      "source": "~/.codex/skills/gstack",
+      "skill_sha256": "52d2a4f70bbd509d07864a1829968f12207d4e8857447facac37ea90c4863d06"
+    },
+    {
+      "name": "gstack-autoplan",
+      "source": "~/.codex/skills/gstack-autoplan",
+      "skill_sha256": "b0168dafa082c92ed43ee2f975e1c99f41877334a4145af1cafb91a381d983c9"
+    },
+    {
+      "name": "gstack-benchmark",
+      "source": "~/.codex/skills/gstack-benchmark",
+      "skill_sha256": "d380e2c7d980d33a00cb8d89aa445fe9931ff77a81073eded932177e76ea7c95"
+    },
+    {
+      "name": "gstack-benchmark-models",
+      "source": "~/.codex/skills/gstack-benchmark-models",
+      "skill_sha256": "ac88a31432aca371ab5e175b9b79fb282bb9427a19640358b1f444408f1dfc3a"
+    },
+    {
+      "name": "gstack-browse",
+      "source": "~/.codex/skills/gstack-browse",
+      "skill_sha256": "f03422668314a2551b2e8d56652ae70d2cce7ca6e3972286cbaeadd64c74e74d"
+    },
+    {
+      "name": "gstack-canary",
+      "source": "~/.codex/skills/gstack-canary",
+      "skill_sha256": "b104c873c4565e0accd39846f69947c1c8f75a9f5ba191df253d17f8da22d7cf"
+    },
+    {
+      "name": "gstack-careful",
+      "source": "~/.codex/skills/gstack-careful",
+      "skill_sha256": "1078a5bd65aa12b78fb9c5897f2a00e3c2b7f97ef51ff42edd18a66fa4806ae4"
+    },
+    {
+      "name": "gstack-claude",
+      "source": "~/.codex/skills/gstack-claude",
+      "skill_sha256": "18571ac43ca5c013649cfd907b235403697fdb557509ab9548c3d3c052012f2a"
+    },
+    {
+      "name": "gstack-context-restore",
+      "source": "~/.codex/skills/gstack-context-restore",
+      "skill_sha256": "14d4036d8d666203c3b99ad9ac88c9a81e6d5ea95110a872c000cb0fb9da6767"
+    },
+    {
+      "name": "gstack-context-save",
+      "source": "~/.codex/skills/gstack-context-save",
+      "skill_sha256": "77eaed1531f374771a3d7e924ecc47f308f71ac1f30fe71bc41b24dc8aadaa55"
+    },
+    {
+      "name": "gstack-cso",
+      "source": "~/.codex/skills/gstack-cso",
+      "skill_sha256": "5ebedb0cb17978aa29fb2cb94f99a55588cb77b271a0a11f9e08d4b062574649"
+    },
+    {
+      "name": "gstack-design-consultation",
+      "source": "~/.codex/skills/gstack-design-consultation",
+      "skill_sha256": "d71b59343842906b0c3a6c2d2d8fa8b81f8c48efc03c1fcb19cb011614814afa"
+    },
+    {
+      "name": "gstack-design-html",
+      "source": "~/.codex/skills/gstack-design-html",
+      "skill_sha256": "4ef14a2e015d388dc3570de74714ffb5e51d8eb64d3ef76bd02c0440681185b9"
+    },
+    {
+      "name": "gstack-design-review",
+      "source": "~/.codex/skills/gstack-design-review",
+      "skill_sha256": "6ae7940dcf8f0f5a36cce2df3529a5f7d2b6e038f6aebc2b595c411a13b9baa0"
+    },
+    {
+      "name": "gstack-design-shotgun",
+      "source": "~/.codex/skills/gstack-design-shotgun",
+      "skill_sha256": "4d6e0610c211e281f75e32eaa965158756d75f603038dfe494d9fb95d7d53964"
+    },
+    {
+      "name": "gstack-devex-review",
+      "source": "~/.codex/skills/gstack-devex-review",
+      "skill_sha256": "154676b2992aff773d65a20a612e5a920e9ca5413a01a3ed82c2bcf170ee588f"
+    },
+    {
+      "name": "gstack-diagram",
+      "source": "~/.codex/skills/gstack-diagram",
+      "skill_sha256": "8ba174ca0fa5332f31819eec8ddfa1e9e90f289929eff5200904bda8392caa9d"
+    },
+    {
+      "name": "gstack-document-generate",
+      "source": "~/.codex/skills/gstack-document-generate",
+      "skill_sha256": "221c4ebabe664ff75d9b9cf816f0e43fbc722bfe99b806484491e5a47aa01c7f"
+    },
+    {
+      "name": "gstack-document-release",
+      "source": "~/.codex/skills/gstack-document-release",
+      "skill_sha256": "d3c04d94b6149ca92971e366adfe96cab5934d959b3b7d5a569c10e6cd7a57ed"
+    },
+    {
+      "name": "gstack-freeze",
+      "source": "~/.codex/skills/gstack-freeze",
+      "skill_sha256": "df5dd63cb24b151e3b874045fb82fd9d6e1ac925b67feaf1707a99168ba0c02a"
+    },
+    {
+      "name": "gstack-guard",
+      "source": "~/.codex/skills/gstack-guard",
+      "skill_sha256": "ba1eabf2651663741ccd0a1c9457bf07dc1f34f89a85907ffbf5ec012081459b"
+    },
+    {
+      "name": "gstack-health",
+      "source": "~/.codex/skills/gstack-health",
+      "skill_sha256": "8bf23c6f1d9be72ed1eee9c75cc0aadab272a5075de8d8ce78fe6c6ff611a106"
+    },
+    {
+      "name": "gstack-investigate",
+      "source": "~/.codex/skills/gstack-investigate",
+      "skill_sha256": "eedc8b998ab8a9ca95daa9a720fc88ef62b9bd948aad7daf52f3669fc80689d8"
+    },
+    {
+      "name": "gstack-ios-clean",
+      "source": "~/.codex/skills/gstack-ios-clean",
+      "skill_sha256": "40a51925dbf311968e345f70e58b1be6d2a3487ccc9de492fd203f321c5f0bb7"
+    },
+    {
+      "name": "gstack-ios-design-review",
+      "source": "~/.codex/skills/gstack-ios-design-review",
+      "skill_sha256": "bbee3b74a9cc08330bd0ca31fee6a9efa6c664b43fb6876a179d831c02bcbde2"
+    },
+    {
+      "name": "gstack-ios-fix",
+      "source": "~/.codex/skills/gstack-ios-fix",
+      "skill_sha256": "b1b072372f623ebb59e20872ecf0bcec8ec81183499306e5b9f5c12a183e89d9"
+    },
+    {
+      "name": "gstack-ios-qa",
+      "source": "~/.codex/skills/gstack-ios-qa",
+      "skill_sha256": "eb135062f004852aff8ce6b7961eb7996d314327194ea31da1424c0a42489454"
+    },
+    {
+      "name": "gstack-ios-sync",
+      "source": "~/.codex/skills/gstack-ios-sync",
+      "skill_sha256": "d86095160de5267ff1b6ce5192170355e0a54bf26e0e27dcdf13e8798b6b02e2"
+    },
+    {
+      "name": "gstack-land-and-deploy",
+      "source": "~/.codex/skills/gstack-land-and-deploy",
+      "skill_sha256": "256510e3cb8387e6f80b4402cbae5cc63b201b0638ebc728677a4e290cce324d"
+    },
+    {
+      "name": "gstack-landing-report",
+      "source": "~/.codex/skills/gstack-landing-report",
+      "skill_sha256": "2891d27a03714170ecf3db146535ae81f978c7f7e815efb2464d72b2fea68a96"
+    },
+    {
+      "name": "gstack-learn",
+      "source": "~/.codex/skills/gstack-learn",
+      "skill_sha256": "50775859cf7195f59a4799808993d099c173d1a8dcb43a45bf232916b48ecc83"
+    },
+    {
+      "name": "gstack-make-pdf",
+      "source": "~/.codex/skills/gstack-make-pdf",
+      "skill_sha256": "81ddff031b5cf863e1ad747547ee48be4599f719bc0a1c34ebc3d749315f8a7b"
+    },
+    {
+      "name": "gstack-office-hours",
+      "source": "~/.codex/skills/gstack-office-hours",
+      "skill_sha256": "5ccfe837ea81a6417b380f2015b1dd2a7a5c6d4893f2572d19467969c7e8ce07"
+    },
+    {
+      "name": "gstack-open-gstack-browser",
+      "source": "~/.codex/skills/gstack-open-gstack-browser",
+      "skill_sha256": "5a44c0948f0ba0abfc6dea0433f6bdfc00dc9c4926f31e309d2cd44613d8894a"
+    },
+    {
+      "name": "gstack-pair-agent",
+      "source": "~/.codex/skills/gstack-pair-agent",
+      "skill_sha256": "611b8af393528e8e1c394880cec3b28d37cb375301e121721d9ff5e4bc10980f"
+    },
+    {
+      "name": "gstack-plan-ceo-review",
+      "source": "~/.codex/skills/gstack-plan-ceo-review",
+      "skill_sha256": "30266ebb7236d633a8a14a2e5eca942b0903d2fc41e7e2b132f4ce8a0a421e01"
+    },
+    {
+      "name": "gstack-plan-design-review",
+      "source": "~/.codex/skills/gstack-plan-design-review",
+      "skill_sha256": "c93f07afd255611bbcfb86b1182ded6a7dfcfa02b365cfe62d9a34098736949b"
+    },
+    {
+      "name": "gstack-plan-devex-review",
+      "source": "~/.codex/skills/gstack-plan-devex-review",
+      "skill_sha256": "8b020283cde6b23c85f1550796a41f129dd28dd47976cdc1df4ea2fd67e1810b"
+    },
+    {
+      "name": "gstack-plan-eng-review",
+      "source": "~/.codex/skills/gstack-plan-eng-review",
+      "skill_sha256": "450400a1de7253d610432c5523a9fcae59d9a5d061aba45012f9bf5c36102689"
+    },
+    {
+      "name": "gstack-plan-tune",
+      "source": "~/.codex/skills/gstack-plan-tune",
+      "skill_sha256": "8e2621d9079c8c356a91fa472d687316ed1d087eef49fef9b5669d7a9fb2a569"
+    },
+    {
+      "name": "gstack-qa",
+      "source": "~/.codex/skills/gstack-qa",
+      "skill_sha256": "3698d198b43588f257cf7b9bee7f1096d1dd3c922ea00ddfbf89633b97d2f108"
+    },
+    {
+      "name": "gstack-qa-only",
+      "source": "~/.codex/skills/gstack-qa-only",
+      "skill_sha256": "d55e81bcbb4e3da9d403bcf87243825cd2765b2c815a6c54816dd2d44f712c0d"
+    },
+    {
+      "name": "gstack-retro",
+      "source": "~/.codex/skills/gstack-retro",
+      "skill_sha256": "b054396f2a03f59eb6d8955b415f6655d66fce850e765cc1f1ee8592bd7d1e2a"
+    },
+    {
+      "name": "gstack-review",
+      "source": "~/.codex/skills/gstack-review",
+      "skill_sha256": "fb874345b55680ed0bb77054cc069db072028cceefd9d0e1e1acd78fa1fb6b02"
+    },
+    {
+      "name": "gstack-scrape",
+      "source": "~/.codex/skills/gstack-scrape",
+      "skill_sha256": "5081badebca031ab466a2d025430851600c22c17a91e4699a5ad174b9710d624"
+    },
+    {
+      "name": "gstack-setup-browser-cookies",
+      "source": "~/.codex/skills/gstack-setup-browser-cookies",
+      "skill_sha256": "cea07309f255e982f288a0e953dbdb58ab8607e0a010f6756b79dbd6c6449073"
+    },
+    {
+      "name": "gstack-setup-deploy",
+      "source": "~/.codex/skills/gstack-setup-deploy",
+      "skill_sha256": "b4e4028443b7b811e59dfb16e0e2b0f3ddffad6cb93865a25b6b37ccfba172ca"
+    },
+    {
+      "name": "gstack-setup-gbrain",
+      "source": "~/.codex/skills/gstack-setup-gbrain",
+      "skill_sha256": "93d2f45197289e61117d1d8ec4b56e1fe0d9e26872eb98af20faed096460afc3"
+    },
+    {
+      "name": "gstack-ship",
+      "source": "~/.codex/skills/gstack-ship",
+      "skill_sha256": "d3931d7148a5dccf3edd80444218dce8c30160a771c61480cd0194b8caf3afe4"
+    },
+    {
+      "name": "gstack-skillify",
+      "source": "~/.codex/skills/gstack-skillify",
+      "skill_sha256": "17aec02a175639ebd1e9f1ecf611bfa05611e0f35a96fc24ee45122ef3da9bbd"
+    },
+    {
+      "name": "gstack-spec",
+      "source": "~/.codex/skills/gstack-spec",
+      "skill_sha256": "26da9280dc32da9afcb1133b6188f7a50ad4ade13830eb3915d22a6e682a2b6f"
+    },
+    {
+      "name": "gstack-sync-gbrain",
+      "source": "~/.codex/skills/gstack-sync-gbrain",
+      "skill_sha256": "a80848c1cee0b50620fd3ef83ca914097045bbd0fcec04debdbc490872176b42"
+    },
+    {
+      "name": "gstack-unfreeze",
+      "source": "~/.codex/skills/gstack-unfreeze",
+      "skill_sha256": "a330adee935ffc70f7a34794e353d7ef6243e721c0650793fe442f73aaa2d815"
+    },
+    {
+      "name": "gstack-upgrade",
+      "source": "~/.codex/skills/gstack-upgrade",
+      "skill_sha256": "f857c6495e6c9d458064137945ce0608cadb9257f05bb44c8b2e4548ff552628"
+    }
+  ],
+  "claude": [
+    {
+      "name": "gstack",
+      "source": "~/.claude/skills/gstack",
+      "skill_sha256": "9f5e4d787d1ec0f8996ebff0756803cffdb6023172803aaf17709785cf73583f"
+    },
+    {
+      "name": "gstack-autoplan",
+      "source": "~/.claude/skills/gstack-autoplan",
+      "skill_sha256": "33dbb46687ba703e3598bd317c3c3289b339afcd6f2014b98f49371751af1c6f"
+    },
+    {
+      "name": "gstack-benchmark",
+      "source": "~/.claude/skills/gstack-benchmark",
+      "skill_sha256": "ac48a6b2ac38a97d64dac4383fdf656893dccf18c6ee3ab46fe8984d123ed6d8"
+    },
+    {
+      "name": "gstack-benchmark-models",
+      "source": "~/.claude/skills/gstack-benchmark-models",
+      "skill_sha256": "2e9ab862559c487571c0903eb3ee3f2fd6d1aee61ea049a7a0cfb6dd24637f5f"
+    },
+    {
+      "name": "gstack-browse",
+      "source": "~/.claude/skills/gstack-browse",
+      "skill_sha256": "d07fe57377a64f08704c5ac1e3675130d5aecbac82cc35861082174af828883f"
+    },
+    {
+      "name": "gstack-canary",
+      "source": "~/.claude/skills/gstack-canary",
+      "skill_sha256": "ded59499de2ffa8246f6881a7bb8e8e83976d6839b797991bb97bd182d774560"
+    },
+    {
+      "name": "gstack-careful",
+      "source": "~/.claude/skills/gstack-careful",
+      "skill_sha256": "d4547f0e74c65784bc3739989ee32d96c197fde01bd1e7c8503edc9c3c69c547"
+    },
+    {
+      "name": "gstack-codex",
+      "source": "~/.claude/skills/gstack-codex",
+      "skill_sha256": "effca73dd14f19420fcc215004ee067078a8f59c684718948e0967baaaa93c7d"
+    },
+    {
+      "name": "gstack-context-restore",
+      "source": "~/.claude/skills/gstack-context-restore",
+      "skill_sha256": "8cc191e08ada56d0809cb9ea2684341da0a011cdc8ea0252f1134ac331db6cd3"
+    },
+    {
+      "name": "gstack-context-save",
+      "source": "~/.claude/skills/gstack-context-save",
+      "skill_sha256": "a7734b7c760eabb06ee62181586473eb089871d8c198fde3b20db19fb093952a"
+    },
+    {
+      "name": "gstack-cso",
+      "source": "~/.claude/skills/gstack-cso",
+      "skill_sha256": "c71c8d722efabd2ac797b5588a01f6d549620b8d52a8fde2eb76d995bf9d1a8b"
+    },
+    {
+      "name": "gstack-design-consultation",
+      "source": "~/.claude/skills/gstack-design-consultation",
+      "skill_sha256": "5bcd47134fc572920f32cc6b118406f5f77446641c44b8275d4ae183b709de07"
+    },
+    {
+      "name": "gstack-design-html",
+      "source": "~/.claude/skills/gstack-design-html",
+      "skill_sha256": "e5ad5fdbbc14a3f702fe4bd7599ab79759b86ec0a952ce5e08188013f5e54854"
+    },
+    {
+      "name": "gstack-design-review",
+      "source": "~/.claude/skills/gstack-design-review",
+      "skill_sha256": "e87166941a0fd0be19e914296fde6faa6209f4073316b610b9be444a46273fd5"
+    },
+    {
+      "name": "gstack-design-shotgun",
+      "source": "~/.claude/skills/gstack-design-shotgun",
+      "skill_sha256": "815970646f50a3bf318b391f3298ea6413c7c2ea5eb861b7aae20df4bf25c461"
+    },
+    {
+      "name": "gstack-devex-review",
+      "source": "~/.claude/skills/gstack-devex-review",
+      "skill_sha256": "b166679a10330463756b6f09236434aec7be1217d1cfef9028bb4ffc3bbbbff1"
+    },
+    {
+      "name": "gstack-diagram",
+      "source": "~/.claude/skills/gstack-diagram",
+      "skill_sha256": "9e19411656a9a39fa64e54d0f8d7466c5288258b5429cfdc0858313ec1a55e71"
+    },
+    {
+      "name": "gstack-document-generate",
+      "source": "~/.claude/skills/gstack-document-generate",
+      "skill_sha256": "ecd5d8d5c7ef2c866fa0912d912fbf78017c6843198aa7e995fcd68484fc3711"
+    },
+    {
+      "name": "gstack-document-release",
+      "source": "~/.claude/skills/gstack-document-release",
+      "skill_sha256": "69e0138b1d4fbc7eb5ae1dad2402a3f61f9c9c279727cf2bdae781c8eea41d61"
+    },
+    {
+      "name": "gstack-freeze",
+      "source": "~/.claude/skills/gstack-freeze",
+      "skill_sha256": "24ab396605e06c2aaceaddd0158e6957425d5ad5611ce6bf2b5ff9f9dc76c20f"
+    },
+    {
+      "name": "gstack-guard",
+      "source": "~/.claude/skills/gstack-guard",
+      "skill_sha256": "5e9c3e7782815f946481df6b762b9625292b14bfeb98fe28b3002d793f8e7a92"
+    },
+    {
+      "name": "gstack-health",
+      "source": "~/.claude/skills/gstack-health",
+      "skill_sha256": "3c4a2d17101fd4b8b408c9381f01609fff7a53d791e6abc9dd2b6a4619de3df0"
+    },
+    {
+      "name": "gstack-investigate",
+      "source": "~/.claude/skills/gstack-investigate",
+      "skill_sha256": "390cc85fd626efe2a87600cbcf2248bf7c940217a1de359b426b45df0d100bb2"
+    },
+    {
+      "name": "gstack-ios-clean",
+      "source": "~/.claude/skills/gstack-ios-clean",
+      "skill_sha256": "8b2e717370e9a239bcb858535a8905fade173eaf0c0a71faa209f8189527b77b"
+    },
+    {
+      "name": "gstack-ios-design-review",
+      "source": "~/.claude/skills/gstack-ios-design-review",
+      "skill_sha256": "41bc9fde49519172097fbdfc27472acbed4f1182ba757624d6ea27d6acc109f6"
+    },
+    {
+      "name": "gstack-ios-fix",
+      "source": "~/.claude/skills/gstack-ios-fix",
+      "skill_sha256": "d791abda5cac0e21840e44c08981fab91e37e02785395f00e0272c5af4da2f68"
+    },
+    {
+      "name": "gstack-ios-qa",
+      "source": "~/.claude/skills/gstack-ios-qa",
+      "skill_sha256": "e73b454ea41b3fa58adae9ffbf6a9a84b62e707fc98384ebb395fff7f2085cca"
+    },
+    {
+      "name": "gstack-ios-sync",
+      "source": "~/.claude/skills/gstack-ios-sync",
+      "skill_sha256": "19d6f462fc471a7bc0323564e2476fddcb0aaf2328b3401d80f401111d9e9ce6"
+    },
+    {
+      "name": "gstack-land-and-deploy",
+      "source": "~/.claude/skills/gstack-land-and-deploy",
+      "skill_sha256": "9ab73dbf45d8aa0646d73230beb9933abe463c8135006293d6caa8f735db371f"
+    },
+    {
+      "name": "gstack-landing-report",
+      "source": "~/.claude/skills/gstack-landing-report",
+      "skill_sha256": "aac3334297c9da4d0c1cab631915480c5d56f42c1b6979d2f56c57aceb258110"
+    },
+    {
+      "name": "gstack-learn",
+      "source": "~/.claude/skills/gstack-learn",
+      "skill_sha256": "6b75f44aee906cf05d5d343755336fc875bceb3989e672591e0c9ef87417918f"
+    },
+    {
+      "name": "gstack-make-pdf",
+      "source": "~/.claude/skills/gstack-make-pdf",
+      "skill_sha256": "183efdf79966caa75d73e12418ddc45be2c87163ab7321fac670e56f276e861f"
+    },
+    {
+      "name": "gstack-office-hours",
+      "source": "~/.claude/skills/gstack-office-hours",
+      "skill_sha256": "1c18f21e21078509b8f6bf6b454868ee95b51cc688bd9d7ee86502a5d87cb8d1"
+    },
+    {
+      "name": "gstack-open-gstack-browser",
+      "source": "~/.claude/skills/gstack-open-gstack-browser",
+      "skill_sha256": "508389f3b5689411d983daec2cd5f32cea444861464a5045e3ce0635afb2312e"
+    },
+    {
+      "name": "gstack-pair-agent",
+      "source": "~/.claude/skills/gstack-pair-agent",
+      "skill_sha256": "b2ee1566c15ce0af0c38c112d7d613b5c6efc0414fb16741ee1d4d1b22b51fd8"
+    },
+    {
+      "name": "gstack-plan-ceo-review",
+      "source": "~/.claude/skills/gstack-plan-ceo-review",
+      "skill_sha256": "31e84d1efefc9b7cb5d460c3c30e3623e2dbbd12575eec8aba51f9e6ec761e0a"
+    },
+    {
+      "name": "gstack-plan-design-review",
+      "source": "~/.claude/skills/gstack-plan-design-review",
+      "skill_sha256": "4b9c746030cf4659bd47ac1c7722a237e3d2832d06d73abae2dcc836011bbf71"
+    },
+    {
+      "name": "gstack-plan-devex-review",
+      "source": "~/.claude/skills/gstack-plan-devex-review",
+      "skill_sha256": "3900ab2d67687edda945563d53a73cb83dc4ac543032f862598899a0442c4dda"
+    },
+    {
+      "name": "gstack-plan-eng-review",
+      "source": "~/.claude/skills/gstack-plan-eng-review",
+      "skill_sha256": "9e913d2286ff4eb3236a3a80f1d0dba77137e40f0632d63ccdd89aa08c6de02f"
+    },
+    {
+      "name": "gstack-plan-tune",
+      "source": "~/.claude/skills/gstack-plan-tune",
+      "skill_sha256": "8a2bb5c896f8a4e4224d6fdddac76becca1cd222cca0ef5bde537597f4752486"
+    },
+    {
+      "name": "gstack-qa",
+      "source": "~/.claude/skills/gstack-qa",
+      "skill_sha256": "e90f45211ae7dcf2e3dc40ddd13cff0b25e246c8f0faea1f79243676012fee61"
+    },
+    {
+      "name": "gstack-qa-only",
+      "source": "~/.claude/skills/gstack-qa-only",
+      "skill_sha256": "2ddcdcabd9e738e2a688362ce258bf77e991a792b233365102d2a320bb578b19"
+    },
+    {
+      "name": "gstack-retro",
+      "source": "~/.claude/skills/gstack-retro",
+      "skill_sha256": "bb127a091f456c5a1b65aefd389fb64e44421dfd5be5d3e4a6e39061b66f5aea"
+    },
+    {
+      "name": "gstack-review",
+      "source": "~/.claude/skills/gstack-review",
+      "skill_sha256": "33a483556e67722b15aeaebb105d8ec3ec86c6e85b0ae2a807bebeab8e803706"
+    },
+    {
+      "name": "gstack-scrape",
+      "source": "~/.claude/skills/gstack-scrape",
+      "skill_sha256": "6e42923e6b1b002e36babac9589d7b4dc5260b1c896a68e0efd2a9e92c080836"
+    },
+    {
+      "name": "gstack-setup-browser-cookies",
+      "source": "~/.claude/skills/gstack-setup-browser-cookies",
+      "skill_sha256": "0e90511ef7339331cba37a96b20761b4967dabd27b8fa1eb469197017e4d0a40"
+    },
+    {
+      "name": "gstack-setup-deploy",
+      "source": "~/.claude/skills/gstack-setup-deploy",
+      "skill_sha256": "8fc91cd37c0c4830fe9006f4a5ac3f285f098dfaddd293314de36105a2c5e8a8"
+    },
+    {
+      "name": "gstack-setup-gbrain",
+      "source": "~/.claude/skills/gstack-setup-gbrain",
+      "skill_sha256": "78b8dc93610dc61edd4b1800d402efc791aa313d71b413b390a2ada417ae9fc6"
+    },
+    {
+      "name": "gstack-ship",
+      "source": "~/.claude/skills/gstack-ship",
+      "skill_sha256": "bbd2bac1c6fba4db9dc78f7bc077e6f6185f3c1448e7e29f27951b606bc5a2a3"
+    },
+    {
+      "name": "gstack-skillify",
+      "source": "~/.claude/skills/gstack-skillify",
+      "skill_sha256": "aff06e24fb66c3268d02de5dbad9b8a08682addd92b183afef66f0289be6e853"
+    },
+    {
+      "name": "gstack-spec",
+      "source": "~/.claude/skills/gstack-spec",
+      "skill_sha256": "49a570083d349ef612e180ce5364deda353e218d120aff7e3fbec08f2e22cc5d"
+    },
+    {
+      "name": "gstack-sync-gbrain",
+      "source": "~/.claude/skills/gstack-sync-gbrain",
+      "skill_sha256": "f6cbef5710aba4de8bfa9991da8ca097af431bb703af24af88d055817f1f5083"
+    },
+    {
+      "name": "gstack-unfreeze",
+      "source": "~/.claude/skills/gstack-unfreeze",
+      "skill_sha256": "88caa25783e4004713267ac5123766ef0c23a5177b4017ef27318fb648d7bd48"
+    },
+    {
+      "name": "gstack-upgrade",
+      "source": "~/.claude/skills/gstack-upgrade",
+      "skill_sha256": "c03ad6608b0bd0b7a297846f26360bd503ab82879aa2059f63c86b902ffce5a0"
+    }
+  ]
+}

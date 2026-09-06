@@ -1,0 +1,36 @@
+{
+  "checked_at": "2026-09-05T15:58:54.725260+00:00",
+  "scope": "Repository/setup snapshot at start of dossier; not chess application evidence. Git status includes the new dossier working files.",
+  "checks": [
+    {
+      "command": "just check",
+      "exit_code": 0,
+      "output": "PASS: 180 skill links and 2 agent directory mirrors; entrypoint hashes match\n\u2713 change/explore-one-mistake\nTotals: 1 passed, 0 failed (1 items)\npython3 scripts/setup_skills.py --check\nopenspec validate --all --strict --no-interactive\ngit diff --check\n"
+    },
+    {
+      "command": "just test",
+      "exit_code": 0,
+      "output": "PASS: link creation, idempotence, conflict preservation, read-only checks\npython3 scripts/setup_skills.py --self-test\n"
+    },
+    {
+      "command": "git status --short",
+      "exit_code": 0,
+      "output": "A  .gitattributes\nA  .gitignore\nA  AGENTS.md\nA  CLAUDE.md\nA  CONTEXT.md\nA  README.md\nA  docs/agents/domain.md\nA  docs/agents/issue-tracker.md\nA  docs/agents/setup.md\nA  docs/agents/triage-labels.md\nA  docs/research/assessment.md\nA  docs/research/sources/learning-products.md\nA  docs/research/sources/provenance.json\nA  docs/research/sources/startup-research.md\nA  docs/research/sources/startup-research.pdf\nA  justfile\nA  openspec/changes/archive/.gitkeep\nA  openspec/changes/explore-one-mistake/.openspec.yaml\nA  openspec/changes/explore-one-mistake/design.md\nA  openspec/changes/explore-one-mistake/proposal.md\nA  openspec/changes/explore-one-mistake/specs/mistake-exploration/spec.md\nA  openspec/changes/explore-one-mistake/tasks.md\nA  openspec/config.yaml\nA  openspec/specs/.gitkeep\nA  scripts/setup_skills.py\nA  skills.local.json\n?? docs/dossier/\n?? docs/research/sources/IMG_0859.png\n?? docs/research/sources/IMG_0860.png\n?? docs/research/sources/original-conversation.json\n?? docs/research/sources/original-conversation.md\n"
+    },
+    {
+      "command": "git symbolic-ref --short HEAD",
+      "exit_code": 0,
+      "output": "main\n"
+    },
+    {
+      "command": "git rev-parse --verify HEAD",
+      "exit_code": 128,
+      "output": "fatal: Needed a single revision\n"
+    },
+    {
+      "command": "git remote -v",
+      "exit_code": 0,
+      "output": ""
+    }
+  ]
+}

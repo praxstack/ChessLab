@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Site · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Site</h1><p class="lede">scripts/report_assets/site.js</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Site"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/report_assets/site.js" download>Download original file ↗</a></div><p class="source-meta">scripts/report_assets/site.js<br>SHA-256: afe6f588e3d48f3e8a5947b8215343a55a9df5a8d7566f90635abb17cf734674</p><pre><code>&#x27;use strict&#x27;;
+const menu = document.querySelector(&#x27;.menu-toggle&#x27;);
+menu?.addEventListener(&#x27;click&#x27;, () =&gt; {
+  const open = menu.getAttribute(&#x27;aria-expanded&#x27;) !== &#x27;true&#x27;;
+  menu.setAttribute(&#x27;aria-expanded&#x27;, String(open));
+  document.getElementById(&#x27;chapter-nav&#x27;).classList.toggle(&#x27;open&#x27;, open);
+});
+document.querySelector(&#x27;.print-button&#x27;)?.addEventListener(&#x27;click&#x27;, () =&gt; window.print());
+const query = document.getElementById(&#x27;document-search&#x27;);
+const category = document.getElementById(&#x27;document-category&#x27;);
+function filterDocuments() {
+  const text = query.value.toLocaleLowerCase().trim();
+  let count = 0;
+  for (const card of document.querySelectorAll(&#x27;.document-card&#x27;)) {
+    const visible = (!text || card.dataset.search.includes(text)) &amp;&amp; (!category.value || card.dataset.category === category.value);
+    card.hidden = !visible;
+    count += Number(visible);
+  }
+  document.getElementById(&#x27;document-count&#x27;).textContent = `${count} documents`;
+  document.getElementById(&#x27;no-documents&#x27;).hidden = count &gt; 0;
+}
+query?.addEventListener(&#x27;input&#x27;, filterDocuments);
+category?.addEventListener(&#x27;change&#x27;, filterDocuments);
+const exchangeText = {
+  knight: &#x27;Knight lost without a recapture: 3 points lost.&#x27;,
+  rook: &#x27;Rook exchanged for bishop: 5 − 3 = 2 points lost.&#x27;
+};
+for (const button of document.querySelectorAll(&#x27;[data-exchange]&#x27;)) {
+  button.addEventListener(&#x27;click&#x27;, () =&gt; {
+    document.querySelectorAll(&#x27;[data-exchange]&#x27;).forEach(b =&gt; b.setAttribute(&#x27;aria-pressed&#x27;, String(b === button)));
+    document.getElementById(&#x27;exchange-result&#x27;).textContent = exchangeText[button.dataset.exchange];
+  });
+}
+const conceptText = {
+  inspect: [&#x27;Inspect the question&#x27;, &#x27;The learner has selected a confusing move. The original game is preserved while the explanation stays attached to this position.&#x27;],
+  explore: [&#x27;Explore a different reply&#x27;, &#x27;An alternative belongs to this position. A question inside it stays in that branch; sibling lines remain available.&#x27;],
+  return: [&#x27;Return to the actual game&#x27;, &#x27;The original node is selected again. The explored branch remains saved and can be reopened.&#x27;]
+};
+for (const button of document.querySelectorAll(&#x27;[data-concept]&#x27;)) {
+  button.addEventListener(&#x27;click&#x27;, () =&gt; {
+    document.querySelectorAll(&#x27;[data-concept]&#x27;).forEach(b =&gt; b.setAttribute(&#x27;aria-pressed&#x27;, String(b === button)));
+    const state = button.dataset.concept;
+    document.getElementById(&#x27;concept-title&#x27;).textContent = conceptText[state][0];
+    document.getElementById(&#x27;concept-description&#x27;).textContent = conceptText[state][1];
+    document.querySelectorAll(&#x27;[data-branch]&#x27;).forEach(b =&gt; b.classList.toggle(&#x27;active&#x27;, b.dataset.branch === state));
+  });
+}
+const calculator = document.getElementById(&#x27;economics&#x27;);
+function calculate() {
+  const ids = [&#x27;payers&#x27;, &#x27;price&#x27;, &#x27;sessions&#x27;, &#x27;unit-cost&#x27;, &#x27;fee&#x27;];
+  const values = ids.map(id =&gt; document.getElementById(id).valueAsNumber);
+  const valid = values.every(Number.isFinite) &amp;&amp; values.every(n =&gt; n &gt;= 0) &amp;&amp; values[4] &lt;= 100 &amp;&amp; Number.isInteger(values[0]) &amp;&amp; Number.isInteger(values[2]);
+  const error = document.getElementById(&#x27;calc-error&#x27;);
+  if (!valid) {
+    error.textContent = &#x27;Enter non-negative values; subscribers and sessions must be whole numbers, and fees must be 0–100%.&#x27;;
+    [&#x27;revenue&#x27;,&#x27;variable-cost&#x27;,&#x27;contribution&#x27;].forEach(id =&gt; document.getElementById(id).textContent = &#x27;—&#x27;);
+    return;
+  }
+  error.textContent = &#x27;&#x27;;
+  const [payers,price,sessions,unitCost,fee] = values;
+  const revenue = payers * price;
+  const costs = payers * sessions * unitCost + revenue * fee / 100;
+  const currency = document.getElementById(&#x27;currency&#x27;).value;
+  const format = new Intl.NumberFormat(currency === &#x27;INR&#x27; ? &#x27;en-IN&#x27; : &#x27;en-US&#x27;, {style:&#x27;currency&#x27;,currency,maximumFractionDigits:2});
+  document.getElementById(&#x27;revenue&#x27;).textContent = format.format(revenue);
+  document.getElementById(&#x27;variable-cost&#x27;).textContent = format.format(costs);
+  document.getElementById(&#x27;contribution&#x27;).textContent = format.format(revenue-costs);
+}
+calculator?.addEventListener(&#x27;input&#x27;, calculate);
+calculator?.addEventListener(&#x27;change&#x27;, calculate);
+if (calculator) calculate();
+</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Snapshot: September 5, 2026</span></footer>
+</div>
+</body></html>

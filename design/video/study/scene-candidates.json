@@ -1,0 +1,16 @@
+{
+  "method": "FFmpeg scene difference > 0.16 at 480px width on compressed video. Candidate discovery, not a complete event detector.",
+  "seconds": [
+    249.333333,
+    257.916667,
+    591.916667,
+    594.333333,
+    614.0,
+    651.416667,
+    674.583333,
+    675.25,
+    675.916667,
+    874.333333,
+    877.25
+  ]
+}

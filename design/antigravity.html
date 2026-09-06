@@ -1,0 +1,398 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Antigravity attempt: blocked · ChessLab concepts</title><link rel="stylesheet" href="gallery.css"></head><body>
+<a class="skip" href="#main">Skip to content</a><header><a class="brand" href="index.html">♞ ChessLab <span>DESIGN STUDIES</span></a><nav aria-label="Main navigation"><a href="index.html">Mockups</a><a href="video.html">Recording</a><a href="frame-study.html">Frame study</a><a href="findings.html">What we learned</a><a href="sources.html" aria-current="page">Sources & limits</a></nav></header>
+<main id="main"><aside class="notice">This attempt did not ingest the video. Its generic recommendations are excluded from the video evidence.</aside><article class="prose"><h1 id="chesslab-research--technical-design-report">ChessLab Research &amp; Technical Design Report</h1>
+<hr />
+<h2 id="evidence-scope">Evidence Scope</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: left;">Observation / Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Exact Model</strong></td>
+<td style="text-align: left;">Gemini 3.8 Flash (High)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Target Video Path</strong></td>
+<td style="text-align: left;"><code>/Users/prax/Developer/ChessLab/design/video/chess-session-review.mp4</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Payload Ingestion Status</strong></td>
+<td style="text-align: left;"><strong>Rejected / Denied by Pre-Tool Hook</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Audio Availability</strong></td>
+<td style="text-align: left;"><strong>Unavailable</strong> (Tool execution intercepted before payload transmission)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Media Duration</strong></td>
+<td style="text-align: left;">Undetermined from tool payload (Execution denied)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Truncation / Sampling Limits</strong></td>
+<td style="text-align: left;">Complete failure to ingest due to environment security hook denial (<code>tool call denied by pre-tool hook:</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Coverage Declaration</strong></td>
+<td style="text-align: left;"><strong>Incomplete / Non-admitted</strong>. In strict accordance with the evaluation protocol, complete coverage cannot be claimed because the environment denied the tool call to access the physical binary file. No visual frames or audio waveforms were decoded or streamed into model inference context.</td>
+</tr>
+</tbody>
+</table>
+<div class="important">
+<div class="title">
+<p>Important</p>
+</div>
+<p><strong>Audit Trail &amp; Integrity Note</strong>: In accordance with the prompt's explicit mandate (<em>"Do not claim complete coverage if the tool rejects/truncates the file. Tell us honestly if no narration exists"</em>), no timestamps, visual pixel deductions, or spoken audio transcripts are fabricated or hallucinated. The tool invocation <code>view_file(AbsolutePath="/Users/prax/Developer/ChessLab/design/video/chess-session-review.mp4")</code> was rejected at runtime by the pre-tool policy hook.</p>
+</div>
+<hr />
+<h2 id="1-chronological-observations-across-recording">1. Chronological Observations Across Recording</h2>
+<p><em>Status: Direct sensory frame-by-frame observation was halted by tool call denial. The following section outlines the necessary observational framework and delineates visible user actions from inferred intent when inspecting recorded review sessions.</em></p>
+<h3 id="visible-actions-vs-inferred-intent-framework">Visible Actions vs. Inferred Intent Framework</h3>
+<p>When analyzing recorded screen captures of chess reviews (e.g., Chess.com Game Review / Coach interactions), human and automated analysts must preserve strict separation between recorded telemetry (ground truth) and speculative intent:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Timestamp Segment (General Template)</th>
+<th style="text-align: left;">Visible Telemetry &amp; UI Events (Observable Ground Truth)</th>
+<th style="text-align: left;">Inferred User/Learner Intent (Hypothesis / Unverified)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Phase A: Game Completion &amp; Transition</strong></td>
+<td style="text-align: left;">The board transitions from live play/result dialog ("Checkmate" / "Resignation") to the "Game Review" launch button. Mouse cursor moves to initiate post-game processing.</td>
+<td style="text-align: left;">The user desires immediate diagnostic feedback on why the game was won or lost, seeking validation or closure.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Phase B: Review Generation &amp; Classification</strong></td>
+<td style="text-align: left;">Progress bar/spinner runs; classification chips populate (Brilliant, Best, Miss, Blunder). Evaluation graph displays swings.</td>
+<td style="text-align: left;">The user glances at accuracy percentage and key swing points on the evaluation graph to locate turning points.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Phase C: Coach Dialogue Bubbles</strong></td>
+<td style="text-align: left;">Virtual coach avatar displays static or canned text (e.g., <em>"This move allows Black to centralize the knight"</em>). Forward/backward arrow controls are toggled.</td>
+<td style="text-align: left;">The user reads the surface explanation but may not understand <em>why</em> the rejected move was fatal or what defensive counterplay existed.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Phase D: Exploration / "Retry" Prompt</strong></td>
+<td style="text-align: left;">"Retry" button appears on a blunder. User clicks piece and attempts alternative square. Green/red indicator signals correctness.</td>
+<td style="text-align: left;">The user attempts trial-and-error puzzle solving; repeatedly dragging pieces until the engine accepts the move.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Phase E: Stalled Engagement</strong></td>
+<td style="text-align: left;">Cursor hovers over board squares; user makes several quick moves back and forth along the move list or closes review to open raw Analysis tab.</td>
+<td style="text-align: left;">The canned coach explanation failed to resolve confusion; the user seeks raw engine lines or feels constrained by linear review flow.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-asymmetric-communication-moments-coach-vs-learner">2. Asymmetric Communication Moments: Coach vs. Learner</h2>
+<p>In conventional commercial platforms (including Chess.com's Game Review), the interaction model is fundamentally <strong>unidirectional and asymmetric</strong>. The system speaks <em>at</em> the learner, but the learner has no affordance to ask clarifying questions.</p>
+<h3 id="friction-points-observed-in-standard-coach-paradigms">Friction Points Observed in Standard Coach Paradigms:</h3>
+<ol type="1">
+<li><strong>The "Why Not?" Silence</strong>:
+<ul>
+<li><em>Coach Statement</em>: <em>"You missed an opportunity to fork the rook and queen."</em></li>
+<li><em>Learner Impasse</em>: The user wants to ask: <em>"If I move my queen first, doesn't their bishop take my knight?"</em> There is <strong>zero input affordance</strong> (no text prompt, no microphone) for the user to query counter-threats.</li>
+</ul></li>
+<li><strong>The Positional Jargon Barrier</strong>:
+<ul>
+<li><em>Coach Statement</em>: <em>"This weakens your pawn structure."</em> or <em>"You conceded the d5 outpost."</em></li>
+<li><em>Learner Impasse</em>: Sub-1200 rating players often do not recognize why an open square matters if no immediate tactic exists. The user cannot request: <em>"Show me what happens if they try to occupy d5."</em></li>
+</ul></li>
+<li><strong>The Rigid Single-Path "Retry"</strong>:
+<ul>
+<li><em>Coach Statement</em>: <em>"Can you find the best move?"</em></li>
+<li><em>Learner Impasse</em>: The user plays a move that is +1.8, but the engine demanded the #1 engine line at +2.3. The UI flags it as incorrect with no nuance explaining that the user's idea was completely winning, merely suboptimal.</li>
+</ul></li>
+</ol>
+<p><em>(Note: Exact verbatim quotes from <code>/Users/prax/Developer/ChessLab/design/video/chess-session-review.mp4</code> cannot be transcribed due to the pre-tool execution denial).</em></p>
+<hr />
+<h2 id="3-existing-commercial-baseline-what-chesscom-already-provides">3. Existing Commercial Baseline: What Chess.com Already Provides</h2>
+<p>To avoid strawman arguments or exaggerated absence claims, ChessLab must benchmark against the extensive suite of features already present in commercial engines like Chess.com:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Feature Area</th>
+<th style="text-align: left;">Existing Capabilities on Modern Platforms (e.g., Chess.com)</th>
+<th style="text-align: left;">Real Limitations (The Real Product Opportunity)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Retry &amp; Mistakes</strong></td>
+<td style="text-align: left;">Dedicated "Retry" workflow for Blunders and Mistakes. Allows re-playing the position in a puzzle-like format until the top move is found.</td>
+<td style="text-align: left;">Binary right/wrong feedback. If a player finds a strong second-best move, the system rejects it without comparative commentary.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Visual Arrows &amp; Badges</strong></td>
+<td style="text-align: left;">Dynamic color-coded arrows (Green = Best, Red = Blunder, Blue = Book, Yellow = Inaccuracy). Move classification badges.</td>
+<td style="text-align: left;">Arrows show <em>where</em> pieces should go, but not <em>the strategic concept</em> behind them. Multiple complex threats result in visual clutter.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Hints &amp; Key Moves</strong></td>
+<td style="text-align: left;">Step-by-step hints ("Show piece", then "Show move"). "Key Moments" navigation automatically skips quiet moves.</td>
+<td style="text-align: left;">Hints are pre-computed engine outputs; they cannot adapt to conversational hints (e.g., giving a conceptual riddle vs revealing the piece).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Self-Analysis &amp; Engine Lines</strong></td>
+<td style="text-align: left;">Stockfish running in WebAssembly/Cloud with multiple PVs (principal variations), evaluation bar, depth controls, threat highlighting.</td>
+<td style="text-align: left;">Overwhelms casual/intermediate learners. An engine line like <code>14... exd4 15. Nb5 d3 16. Qxd3</code> does not explain <em>human logic</em>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Coach Personas &amp; Voice</strong></td>
+<td style="text-align: left;">Multiple coach personalities (e.g., Coach Danny, master personas, themed characters) with text-to-speech audio narration.</td>
+<td style="text-align: left;">Audio is pre-rendered or template-stitched clips triggered by move flags; not dynamic interactive conversation.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Difficulty &amp; Bots</strong></td>
+<td style="text-align: left;">Extensive bot roster from 250 rating to 3200 (Grandmasters), adaptive bots that dynamically adjust blunder rates.</td>
+<td style="text-align: left;">Bots mimic rating via artificial blunder timers and random sub-optimal moves, rather than realistic human cognitive mistakes.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Move Navigation</strong></td>
+<td style="text-align: left;">Comprehensive timeline navigation: forward, backward, jump to blunder, move list tree, flip board, keyboard shortcuts.</td>
+<td style="text-align: left;">Exploratory sub-lines branch in the analysis board, but exiting a sub-variation often loses context or clutters the move list.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-comprehensive-chesslab-mockup-scenarios">4. Comprehensive ChessLab Mockup Scenarios</h2>
+<p>The following 14 scenarios define the full design space for ChessLab's conversational and multi-branch exploration UX:</p>
+<h3 id="scenario-1-onboarding--skill-calibration">Scenario 1: Onboarding &amp; Skill Calibration</h3>
+<ul>
+<li><strong>Goal</strong>: Seamless first-run experience that calibrates both engine depth and conversational complexity.</li>
+<li><strong>UI/UX Flow</strong>:
+<ol type="1">
+<li>Welcome card: <em>"What is your chess journey?"</em> (Options: Beginner [Under 800], Club Player [800–1500], Competitive [1500+]).</li>
+<li>Pedagogical Style Selection:
+<ul>
+<li><strong>Socratic Guide</strong>: Asks guiding questions before revealing moves.</li>
+<li><strong>Direct Grandmaster</strong>: Concise, analytical, high-level structural concepts.</li>
+<li><strong>Friendly Mentor</strong>: Encouraging tone, focuses on piece safety and fundamental principles.</li>
+</ul></li>
+<li>Interactive 3-move test puzzle to calibrate explanation reading level (evaluating whether user understands terms like <em>fianchetto</em>, <em>overloaded piece</em>, or <em>zwischenzug</em>).</li>
+</ol></li>
+</ul>
+<h3 id="scenario-2-choosing-ai-coach-personality--difficulty">Scenario 2: Choosing AI Coach Personality &amp; Difficulty</h3>
+<ul>
+<li><strong>Goal</strong>: Granular control over the coaching assistant's demeanor, strictness, and compute budget.</li>
+<li><strong>UI/UX Flow</strong>:
+<ul>
+<li>Top-bar Coach Widget: Displays avatar, persona name, and active engine depth (e.g., "Stockfish 16 Lite @ Depth 18").</li>
+<li>Flyout Settings Panel:
+<ul>
+<li><em>Tolerance for Suboptimality</em>: Slider from "Strict Master" (flags 0.3 centipawn loss) to "Practical Club" (only flags major tactical swings).</li>
+<li><em>Verbosity</em>: Bullet points vs. full narrative.</li>
+<li><em>Tone</em>: Strict, Socratic, Humorous, or Neutral Analytical.</li>
+</ul></li>
+</ul></li>
+</ul>
+<h3 id="scenario-3-importing-a-completed-game">Scenario 3: Importing a Completed Game</h3>
+<ul>
+<li><strong>Goal</strong>: Low-friction ingestion of external games from major ecosystems.</li>
+<li><strong>UI/UX Flow</strong>:
+<ul>
+<li>Unified Import Modal with three tabs:
+<ol type="1">
+<li><strong>Direct Sync</strong>: Connect Chess.com / Lichess username (auto-fetches latest 10 played games).</li>
+<li><strong>PGN Paste / File Upload</strong>: Drag-and-drop <code>.pgn</code> files with real-time syntax checking and parsing preview.</li>
+<li><strong>FEN Setup / Custom Position</strong>: Quick board editor for specific tactical snapshots.</li>
+</ol></li>
+<li>Initial Game Ingestion View: Timeline scrub bar renders overall evaluation curve with colored dots representing critical moments.</li>
+</ul></li>
+</ul>
+<h3 id="scenario-4-playing-live--training-positions">Scenario 4: Playing Live / Training Positions</h3>
+<ul>
+<li><strong>Goal</strong>: Active practice against AI or self-play with an on-demand coach bystander.</li>
+<li><strong>UI/UX Flow</strong>:
+<ul>
+<li>Interactive board with legal move highlights and optional threat-radar overlay.</li>
+<li>Coach avatar sits in a non-intrusive side-dock, observing quietly without interrupting every move.</li>
+<li>Floating HUD displays move notation, clock (or untimed toggle), and a visible <strong>"Pause &amp; Discuss"</strong> button.</li>
+</ul></li>
+</ul>
+<h3 id="scenario-5-pausing-the-session">Scenario 5: Pausing the Session</h3>
+<ul>
+<li><strong>Goal</strong>: Immediate freeze of game state to enter non-destructive study mode.</li>
+<li><strong>UI/UX Flow</strong>:
+<ul>
+<li>User clicks <strong>"Pause"</strong> or presses <code>Spacebar</code>.</li>
+<li>Visual State Change: Clock stops; board boundary illuminates with a subtle amber highlight indicating <strong>"Study Sandbox Active"</strong>.</li>
+<li>Coach Dock expands: <em>"Game paused at Move 18... What's on your mind?"</em></li>
+<li>Fast prompts appear as pill buttons:
+<ul>
+<li><code>[What was Black's threat?]</code></li>
+<li><code>[Did I have a better square for my bishop?]</code></li>
+<li><code>[Evaluate pawn structure]</code></li>
+</ul></li>
+</ul></li>
+</ul>
+<h3 id="scenario-6-asking-free-form-follow-up-questions">Scenario 6: Asking Free-Form Follow-Up Questions</h3>
+<ul>
+<li><strong>Goal</strong>: Unconstrained natural-language querying anchored to board geometry and engine evaluations.</li>
+<li><strong>UI/UX Flow</strong>:
+<ul>
+<li>Chat input box with multimodal awareness: accepts typed text, voice dictation, or direct square-selection inputs (e.g., clicking on <code>d5</code> inserts the <code>@d5</code> token into the chat box).</li>
+<li>User asks: <em>"Why can't I push e5 here? Doesn't it win space?"</em></li>
+<li>System Response:
+<ul>
+<li>Coach generates text response grounded by Stockfish verification: <em>"Pushing e5 wins central space, but it leaves your d4 pawn backward and undefended. Let's see what happens after 19. e5 dxe5 20. Nxe5 Nxe5."</em></li>
+<li>The board automatically previews ghost pieces illustrating the line.</li>
+</ul></li>
+</ul></li>
+</ul>
+<h3 id="scenario-7-exploring-move-alternatives-for-both-sides-what-if-branching">Scenario 7: Exploring Move Alternatives for BOTH Sides (What-If Branching)</h3>
+<ul>
+<li><strong>Goal</strong>: Frictionless counterfactual exploration without corrupting the canonical game record.</li>
+<li><strong>UI/UX Flow</strong>:
+<ul>
+<li>While paused, the user can freely drag <em>either</em> White or Black pieces.</li>
+<li>If the user moves Black (opponent), the coach responds from White's perspective, or vice versa:
+<ul>
+<li>User moves <code>18... Re8</code> (alternative for opponent).</li>
+<li>Coach responds: <em>"If Black plays 18... Re8 instead, your queen is no longer pressured, allowing you to launch 19. Qh4."</em></li>
+</ul></li>
+<li>Distinction: Moves played in this sandbox are highlighted in cyan/purple to clearly distinguish them from the official game score.</li>
+</ul></li>
+</ul>
+<h3 id="scenario-8-nested-exploration-branches-tree-visualization">Scenario 8: Nested Exploration Branches (Tree Visualization)</h3>
+<ul>
+<li><strong>Goal</strong>: Support deep, multi-ply sub-variations without user disorientation.</li>
+<li><strong>UI/UX Flow</strong>:
+<ul>
+<li>Secondary tree breadcrumb navigation: <code>Main Game (18. Nd4) &gt; Branch A (18... Re8) &gt; Sub-Branch A1 (19. Qh4 h6)</code>.</li>
+<li>Side panel displays a mini-tree diagram with interactive nodes.</li>
+<li>Collapsible branches: User can collapse deep rabbit holes with one click.</li>
+<li>Depth indicators: Visual indicators notify the user when they are 3+ plies deep into an exploratory hypothetical line.</li>
+</ul></li>
+</ul>
+<h3 id="scenario-9-comparing-explanations-coach-vs-engine-vs-master">Scenario 9: Comparing Explanations (Coach vs. Engine vs. Master)</h3>
+<ul>
+<li><strong>Goal</strong>: Reconciling human conceptual logic with raw calculation.</li>
+<li><strong>UI/UX Flow</strong>:
+<ul>
+<li>Move detail card features a three-way toggle:
+<ol type="1">
+<li><strong>Conceptual (Coach)</strong>: <em>"Your king safety is compromised due to open h-file; defensive retreat required."</em></li>
+<li><strong>Engine Line (Stockfish)</strong>: <code>+3.42 | 19. Kh1 Bh3 20. Rg1 Bxg2+ 21. Rxg2 (Depth 22)</code></li>
+<li><strong>Comparative Matrix</strong>: Side-by-side card showing <em>Played Move</em> vs. <em>Suggested Move</em> across 3 dimensions: King Safety, Piece Activity, Material Balance.</li>
+</ol></li>
+</ul></li>
+</ul>
+<h3 id="scenario-10-returning-to-the-original-game-anchor">Scenario 10: Returning to the Original Game Anchor</h3>
+<ul>
+<li><strong>Goal</strong>: Instantly escape nested hypothetical lines back to the authoritative game timeline.</li>
+<li><strong>UI/UX Flow</strong>:
+<ul>
+<li>Persistent sticky button at top/bottom of the board: <strong>"Return to Move 18 (Canonical)"</strong> [Hotkey: <code>Escape</code>].</li>
+<li>Optional dialog/toast on exit: <em>"Branch explored (4 moves). [Keep as Study Note] or [Discard]?"</em></li>
+<li>Board pieces smoothly animate back to the original positions, removing sandbox visual cues.</li>
+</ul></li>
+</ul>
+<h3 id="scenario-11-saving--reopening-study-sessions">Scenario 11: Saving &amp; Reopening Study Sessions</h3>
+<ul>
+<li><strong>Goal</strong>: Persistent notebook model for longitudinal learning.</li>
+<li><strong>UI/UX Flow</strong>:
+<ul>
+<li>Game sessions automatically save into local storage or account database as an annotated study notebook.</li>
+<li>Annotations capture:
+<ul>
+<li>Master game PGN.</li>
+<li>All created sub-branches and alternative moves.</li>
+<li>Chat history transcript between user and Coach.</li>
+</ul></li>
+<li>Reopening: User opens "Study Notebooks", clicks the saved session, and can resume the chat conversation from any point in the tree.</li>
+</ul></li>
+</ul>
+<h3 id="scenario-12-practice--spaced-repetition-the-blunder-journal">Scenario 12: Practice &amp; Spaced Repetition (The Blunder Journal)</h3>
+<ul>
+<li><strong>Goal</strong>: Converting reviewed mistakes into retention puzzles.</li>
+<li><strong>UI/UX Flow</strong>:
+<ul>
+<li>At the conclusion of a review session, critical blunders are tagged with a single-click button: <strong>"Add to Training Deck"</strong>.</li>
+<li>Spaced Repetition Tab ("Drill Lab"): Positions re-appear after 1 day, 3 days, 7 days.</li>
+<li>The Coach presents the position without arrows and prompts: <em>"You faced this dilemma last Tuesday. What did we decide was the key defensive move here?"</em></li>
+</ul></li>
+</ul>
+<h3 id="scenario-13-mobile-form-factor-adaptation">Scenario 13: Mobile Form Factor Adaptation</h3>
+<ul>
+<li><strong>Goal</strong>: Retaining desktop analytical depth within portrait and touch constraints.</li>
+<li><strong>UI/UX Flow</strong>:
+<ul>
+<li>Portrait layout:
+<ul>
+<li>Top 45%: Square chessboard, touch-optimized (tap-to-select, tap-to-move, generous hit targets).</li>
+<li>Middle 15%: Collapsible compact timeline &amp; move scrub slider.</li>
+<li>Bottom 40%: Bottom sheet containing the Coach conversational interface.</li>
+</ul></li>
+<li>Gesture controls: Swipe up on bottom sheet to view full chat history; swipe down to focus on the board.</li>
+<li>Voice-first affordance: prominent mic button for hands-free query while looking at the mobile board.</li>
+</ul></li>
+</ul>
+<h3 id="scenario-14-error-handling--accessibility-a11y">Scenario 14: Error Handling &amp; Accessibility (a11y)</h3>
+<ul>
+<li><strong>Goal</strong>: Robustness against LLM failures and full barrier-free accessibility.</li>
+<li><strong>UI/UX Flow</strong>:
+<ul>
+<li><strong>Engine Validation Barrier (Anti-Hallucination)</strong>: Any move suggested in AI text is parsed against a local chess rules engine (<code>chess.js</code>). If the LLM mentions an illegal move (e.g., <em>"Move your knight to e6"</em> when e6 is blocked), the UI catches it before display and prompts the model to regenerate with valid coordinates.</li>
+<li><strong>Fallback States</strong>: If the LLM service drops connection or times out, the UI gracefully defaults to raw local Stockfish evaluation cards without freezing the board.</li>
+<li><strong>Screen Reader Support</strong>: ARIA live regions announce piece movements and board coordinates in standard notation (e.g., <em>"White Knight moves from f3 to d4"</em>).</li>
+<li><strong>Colorblind Palettes</strong>: Board highlights, eval bars, and arrows support high-contrast monochromatic, Deuteranopia, and Protanopia palettes.</li>
+</ul></li>
+</ul>
+<hr />
+<h2 id="5-first-prototype-architecture--non-proven-hypotheses">5. First Prototype Architecture &amp; Non-Proven Hypotheses</h2>
+<h3 id="best-first-prototype-mvp-specification">Best First Prototype (MVP Specification)</h3>
+<p>To adhere strictly to senior engineering discipline (minimal diff, avoiding speculative abstractions, highest signal-to-effort ratio), <strong>Prototype v0.1 must NOT build all 14 scenarios at once.</strong></p>
+<h4 id="mvp-scope">MVP Scope:</h4>
+<pre><code>[PGN Ingest / Local Board]
+           │
+           ▼
+[Interactive Sandbox (Pause / Play Alternative Moves for BOTH Sides)]
+           │
+           ▼
+[Deterministic Engine Validation (Stockfish.js)]
+           │
+           ▼
+[Socratic Conversational Side-Panel (Grounded LLM Prompting)]</code></pre>
+<h4 id="core-components">Core Components:</h4>
+<ol type="1">
+<li><strong>Board &amp; Rule Engine</strong>: Web-based chessboard (<code>chessboard.js</code> or SVG canvas) paired with <code>chess.js</code> running client-side.</li>
+<li><strong>Move Branching Tree</strong>: A lightweight in-memory trie structure that tracks <code>master_history</code> vs. <code>scratch_branch</code>. Allows playing moves for both White and Black.</li>
+<li><strong>Engine Evaluation Feed</strong>: Stockfish WebAssembly running in a background Web Worker computing evaluation and top 3 lines for the active board state.</li>
+<li><strong>Context-Grounded Coach Chat</strong>:
+<ul>
+<li>Backend prompt combines: current FEN, master game FEN, last 4 moves played in the scratch branch, and top 2 Stockfish evaluations.</li>
+<li>LLM provides Socratic answers to user queries with zero ability to invent illegal board configurations.</li>
+</ul></li>
+</ol>
+<hr />
+<h3 id="what-the-recording-does-not-prove">What the Recording Does NOT Prove</h3>
+<p>Even if the video file were fully decoded and transcribed, recording observations have distinct epistemological limits that must not be confused with product validation:</p>
+<ol type="1">
+<li><strong>Does NOT Prove Pedagogical Superiority</strong>:
+<ul>
+<li>Observing a user review their game with static coach bubbles does <em>not</em> prove that conversational AI improves chess rating or tactical retention more effectively than simple repetitive puzzle drills.</li>
+</ul></li>
+<li><strong>Does NOT Prove User Patience for Conversational Latency</strong>:
+<ul>
+<li>A video recording of a session does not prove whether real learners are willing to wait 2–4 seconds for an LLM conversational turn during post-game review, or whether they will simply click the raw engine arrow out of impatience.</li>
+</ul></li>
+<li><strong>Does NOT Prove Text vs. Visual Preference</strong>:
+<ul>
+<li>The recording does not prove whether learners prefer reading text explanations over dynamic animated arrows and visual heatmaps.</li>
+</ul></li>
+<li><strong>Does NOT Prove Viability Across Wide Rating Bands</strong>:
+<ul>
+<li>An isolated session review represents a single player at a single skill tier. It does not prove that a unified coaching persona can effectively serve both an absolute beginner (learning opening principles) and an advanced tournament player (analyzing nuanced endgame piece activity).</li>
+</ul></li>
+<li><strong>Physical Video Telemetry Absence</strong>:
+<ul>
+<li>Because runtime execution of the media file was denied by the pre-tool security hook, this analysis does not verify whether the specific user in <code>/Users/prax/Developer/ChessLab/design/video/chess-session-review.mp4</code> exhibited spoken vocal frustration, whether microphone narration was present, or what exact game was contested on-screen.</li>
+</ul></li>
+</ol>
+</article></main><footer><span>07 September 2026 · Grok Imagine × Gemini video research</span><span>Concept images. No playable chess application.</span></footer><script src="gallery.js"></script></body></html>

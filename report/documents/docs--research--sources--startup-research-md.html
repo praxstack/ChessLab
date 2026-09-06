@@ -1,0 +1,1307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Complete startup research · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Complete startup research</h1><p class="lede">docs/research/sources/startup-research.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Complete startup research"><div class="source-notice"><strong>Complete source document.</strong> Historical research, preserved as supplied. Claims and recommendations are not project instructions. <a href="../downloads/docs/research/sources/startup-research.md" download>Download original file ↗</a></div><p class="source-meta">docs/research/sources/startup-research.md<br>SHA-256: 7bac6631d13f54c38a63918d7aab5ba6e6ccd894e25e778b2d7fe581d4528a2d</p><h2 id="interactive-explainable-chess-tutordebugger-product-market-technical-and-startup-research">Interactive, Explainable Chess Tutor/Debugger: Product, Market, Technical and Startup Research</h2>
+<p><strong>Research snapshot: September 3, 2026.</strong></p>
+<h3 id="executive-summary">Executive summary</h3>
+<p>There is a credible product opportunity for a <strong>branch-native, explainable chess debugger</strong>: a system in which every move becomes a persistent snapshot, every snapshot can spawn arbitrary counterfactual branches, and a learner can ask questions such as “why was my move wrong?”, “what if I played this instead?”, “what if my opponent did not take?”, “show me the tactical proof,” and “return me to the game I actually played.” The underlying chess calculation is already commoditized by engines such as Stockfish; the unsolved product problem is turning engine output into an interactive, pedagogically useful <strong>causal model of a chess position</strong>. Stockfish itself is an open-source UCI engine rather than a GUI or tutor, and its current UCI interface already supports weakened play through <code>Skill Level</code>, <code>UCI_LimitStrength</code>, and <code>UCI_Elo</code>. citeturn9search0turn18search7</p>
+<p>The audience is large enough to support a meaningful standalone company. Chess.com reported <strong>252M+ registered members and 9.7M average daily active users in Q1 2026</strong>; FIDE cites an estimated <strong>600–800M people globally who play chess</strong>; Lichess says more than <strong>5M games are played on its platform daily</strong>. Chess.com’s education subsidiaries are meaningful businesses themselves: ChessKid reported 14.8M registered users and 838K MAU in Q1 2026, while Chessable reported 630K active users in the quarter. citeturn19search2turn19search3turn1view5</p>
+<p>The market is nevertheless crowded. Chess.com has Game Review, Coach Explanations, bots and an analysis board; Lichess has world-class free analysis and persistent collaborative Studies; DecodeChess explains positions and moves in natural language; Chessvia offers conversational/voice AI coaching and even a developer analysis API; Noctie specializes in human-like opponents; Aimchess specializes in personalized post-game training; Take Take Take entered play-and-learn in 2026 with a human-language AI review experience; Endgame.ai and ChessMonitor are also expanding. citeturn8search0turn13search15turn1view5turn1view1turn6search10turn13search1turn1view3turn20news12turn5search1turn5search2</p>
+<p>The opportunity is therefore <strong>not</strong> “put Stockfish next to ChatGPT.” That is already replicable. The defensible product thesis should be:</p>
+<blockquote>
+<p><strong>A chess debugger where every explanation is executable.</strong><br></br>
+The user can turn any sentence into a highlighted board proof, turn any alternative into a real branch, continue that branch against an appropriate opponent model, compare it with the original line, and jump back to any earlier snapshot without losing context.</p>
+</blockquote>
+<p>In the products and first-party documentation reviewed for this report, I did <strong>not</strong> find one established product that clearly combines all of the following in one coherent workflow: persistent arbitrary-depth counterfactual trees, free-form Q&amp;A attached to each node, deterministic visual proof of explanations, human-like adjustable opponents, branch comparison, durable personal learning memory, and real-time coach/student collaboration. DecodeChess and Chessvia are closest on explanation; Lichess is strongest on persistent branching/collaboration; Noctie is strongest on human-like sparring; Chess.com has by far the broadest distribution and integrated learning ecosystem. citeturn1view1turn1view2turn6search2turn6search10turn1view5turn13search1turn19search2</p>
+<p>My base-case commercial estimate is approximately <strong>$2.1B annual consumer TAM</strong>, a <strong>$504M initial SAM</strong>, and a credible five-year SOM of <strong>$9.6M–$24M ARR</strong>, based on assumptions detailed below rather than third-party market-research forecasts. Chess-only is large enough for a substantial company, but a YC-scale outcome becomes much more compelling if the company ultimately owns the generalized technology for <strong>interactive counterfactual tutoring</strong> rather than remaining simply another chess-analysis website. YC’s Fall 2026 Requests for Startups explicitly argues that AI can bring individualized tutoring to consumer scale; chess is not the specific foundational-childhood-learning category YC requested, but the underlying adaptive one-to-one-tutor thesis is highly aligned. citeturn15search1</p>
+<p>My recommended launch sequence is <strong>web/PWA first</strong>, with local Stockfish, PGN/Chess.com/Lichess import, immutable game snapshots, unlimited local branches, a structured tactical feature extractor, evidence-grounded conversational explanations, branch comparison, and a human-like training opponent. Desktop should follow through a lightweight wrapper/native engine; native mobile should follow once the core interaction model has proven retention. Do <strong>not</strong> begin by building rated multiplayer, a social network, an opening-course marketplace, voice-first interaction, or three independent native clients.</p>
+<p>A strong MVP is realistically a <strong>five-to-six-month project for three to five strong builders</strong>, with a lean remote/India-heavy cash budget around <strong>$120K–$300K</strong>, excluding founder opportunity cost; a US-heavy team can easily cost <strong>$450K–$900K</strong> over the same period. Those are planning estimates, not quoted vendor prices. The architecture can keep operating costs relatively low by performing shallow-to-medium Stockfish analysis on the client, caching engine evaluations aggressively, and invoking LLMs only to explain already-verified chess evidence.</p>
+<h3 id="market-landscape-and-competitor-inventory">Market landscape and competitor inventory</h3>
+<p>Chess has a particularly favorable AI-product structure: the “ground truth” is unusually strong. Legal moves are deterministic; tactical sequences can be verified; Stockfish can supply high-quality counterfactual evaluations; tablebases can make small endgames exact; and human game databases provide enormous behavioral datasets. Lichess, for example, publishes a CC0 database containing billions of games and, as of August 2, 2026, <strong>394,669,566 evaluated positions</strong>. That makes chess substantially easier to ground than an unconstrained educational domain where an LLM itself must determine what is correct. citeturn1view6</p>
+<p>At the same time, the incumbent is formidable. Chess.com crossed 100M members in December 2022 when it completed its acquisition of Play Magnus Group—which brought Chessable, Aimchess, chess24 and other properties into its ecosystem—and had reached 252M+ members by Q1 2026. Historical economics show that paid chess learning can monetize: when Play Magnus Group listed publicly in 2020, FIDE reported more than three million registered users and roughly 35,000 monthly paying customers across the group. citeturn20search0turn19search2turn20search9</p>
+<h4 id="competitor-and-product-inventory">Competitor and product inventory</h4>
+<p>“Explainability” below means <em>why-oriented pedagogical explanation</em>, not merely showing an evaluation bar and principal variation. “Branching” means the ability to explore alternative continuations; <strong>strong</strong> means persistent variation-tree functionality rather than merely showing the engine’s best line. API status refers to publicly documented developer interfaces found in the reviewed materials; “none found” does not rule out private partner APIs.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Product</th>
+<th>Platforms</th>
+<th>Relevant functionality</th>
+<th>Explainability</th>
+<th>Branching / what-if</th>
+<th>Adjustable / human-like opponent</th>
+<th>Public API / SDK</th>
+<th>Current pricing signal</th>
+<th>Scale signal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Chess.com</strong></td>
+<td>Web, iOS, Android</td>
+<td>Game Review, Coach Explanations, analysis board, bots, puzzles, lessons, saved analysis/alternate lines</td>
+<td><strong>Medium–High</strong> for reviewed moves; not documented as arbitrary node-attached conversational debugging</td>
+<td><strong>Medium–High</strong>; analysis board explores lines and saved analysis can contain alternatives</td>
+<td>Yes; bots across skill levels</td>
+<td><strong>Yes, but limited:</strong> read-only PubAPI; OAuth/connected-board access has separate developer process</td>
+<td>US App Store lists Diamond around $16.99/mo and $119.99/yr; tiers/local pricing vary</td>
+<td><strong>252M+ members; 9.7M avg DAU Q1 2026</strong> citeturn19search2turn8search0turn13search15turn8search2turn8search23turn3search4</td>
+</tr>
+<tr>
+<td><strong>Lichess</strong></td>
+<td>Web, mobile</td>
+<td>Stockfish analysis, board editor, opening explorer, collaborative Studies, comments, annotations, persistent variations</td>
+<td><strong>Low machine-language explanation</strong>, excellent raw analysis; users/coaches provide commentary</td>
+<td><strong>Very strong</strong>; Studies are explicitly collaborative collections of positions and annotated variations</td>
+<td>Computer opponent available; not primarily human-model-based</td>
+<td><strong>Excellent public API</strong>; open source and open databases</td>
+<td>Free; donation-funded</td>
+<td>User count not disclosed in cited material; <strong>&gt;5M games/day</strong> citeturn1view5turn8search7turn1view4turn1view6</td>
+</tr>
+<tr>
+<td><strong>DecodeChess</strong></td>
+<td>Web; mobile availability via app ecosystem</td>
+<td>Explains pros/cons of moves, threats, plans, piece functionality and alternative moves using Stockfish + proprietary AI</td>
+<td><strong>High</strong></td>
+<td><strong>High exploration</strong>, although less obviously a durable collaborative Git-like tree</td>
+<td>Adaptive computer opponent</td>
+<td>No public developer API found</td>
+<td>Limited/free access plus paid service; exact public indexed price not used here</td>
+<td>Not disclosed citeturn1view1turn1view2turn0search10</td>
+</tr>
+<tr>
+<td><strong>Chessvia</strong></td>
+<td>Web/mobile-browser oriented</td>
+<td>“Chessy” conversational AI coach; voice/text; remembers games/conversations; game review; free analysis</td>
+<td><strong>Very high conversationally</strong></td>
+<td><strong>Medium</strong>; arbitrary Q&amp;A is strong, durable multi-branch workspace less clearly documented</td>
+<td>Adaptive coaching/player-level behavior</td>
+<td><strong>Yes:</strong> position analysis, natural-language Q&amp;A, move-by-move game review and configurable coaching API</td>
+<td>Free analysis plus paid conversational coaching; trial available</td>
+<td>Company reports <strong>5,000+ students</strong> through programs/partnerships citeturn6search2turn6search4turn6search10turn6search16turn6search20</td>
+</tr>
+<tr>
+<td><strong>Noctie</strong></td>
+<td>Web, iOS, Android</td>
+<td>Human-like AI sparring, 25-level app experience, instant move grading, openings, custom positions, mistake-derived puzzles</td>
+<td><strong>Medium</strong>; strong feedback, less focused on deep natural-language causal dialogue</td>
+<td><strong>Medium</strong>; custom positions and sparring, not a documented persistent counterfactual graph</td>
+<td><strong>Very strong differentiator</strong>; trained to mimic human play and mistakes</td>
+<td>No public API found</td>
+<td><strong>€14/mo or €96/yr</strong>, seven-day trial</td>
+<td>Not disclosed citeturn13search1turn13search10turn13search4</td>
+</tr>
+<tr>
+<td><strong>Aimchess</strong></td>
+<td>Web; mobile apps</td>
+<td>Imports online games, identifies weaknesses, personalized training plans/reports, coach sharing</td>
+<td><strong>Medium</strong> at aggregate/player-development level</td>
+<td><strong>Low–Medium</strong> for arbitrary branch exploration</td>
+<td>Not its core proposition</td>
+<td>No public API found</td>
+<td>Official web pricing: <strong>$7.99/mo or $57.99/yr</strong> Premium</td>
+<td>Not disclosed citeturn1view3</td>
+</tr>
+<tr>
+<td><strong>Take Take Take</strong></td>
+<td>Web, iOS, Android</td>
+<td>New play/learn/social platform; AI game review designed to “speak like a human,” progress/social layer, Lichess integration</td>
+<td><strong>Medium–High</strong>, rapidly developing</td>
+<td><strong>Medium</strong> based on currently documented workflow</td>
+<td>Play product exists; human-model depth not established publicly</td>
+<td>No public developer API found</td>
+<td>Public pricing not clearly disclosed in reviewed sources</td>
+<td>Previous fan app reported <strong>200K downloads</strong>; current product says thousands have moved over; Crunchbase lists company as seed-stage citeturn5search0turn5search11turn5search13turn21search0</td>
+</tr>
+<tr>
+<td><strong>Endgame.ai</strong></td>
+<td>Web</td>
+<td>Online play, tournaments, puzzles, AI analysis/insights, named AI bots, clubs/leaderboards</td>
+<td><strong>Medium</strong>, details less publicly documented than Decode/Chessvia</td>
+<td><strong>Medium / unclear</strong></td>
+<td>Yes</td>
+<td>No public API found</td>
+<td>Not clearly disclosed</td>
+<td>Not disclosed citeturn5search1turn20news12</td>
+</tr>
+<tr>
+<td><strong>ChessMonitor</strong></td>
+<td>Web, iOS/Android</td>
+<td>Deep account analytics, opponent preparation, databases, Studio beta, multi-account analysis</td>
+<td><strong>Low–Medium explanatory</strong>, high analytical depth</td>
+<td><strong>Medium–High</strong> for analytical/preparation workflows</td>
+<td>Not core</td>
+<td>No general-purpose public analysis API found</td>
+<td>Basic/Plus/Professional tiers; indexed source did not expose reliable current amounts</td>
+<td>Not disclosed citeturn5search2turn5search5turn6search1</td>
+</tr>
+<tr>
+<td><strong>CircleChess / Caissa</strong></td>
+<td>Web plus mobile ecosystem</td>
+<td>24/7 AI coach, game analysis, position/calculation/intuition trainers, integration with human coaching</td>
+<td><strong>High coaching orientation</strong></td>
+<td><strong>Medium</strong>; branch-native debugger behavior not clearly documented</td>
+<td>Training platform, not primarily sparring-bot product</td>
+<td>No public developer API found</td>
+<td>Mixed AI + human-coaching model; prices vary by program</td>
+<td>Company reports thousands of families/students; first introduced Caissa publicly in 2024 citeturn13search8turn13search24turn13search11</td>
+</tr>
+<tr>
+<td><strong>Fritz / ChessBase</strong></td>
+<td>Primarily Windows desktop plus companion ecosystem</td>
+<td>Professional analysis databases, engine analysis, style simulation, opponent preparation, deep variation work</td>
+<td><strong>Low–Medium</strong> compared with conversational AI; extremely deep expert tooling</td>
+<td><strong>Very strong traditional variation analysis</strong></td>
+<td>Fritz supports style/strength simulation</td>
+<td>UCI engines are interoperable, but no comparable consumer conversational API found</td>
+<td><strong>Fritz 21 €69.90</strong>; ChessBase/Fritz bundle around <strong>$224 ex-VAT</strong> in current shop listing</td>
+<td>User count not publicly stated in cited material citeturn14search12turn14search6turn14search18</td>
+</tr>
+<tr>
+<td><strong>En Croissant</strong></td>
+<td>Cross-platform desktop</td>
+<td>Open-source GUI; imports/organizes online games, multiple UCI engines, analysis, databases, opening/repertoire training</td>
+<td>Engine-based rather than LLM-first</td>
+<td><strong>Strong traditional analysis</strong></td>
+<td>Any supported UCI engine</td>
+<td><strong>Code itself is open source</strong></td>
+<td>Free/open source</td>
+<td>GitHub/community project; commercial user base not disclosed citeturn12search12turn12search27</td>
+</tr>
+</tbody>
+</table></div>
+<p>The strategic gap is clearer when these products are grouped by their strongest capability. <strong>Chess.com</strong> owns breadth and distribution; <strong>Lichess</strong> owns open, persistent study/variation infrastructure; <strong>DecodeChess and Chessvia</strong> are strongest on language explanation; <strong>Noctie</strong> is strongest on human-like sparring; <strong>Fritz/ChessBase</strong> remains a deep professional analysis environment. The proposed product should not try to beat all of them feature-for-feature. It should own the intersection: <strong>counterfactual navigation + proof-grounded explanation + learner memory.</strong> citeturn19search2turn1view5turn1view1turn6search10turn13search1turn14search12</p>
+<p>A second important market signal is renewed startup activity. Reuters reported in April 2026 that Magnus Carlsen-backed <strong>Take Take Take</strong> was expanding into online playing and learning, with a Lichess partnership, while identifying <strong>Endgame.ai and ChessMonitor</strong> as other new ventures entering the ecosystem. Take Take Take’s Crunchbase page currently describes it as a seed-stage company with two funding rounds, though public free access obscures the amounts. citeturn20news12turn21search0</p>
+<p>On the requested question of <strong>“leaks” and stealth startups</strong>: I found no sufficiently credible primary-source or high-quality press evidence of a genuinely stealth, materially funded company secretly building the exact branch-native explainable debugger described here. Search results contained generic stealth profiles and hobby projects, but nothing reliable enough to present as intelligence. The defensible emerging-competitor set is therefore the publicly verifiable one above rather than rumor. Reuters’ identification of Take Take Take, Endgame.ai and ChessMonitor is the strongest current signal that investors/operators see renewed opportunity in chess software. citeturn20news12</p>
+<p>There is also adjacent competitive pressure from broad education platforms. Duolingo now has a chess product, while Chessable continues to build a substantial active-learning audience around its spaced-repetition MoveTrainer model. Neither is currently the same product as a forensic chess debugger, but both illustrate that chess learning is increasingly being treated as an interactive consumer-learning category rather than merely an engine-analysis category. citeturn3search19turn7search19turn19search2</p>
+<h3 id="market-size-business-model-and-yc-fit">Market size, business model, and YC fit</h3>
+<p>A top-down chess TAM based on “everyone who knows chess” would be misleading. FIDE’s 600–800M estimate establishes cultural reach, not willingness to buy AI tutoring. More useful anchors are Chess.com’s 252M+ registered accounts and 9.7M average DAU, Lichess’s &gt;5M daily games, and demonstrated paid chess-training businesses such as the historical Play Magnus Group subscription base. citeturn19search3turn19search2turn1view5turn20search9</p>
+<p>I would therefore use an <strong>assumption-driven operating model</strong> rather than cite a generic “AI chess market” report.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Market layer</th>
+<th style="text-align: right;">Base assumption</th>
+<th style="text-align: right;">Calculation</th>
+<th style="text-align: right;">Annual opportunity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>TAM: global digital improvers</strong></td>
+<td style="text-align: right;">25M players worldwide who are sufficiently active, improvement-oriented and economically reachable; target blended ARPU <strong>$84/year</strong></td>
+<td style="text-align: right;">25M × $84</td>
+<td style="text-align: right;"><strong>$2.10B/year</strong></td>
+</tr>
+<tr>
+<td>TAM low scenario</td>
+<td style="text-align: right;">15M × $72</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><strong>$1.08B/year</strong></td>
+</tr>
+<tr>
+<td>TAM high scenario</td>
+<td style="text-align: right;">40M × $96</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><strong>$3.84B/year</strong></td>
+</tr>
+<tr>
+<td><strong>SAM: initial English-language, roughly beginner-to-advanced-club segment</strong></td>
+<td style="text-align: right;">6M potential users reachable through web/mobile, Chess.com/Lichess imports, creators and coaches</td>
+<td style="text-align: right;">6M × $84</td>
+<td style="text-align: right;"><strong>$504M/year</strong></td>
+</tr>
+<tr>
+<td><strong>SOM base, year five</strong></td>
+<td style="text-align: right;">100K paying subscribers at $96 realized annual ARPU</td>
+<td style="text-align: right;">100K × $96</td>
+<td style="text-align: right;"><strong>$9.6M ARR</strong></td>
+</tr>
+<tr>
+<td><strong>SOM stretch, year five</strong></td>
+<td style="text-align: right;">250K paying subscribers</td>
+<td style="text-align: right;">250K × $96</td>
+<td style="text-align: right;"><strong>$24M ARR</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>The 25M TAM-user assumption is only about <strong>3–4% of FIDE’s estimated global chess-playing population</strong> and roughly <strong>10% of Chess.com’s Q1 2026 registered membership</strong>, making it much less aggressive than counting all chess players as purchasers. The revenue assumption is also consistent with observed consumer pricing: Aimchess charges $7.99/month or $57.99/year, Noctie charges €14/month or €96/year, and Chess.com’s US App Store currently lists Diamond around $16.99/month and $119.99/year. citeturn19search3turn19search2turn1view3turn13search10turn3search4</p>
+<p>The weak point in the TAM is <strong>conversion, not audience size</strong>. Historical Play Magnus Group data showed roughly 35K monthly payers on three million registered users in 2020—about 1.2% of registrations, though the products, maturity and denominator make that an imperfect benchmark. To reach 100K paying users, a startup would probably need somewhere around <strong>2–5M meaningfully engaged free users</strong> if eventual free-to-paid conversion settled in a 2–5% range. That conversion range is my planning assumption, not an observed chess-industry average. citeturn20search9</p>
+<p>The best consumer packaging is consequently freemium:</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Tier</th>
+<th style="text-align: right;">Recommended economics</th>
+<th>Product</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Free</strong></td>
+<td style="text-align: right;">$0</td>
+<td>Local analysis, unlimited manual branches, PGN import, basic tactical overlays, limited cloud explanations</td>
+</tr>
+<tr>
+<td><strong>Pro</strong></td>
+<td style="text-align: right;"><strong>$9.99/mo or $79–89/yr</strong></td>
+<td>Deep explanations, unlimited conversational what-ifs, branch comparison, personalized weakness memory, cloud sync, advanced human-like bots</td>
+</tr>
+<tr>
+<td><strong>Coach</strong></td>
+<td style="text-align: right;"><strong>$19–39/mo</strong></td>
+<td>Shared student trees, live annotations, assignments, comments, student analytics, reusable lessons</td>
+</tr>
+<tr>
+<td><strong>Academy / school</strong></td>
+<td style="text-align: right;"><strong>$3–8/student/month</strong>, annual contract</td>
+<td>Rosters, teacher dashboard, safe collaboration, progress reports, centralized content</td>
+</tr>
+<tr>
+<td><strong>Developer API</strong></td>
+<td style="text-align: right;">Metered</td>
+<td>Structured evaluation + motif extraction + grounded explanation API</td>
+</tr>
+<tr>
+<td><strong>Enterprise / federation</strong></td>
+<td style="text-align: right;">Contract</td>
+<td>White labeling, SSO, coaching analytics, events/training infrastructure</td>
+</tr>
+</tbody>
+</table></div>
+<p>A particularly promising model is <strong>open-core</strong>: make the board, PGN/FEN handling, local branch tree, offline Stockfish integration and perhaps the core “chess evidence” schema open source, while charging for hosted LLM tutoring, synchronization, multiplayer collaboration, longitudinal learner models, teams and managed compute. Lichess demonstrates that an enormous free/open-source chess platform can attract daily activity at global scale, although its donation-supported economics are different from a venture-backed SaaS business. citeturn1view4turn1view5</p>
+<p>The strongest moat would not initially be proprietary engine strength. It would be the <strong>learner graph</strong> accumulated over time: which positions a person misunderstood, which alternatives they considered, which tactical motifs they repeatedly missed, what questions they asked, which explanations actually corrected the misunderstanding, and whether the concept transferred to later positions. An ordinary game database tells you <em>what players did</em>. A debugger can gradually acquire data about <strong>why learners were confused</strong>. That is potentially much more valuable for personalization.</p>
+<p>YC fit is <strong>good but not automatic</strong>. YC’s Fall 2026 Requests for Startups explicitly argues for AI that can provide individualized tutoring at consumer scale and adapt over long periods to a learner. The chess debugger maps unusually well to this because chess supplies objective feedback and allows the tutor’s explanations to be mechanically checked. The mismatch is that YC’s explicit request focuses on foundational childhood reading, writing and arithmetic—not chess—so this should be presented as a strong application of the same tutoring paradigm, not as “YC specifically asked for chess.” citeturn15search1</p>
+<p>My YC-style scorecard would be:</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pain / existing bad workflow</td>
+<td><strong>Strong</strong> — players regularly encounter opaque “best move” answers without understanding causality</td>
+</tr>
+<tr>
+<td>Usage frequency</td>
+<td><strong>Strong</strong> for engaged players; a game can generate dozens of learning moments</td>
+</tr>
+<tr>
+<td>Technical feasibility</td>
+<td><strong>Very strong</strong> — deterministic rules + mature engines + open data</td>
+</tr>
+<tr>
+<td>Initial market</td>
+<td><strong>Good</strong>, but more niche than horizontal AI education</td>
+</tr>
+<tr>
+<td>Competitive intensity</td>
+<td><strong>High</strong></td>
+</tr>
+<tr>
+<td>Distribution</td>
+<td><strong>Hard</strong> because Chess.com/Lichess already own the game-playing habit</td>
+</tr>
+<tr>
+<td>AI differentiation</td>
+<td><strong>Medium initially</strong>; high only if explanations are demonstrably better and stateful</td>
+</tr>
+<tr>
+<td>Data moat potential</td>
+<td><strong>High</strong> if branch/question/learning outcomes are captured</td>
+</tr>
+<tr>
+<td>Network effects</td>
+<td><strong>Medium</strong>, potentially high through coach/student/shared-study workflows</td>
+</tr>
+<tr>
+<td>Venture-scale ceiling</td>
+<td><strong>Moderate–high</strong> in chess alone; substantially higher if the underlying counterfactual tutoring framework expands</td>
+</tr>
+<tr>
+<td>Overall</td>
+<td><strong>~7/10 as chess-only; ~8–9/10 if chess is the wedge for a broader interactive tutoring platform</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>The most compelling YC pitch is therefore not “we built another AI chess coach.” It is:</p>
+<blockquote>
+<p><strong>Engines tell 600M chess players what the right move is. We are building the debugger that teaches them why—by letting them execute every question as a counterfactual branch. Chess is our first domain because every explanation can be verified.</strong></p>
+</blockquote>
+<p>Chess also has proven acquisition economics: Chess.com completed the acquisition of Play Magnus Group in December 2022, after the group had previously reached an approximately $85.8M equity valuation at its 2020 listing. That does not imply a similar exit valuation for a new company, but it demonstrates that strategic acquisition is a real outcome in digital chess learning. citeturn20search0turn20search9</p>
+<h3 id="academic-open-source-and-emerging-startup-landscape">Academic, open-source, and emerging startup landscape</h3>
+<p>The academic literature strongly supports separating <strong>optimal chess</strong> from <strong>human chess</strong>. The Maia work showed that engines optimized for playing strength are poor models of the moves humans actually choose, motivating neural models trained specifically to predict human decisions at different rating levels. Maia-2 subsequently generalized this approach into a unified skill-aware model across rating levels. This matters directly for the proposed product: when a learner asks “what would a 1200-rated opponent probably do?”, the correct product response is not necessarily Stockfish’s principal variation. citeturn11search1turn11search21</p>
+<p>A useful research inventory is:</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Research project</th>
+<th>Contribution</th>
+<th>Direct product implication</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Automated Chess Commentator Powered by Neural Chess Engine</strong> — ACL 2019</td>
+<td>Connects neural chess representation with natural-language commentary, including description, comparison and planning commentary</td>
+<td>Establishes that commentary can be conditioned on chess representations rather than generated from raw notation alone citeturn11search0</td>
+</tr>
+<tr>
+<td><strong>Maia / Aligning Superhuman AI with Human Behavior</strong></td>
+<td>Models human move choices across skill levels rather than maximizing playing strength</td>
+<td>Use for believable opponents, expected-human-reply rankings, mistake probability and “what is a player like me likely to miss?” citeturn11search1</td>
+</tr>
+<tr>
+<td><strong>Maia-2</strong> — NeurIPS 2024</td>
+<td>Unified skill-aware model that captures differences in move behavior across skill levels</td>
+<td>Better basis than simple Stockfish depth throttling for adaptive sparring and personalized counterfactuals citeturn11search21turn12search6</td>
+</tr>
+<tr>
+<td><strong>Concept-guided Chess Commentary</strong> — 2025</td>
+<td>Grounds commentary in interpretable chess concepts rather than unconstrained text generation</td>
+<td>Strong blueprint for evidence → concept → explanation pipelines citeturn11search23turn11search4</td>
+</tr>
+<tr>
+<td><strong>Towards Piece-by-Piece Explanations for Chess Positions</strong> — 2025</td>
+<td>Addresses the opacity of reducing an entire position to one scalar centipawn score</td>
+<td>Supports piece-level overlays such as “this knight is the problem,” contribution views and local explanations citeturn11search35</td>
+</tr>
+<tr>
+<td><strong>AlphaZero concept-probing / knowledge extraction work</strong></td>
+<td>Finds recognizable human chess concepts in learned chess representations and investigates extraction of concepts</td>
+<td>Longer-term route to explanations richer than hand-coded tactical motifs citeturn11search3turn11search15</td>
+</tr>
+</tbody>
+</table></div>
+<p>The open-source base is unusually mature:</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Component / project</th>
+<th>Role</th>
+<th>Licensing / product consequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Stockfish</strong></td>
+<td>Best-move search, MultiPV, evaluation, adjustable playing strength</td>
+<td>GPLv3; commercial use is allowed, but distribution carries source/license obligations citeturn9search0turn9search8</td>
+</tr>
+<tr>
+<td><strong>Lichess / lila ecosystem</strong></td>
+<td>Reference architecture for online chess, Studies, APIs, analysis infrastructure</td>
+<td>Fully open/free ecosystem; excellent architectural precedent and API/data source citeturn1view4turn8search7</td>
+</tr>
+<tr>
+<td><strong>Lichess open database</strong></td>
+<td>Human games, puzzles/analysis datasets</td>
+<td>Game exports are CC0; evaluated-position dataset is especially useful for cache warming/research citeturn1view6</td>
+</tr>
+<tr>
+<td><strong>Chessground</strong></td>
+<td>High-quality chessboard UI used by Lichess</td>
+<td>GPL-family license; its own repo warns about license implications for combined web applications, so closed-source startups need counsel or a different board component citeturn9search1</td>
+</tr>
+<tr>
+<td><strong>react-chessboard</strong></td>
+<td>React board UI</td>
+<td>MIT-licensed alternative with drag/drop, animation and responsive features; easier fit for a proprietary frontend citeturn10search0</td>
+</tr>
+<tr>
+<td><strong>chess.js</strong></td>
+<td>Legal move generation/validation and chess state</td>
+<td>BSD-2-Clause; useful for deterministic client/server validation rather than asking an LLM about legality citeturn9search2</td>
+</tr>
+<tr>
+<td><strong>Maia / Maia-2 implementations</strong></td>
+<td>Human move model</td>
+<td>Open implementations are available for building human-like opponents and behavioral prediction citeturn12search2turn12search6</td>
+</tr>
+<tr>
+<td><strong>En Croissant</strong></td>
+<td>Desktop open-source chess GUI</td>
+<td>Good reference implementation for game import, local engines, databases and desktop chess UX citeturn12search12turn12search27</td>
+</tr>
+<tr>
+<td><strong>ChessCoach</strong></td>
+<td>Neural chess engine + commentary research implementation</td>
+<td>Demonstrates open experimentation with natural-language chess commentary beyond ordinary Stockfish PVs citeturn12search3turn12search11</td>
+</tr>
+</tbody>
+</table></div>
+<p>There are also small open-source experiments that already combine Stockfish/WASM and LLM coaching, including browser-only and local/offline projects surfaced on GitHub. Their existence is strategically important even if none is yet a major consumer business: <strong>the basic “LLM + Stockfish” architecture has essentially zero durable technical moat.</strong> The product has to differentiate through interaction design, grounded reasoning, learner modeling, branch infrastructure and distribution rather than API assembly. citeturn12search1turn12search24turn12search26turn12search33</p>
+<p>For adjustable strength, Stockfish provides an immediate baseline. Its official UCI documentation says that when <code>UCI_LimitStrength</code> is enabled, <code>UCI_Elo</code> aims for a specified Elo and overrides <code>Skill Level</code>; <code>Skill Level</code> itself ranges from 0 to 20. But even Stockfish project discussions show why merely weakening a superhuman engine can create behavior that feels unnatural at lower levels. For pedagogical sparring, a hybrid architecture—Stockfish for truth, Maia-like models for <em>human choice</em>—is substantially better. citeturn18search7turn18search1turn11search1</p>
+<p>That distinction should become a visible product control:</p>
+<p><strong>“Opponent type”</strong></p>
+<p><code>Perfect / Engine-like</code> → Stockfish<br></br>
+<code>Human at ~800</code> → human-move model<br></br>
+<code>Human at ~1400</code> → human-move model<br></br>
+<code>Aggressive / tactical</code> → style-conditioned model<br></br>
+<code>Play the most likely tournament response</code> → human database/model<br></br>
+<code>Try to punish my weakness</code> → personalized opponent policy</p>
+<p>This is far more pedagogically useful than a single slider labeled “Difficulty.”</p>
+<h3 id="product-architecture-and-experience-design">Product architecture and experience design</h3>
+<p>The defining architectural principle should be:</p>
+<blockquote>
+<p><strong>The LLM is the teacher and renderer—not the chess oracle.</strong></p>
+</blockquote>
+<p>Every chess-specific assertion should be derived from deterministic state, engine search, tactical feature extraction, human-game models or tablebases before the language model sees the position. The LLM should turn evidence into an explanation, ask good Socratic questions and maintain pedagogical continuity. It should <strong>never be trusted to determine move legality, invent a principal variation or calculate material from the board image by itself</strong> when deterministic components are available. Stockfish supplies evaluation/search; chess.js or an equivalent rules implementation supplies legal state transitions; Maia-like systems can supply human-move probability. citeturn9search0turn9search2turn11search1</p>
+<p>A production architecture could look like this:</p>
+<pre class="mermaid"><code>flowchart LR
+    subgraph Clients
+        W[Web / PWA]
+        M[Mobile]
+        D[Desktop]
+        C[Coach / Classroom UI]
+    end
+
+    W --&gt; LCE[Local Chess Runtime]
+    M --&gt; LCE
+    D --&gt; LCE
+
+    LCE --&gt; RULES[Rules + PGN/FEN + Snapshot Manager]
+    LCE --&gt; LOCALSF[Local Stockfish / WASM or Native Engine]
+    LCE --&gt; OFFLINE[Offline Store]
+
+    W --&gt; API
+    M --&gt; API
+    D --&gt; API
+    C --&gt; API
+
+    subgraph Cloud
+        API[API Gateway + Auth]
+        GAME[Game / Snapshot Service]
+        TREE[Variation Graph Service]
+        COLLAB[Collaboration Service]
+        COACH[Learner Model / Mastery Service]
+        EXPLAIN[Explanation Orchestrator]
+        ANALYSIS[Analysis Scheduler]
+        CACHE[Evaluation Cache]
+        TELEMETRY[Telemetry / Experimentation]
+    end
+
+    API --&gt; GAME
+    API --&gt; TREE
+    API --&gt; COLLAB
+    API --&gt; COACH
+    API --&gt; EXPLAIN
+    API --&gt; TELEMETRY
+
+    GAME --&gt; PG[(PostgreSQL)]
+    TREE --&gt; PG
+    COACH --&gt; PG
+    COLLAB --&gt; PG
+
+    ANALYSIS --&gt; Q[Job Queue]
+    Q --&gt; SF[Stockfish Worker Pool]
+    Q --&gt; HUMAN[Human-Move / Maia Service]
+    Q --&gt; TB[Tablebase / Opening Data]
+    SF --&gt; CACHE
+    HUMAN --&gt; CACHE
+    TB --&gt; CACHE
+
+    EXPLAIN --&gt; FEATURES[Tactical + Positional Feature Extractor]
+    EXPLAIN --&gt; CACHE
+    EXPLAIN --&gt; LLM[LLM Gateway]
+    FEATURES --&gt; LLM
+    COACH --&gt; LLM
+
+    LLM --&gt; VERIFY[Legality + Evidence Verifier]
+    VERIFY --&gt; API
+
+    OFFLINE -. reconnect .-&gt; API</code></pre>
+<p>The “game” should not be represented merely as a PGN string. Store the actual played game as an <strong>immutable mainline</strong>, then attach counterfactual edges to individual snapshots. The UI can appear tree-shaped, while the backend can deduplicate transpositions as a graph.</p>
+<p>A simplified interaction model is:</p>
+<pre class="mermaid"><code>flowchart TD
+    S[Snapshot: position after move 18] --&gt; A[Actual move: 19.Rg4?]
+    A --&gt; AR[Actual / imported opponent reply]
+    AR --&gt; AN[Continue actual game]
+
+    S --&gt; B[What if: 19.Na3?]
+    B --&gt; B1[Engine best reply]
+    B --&gt; B2[Likely 1200-rated reply]
+    B --&gt; B3[User asks: what if Black takes rook?]
+
+    B3 --&gt; B4[Calculate capture]
+    B4 --&gt; B5[Show recapture + net material]
+    B5 --&gt; B6[Continue this branch]
+
+    B2 --&gt; C[User chooses another response]
+    C --&gt; C1[Continue alternate universe]
+
+    B6 -. Return to snapshot .-&gt; S
+    C1 -. Return to snapshot .-&gt; S
+    AN -. Jump back .-&gt; S
+
+    S --&gt; COMP[Compare branches]
+    COMP --&gt; X[Eval delta + material + concepts + visual proof]</code></pre>
+<p>A useful schema is roughly:</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Entity</th>
+<th>Important fields</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Game</code></td>
+<td>source, players, result, time control, raw PGN, imported/completed status</td>
+</tr>
+<tr>
+<td><code>Snapshot</code></td>
+<td>FEN, side to move, ply, castling rights, en-passant state, move-history/repetition context, position hash</td>
+</tr>
+<tr>
+<td><code>VariationEdge</code></td>
+<td>parent snapshot, move UCI/SAN, child snapshot, source=<code>actual/user/engine/human-model/coach</code>, branch ID</td>
+</tr>
+<tr>
+<td><code>EngineAnalysis</code></td>
+<td>engine version, NNUE hash, depth/nodes, MultiPV rank, score/WDL, PV</td>
+</tr>
+<tr>
+<td><code>FeatureEvidence</code></td>
+<td>attackers, defenders, pins, forks, skewers, loose pieces, SEE, king threats, positional concept tags</td>
+</tr>
+<tr>
+<td><code>Annotation</code></td>
+<td>arrows, squares, text, creator, visibility</td>
+</tr>
+<tr>
+<td><code>ConversationThread</code></td>
+<td>snapshot ID, branch ID, user question, evidence used, generated answer</td>
+</tr>
+<tr>
+<td><code>LearnerState</code></td>
+<td>rating estimate, concept mastery, recurring errors, preferred explanation style</td>
+</tr>
+<tr>
+<td><code>ExplanationArtifact</code></td>
+<td>answer text, visual commands, evidence references, model/version, verification status</td>
+</tr>
+</tbody>
+</table></div>
+<p>A subtle but important point is that <strong>FEN alone is insufficient as the complete identity of a game state for all rule purposes</strong>, because repetition and move-history context can matter. For evaluation caching, equivalent board states can often share engine work, but the game record should preserve lineage and history separately. The product should therefore expose a “tree” to humans but permit a <strong>DAG-like evaluation cache</strong> internally.</p>
+<p>The tactical/positional feature extractor is arguably the most important component beyond Stockfish. It should deterministically identify:</p>
+<ul>
+<li>attackers and defenders of every piece and square;</li>
+<li>hanging and inadequately defended pieces;</li>
+<li>pins, skewers, forks, discovered attacks and x-rays;</li>
+<li>overloaded defenders;</li>
+<li>checks, captures and immediate threats;</li>
+<li>static exchange outcomes;</li>
+<li>trapped pieces and restricted mobility;</li>
+<li>king-safety changes;</li>
+<li>passed/isolated/backward pawns and pawn breaks;</li>
+<li>development, space, files, diagonals and weak squares;</li>
+<li>engine tactical motifs inferred from the PV.</li>
+</ul>
+<p>The distinction between an <strong>attack map</strong> and a <strong>threat map</strong> is crucial. A bishop may geometrically attack a rook, but that does not mean taking the rook wins five points; the capturing bishop may immediately be recaptured. Your earlier rook/knight example is precisely why the visualization layer should include <strong>exchange sequences and static exchange evaluation</strong>, not merely red arrows.</p>
+<p>A generated explanation should therefore begin from an evidence object like:</p>
+<pre class="text"><code>Your move: Rg4
+Evaluation change: -0.4 → -2.7
+Immediate issue: knight on a3 becomes undefended and can be captured
+Alternative: save Na3
+If ...Bxf4:
+    White can play gxf4
+Material sequence:
+    White loses rook: -5
+    Black loses bishop: +3
+    Net material cost to White: -2
+If rook is saved instead:
+    White loses knight without compensation: -3
+Relevant concepts:
+    defended piece
+    exchange sequence
+    count the whole trade</code></pre>
+<p>The LLM’s job is then to transform that into:</p>
+<blockquote>
+<p>“You correctly noticed that the rook is worth more than the knight, but you stopped the calculation one capture too early. The rook is defended by the g3 pawn. Let’s compare the complete exchanges.”</p>
+</blockquote>
+<p>That is fundamentally more trustworthy than asking an LLM to inspect a FEN and freestyle an explanation.</p>
+<p>The interface should support five depths of explanation for every decision:</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>UX</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Verdict</strong></td>
+<td>“This loses a knight.”</td>
+</tr>
+<tr>
+<td><strong>Why</strong></td>
+<td>“The bishop attacks both pieces, and the knight is unprotected.”</td>
+</tr>
+<tr>
+<td><strong>Show me</strong></td>
+<td>Draw arrows, attackers/defenders and the capture sequence</td>
+</tr>
+<tr>
+<td><strong>What if?</strong></td>
+<td>Create an executable variation branch</td>
+</tr>
+<tr>
+<td><strong>Teach me</strong></td>
+<td>Hide the answer and ask the learner to calculate it first</td>
+</tr>
+</tbody>
+</table></div>
+<p>For example:</p>
+<blockquote>
+<p><strong>Why is Rg4 wrong?</strong><br></br>
+→ highlight <code>Ba3</code> and <code>Rf4</code>; show protection relationships.</p>
+<p><strong>Why is saving the knight better if the rook is worth five?</strong><br></br>
+→ animate <code>Bxf4 gxf4</code>; show <code>5 − 3 = 2</code> versus free knight loss <code>3</code>.</p>
+<p><strong>What if Black does not take the rook?</strong><br></br>
+→ spawn a new branch and rank Black’s alternatives.</p>
+<p><strong>What would a 1000-rated Black player probably choose?</strong><br></br>
+→ switch reply model from Stockfish to human-move probability.</p>
+<p><strong>Let me play the rest myself.</strong><br></br>
+→ hand the branch to the appropriate bot.</p>
+<p><strong>Back to my real game.</strong><br></br>
+→ restore the immutable mainline instantly.</p>
+</blockquote>
+<p>For evaluation caching, key entries by at least <code>position + engine version + NNUE/model version + search limit + MultiPV settings</code>; deeper results can satisfy shallower requests when compatible. The Lichess CC0 evaluated-position dataset is a potentially valuable research/precomputation input because it already contains hundreds of millions of evaluated positions, though integration should respect its published schema and attribution/licensing terms. citeturn1view6</p>
+<p>For adjustable playing strength, implement <strong>two systems rather than one</strong>. A conventional mode can use Stockfish <code>UCI_LimitStrength/UCI_Elo</code>; a “human sparring” mode should use a Maia-like policy or similar human-game model. This avoids the classic problem where a weakened super-engine plays strongly for twenty moves and then manufactures an implausible blunder merely to reduce its rating. Stockfish’s own documentation and issue discussions make clear that limited-strength behavior is an engineered approximation rather than a human simulation. citeturn18search7turn18search1</p>
+<p>Offline mode is very feasible. A PWA can keep games, branches and annotations in local browser storage and run Stockfish in a Web Worker/WASM environment; a desktop wrapper can invoke native Stockfish; mobile apps can embed an appropriately licensed ARM build. Offline users can still play bots, branch, annotate and receive engine-based tactical feedback; conversational LLM explanation can queue until reconnection unless a local model is eventually supported. Stockfish itself supports mainstream desktop/mobile environments, while projects such as En Croissant demonstrate the viability of local multi-engine desktop workflows. citeturn18search16turn12search27</p>
+<p>Collaboration should eventually borrow the strongest idea from Lichess Studies: several users can inspect the same position and preserve annotated variations. The differentiator would be attaching AI conversation and student attempts to those branches. A coach could say, “Solve from this node without the engine,” watch the student create a branch, then reveal the engine-backed explanation. Lichess already proves there is demand for shared positions, annotated variations and collaborative study; the proposed product would make the tutor an active participant. citeturn1view5</p>
+<h3 id="operations-go-to-market-and-risk">Operations, go-to-market, and risk</h3>
+<p>The first distribution wedge should be <strong>post-game debugging, not another chess server</strong>. Trying to recreate matchmaking, ratings, tournaments, anti-cheat systems and community liquidity puts a startup directly against Chess.com’s 9.7M daily users and Lichess’s enormous free community before the differentiated product even exists. Instead, import completed games from Chess.com/Lichess/PGN, find the most educational moment, and immediately ask the learner a question about it. Chess.com exposes a read-only public API for public game/player data, while Lichess has extensive public APIs. citeturn19search2turn8search2turn8search7</p>
+<p>The ideal activation experience is:</p>
+<p><strong>Paste username → import recent completed games → choose one → AI identifies one misunderstanding → visual explanation → “What if I did this?” → branch opens immediately.</strong></p>
+<p>That should happen before signup if technically possible. A user should reach the “aha” moment in under two minutes.</p>
+<p>The strongest growth loops are shareable. A branch can have a public URL:</p>
+<p><code>/position/abc123?branch=rook-vs-knight</code></p>
+<p>A creator can post “Can you find why saving the rook loses more material?” Followers play the branch themselves, ask the tutor questions and fork it. Coaches can share annotated lessons; students can submit their attempted branches; streamers can distribute “play from here” links. That turns the variation graph itself into user-generated content.</p>
+<p>The GTM stack I would prioritize is:</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Channel</th>
+<th>Mechanism</th>
+<th>Why it fits</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Chess creators / streamers</strong></td>
+<td>Give creators interactive “what would you play?” branch links</td>
+<td>Chess already has a strong creator culture and the object being shared is the actual product</td>
+</tr>
+<tr>
+<td><strong>SEO</strong></td>
+<td>Public explainable pages for openings, common mistakes, tactical concepts and imported famous positions</td>
+<td>Search intent around “why is this move bad?” maps directly to the product</td>
+</tr>
+<tr>
+<td><strong>Chess coaches</strong></td>
+<td>Free coach workspace, paid student management</td>
+<td>Coaches bring multiple high-intent learners and produce reusable content</td>
+</tr>
+<tr>
+<td><strong>Clubs / academies</strong></td>
+<td>Team dashboards, assignments, coach collaboration</td>
+<td>Higher retention and lower consumer CAC</td>
+</tr>
+<tr>
+<td><strong>Open source</strong></td>
+<td>OSS local core + GitHub contributor community</td>
+<td>Establishes credibility with Lichess/engine/developer audiences</td>
+</tr>
+<tr>
+<td><strong>Chess.com/Lichess import</strong></td>
+<td>One-click completed-game ingestion</td>
+<td>User does not have to abandon existing play habit</td>
+</tr>
+<tr>
+<td><strong>Shareable branches</strong></td>
+<td>Fork/remix variation URLs</td>
+<td>Product-native viral loop</td>
+</tr>
+<tr>
+<td><strong>API</strong></td>
+<td>Offer explanation/motif API to chess apps/content sites</td>
+<td>Monetizes infrastructure independently of consumer UI</td>
+</tr>
+</tbody>
+</table></div>
+<p>Partnership targets would include chess coaches and academies, titled creators, federations/schools, electronic-board manufacturers, event organizers, and platforms willing to permit completed-game imports. Lichess is particularly developer-friendly through its public API and open database; Chess.com’s public API is read-only and deeper OAuth/connected-board capabilities go through its developer ecosystem, so those relationships should be treated differently. citeturn8search7turn1view6turn8search2turn8search23</p>
+<p>The <strong>anti-cheat boundary must be explicit from day one</strong>. Chess.com’s March 2026 Fair Play Policy prohibits engines, software, plugins or other position-analysis tools during games against humans, including automated blunder checking of games in progress; it explicitly distinguishes games against Chess.com bots. Lichess similarly prohibits external assistance in ongoing human games while permitting assistance in games against its AI and providing special rules for Bot API usage. citeturn16search0turn16search1</p>
+<p>Therefore the product should implement a “Fair Play Lock”:</p>
+<blockquote>
+<p><strong>Completed imported game:</strong> full analysis enabled<br></br>
+<strong>Game against this product’s AI:</strong> full tutor enabled if mode allows it<br></br>
+<strong>Lichess/Chess.com human game detected as ongoing:</strong> explanations, eval and move recommendations disabled<br></br>
+<strong>Coach lesson / study position:</strong> enabled<br></br>
+<strong>Rated human game through a board API:</strong> never expose assistance</p>
+</blockquote>
+<p>I would avoid shipping a browser extension that overlays live evaluations on Chess.com or Lichess. Even if the marketing intent were educational, it creates unacceptable cheating ambiguity and platform risk. The two platforms’ published policies are clear about ongoing assistance. citeturn16search0turn16search1</p>
+<p>Open-source licensing also needs active design rather than an afterthought. Stockfish is GPLv3; its project explicitly states that distributing Stockfish requires supplying the corresponding source or a suitable pointer to the exact source. Chessground is GPL-family software and its repository explicitly warns web integrators about source-release implications. By contrast, react-chessboard is MIT and chess.js is BSD-2-Clause. citeturn9search8turn9search1turn10search0turn9search2</p>
+<p>A proprietary company should therefore consider:</p>
+<p><strong>closed/commercial UI → react-chessboard + chess.js</strong><br></br>
+<strong>engine → Stockfish as clearly separated GPL component with full compliance</strong><br></br>
+<strong>server analysis → isolated Stockfish worker processes</strong><br></br>
+<strong>training data → Lichess CC0 where appropriate</strong><br></br>
+<strong>open-core version → license the startup-owned core permissively if ecosystem adoption is a goal</strong></p>
+<p>Running software as a server and distributing binaries create different open-source-license considerations. The exact architecture/license strategy should be reviewed by counsel before release; this report is not legal advice. Stockfish’s history of license enforcement, including its dispute with ChessBase, is a useful reminder that compliance is substantive rather than ceremonial. citeturn9search20turn9search8</p>
+<p>For imported content, avoid assuming that “it is chess, therefore all data is unrestricted.” Maintain provenance for game records, annotations, comments, engine evaluations and course material; favor clearly open datasets such as Lichess’s CC0 exports; follow external API terms; avoid copying proprietary lessons or commentary; and obtain counsel on user-generated content, privacy, minors and commercial data rights before school deployment. citeturn1view6turn8search2</p>
+<p>Moderation is modest for a solo product but becomes real once coach rooms, comments and children are introduced. The system needs reporting/blocking, controls for public/private study rooms, content retention/deletion workflows, safe defaults for minors, and prompt-injection isolation so imported comments cannot alter the system’s chess-analysis behavior.</p>
+<p>Telemetry should measure learning rather than merely session length. Useful events include:</p>
+<p><code>game_imported → mistake_opened → why_asked → visual_proof_opened → branch_created → branch_depth → returned_to_mainline → quiz_attempted → explanation_helpful → concept_seen_again → same_error_repeated</code></p>
+<p>The strongest North Star is not “number of Stockfish analyses.” A better long-run metric is something like <strong>resolved misunderstandings per weekly active learner</strong>, supported by downstream evidence such as whether the same tactical/strategic error recurs.</p>
+<p>The major risks and defenses are:</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Severity</th>
+<th>Defense</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Chess.com/other incumbent copies conversational branching</strong></td>
+<td>High</td>
+<td>Move fast on branch-native UX, personalization and data flywheel; become the best neutral debugger across platforms</td>
+</tr>
+<tr>
+<td><strong>LLM hallucinates chess facts</strong></td>
+<td>Critical</td>
+<td>Structured evidence pipeline; legal-move validator; engine verification; never use LLM as evaluator</td>
+</tr>
+<tr>
+<td><strong>Users become dependent on answers rather than learning</strong></td>
+<td>High</td>
+<td>Socratic mode, prediction-before-reveal, spaced repetition from actual mistakes</td>
+</tr>
+<tr>
+<td><strong>Weakened engine feels unnatural</strong></td>
+<td>Medium–High</td>
+<td>Human-move models such as Maia rather than Stockfish-only handicapping citeturn11search1turn18search7</td>
+</tr>
+<tr>
+<td><strong>Anti-cheat/platform conflict</strong></td>
+<td>Critical</td>
+<td>Completed-games-only integrations, Fair Play Lock, no live recommendation overlays citeturn16search0turn16search1</td>
+</tr>
+<tr>
+<td><strong>GPL/IP mistakes</strong></td>
+<td>High</td>
+<td>License inventory, SBOM, separated engine boundary, counsel, automated license scanning citeturn9search8turn9search1</td>
+</tr>
+<tr>
+<td><strong>LLM cost overwhelms subscription margin</strong></td>
+<td>Medium</td>
+<td>Client-side engine, evidence caching, small-model default, batch reviews, premium limits</td>
+</tr>
+<tr>
+<td><strong>Chess-only market ceiling</strong></td>
+<td>Medium</td>
+<td>Prove PMF first; later export counterfactual-tutor technology to other deterministic learning domains</td>
+</tr>
+<tr>
+<td><strong>Novelty churn</strong></td>
+<td>High</td>
+<td>Persistent learner memory, personalized curriculum and post-game habit rather than generic chat</td>
+</tr>
+<tr>
+<td><strong>Three-platform development burns team</strong></td>
+<td>High</td>
+<td>PWA/web first, shared domain layer, desktop wrapper, native mobile only after retention</td>
+</tr>
+<tr>
+<td><strong>Engine numbers confuse beginners</strong></td>
+<td>Medium</td>
+<td>Concepts and visual consequences before centipawn scores</td>
+</tr>
+<tr>
+<td><strong>Coach hostility / disintermediation concern</strong></td>
+<td>Medium</td>
+<td>Make coaches power users; sell collaboration rather than “replace your coach”</td>
+</tr>
+</tbody>
+</table></div>
+<p>CI/CD needs unusually rigorous chess correctness testing. Maintain a golden corpus of tactical positions with known motifs, perft/rules tests, FEN/PGN fuzz tests, engine-version regressions, explanation factuality tests, visual-arrow snapshot tests and a suite where every move named by the LLM is replayed by the rules engine. A release should fail if generated teaching text references a nonexistent defender, illegal move or unsupported tactical motif.</p>
+<h3 id="mvp-roadmap-team-budget-and-recommendation">MVP roadmap, team, budget, and recommendation</h3>
+<p>The biggest MVP mistake would be trying to deliver the entire vision at once. The minimum product needs to prove one thing:</p>
+<blockquote>
+<p><strong>Does executable what-if explanation teach a player meaningfully better than a normal engine review?</strong></p>
+</blockquote>
+<p>The MVP therefore needs only one primary journey:</p>
+<p><strong>Import completed game → choose mistake → explain mistake visually → ask arbitrary why/what-if questions → branch several moves → compare branch with actual game → return to actual game.</strong></p>
+<p>Everything else is secondary.</p>
+<p>A credible first release should include:</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Ship in MVP</th>
+<th>Defer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Responsive web/PWA board</td>
+<td>Native iOS + Android + desktop simultaneously</td>
+</tr>
+<tr>
+<td>PGN upload</td>
+<td>Rated multiplayer</td>
+</tr>
+<tr>
+<td>Chess.com/Lichess completed-game import where permitted</td>
+<td>Tournament system</td>
+</tr>
+<tr>
+<td>Every-ply immutable snapshots</td>
+<td>Social feed</td>
+</tr>
+<tr>
+<td>Persistent variation tree</td>
+<td>Marketplace</td>
+</tr>
+<tr>
+<td>Stockfish MultiPV</td>
+<td>Huge opening-course library</td>
+</tr>
+<tr>
+<td>Tactical feature extraction</td>
+<td>Full strategic neural interpretability</td>
+</tr>
+<tr>
+<td>Natural-language node Q&amp;A</td>
+<td>Voice-first interface</td>
+</tr>
+<tr>
+<td>Arrows, highlighted squares, attackers/defenders</td>
+<td>AR/3D visualization</td>
+</tr>
+<tr>
+<td>Material/exchange visualizer</td>
+<td>Spectator broadcasting</td>
+</tr>
+<tr>
+<td>“Why my move?” / “Why best move?” / “Why not X?”</td>
+<td>Generic unrestricted chatbot</td>
+</tr>
+<tr>
+<td>“What if opponent plays Y?”</td>
+<td>Live human-game assistance</td>
+</tr>
+<tr>
+<td>Return-to-mainline / compare branches</td>
+<td>Advanced CRDT collaboration</td>
+</tr>
+<tr>
+<td>Adjustable AI opponent</td>
+<td>Massive bot personality roster</td>
+</tr>
+<tr>
+<td>Basic learner profile</td>
+<td>Full long-term curriculum</td>
+</tr>
+<tr>
+<td>Local/offline engine analysis</td>
+<td>Fully local LLM on every device</td>
+</tr>
+<tr>
+<td>Telemetry and feedback</td>
+<td>Complex gamification</td>
+</tr>
+</tbody>
+</table></div>
+<p>The recommended development sequence is:</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Milestone</th>
+<th>Exit criterion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Weeks 1–3</strong></td>
+<td>Research + UX prototype</td>
+<td>25–40 real learners/coaches can navigate snapshot → branch → return without explanation</td>
+</tr>
+<tr>
+<td><strong>Weeks 4–7</strong></td>
+<td>Chess core</td>
+<td>PGN import, legal moves, immutable snapshots, branch tree, local Stockfish, evaluation caching</td>
+</tr>
+<tr>
+<td><strong>Weeks 8–11</strong></td>
+<td>Visual evidence</td>
+<td>attacker/defender maps, pins/forks, capture sequences, material deltas, annotations</td>
+</tr>
+<tr>
+<td><strong>Weeks 12–15</strong></td>
+<td>Conversational debugger</td>
+<td>node-specific Q&amp;A, “why not?”, branch creation from chat, grounded explanation verifier</td>
+</tr>
+<tr>
+<td><strong>Weeks 16–18</strong></td>
+<td>Human-like play</td>
+<td>Stockfish strength control + initial Maia/human-move mode</td>
+</tr>
+<tr>
+<td><strong>Weeks 19–21</strong></td>
+<td>Persistence + sync</td>
+<td>accounts, cloud saves, branch share links, offline/reconnect behavior</td>
+</tr>
+<tr>
+<td><strong>Weeks 22–24</strong></td>
+<td>Closed beta + monetization</td>
+<td>500–2,000 testers, subscription gate, telemetry, explanation-quality dashboard</td>
+</tr>
+<tr>
+<td><strong>Months 7–9</strong></td>
+<td>Product expansion</td>
+<td>coach collaboration, native wrapper/mobile work, stronger learner model</td>
+</tr>
+<tr>
+<td><strong>Months 10–12</strong></td>
+<td>PMF push</td>
+<td>creator/academy acquisition, API pilot, personalized curriculum, scale optimization</td>
+</tr>
+</tbody>
+</table></div>
+<p>A tiny team can build it because almost none of the difficult chess technology must be invented from scratch. The minimum serious team is:</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Initial need</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Technical founder / full-stack lead</strong></td>
+<td>Product architecture, board UX, sync, database, deployment</td>
+</tr>
+<tr>
+<td><strong>Chess/AI systems engineer</strong></td>
+<td>Stockfish, Maia/human models, feature extraction, engine orchestration, cache</td>
+</tr>
+<tr>
+<td><strong>Product/frontend engineer</strong></td>
+<td>Branch interaction, animations, visualization, mobile-responsive UX</td>
+</tr>
+<tr>
+<td><strong>Product designer</strong></td>
+<td>Part-time initially; interaction design is strategically important</td>
+</tr>
+<tr>
+<td><strong>Chess educator / titled adviser</strong></td>
+<td>Part-time; creates explanation rubric and evaluates pedagogy</td>
+</tr>
+<tr>
+<td><strong>AI/LLM engineer</strong></td>
+<td>Can initially be one of the technical founders; owns grounding/evaluation pipeline</td>
+</tr>
+<tr>
+<td><strong>Growth/content</strong></td>
+<td>Hire only after retention is demonstrated</td>
+</tr>
+<tr>
+<td><strong>Security/legal/accounting</strong></td>
+<td>Fractional/contract</td>
+</tr>
+</tbody>
+</table></div>
+<p>Do not hire a research team to train a proprietary chess engine. Stockfish already solves the “truth engine” problem at a level far beyond the target learner. Invest that money in <strong>explanation correctness, visual pedagogy, human-behavior modeling and UX</strong>. citeturn9search0turn11search1</p>
+<p>The budget depends enormously on geography and founders taking below-market compensation. A reasonable planning range is:</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Team</th>
+<th style="text-align: right;">Cash budget</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clickable prototype / technical spike, 6–10 weeks</td>
+<td>1–2 founders + contract design/chess adviser</td>
+<td style="text-align: right;"><strong>$15K–$50K</strong> remote/lean</td>
+</tr>
+<tr>
+<td>Serious six-month MVP</td>
+<td>3–5 builders</td>
+<td style="text-align: right;"><strong>$120K–$300K</strong> India/global-remote</td>
+</tr>
+<tr>
+<td>Same MVP with US-market salaries</td>
+<td>3–5 builders</td>
+<td style="text-align: right;"><strong>$450K–$900K</strong></td>
+</tr>
+<tr>
+<td>Production year</td>
+<td>6–8 people</td>
+<td style="text-align: right;"><strong>$400K–$1.2M</strong> global-remote, potentially <strong>$1.2M–$2.5M+</strong> US-heavy</td>
+</tr>
+</tbody>
+</table></div>
+<p>These are my planning estimates rather than market salary survey figures. They exclude founder equity, major paid acquisition and unusual legal expenses.</p>
+<p>Cloud cost should be modeled per learning event rather than per user:</p>
+<p>[ \text{LLM cost/month} = \text{active learners} \times \text{positions explained per learner} \times \text{explanations per position} \times \text{blended model cost per explanation} ]</p>
+<p>For example, assuming <strong>10K active learners × 10 analyzed positions × 2 explanations × $0.01 blended inference cost = $2,000/month</strong> for language-model inference. If the blended explanation cost turns out to be $0.03, the same workload costs $6,000. Those cents-per-call figures are planning assumptions, deliberately not tied to a particular vendor whose pricing may change.</p>
+<p>The correct optimization is architectural: compute legal state locally, run basic Stockfish locally, cache server evaluations, send only structured evidence to the LLM, reuse explanations for identical instructional patterns when appropriate, and route simple questions to inexpensive models. A frontier model should be an escalation path for genuinely ambiguous strategic explanations, not the default for “which pieces defend f4?”</p>
+<p>A sensible beta infrastructure budget is approximately <strong>$2K–$10K/month at 10K MAU</strong> and perhaps <strong>$15K–$75K/month around 100K MAU</strong>, depending mostly on LLM usage and how much engine calculation is kept client-side. Those are planning envelopes rather than cloud-provider quotations.</p>
+<p>The first metrics I would require before expanding the team are:</p>
+<p><strong>Activation:</strong> ≥50% of imported-game users reach an explanation and create at least one branch.</p>
+<p><strong>Core engagement:</strong> ≥25% of activated users create three or more counterfactual branches during their first week.</p>
+<p><strong>Learning value:</strong> users rate ≥70–80% of sampled explanations as “I understand the mistake now,” with independent chess-expert audits for factual correctness.</p>
+<p><strong>Retention:</strong> strong learners return after their next real game rather than only exploring the initial novelty.</p>
+<p><strong>Paid signal:</strong> users voluntarily hit a meaningful limit and convert for <em>explanation depth/personalization</em>, rather than paying merely because ordinary engine analysis was artificially restricted.</p>
+<p>My strongest product recommendation is to brand the experience around <strong>debugging</strong>, not merely “AI coach.” “AI chess coach” is becoming commoditized—Chessvia, Caissa, Noctie, DecodeChess and others already use adjacent language. The interaction model is materially different:</p>
+<blockquote>
+<p><strong>Play → Breakpoint → Inspect → Ask Why → Fork Timeline → Run It → Compare → Return.</strong></p>
+</blockquote>
+<p>That mental model is immediately understandable to software engineers and, with friendlier language such as “Explore,” also works for ordinary chess learners.</p>
+<p>A compelling long-term screen would look approximately like:</p>
+<pre class="text"><code>┌──────────────── CHESS BOARD ───────────────┐  ┌──── TIMELINE / BRANCHES ────┐
+│                                            │  │ Actual game                 │
+│       ← arrows / threats / defenders →    │  │ 16...Bxd6                   │
+│                                            │  │ 17.d4                       │
+│           Current snapshot: Move 19        │  │ 18...Bd6                    │
+│                                            │  │ ├─ 19.Rg4?  ← actual        │
+│                                            │  │ │   └─ ...Bxa3              │
+│                                            │  │ │                           │
+│                                            │  │ └─ 19.Na3! ← what-if       │
+│                                            │  │     ├─ ...Bxf4              │
+│                                            │  │     │   └─ gxf4             │
+│                                            │  │     └─ ...Be7               │
+└────────────────────────────────────────────┘  └─────────────────────────────┘
+
+ Why was Rg4 wrong?
+ ┌─────────────────────────────────────────────────────────────────────────────┐
+ │ You saved the more valuable piece, but the rook was defended.              │
+ │                                                                             │
+ │ Save rook:   Bxa3          → lose knight = -3                              │
+ │ Save knight: Bxf4 gxf4     → rook exchanged for bishop = -2                │
+ │                                                                             │
+ │ [Show attacks] [Animate trade] [What if Black doesn&#39;t capture?]            │
+ │ [Play this branch] [Quiz me] [Back to my game]                             │
+ └─────────────────────────────────────────────────────────────────────────────┘</code></pre>
+<p>That is meaningfully different from an evaluation bar plus “Best move: Na3.”</p>
+<p>The recommendation is therefore <strong>go</strong>, but with a disciplined thesis:</p>
+<p><strong>Build the branch debugger, not another chess site.</strong><br></br>
+<strong>Use Stockfish for truth, human-move models for realism, and LLMs for teaching.</strong><br></br>
+<strong>Make every explanation visually provable and every what-if executable.</strong><br></br>
+<strong>Import users’ existing games instead of asking them to abandon Chess.com/Lichess.</strong><br></br>
+<strong>Open-source enough of the local/core infrastructure to attract developers and coaches while monetizing cloud tutoring, synchronization and collaboration.</strong><br></br>
+<strong>Prove retention before building native apps or multiplayer.</strong></p>
+<p>If this works, the most valuable asset may eventually be neither the engine nor the chess UI. It will be the system that converts:</p>
+<blockquote>
+<p><strong>a state → a mistake → a user question → a counterfactual → verified evidence → an explanation → a learned concept</strong></p>
+</blockquote>
+<p>into a reusable tutoring primitive.</p>
+<p>That is the piece that potentially travels beyond chess.</p>
+<h3 id="selected-primary-sources-and-links">Selected primary sources and links</h3>
+<p>The report prioritized product documentation, official company pages, research papers, GitHub repositories, YC, FIDE and high-quality reporting. Current product/pricing/features should still be rechecked immediately before investment or implementation decisions because they can change.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Why it matters</th>
+<th>Link</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Chess.com Q1 2026 report</td>
+<td>Current member, DAU, ChessKid and Chessable scale</td>
+<td><a href="https://www.chess.com/board-reports/2026-q1" rel="noreferrer noopener">https://www.chess.com/board-reports/2026-q1</a> citeturn19search2</td>
+</tr>
+<tr>
+<td>Chess.com Analysis</td>
+<td>Game Review / analysis functionality</td>
+<td><a href="https://www.chess.com/analysis" rel="noreferrer noopener">https://www.chess.com/analysis</a> citeturn8search0</td>
+</tr>
+<tr>
+<td>Chess.com Fair Play Policy</td>
+<td>Critical anti-cheat integration constraints</td>
+<td><a href="https://www.chess.com/legal/fair-play" rel="noreferrer noopener">https://www.chess.com/legal/fair-play</a> citeturn16search0</td>
+</tr>
+<tr>
+<td>Chess.com Developer Community / PubAPI</td>
+<td>Integration boundaries</td>
+<td><a href="https://www.chess.com/club/chess-com-developer-community" rel="noreferrer noopener">https://www.chess.com/club/chess-com-developer-community</a> citeturn8search23</td>
+</tr>
+<tr>
+<td>Lichess About</td>
+<td>Free/open model, Studies, platform usage</td>
+<td><a href="https://lichess.org/about" rel="noreferrer noopener">https://lichess.org/about</a> citeturn1view5</td>
+</tr>
+<tr>
+<td>Lichess source</td>
+<td>Open-source architecture</td>
+<td><a href="https://lichess.org/source" rel="noreferrer noopener">https://lichess.org/source</a> citeturn1view4</td>
+</tr>
+<tr>
+<td>Lichess API documentation/tips</td>
+<td>Integration opportunity</td>
+<td><a href="https://lichess.org/page/api-tips" rel="noreferrer noopener">https://lichess.org/page/api-tips</a> citeturn8search7</td>
+</tr>
+<tr>
+<td>Lichess open database</td>
+<td>CC0 games and evaluated positions</td>
+<td><a href="https://database.lichess.org/" rel="noreferrer noopener">https://database.lichess.org/</a> citeturn1view6</td>
+</tr>
+<tr>
+<td>Lichess Fair Play</td>
+<td>External-assistance rules</td>
+<td><a href="https://lichess.org/page/fair-play" rel="noreferrer noopener">https://lichess.org/page/fair-play</a> citeturn16search1</td>
+</tr>
+<tr>
+<td>DecodeChess</td>
+<td>Natural-language chess explanation benchmark</td>
+<td><a href="https://decodechess.com/" rel="noreferrer noopener">https://decodechess.com/</a> citeturn1view2</td>
+</tr>
+<tr>
+<td>DecodeChess natural-language analysis</td>
+<td>Detailed explanation capabilities</td>
+<td><a href="https://decodechess.com/natural-language-chess-analysis/" rel="noreferrer noopener">https://decodechess.com/natural-language-chess-analysis/</a> citeturn1view1</td>
+</tr>
+<tr>
+<td>Aimchess</td>
+<td>Personalized training and pricing benchmark</td>
+<td><a href="https://aimchess.com/" rel="noreferrer noopener">https://aimchess.com/</a> citeturn1view3</td>
+</tr>
+<tr>
+<td>Noctie</td>
+<td>Human-like sparring benchmark</td>
+<td><a href="https://noctie.ai/" rel="noreferrer noopener">https://noctie.ai/</a> citeturn13search1</td>
+</tr>
+<tr>
+<td>Noctie pricing</td>
+<td>Comparable paid willingness-to-pay</td>
+<td><a href="https://noctie.ai/pricing/" rel="noreferrer noopener">https://noctie.ai/pricing/</a> citeturn13search10</td>
+</tr>
+<tr>
+<td>Chessvia</td>
+<td>Conversational/voice AI coaching competitor</td>
+<td><a href="https://www.chessvia.ai/" rel="noreferrer noopener">https://www.chessvia.ai/</a> citeturn6search2</td>
+</tr>
+<tr>
+<td>Take Take Take</td>
+<td>Emerging social/play/learn competitor</td>
+<td><a href="https://www.taketaketake.com/" rel="noreferrer noopener">https://www.taketaketake.com/</a> citeturn5search0</td>
+</tr>
+<tr>
+<td>Reuters on Take Take Take</td>
+<td>Independent 2026 competitive-landscape reporting</td>
+<td><a href="https://www.reuters.com/business/chess-carlsen-start-up-takes-aim-chesscom-with-move-into-play-learn-tools-2026-04-06/" rel="noreferrer noopener">https://www.reuters.com/business/chess-carlsen-start-up-takes-aim-chesscom-with-move-into-play-learn-tools-2026-04-06/</a> citeturn20news12</td>
+</tr>
+<tr>
+<td>Endgame.ai</td>
+<td>Emerging AI chess platform</td>
+<td><a href="https://endgame.ai/" rel="noreferrer noopener">https://endgame.ai/</a> citeturn5search1</td>
+</tr>
+<tr>
+<td>Stockfish</td>
+<td>Core open-source engine</td>
+<td><a href="https://stockfishchess.org/" rel="noreferrer noopener">https://stockfishchess.org/</a> citeturn9search0</td>
+</tr>
+<tr>
+<td>Stockfish UCI documentation</td>
+<td>Elo limiting, Skill Level, integration details</td>
+<td><a href="https://official-stockfish.github.io/docs/stockfish-wiki/UCI-Protocol-and-Stockfish-Commands.html" rel="noreferrer noopener">https://official-stockfish.github.io/docs/stockfish-wiki/UCI-Protocol-and-Stockfish-Commands.html</a> citeturn18search7</td>
+</tr>
+<tr>
+<td>Stockfish licensing</td>
+<td>GPL obligations</td>
+<td><a href="https://stockfishchess.org/about/" rel="noreferrer noopener">https://stockfishchess.org/about/</a> citeturn9search8</td>
+</tr>
+<tr>
+<td>react-chessboard</td>
+<td>Proprietary-friendly React board option</td>
+<td><a href="https://github.com/Clariity/react-chessboard" rel="noreferrer noopener">https://github.com/Clariity/react-chessboard</a> citeturn10search0</td>
+</tr>
+<tr>
+<td>chess.js</td>
+<td>Deterministic rules/move validation</td>
+<td><a href="https://github.com/jhlywa/chess.js" rel="noreferrer noopener">https://github.com/jhlywa/chess.js</a> citeturn9search2</td>
+</tr>
+<tr>
+<td>En Croissant</td>
+<td>Open-source desktop chess reference</td>
+<td><a href="https://github.com/franciscoBSalgueiro/en-croissant" rel="noreferrer noopener">https://github.com/franciscoBSalgueiro/en-croissant</a> citeturn12search12</td>
+</tr>
+<tr>
+<td>Maia</td>
+<td>Human-like chess AI research/code</td>
+<td><a href="https://github.com/CSSLab/maia-chess" rel="noreferrer noopener">https://github.com/CSSLab/maia-chess</a> citeturn12search2</td>
+</tr>
+<tr>
+<td>Maia-2</td>
+<td>Skill-aware human move modeling</td>
+<td><a href="https://github.com/CSSLab/maia2" rel="noreferrer noopener">https://github.com/CSSLab/maia2</a> citeturn12search6</td>
+</tr>
+<tr>
+<td>Automated Chess Commentator</td>
+<td>Foundational neural commentary work</td>
+<td>ACL Anthology/project record surfaced in research citeturn11search0</td>
+</tr>
+<tr>
+<td>Concept-guided Chess Commentary</td>
+<td>Recent concept-grounded explainability research</td>
+<td>NAACL/academic source surfaced in research citeturn11search23turn11search4</td>
+</tr>
+<tr>
+<td>FIDE Smart Moves Summit</td>
+<td>FIDE’s 600–800M global-player estimate and AI-in-education context</td>
+<td><a href="https://www.fide.com/smart-moves-summit-sets-out-global-vision-for-chess-in-education/" rel="noreferrer noopener">https://www.fide.com/smart-moves-summit-sets-out-global-vision-for-chess-in-education/</a> citeturn19search3</td>
+</tr>
+<tr>
+<td>YC Requests for Startups, Fall 2026</td>
+<td>Current YC AI-tutoring thesis</td>
+<td><a href="https://www.ycombinator.com/rfs" rel="noreferrer noopener">https://www.ycombinator.com/rfs</a> citeturn15search1</td>
+</tr>
+<tr>
+<td>Chess.com acquisition of Play Magnus</td>
+<td>Strategic M&amp;A precedent and ecosystem consolidation</td>
+<td><a href="https://www.chess.com/news/view/chesscom-acquires-pmg" rel="noreferrer noopener">https://www.chess.com/news/view/chesscom-acquires-pmg</a> citeturn20search0</td>
+</tr>
+<tr>
+<td>FIDE on Play Magnus listing</td>
+<td>Historical valuation, registered users and paid subscribers</td>
+<td><a href="https://www.fide.com/play-magnus-listed-on-oslo-stock-exchange/" rel="noreferrer noopener">https://www.fide.com/play-magnus-listed-on-oslo-stock-exchange/</a> citeturn20search9</td>
+</tr>
+</tbody>
+</table></div>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav><a href="#interactive-explainable-chess-tutordebugger-product-market-technical-and-startup-research">Interactive, Explainable Chess Tutor/Debugger: Product, Market, Technical and Startup Research</a></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Snapshot: September 5, 2026</span></footer>
+</div>
+</body></html>

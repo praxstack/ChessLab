@@ -1,0 +1,20 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+node_modules/
+dist/
+coverage/
+__pycache__/
+.venv/
+.agents/skills/
+.codex/skills
+.claude/skills/
+.cursor/skills
+.gstack/
+.context/
+.scratch/
+
+# Local browser downloads, caches and provider diagnostics.
+.playwright-mcp/
+design/**/*.stderr.txt

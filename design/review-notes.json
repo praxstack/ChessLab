@@ -1,0 +1,19 @@
+{
+  "01-conversation": "The writable follow-up and return anchor are the right emphasis. The board is only illustrative; use an exact legal position in the prototype. Keep the selected branch label synchronized with the displayed position.",
+  "02-home": "The three entry points are clear. The sample saved study and suggested lesson count are invented illustration, not existing user history or a delivered course.",
+  "03-game-setup": "Difficulty is presented without pretending the bot has a calibrated human Elo. Replace the small brown-board preview with the accepted blue theme when implemented.",
+  "04-import": "The preview communicates import well. Player names and game metadata are example content, not a verified imported game. Preserve the entire existing study if parsing fails.",
+  "05-play": "Pause and ask is discoverable. The board should be larger and the duplicated Play navigation entry removed in the real design. Generated moves are illustrative.",
+  "06-review": "Asking for the learner prediction is useful. Generated chart numbers and the named match are not real analysis of your recording. Use one selected turning point before adding a dense dashboard.",
+  "07-your-idea": "The prediction field and original-position thumbnail support the learning loop. The generated title and coordinates are illustrative, and an actual legal board must replace them.",
+  "08-opponent-reply": "The nested breadcrumb expresses the intended interaction. Generated candidate replies, evaluations and explanations are not verified chess evidence. Offer only legal moves for the side to move.",
+  "09-compare": "Two boards and shared stepping controls make comparison clear. The generated image duplicates Played line over the right board; the correct right-hand label is Your alternative. The explanatory text must be rebuilt from verified evidence.",
+  "10-return": "Saved branches stay visible after returning. A real return must restore the exact original node and its history. Show Resume AI game or Continue review according to the session type, not both indiscriminately.",
+  "11-notebook": "The takeaway, saved questions, reopen and export actions belong together. The generated note is placeholder text, not a validated chess explanation. Public sharing is not part of the first prototype.",
+  "12-practice": "The prediction-before-hint sequence is useful, but the generated board places the kings on adjacent squares, which is illegal. Do not use this image as a chess exercise. Replace the board with an educator-reviewed legal position before implementing practice.",
+  "13-progress": "Reviewed, tried again and still unclear are more useful early measures than promised rating gains. All counts and learner quotations in this image are sample data. Completion is not proof of mastery.",
+  "14-mobile": "The editable voice transcript and persistent return action are useful. Generated chess dialogue is illustrative. Keep both text and voice usable; voice starts only after an explicit user action.",
+  "15-recovery": "These are three separate states, not three errors that must appear together. Preserve the full existing study on invalid import. Local save failure is the first-build concern; the image mentions cloud save, which remains a future option.",
+  "16-accessibility": "Settings need real keyboard, contrast and screen-reader behavior behind them. A mockup cannot establish accessibility compliance.",
+  "17-pricing": "This is a pricing research concept only. No available paid plan, allowance, checkout or willingness-to-pay evidence is implied."
+}

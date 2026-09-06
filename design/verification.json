@@ -1,0 +1,36 @@
+{
+  "checked_at_utc": "2026-09-06T20:32:14.379628+00:00",
+  "manifest_sha256": "c4e23e6efbc598dd41536257325b25d118918a91a77328bcdc71c3710871e5da",
+  "static_check": "PASS: 23 HTML pages, 335 local links, exactly 17 gallery cards, 17 image receipts and image hashes, full-duration video and audio",
+  "browser_check": {
+    "surface": "Codex in-app browser",
+    "viewport_width": 1280,
+    "pages_checked": 23,
+    "horizontal_overflow_pages": 0,
+    "broken_completed_images": 0,
+    "search_voice_results": 1,
+    "search_no_match_results": 0,
+    "search_whitespace_results": 17,
+    "scenario_navigation": "Passed",
+    "video_metadata_duration_seconds": 919.583333,
+    "video_error": null
+  },
+  "limits": [
+    "Desktop browser checks only; mobile and screen-reader behavior not tested in this run.",
+    "Mockup chess positions are not legal-state validated.",
+    "Video metadata and sampled frames checked; no full audio transcript or complete real-time playback certification.",
+    "No chess application or application E2E exists."
+  ],
+  "repository_checks": {
+    "just test": "passed",
+    "just check": "blocked by pre-existing global gstack-cso skill hash drift; manifest not changed",
+    "openspec validate --all --strict --no-interactive": "passed separately",
+    "git diff --check": "passed separately"
+  },
+  "frame_study_check": {
+    "checked_at_utc": "2026-09-06T20:41:05.405311+00:00",
+    "static_check": "PASS: 27 HTML pages, 651 local links, 150 exact-time frames, 19 contact sheets, image receipts and hashes, full video duration and audio",
+    "browser_check": "Four added pages checked at 1280px: no horizontal overflow or broken completed images; Frame study navigation and expandable atlas passed; 150 full-frame links and 19 sheets present. Earlier 23-page browser receipt retained above.",
+    "analysis_scope": "Own visual study of selected frames across full duration, with one-second settings sampling. Not continuous real-time playback or a complete audio review."
+  }
+}

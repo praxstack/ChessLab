@@ -1,0 +1,282 @@
+{
+  "session_id": "01a07858-7f60-7f72-91d2-263c1d00653e",
+  "images": [
+    {
+      "scenario": "01-conversation",
+      "tool": "image_gen",
+      "provider": "Grok Imagine via authenticated Grok Build CLI",
+      "source_path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/2.jpg",
+      "local_path": "mockups/01-conversation.jpg",
+      "sha256": "41695223dd1250ddd61b8ee52e19442835c3266b8cf3bf75c0961fc99a0e6f71",
+      "tool_receipt": [
+        {
+          "path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/2.jpg",
+          "filename": "2.jpg",
+          "session_folder": "images",
+          "message": "Image generated and saved to /Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/2.jpg. Do not read or re-display it, and do not describe how it appears to the user."
+        }
+      ]
+    },
+    {
+      "scenario": "02-home",
+      "tool": "image_gen",
+      "provider": "Grok Imagine via authenticated Grok Build CLI",
+      "source_path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/3.jpg",
+      "local_path": "mockups/02-home.jpg",
+      "sha256": "378e0303d85deda2a3fb2c03f7a025449f1e27553cd11ad4409d6df74ae4ea9f",
+      "tool_receipt": [
+        {
+          "path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/3.jpg",
+          "filename": "3.jpg",
+          "session_folder": "images",
+          "message": "Image generated and saved to /Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/3.jpg. Do not read or re-display it, and do not describe how it appears to the user."
+        }
+      ]
+    },
+    {
+      "scenario": "03-game-setup",
+      "tool": "image_gen",
+      "provider": "Grok Imagine via authenticated Grok Build CLI",
+      "source_path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/5.jpg",
+      "local_path": "mockups/03-game-setup.jpg",
+      "sha256": "75133066f4bc828b3abb0695c2e9ce4b7d6230fb3410c9487ea6f8e55fc68206",
+      "tool_receipt": [
+        {
+          "path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/5.jpg",
+          "filename": "5.jpg",
+          "session_folder": "images",
+          "message": "Image generated and saved to /Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/5.jpg. Do not read or re-display it, and do not describe how it appears to the user."
+        }
+      ]
+    },
+    {
+      "scenario": "04-import",
+      "tool": "image_gen",
+      "provider": "Grok Imagine via authenticated Grok Build CLI",
+      "source_path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/4.jpg",
+      "local_path": "mockups/04-import.jpg",
+      "sha256": "d30387addfe7536ccc0df17381f1826ecb99e61b8ff9f0f0f355b6eca67eb3a8",
+      "tool_receipt": [
+        {
+          "path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/4.jpg",
+          "filename": "4.jpg",
+          "session_folder": "images",
+          "message": "Image generated and saved to /Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/4.jpg. Do not read or re-display it, and do not describe how it appears to the user."
+        }
+      ]
+    },
+    {
+      "scenario": "05-play",
+      "tool": "image_gen",
+      "provider": "Grok Imagine via authenticated Grok Build CLI",
+      "source_path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/6.jpg",
+      "local_path": "mockups/05-play.jpg",
+      "sha256": "d6f4dfc97be01a256b5a35ee8102fc3c98715f2a014ba922126410c673245f24",
+      "tool_receipt": [
+        {
+          "path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/6.jpg",
+          "filename": "6.jpg",
+          "session_folder": "images",
+          "message": "Image generated and saved to /Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/6.jpg. Do not read or re-display it, and do not describe how it appears to the user."
+        }
+      ]
+    },
+    {
+      "scenario": "06-review",
+      "tool": "image_gen",
+      "provider": "Grok Imagine via authenticated Grok Build CLI",
+      "source_path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/7.jpg",
+      "local_path": "mockups/06-review.jpg",
+      "sha256": "c5da886b2fc1abcdbd3e33c572775b10957f8673e5cf84fd9620b885dd11b4bb",
+      "tool_receipt": [
+        {
+          "path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/7.jpg",
+          "filename": "7.jpg",
+          "session_folder": "images",
+          "message": "Image generated and saved to /Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/7.jpg. Do not read or re-display it, and do not describe how it appears to the user."
+        }
+      ]
+    },
+    {
+      "scenario": "07-your-idea",
+      "tool": "image_gen",
+      "provider": "Grok Imagine via authenticated Grok Build CLI",
+      "source_path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/9.jpg",
+      "local_path": "mockups/07-your-idea.jpg",
+      "sha256": "d1990839b1927467162cc3f16d8936cfadfbb2304e1621de15553b168ed7b8bd",
+      "tool_receipt": [
+        {
+          "path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/9.jpg",
+          "filename": "9.jpg",
+          "session_folder": "images",
+          "message": "Image generated and saved to /Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/9.jpg. Do not read or re-display it, and do not describe how it appears to the user."
+        }
+      ]
+    },
+    {
+      "scenario": "08-opponent-reply",
+      "tool": "image_gen",
+      "provider": "Grok Imagine via authenticated Grok Build CLI",
+      "source_path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/8.jpg",
+      "local_path": "mockups/08-opponent-reply.jpg",
+      "sha256": "d29b742d5860272307774278038be737899a09c875e3ea1abbd82942f54ec3a0",
+      "tool_receipt": [
+        {
+          "path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/8.jpg",
+          "filename": "8.jpg",
+          "session_folder": "images",
+          "message": "Image generated and saved to /Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/8.jpg. Do not read or re-display it, and do not describe how it appears to the user."
+        }
+      ]
+    },
+    {
+      "scenario": "09-compare",
+      "tool": "image_gen",
+      "provider": "Grok Imagine via authenticated Grok Build CLI",
+      "source_path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/10.jpg",
+      "local_path": "mockups/09-compare.jpg",
+      "sha256": "f88705dc0cf9489144a863678e1cf6d2a9e90908cca086ee021c26f8ba348194",
+      "tool_receipt": [
+        {
+          "path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/10.jpg",
+          "filename": "10.jpg",
+          "session_folder": "images",
+          "message": "Image generated and saved to /Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/10.jpg. Do not read or re-display it, and do not describe how it appears to the user."
+        }
+      ]
+    },
+    {
+      "scenario": "10-return",
+      "tool": "image_gen",
+      "provider": "Grok Imagine via authenticated Grok Build CLI",
+      "source_path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/11.jpg",
+      "local_path": "mockups/10-return.jpg",
+      "sha256": "86149e9f9b13e2a5f1b064bcae905919288c0e356bc3ccd9f797f88ccc264483",
+      "tool_receipt": [
+        {
+          "path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/11.jpg",
+          "filename": "11.jpg",
+          "session_folder": "images",
+          "message": "Image generated and saved to /Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/11.jpg. Do not read or re-display it, and do not describe how it appears to the user."
+        }
+      ]
+    },
+    {
+      "scenario": "11-notebook",
+      "tool": "image_gen",
+      "provider": "Grok Imagine via authenticated Grok Build CLI",
+      "source_path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/12.jpg",
+      "local_path": "mockups/11-notebook.jpg",
+      "sha256": "bafe9b765cabb22bbd636639ce0aafb38d884378496267503cbf168da93fa22c",
+      "tool_receipt": [
+        {
+          "path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/12.jpg",
+          "filename": "12.jpg",
+          "session_folder": "images",
+          "message": "Image generated and saved to /Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/12.jpg. Do not read or re-display it, and do not describe how it appears to the user."
+        }
+      ]
+    },
+    {
+      "scenario": "12-practice",
+      "tool": "image_gen",
+      "provider": "Grok Imagine via authenticated Grok Build CLI",
+      "source_path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/19.jpg",
+      "local_path": "mockups/12-practice.jpg",
+      "sha256": "3168d9a6594370da1b8689c0f673abb0f051bfb8c0933f416e1c8bc6db2a1ea2",
+      "tool_receipt": [
+        {
+          "type": "ImageGen",
+          "path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/19.jpg",
+          "filename": "19.jpg",
+          "session_folder": "images"
+        }
+      ],
+      "supersedes_source_path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/13.jpg"
+    },
+    {
+      "scenario": "13-progress",
+      "tool": "image_gen",
+      "provider": "Grok Imagine via authenticated Grok Build CLI",
+      "source_path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/15.jpg",
+      "local_path": "mockups/13-progress.jpg",
+      "sha256": "ae1ded359040f32f6324bc7106337a9ede3c8d2ef212921a56a42146ee3fc375",
+      "tool_receipt": [
+        {
+          "path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/15.jpg",
+          "filename": "15.jpg",
+          "session_folder": "images",
+          "message": "Image generated and saved to /Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/15.jpg. Do not read or re-display it, and do not describe how it appears to the user."
+        }
+      ]
+    },
+    {
+      "scenario": "14-mobile",
+      "tool": "image_gen",
+      "provider": "Grok Imagine via authenticated Grok Build CLI",
+      "source_path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/14.jpg",
+      "local_path": "mockups/14-mobile.jpg",
+      "sha256": "e7b9530e831cd4ba695fc80830402828fd9ffdcaba1f5fde7451cccc1e306d23",
+      "tool_receipt": [
+        {
+          "path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/14.jpg",
+          "filename": "14.jpg",
+          "session_folder": "images",
+          "message": "Image generated and saved to /Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/14.jpg. Do not read or re-display it, and do not describe how it appears to the user."
+        }
+      ]
+    },
+    {
+      "scenario": "15-recovery",
+      "tool": "image_gen",
+      "provider": "Grok Imagine via authenticated Grok Build CLI",
+      "source_path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/16.jpg",
+      "local_path": "mockups/15-recovery.jpg",
+      "sha256": "6187d524903237aab46e708986ccea89128663239ce0d959b46de7a64940876b",
+      "tool_receipt": [
+        {
+          "path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/16.jpg",
+          "filename": "16.jpg",
+          "session_folder": "images",
+          "message": "Image generated and saved to /Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/16.jpg. Do not read or re-display it, and do not describe how it appears to the user."
+        }
+      ]
+    },
+    {
+      "scenario": "16-accessibility",
+      "tool": "image_gen",
+      "provider": "Grok Imagine via authenticated Grok Build CLI",
+      "source_path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/20.jpg",
+      "local_path": "mockups/16-accessibility.jpg",
+      "sha256": "b0c8267cbc9207bb916ec37c2124d4dbc0b35ce3dace62a6f285825c998cb777",
+      "tool_receipt": [
+        {
+          "type": "ImageGen",
+          "path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/20.jpg",
+          "filename": "20.jpg",
+          "session_folder": "images"
+        }
+      ],
+      "supersedes_source_path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/17.jpg"
+    },
+    {
+      "scenario": "17-pricing",
+      "tool": "image_gen",
+      "provider": "Grok Imagine via authenticated Grok Build CLI",
+      "source_path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/21.jpg",
+      "local_path": "mockups/17-pricing.jpg",
+      "sha256": "8fbe53136f8492ba96f7a3e0c7fb56b6e79d36adbfd7da6f4f8d736dbe78d00c",
+      "tool_receipt": [
+        {
+          "type": "ImageGen",
+          "path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/21.jpg",
+          "filename": "21.jpg",
+          "session_folder": "images"
+        }
+      ],
+      "supersedes_source_path": "/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/18.jpg"
+    }
+  ],
+  "note": "Concepts only; board state and text may be inaccurate. Initial exploratory image excluded; practice, accessibility and pricing received one focused refinement pass.",
+  "mapping_review": "Three pairs in the CLI final mapping were reversed by concurrent completion; corrected against actual images and tool receipts."
+}

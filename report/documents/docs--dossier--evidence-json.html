@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Current setup verification snapshot · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Current setup verification snapshot</h1><p class="lede">docs/dossier/evidence.json</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Current setup verification snapshot"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/docs/dossier/evidence.json" download>Download original file ↗</a></div><p class="source-meta">docs/dossier/evidence.json<br>SHA-256: 6ca8bbaba56eecc6ce96f7f88641376285b2d2fdb54571dbf46e99f5b827433f</p><pre><code>{
+  &quot;checked_at&quot;: &quot;2026-09-05T15:58:54.725260+00:00&quot;,
+  &quot;scope&quot;: &quot;Repository/setup snapshot at start of dossier; not chess application evidence. Git status includes the new dossier working files.&quot;,
+  &quot;checks&quot;: [
+    {
+      &quot;command&quot;: &quot;just check&quot;,
+      &quot;exit_code&quot;: 0,
+      &quot;output&quot;: &quot;PASS: 180 skill links and 2 agent directory mirrors; entrypoint hashes match\n✓ change/explore-one-mistake\nTotals: 1 passed, 0 failed (1 items)\npython3 scripts/setup_skills.py --check\nopenspec validate --all --strict --no-interactive\ngit diff --check\n&quot;
+    },
+    {
+      &quot;command&quot;: &quot;just test&quot;,
+      &quot;exit_code&quot;: 0,
+      &quot;output&quot;: &quot;PASS: link creation, idempotence, conflict preservation, read-only checks\npython3 scripts/setup_skills.py --self-test\n&quot;
+    },
+    {
+      &quot;command&quot;: &quot;git status --short&quot;,
+      &quot;exit_code&quot;: 0,
+      &quot;output&quot;: &quot;A  .gitattributes\nA  .gitignore\nA  AGENTS.md\nA  CLAUDE.md\nA  CONTEXT.md\nA  README.md\nA  docs/agents/domain.md\nA  docs/agents/issue-tracker.md\nA  docs/agents/setup.md\nA  docs/agents/triage-labels.md\nA  docs/research/assessment.md\nA  docs/research/sources/learning-products.md\nA  docs/research/sources/provenance.json\nA  docs/research/sources/startup-research.md\nA  docs/research/sources/startup-research.pdf\nA  justfile\nA  openspec/changes/archive/.gitkeep\nA  openspec/changes/explore-one-mistake/.openspec.yaml\nA  openspec/changes/explore-one-mistake/design.md\nA  openspec/changes/explore-one-mistake/proposal.md\nA  openspec/changes/explore-one-mistake/specs/mistake-exploration/spec.md\nA  openspec/changes/explore-one-mistake/tasks.md\nA  openspec/config.yaml\nA  openspec/specs/.gitkeep\nA  scripts/setup_skills.py\nA  skills.local.json\n?? docs/dossier/\n?? docs/research/sources/IMG_0859.png\n?? docs/research/sources/IMG_0860.png\n?? docs/research/sources/original-conversation.json\n?? docs/research/sources/original-conversation.md\n&quot;
+    },
+    {
+      &quot;command&quot;: &quot;git symbolic-ref --short HEAD&quot;,
+      &quot;exit_code&quot;: 0,
+      &quot;output&quot;: &quot;main\n&quot;
+    },
+    {
+      &quot;command&quot;: &quot;git rev-parse --verify HEAD&quot;,
+      &quot;exit_code&quot;: 128,
+      &quot;output&quot;: &quot;fatal: Needed a single revision\n&quot;
+    },
+    {
+      &quot;command&quot;: &quot;git remote -v&quot;,
+      &quot;exit_code&quot;: 0,
+      &quot;output&quot;: &quot;&quot;
+    }
+  ]
+}</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Snapshot: September 5, 2026</span></footer>
+</div>
+</body></html>

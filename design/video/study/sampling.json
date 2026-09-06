@@ -1,0 +1,442 @@
+{
+  "source": "/Users/prax/Desktop/Screen Recording 2026-09-07 at 12.48.45\u202fAM.mov",
+  "strategy": "Exact timestamp seeks every 10 seconds, plus final second. Coarse whole-duration visual coverage; transitions inspected separately.",
+  "frames": [
+    {
+      "seconds": 0,
+      "image": "frames/0000.jpg"
+    },
+    {
+      "seconds": 10,
+      "image": "frames/0010.jpg"
+    },
+    {
+      "seconds": 20,
+      "image": "frames/0020.jpg"
+    },
+    {
+      "seconds": 30,
+      "image": "frames/0030.jpg"
+    },
+    {
+      "seconds": 40,
+      "image": "frames/0040.jpg"
+    },
+    {
+      "seconds": 50,
+      "image": "frames/0050.jpg"
+    },
+    {
+      "seconds": 60,
+      "image": "frames/0060.jpg"
+    },
+    {
+      "seconds": 70,
+      "image": "frames/0070.jpg"
+    },
+    {
+      "seconds": 80,
+      "image": "frames/0080.jpg"
+    },
+    {
+      "seconds": 90,
+      "image": "frames/0090.jpg"
+    },
+    {
+      "seconds": 100,
+      "image": "frames/0100.jpg"
+    },
+    {
+      "seconds": 110,
+      "image": "frames/0110.jpg"
+    },
+    {
+      "seconds": 120,
+      "image": "frames/0120.jpg"
+    },
+    {
+      "seconds": 130,
+      "image": "frames/0130.jpg"
+    },
+    {
+      "seconds": 140,
+      "image": "frames/0140.jpg"
+    },
+    {
+      "seconds": 150,
+      "image": "frames/0150.jpg"
+    },
+    {
+      "seconds": 160,
+      "image": "frames/0160.jpg"
+    },
+    {
+      "seconds": 170,
+      "image": "frames/0170.jpg"
+    },
+    {
+      "seconds": 180,
+      "image": "frames/0180.jpg"
+    },
+    {
+      "seconds": 190,
+      "image": "frames/0190.jpg"
+    },
+    {
+      "seconds": 200,
+      "image": "frames/0200.jpg"
+    },
+    {
+      "seconds": 210,
+      "image": "frames/0210.jpg"
+    },
+    {
+      "seconds": 220,
+      "image": "frames/0220.jpg"
+    },
+    {
+      "seconds": 230,
+      "image": "frames/0230.jpg"
+    },
+    {
+      "seconds": 240,
+      "image": "frames/0240.jpg"
+    },
+    {
+      "seconds": 250,
+      "image": "frames/0250.jpg"
+    },
+    {
+      "seconds": 260,
+      "image": "frames/0260.jpg"
+    },
+    {
+      "seconds": 270,
+      "image": "frames/0270.jpg"
+    },
+    {
+      "seconds": 280,
+      "image": "frames/0280.jpg"
+    },
+    {
+      "seconds": 290,
+      "image": "frames/0290.jpg"
+    },
+    {
+      "seconds": 300,
+      "image": "frames/0300.jpg"
+    },
+    {
+      "seconds": 310,
+      "image": "frames/0310.jpg"
+    },
+    {
+      "seconds": 320,
+      "image": "frames/0320.jpg"
+    },
+    {
+      "seconds": 330,
+      "image": "frames/0330.jpg"
+    },
+    {
+      "seconds": 340,
+      "image": "frames/0340.jpg"
+    },
+    {
+      "seconds": 350,
+      "image": "frames/0350.jpg"
+    },
+    {
+      "seconds": 360,
+      "image": "frames/0360.jpg"
+    },
+    {
+      "seconds": 370,
+      "image": "frames/0370.jpg"
+    },
+    {
+      "seconds": 380,
+      "image": "frames/0380.jpg"
+    },
+    {
+      "seconds": 390,
+      "image": "frames/0390.jpg"
+    },
+    {
+      "seconds": 400,
+      "image": "frames/0400.jpg"
+    },
+    {
+      "seconds": 410,
+      "image": "frames/0410.jpg"
+    },
+    {
+      "seconds": 420,
+      "image": "frames/0420.jpg"
+    },
+    {
+      "seconds": 430,
+      "image": "frames/0430.jpg"
+    },
+    {
+      "seconds": 440,
+      "image": "frames/0440.jpg"
+    },
+    {
+      "seconds": 450,
+      "image": "frames/0450.jpg"
+    },
+    {
+      "seconds": 460,
+      "image": "frames/0460.jpg"
+    },
+    {
+      "seconds": 470,
+      "image": "frames/0470.jpg"
+    },
+    {
+      "seconds": 480,
+      "image": "frames/0480.jpg"
+    },
+    {
+      "seconds": 490,
+      "image": "frames/0490.jpg"
+    },
+    {
+      "seconds": 500,
+      "image": "frames/0500.jpg"
+    },
+    {
+      "seconds": 510,
+      "image": "frames/0510.jpg"
+    },
+    {
+      "seconds": 520,
+      "image": "frames/0520.jpg"
+    },
+    {
+      "seconds": 530,
+      "image": "frames/0530.jpg"
+    },
+    {
+      "seconds": 540,
+      "image": "frames/0540.jpg"
+    },
+    {
+      "seconds": 550,
+      "image": "frames/0550.jpg"
+    },
+    {
+      "seconds": 560,
+      "image": "frames/0560.jpg"
+    },
+    {
+      "seconds": 570,
+      "image": "frames/0570.jpg"
+    },
+    {
+      "seconds": 580,
+      "image": "frames/0580.jpg"
+    },
+    {
+      "seconds": 590,
+      "image": "frames/0590.jpg"
+    },
+    {
+      "seconds": 600,
+      "image": "frames/0600.jpg"
+    },
+    {
+      "seconds": 610,
+      "image": "frames/0610.jpg"
+    },
+    {
+      "seconds": 620,
+      "image": "frames/0620.jpg"
+    },
+    {
+      "seconds": 630,
+      "image": "frames/0630.jpg"
+    },
+    {
+      "seconds": 640,
+      "image": "frames/0640.jpg"
+    },
+    {
+      "seconds": 650,
+      "image": "frames/0650.jpg"
+    },
+    {
+      "seconds": 660,
+      "image": "frames/0660.jpg"
+    },
+    {
+      "seconds": 670,
+      "image": "frames/0670.jpg"
+    },
+    {
+      "seconds": 680,
+      "image": "frames/0680.jpg"
+    },
+    {
+      "seconds": 690,
+      "image": "frames/0690.jpg"
+    },
+    {
+      "seconds": 700,
+      "image": "frames/0700.jpg"
+    },
+    {
+      "seconds": 710,
+      "image": "frames/0710.jpg"
+    },
+    {
+      "seconds": 720,
+      "image": "frames/0720.jpg"
+    },
+    {
+      "seconds": 730,
+      "image": "frames/0730.jpg"
+    },
+    {
+      "seconds": 740,
+      "image": "frames/0740.jpg"
+    },
+    {
+      "seconds": 750,
+      "image": "frames/0750.jpg"
+    },
+    {
+      "seconds": 760,
+      "image": "frames/0760.jpg"
+    },
+    {
+      "seconds": 770,
+      "image": "frames/0770.jpg"
+    },
+    {
+      "seconds": 780,
+      "image": "frames/0780.jpg"
+    },
+    {
+      "seconds": 790,
+      "image": "frames/0790.jpg"
+    },
+    {
+      "seconds": 800,
+      "image": "frames/0800.jpg"
+    },
+    {
+      "seconds": 810,
+      "image": "frames/0810.jpg"
+    },
+    {
+      "seconds": 820,
+      "image": "frames/0820.jpg"
+    },
+    {
+      "seconds": 830,
+      "image": "frames/0830.jpg"
+    },
+    {
+      "seconds": 840,
+      "image": "frames/0840.jpg"
+    },
+    {
+      "seconds": 850,
+      "image": "frames/0850.jpg"
+    },
+    {
+      "seconds": 860,
+      "image": "frames/0860.jpg"
+    },
+    {
+      "seconds": 870,
+      "image": "frames/0870.jpg"
+    },
+    {
+      "seconds": 880,
+      "image": "frames/0880.jpg"
+    },
+    {
+      "seconds": 890,
+      "image": "frames/0890.jpg"
+    },
+    {
+      "seconds": 900,
+      "image": "frames/0900.jpg"
+    },
+    {
+      "seconds": 910,
+      "image": "frames/0910.jpg"
+    },
+    {
+      "seconds": 919,
+      "image": "frames/0919.jpg"
+    }
+  ],
+  "targeted_strategy": "Every second from 10:14 through 10:51 for settings; every two seconds around coach picker and late skills tabs; selected transition and branch frames.",
+  "targeted_seconds": [
+    249,
+    251,
+    253,
+    255,
+    257,
+    592,
+    594,
+    614,
+    615,
+    616,
+    617,
+    618,
+    619,
+    620,
+    621,
+    622,
+    623,
+    624,
+    625,
+    626,
+    627,
+    628,
+    629,
+    630,
+    631,
+    632,
+    633,
+    634,
+    635,
+    636,
+    637,
+    638,
+    639,
+    640,
+    641,
+    642,
+    643,
+    644,
+    645,
+    646,
+    647,
+    648,
+    649,
+    650,
+    651,
+    684,
+    769,
+    776,
+    786,
+    794,
+    806,
+    867,
+    869,
+    871,
+    873,
+    875,
+    877,
+    879,
+    881,
+    883,
+    885
+  ]
+}

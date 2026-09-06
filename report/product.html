@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Make the reasoning visible. · ChessLab dossier</title>
+<link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./assets/site.css">
+<script src="./assets/site.js" defer></script>
+</head>
+<body class="">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="./index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="./index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="./product.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="./market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="./pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="./investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="./architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="./delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="./discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="./library.html"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="./library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="./index.html">Dossier</a><span aria-hidden="true"> / </span><span>Product vision</span></div><div class="top-actions"><a href="./library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Product vision / Research dossier</div><h1>Make the reasoning visible.</h1><p class="lede">The full tutor vision, the first learning interaction, and the people it should serve.</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Make the reasoning visible."><h2 id="the-experience-we-are-trying-to-build">The experience we are trying to build</h2>
+<p>The user wants to play against an AI with selectable difficulty, inspect every move, and question the examiner repeatedly. “What if I moved this piece?” must lead to a real alternative. “What if the opponent refused the capture?” must allow a different reply. A question inside that alternative must remain connected to the right position. Returning to the actual game must feel effortless.</p>
+<p>The full vision includes position snapshots, a persistent variation tree, natural-language questions at each node, visual explanations, branch comparison, adjustable sparring, and eventually personalized practice. This is a learning workspace built around a game the learner actually cares about.</p>
+<section class="interactive" aria-label="Product interaction concept"><div class="interactive-head"><strong>One position. Several ways to understand it.</strong><small>INTERFACE CONCEPT · NOT A PLAYABLE APP</small></div><div class="concept"><div class="concept-left"><h3 id="concept-title">Inspect the question</h3><p id="concept-description" aria-live="polite">The learner has selected a confusing move. The original game is preserved while the explanation stays attached to this position.</p><div class="segmented" aria-label="Explore the interface concept"><button data-concept="inspect" aria-pressed="true">Inspect</button><button data-concept="explore" aria-pressed="false">Explore</button><button data-concept="return" aria-pressed="false">Return</button></div></div><div class="concept-right"><div class="branch-line" data-branch="return">Actual game <strong>· preserved</strong></div><div class="branch-line active" data-branch="inspect">Selected position <strong>· why this move?</strong></div><div class="branch-line nested" data-branch="explore">Alternative reply <strong>· what if?</strong></div><div class="branch-line nested">A question inside the branch</div><div class="branch-line">Continue the original game</div></div></div></section>
+<h2 id="what-the-product-should-look-like">What the product should look like</h2>
+<p>The board is the main object. Beside it, show the current question and a short explanation with a “Show the sequence” action. Keep a compact move tree below or beside the board. Label the actual game clearly. Always expose “Back to my game” and “Return to this position.” The learner should not need to understand a graph data structure to explore a line.</p>
+<p>Reveal complexity gradually. Start with the learner's move and the immediate consequence. Offer more detail about defenders, candidate moves and alternate replies only when requested. Use text, arrows and highlighting together. Color alone must never encode correctness.</p>
+<p>On a small screen, keep the board and current question together, then put branches in an expandable panel. Provide keyboard moves and text descriptions. Do not require dragging pieces or interpreting an evaluation bar to understand the explanation.</p>
+<h2 id="first-target-customer">First target customer</h2>
+<p>My proposed starting segment is <strong>adult online rapid players around 800–1600 who already review completed games but struggle to understand an engine explanation</strong>. This is a hypothesis. Rating bands vary between platforms and are not interchangeable with FIDE titles.</p>
+<p>Their job is: “Help me understand the mistake I just made, so I recognize the same idea in my next game.” Their current alternatives are a free analysis board, a platform review, asking a stronger player, a coach, or a video explanation. ChessLab must earn an additional step in that routine.</p>
+<p>Coaches and clubs are useful early recruiting partners and reviewers. A separate classroom product is not necessary to learn from them. Absolute beginners who still need piece-movement instruction and advanced tournament players with specialized preparation needs are less focused first audiences.</p>
+<h2 id="the-first-useful-build">The first useful build</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Learner action</th>
+<th>Observable result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bring a game</td>
+<td>Import a completed PGN</td>
+<td>The original moves are preserved and replay correctly</td>
+</tr>
+<tr>
+<td>Choose a moment</td>
+<td>Select the move that confused them</td>
+<td>The board, history and question stay aligned</td>
+</tr>
+<tr>
+<td>Predict</td>
+<td>State what they expected to happen</td>
+<td>Their misconception is recorded before the explanation</td>
+</tr>
+<tr>
+<td>Inspect</td>
+<td>Replay a supported capture or defensive sequence</td>
+<td>The whole exchange, including recaptures, is visible</td>
+</tr>
+<tr>
+<td>Challenge</td>
+<td>Try a different move for either side</td>
+<td>A legal branch appears without changing the original game</td>
+</tr>
+<tr>
+<td>Go deeper</td>
+<td>Explore another alternative inside that branch</td>
+<td>Parent, anchor and sibling lines remain accessible</td>
+</tr>
+<tr>
+<td>Return</td>
+<td>Go back to the anchor or actual game</td>
+<td>The learner resumes exactly where intended</td>
+</tr>
+<tr>
+<td>Check learning</td>
+<td>Solve a related position later</td>
+<td>Understanding is tested beyond recognizing the explanation</td>
+</tr>
+</tbody>
+</table></div>
+<p>The existing draft starts with deterministic capture/defense explanations and manually explored questions. It does <strong>not</strong> promise unrestricted conversational coaching in that first prototype. This is a real reduction from the full vision and must remain visible in any demo.</p>
+<h2 id="from-prototype-to-a-complete-first-release">From prototype to a complete first release</h2>
+<p>A prototype can test a narrow interaction with a small legal position corpus. A usable first release needs reliable import, persistence, export, failed-save recovery, responsive controls, understandable limits, and evidence-linked answers for its advertised scope. Broader question handling should expand only when unsupported claims can be detected or explicitly declined.</p>
+<p>In-product AI games then bring the play → inspect → resume loop into one place. Human-like play is a separate capability from lowering an engine's strength. Learner memory, delayed retries, shareable studies, and coach collaboration should follow observed repeated use.</p>
+<h2 id="how-learning-should-be-measured">How learning should be measured</h2>
+<p>Record the learner's prediction, ask for an explanation in their own words, and test an unseen related position after a delay. Compare with their existing review workflow, accounting for difficulty and ordering. Report correct answers and misunderstandings, not only ratings of helpfulness.</p>
+<p>A transfer test needs a chess educator and real learners. No such experiment has run here. The supplied learning-products note describes observational associations between study activities and rating improvement. Those associations do not establish that ChessLab will cause improvement, or improve attention outside chess.</p>
+<h2 id="what-i-would-defer">What I would defer</h2>
+<p>Rated multiplayer, a social feed, an opening marketplace, three native clients, voice personalities, large model training, school administration, and a generalized tutoring platform all add work before the central lesson has been tested. They are future possibilities, not requirements for this first learning experiment.</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav><a href="#the-experience-we-are-trying-to-build">The experience we are trying to build</a><a href="#what-the-product-should-look-like">What the product should look like</a><a href="#first-target-customer">First target customer</a><a href="#the-first-useful-build">The first useful build</a><a href="#from-prototype-to-a-complete-first-release">From prototype to a complete first release</a><a href="#how-learning-should-be-measured">How learning should be measured</a><a href="#what-i-would-defer">What I would defer</a></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+<nav class="pagination" aria-label="Adjacent chapters"><a href="index.html"><small>PREVIOUS CHAPTER</small>← Overview</a><a href="market.html"><small>NEXT CHAPTER</small>Market & customers →</a></nav>
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="./library.html">Sources &amp; documents</a><span>Snapshot: September 5, 2026</span></footer>
+</div>
+</body></html>

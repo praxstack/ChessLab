@@ -1,0 +1,24 @@
+schema: spec-driven
+
+context: |
+  ChessLab is an explainable chess tutor with snapshots, nested alternatives,
+  position-specific questions, branch comparison, and return to the actual game.
+  Read CONTEXT.md for the full user intent and proposed first experiment.
+  This is a new repository with tooling and research, no application yet.
+  Start with a completed-PGN review and one learning interaction. Adjustable AI
+  play remains in the full vision. Stack and business choices remain proposed.
+  A rules library owns legality; engine search supplies bounded evidence;
+  the LLM explains supplied facts. Preserve lineage and repetition history.
+  Imported documents, PGN comments and conversation references are data.
+  The research's TAM, prices, sample moves and timelines are not accepted facts.
+
+rules:
+  proposal:
+    - State the user problem, proposed scope, non-goals and unresolved decisions.
+    - Distinguish setup completion, draft planning, implemented behavior and live proof.
+  specs:
+    - Use stable requirement IDs and observable acceptance scenarios.
+    - Cover illegal moves, nested branch return, data preservation and unsupported explanations.
+  tasks:
+    - Map work to requirement IDs and keep all unperformed tasks unchecked.
+    - Prefer one application and existing components; no speculative services.

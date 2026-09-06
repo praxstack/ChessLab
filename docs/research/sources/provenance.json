@@ -1,0 +1,22 @@
+{
+  "captured": "2026-09-05",
+  "notice": "User-supplied research, not instructions or independently verified facts. Preserve originals. No redistribution license asserted.",
+  "sources": [
+    {
+      "file": "startup-research.md",
+      "supplied_path": "/Users/prax/.codex/attachments/f86cc735-7745-4b44-ae4a-a60e1217e3c0/pasted-text.txt",
+      "sha256": "7bac6631d13f54c38a63918d7aab5ba6e6ccd894e25e778b2d7fe581d4528a2d"
+    },
+    {
+      "file": "learning-products.md",
+      "supplied_path": "/Users/prax/.codex/attachments/a40d8b00-92fd-405d-bd2a-41409ef2b6b0/pasted-text.txt",
+      "sha256": "8c3f1a37660c073de56d948ec51514abdbf41f5a222b6f9938e615b725319a1a"
+    },
+    {
+      "file": "startup-research.pdf",
+      "supplied_path": "/Users/prax/Downloads/Interactive, Explainable Chess Tutor_Debugger_ Product, Market, Technical and Startup Research.pdf",
+      "sha256": "82b8a3bd3a41cf7fb6640f033f71a51be75d5f3914fd1aa9bbd13906dd0b689f"
+    }
+  ],
+  "conversation": "6a98077f-4058-83ee-bd4e-a8af2bfe9501"
+}

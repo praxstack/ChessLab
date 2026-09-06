@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>HTML dossier generator · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>HTML dossier generator</h1><p class="lede">scripts/build_report.py</p></header>
+<div class="reading-layout"><article class="prose" aria-label="HTML dossier generator"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/build_report.py" download>Download original file ↗</a></div><p class="source-meta">scripts/build_report.py<br>SHA-256: abb4c527f5d638a6b936c2e17d41465f68b5164315c11f21ea75c1ff572d6ec8</p><pre><code>&quot;&quot;&quot;Generate the portable ChessLab dossier from project sources; requires Pandoc.&quot;&quot;&quot;
+import argparse
+import hashlib
+import html
+from html.parser import HTMLParser
+import json
+from pathlib import Path
+import re
+import shutil
+from string import Template
+import subprocess
+import sys
+from urllib.parse import unquote, urlsplit
+import zipfile
+
+ROOT = Path(__file__).resolve().parents[1]
+OUT = ROOT / &#x27;report&#x27;
+ASSETS = ROOT / &#x27;scripts/report_assets&#x27;
+CHAPTERS = [
+ (&#x27;index&#x27;,&#x27;Overview&#x27;,&#x27;◇&#x27;,&#x27;Every move. Every why.&#x27;,&#x27;A complete record of the idea, the research, the work and the decisions still ahead.&#x27;,&#x27;overview&#x27;),
+ (&#x27;product&#x27;,&#x27;Product vision&#x27;,&#x27;♙&#x27;,&#x27;Make the reasoning visible.&#x27;,&#x27;The full tutor vision, the first learning interaction, and the people it should serve.&#x27;,&#x27;product&#x27;),
+ (&#x27;market&#x27;,&#x27;Market &amp; customers&#x27;,&#x27;◎&#x27;,&#x27;A crowded board. A specific need.&#x27;,&#x27;Where the alternatives overlap, and what ChessLab still needs to prove.&#x27;,&#x27;market&#x27;),
+ (&#x27;pricing&#x27;,&#x27;Pricing &amp; economics&#x27;,&#x27;↗&#x27;,&#x27;Earn a place in the study budget.&#x27;,&#x27;Current reference prices, historical research, and transparent experiments.&#x27;,&#x27;pricing&#x27;),
+ (&#x27;investor&#x27;,&#x27;Investor memo&#x27;,&#x27;♜&#x27;,&#x27;What would change my mind?&#x27;,&#x27;An angel-investor view of the opportunity, the missing evidence and the next useful milestone.&#x27;,&#x27;investor&#x27;),
+ (&#x27;architecture&#x27;,&#x27;Architecture&#x27;,&#x27;⌘&#x27;,&#x27;Trust starts with the position.&#x27;,&#x27;Rules, engine evidence, explanations and the smallest credible implementation.&#x27;,&#x27;architecture&#x27;),
+ (&#x27;delivery&#x27;,&#x27;Work &amp; readiness&#x27;,&#x27;✓&#x27;,&#x27;Prepared is not yet built.&#x27;,&#x27;A factual account of the setup run, this report run, and what remains incomplete.&#x27;,&#x27;delivery&#x27;),
+ (&#x27;discussion&#x27;,&#x27;Conversation&#x27;,&#x27;↳&#x27;,&#x27;The question behind the project.&#x27;,&#x27;The original confusion, the expanding vision, the research request and the project discussion.&#x27;,&#x27;discussion&#x27;),
+ (&#x27;library&#x27;,&#x27;Document library&#x27;,&#x27;▤&#x27;,&#x27;The complete reading room.&#x27;,&#x27;Original research and every project document, with full reading pages and downloads.&#x27;,&#x27;library&#x27;),
+]
+TITLES = {
+ &#x27;README.md&#x27;:&#x27;ChessLab project introduction&#x27;, &#x27;CONTEXT.md&#x27;:&#x27;Product context and vocabulary&#x27;,
+ &#x27;AGENTS.md&#x27;:&#x27;Project working agreement&#x27;, &#x27;CLAUDE.md&#x27;:&#x27;Claude project entrypoint&#x27;,
+ &#x27;docs/research/sources/startup-research.md&#x27;:&#x27;Complete startup research&#x27;,
+ &#x27;docs/research/sources/learning-products.md&#x27;:&#x27;Complete learning-products research&#x27;,
+ &#x27;docs/research/sources/startup-research.pdf&#x27;:&#x27;Original startup research PDF&#x27;,
+ &#x27;docs/research/sources/original-conversation.md&#x27;:&#x27;Original ChatGPT conversation, full available text&#x27;,
+ &#x27;docs/research/sources/original-conversation.json&#x27;:&#x27;Original conversation retrieval record&#x27;,
+ &#x27;docs/research/sources/IMG_0860.png&#x27;:&#x27;Original lesson: starting position&#x27;,
+ &#x27;docs/research/sources/IMG_0859.png&#x27;:&#x27;Original lesson: incorrect rook move&#x27;,
+ &#x27;docs/research/assessment.md&#x27;:&#x27;Previous run: research assessment&#x27;,
+ &#x27;skills.local.json&#x27;:&#x27;Complete skill-source manifest&#x27;,
+ &#x27;scripts/setup_skills.py&#x27;:&#x27;Repeatable skill-link setup helper&#x27;,
+ &#x27;scripts/build_report.py&#x27;:&#x27;HTML dossier generator&#x27;,
+ &#x27;docs/dossier/evidence.json&#x27;:&#x27;Current setup verification snapshot&#x27;,
+ &#x27;justfile&#x27;:&#x27;Canonical project commands&#x27;,
+}
+
+
+def digest(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def category(path):
+    p = path.as_posix()
+    if &#x27;/research/sources/&#x27; in p: return &#x27;Original research&#x27;
+    if p.startswith(&#x27;openspec/&#x27;): return &#x27;OpenSpec&#x27;
+    if p.startswith(&#x27;docs/dossier/&#x27;): return &#x27;Dossier chapters&#x27;
+    if p == &#x27;docs/research/assessment.md&#x27;: return &#x27;Assessment&#x27;
+    return &#x27;Project &amp; tooling&#x27;
+
+
+def source_files():
+    files = {ROOT/p for p in [&#x27;README.md&#x27;,&#x27;CONTEXT.md&#x27;,&#x27;AGENTS.md&#x27;,&#x27;CLAUDE.md&#x27;,&#x27;skills.local.json&#x27;,&#x27;justfile&#x27;,&#x27;.gitignore&#x27;,&#x27;.gitattributes&#x27;]}
+    for folder in [&#x27;docs&#x27;,&#x27;openspec&#x27;,&#x27;scripts&#x27;]:
+        files.update(p for p in (ROOT/folder).rglob(&#x27;*&#x27;) if p.is_file() and not p.is_symlink() and &#x27;__pycache__&#x27; not in p.parts and p.name != &#x27;.gitkeep&#x27;)
+    return sorted(files)
+
+
+def doc_name(path):
+    return path.relative_to(ROOT).as_posix().replace(&#x27;/&#x27;,&#x27;--&#x27;).replace(&#x27;.&#x27;,&#x27;-&#x27;) + &#x27;.html&#x27;
+
+
+class Fragment(HTMLParser):
+    def __init__(self, source, files, base):
+        super().__init__(convert_charrefs=False)
+        self.source, self.files, self.base = source, files, base
+        self.result = []
+        self.toc = []
+        self.heading = None
+    def handle_starttag(self, tag, attrs):
+        data = dict(attrs)
+        for key in [&#x27;href&#x27;,&#x27;src&#x27;]:
+            value = data.get(key)
+            if not value: continue
+            parsed = urlsplit(value)
+            if parsed.scheme and parsed.scheme not in [&#x27;http&#x27;,&#x27;https&#x27;,&#x27;mailto&#x27;]:
+                data[key] = &#x27;#&#x27;
+            elif not parsed.scheme and parsed.path:
+                target = (self.source.parent / unquote(parsed.path)).resolve()
+                if target in self.files:
+                    if tag == &#x27;img&#x27; or target.suffix.lower() in [&#x27;.png&#x27;,&#x27;.jpg&#x27;,&#x27;.jpeg&#x27;,&#x27;.svg&#x27;,&#x27;.pdf&#x27;]:
+                        data[key] = self.base+&#x27;/downloads/&#x27;+target.relative_to(ROOT).as_posix()
+                    else:
+                        data[key] = self.base+&#x27;/documents/&#x27;+doc_name(target)
+                    if parsed.fragment: data[key] += &#x27;#&#x27;+parsed.fragment
+                elif target.is_relative_to(OUT):
+                    data[key] = self.base+&#x27;/&#x27;+target.relative_to(OUT).as_posix()
+                    if parsed.fragment: data[key] += &#x27;#&#x27;+parsed.fragment
+            if key == &#x27;href&#x27; and parsed.scheme in [&#x27;https&#x27;,&#x27;http&#x27;]:
+                data[&#x27;rel&#x27;] = &#x27;noreferrer noopener&#x27;
+        if tag == &#x27;h2&#x27; and data.get(&#x27;id&#x27;):
+            self.heading = [data[&#x27;id&#x27;],&#x27;&#x27;]
+        if tag == &#x27;table&#x27;: self.result.append(&#x27;&lt;div class=&quot;table-wrap&quot; tabindex=&quot;0&quot; role=&quot;region&quot; aria-label=&quot;Scrollable data table&quot;&gt;&#x27;)
+        self.result.append(&#x27;&lt;&#x27;+tag+&#x27;&#x27;.join(&#x27; &#x27;+k+(&#x27;=&quot;&#x27;+html.escape(v,quote=True)+&#x27;&quot;&#x27; if v is not None else &#x27;&#x27;) for k,v in data.items())+&#x27;&gt;&#x27;)
+    def handle_endtag(self, tag):
+        self.result.append(&#x27;&lt;/&#x27;+tag+&#x27;&gt;&#x27;)
+        if tag == &#x27;table&#x27;: self.result.append(&#x27;&lt;/div&gt;&#x27;)
+        if tag == &#x27;h2&#x27; and self.heading:
+            self.toc.append(tuple(self.heading)); self.heading = None
+    def handle_data(self, data):
+        self.result.append(data)
+        if self.heading is not None: self.heading[1] += data
+    def handle_entityref(self, name): self.result.append(&#x27;&amp;&#x27;+name+&#x27;;&#x27;)
+    def handle_charref(self, name): self.result.append(&#x27;&amp;#&#x27;+name+&#x27;;&#x27;)
+    def handle_comment(self, data): pass
+
+
+def markdown(path, files, base, shift=False):
+    command = [&#x27;pandoc&#x27;,&#x27;--from=gfm-raw_html&#x27;,&#x27;--to=html5&#x27;,&#x27;--wrap=none&#x27;]
+    if shift: command += [&#x27;--shift-heading-level-by=1&#x27;]
+    result = subprocess.run(command+[str(path)],check=True,capture_output=True,text=True).stdout
+    parsed = Fragment(path,files,base); parsed.feed(result)
+    return &#x27;&#x27;.join(parsed.result), parsed.toc
+
+
+def board():
+    pieces={&#x27;d6&#x27;:&#x27;♝&#x27;,&#x27;f4&#x27;:&#x27;♖&#x27;,&#x27;a3&#x27;:&#x27;♘&#x27;,&#x27;g3&#x27;:&#x27;♙&#x27;}
+    cells=[]
+    for rank in range(8,0,-1):
+        for column,file in enumerate(&#x27;abcdefgh&#x27;):
+            square=file+str(rank)
+            dark=(rank+column)%2==0
+            piece=pieces.get(square,&#x27;&#x27;)
+            cells.append(f&#x27;&lt;span class=&quot;sq {&quot;dark&quot; if dark else &quot;&quot;} {&quot;mark&quot; if square==&quot;g3&quot; else &quot;&quot;}&quot;&#x27;+(&#x27; data-piece=&quot;true&quot;&#x27; if piece else &#x27;&#x27;)+f&#x27;&gt;{piece}&lt;small&gt;{square if piece else &quot;&quot;}&lt;/small&gt;&lt;/span&gt;&#x27;)
+    return &#x27;&lt;div class=&quot;board-frame&quot;&gt;&lt;div class=&quot;board&quot; role=&quot;img&quot; aria-label=&quot;Partial lesson diagram: black bishop d6, white rook f4, knight a3 and pawn g3. Other pieces are omitted.&quot;&gt;&#x27;+&#x27;&#x27;.join(cells)+&#x27;&lt;/div&gt;&lt;div class=&quot;board-caption&quot;&gt;FOUR PIECES FROM THE ORIGINAL LESSON&lt;br&gt;Partial diagram · other pieces omitted&lt;/div&gt;&lt;/div&gt;&#x27;
+
+
+def components(files):
+    original = &#x27;&#x27;&#x27;&lt;section class=&quot;interactive&quot; aria-label=&quot;Conditional material comparison&quot;&gt;&lt;div class=&quot;interactive-head&quot;&gt;&lt;strong&gt;The lesson that started it&lt;/strong&gt;&lt;small&gt;CONDITIONAL MATERIAL EXAMPLE&lt;/small&gt;&lt;/div&gt;&lt;div class=&quot;exchange-body&quot;&gt;&lt;button class=&quot;exchange-option&quot; data-exchange=&quot;knight&quot; aria-pressed=&quot;true&quot;&gt;&lt;span class=&quot;pieces&quot; aria-hidden=&quot;true&quot;&gt;♘ → ∅&lt;/span&gt;&lt;strong&gt;Lose the knight&lt;/strong&gt;&lt;small&gt;If it is captured without compensation&lt;/small&gt;&lt;/button&gt;&lt;button class=&quot;exchange-option&quot; data-exchange=&quot;rook&quot; aria-pressed=&quot;false&quot;&gt;&lt;span class=&quot;pieces&quot; aria-hidden=&quot;true&quot;&gt;♖ ⇄ ♝&lt;/span&gt;&lt;strong&gt;Trade rook for bishop&lt;/strong&gt;&lt;small&gt;If the bishop is then recaptured&lt;/small&gt;&lt;/button&gt;&lt;/div&gt;&lt;div id=&quot;exchange-result&quot; class=&quot;exchange-result&quot; aria-live=&quot;polite&quot;&gt;Knight lost without a recapture: 3 points lost.&lt;/div&gt;&lt;p class=&quot;disclosure&quot;&gt;Compare the entire exchange. This arithmetic illustration is not a legal-move engine or proof that these are the only available choices.&lt;/p&gt;&lt;/section&gt;&#x27;&#x27;&#x27;
+    concept = &#x27;&#x27;&#x27;&lt;section class=&quot;interactive&quot; aria-label=&quot;Product interaction concept&quot;&gt;&lt;div class=&quot;interactive-head&quot;&gt;&lt;strong&gt;One position. Several ways to understand it.&lt;/strong&gt;&lt;small&gt;INTERFACE CONCEPT · NOT A PLAYABLE APP&lt;/small&gt;&lt;/div&gt;&lt;div class=&quot;concept&quot;&gt;&lt;div class=&quot;concept-left&quot;&gt;&lt;h3 id=&quot;concept-title&quot;&gt;Inspect the question&lt;/h3&gt;&lt;p id=&quot;concept-description&quot; aria-live=&quot;polite&quot;&gt;The learner has selected a confusing move. The original game is preserved while the explanation stays attached to this position.&lt;/p&gt;&lt;div class=&quot;segmented&quot; aria-label=&quot;Explore the interface concept&quot;&gt;&lt;button data-concept=&quot;inspect&quot; aria-pressed=&quot;true&quot;&gt;Inspect&lt;/button&gt;&lt;button data-concept=&quot;explore&quot; aria-pressed=&quot;false&quot;&gt;Explore&lt;/button&gt;&lt;button data-concept=&quot;return&quot; aria-pressed=&quot;false&quot;&gt;Return&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;concept-right&quot;&gt;&lt;div class=&quot;branch-line&quot; data-branch=&quot;return&quot;&gt;Actual game &lt;strong&gt;· preserved&lt;/strong&gt;&lt;/div&gt;&lt;div class=&quot;branch-line active&quot; data-branch=&quot;inspect&quot;&gt;Selected position &lt;strong&gt;· why this move?&lt;/strong&gt;&lt;/div&gt;&lt;div class=&quot;branch-line nested&quot; data-branch=&quot;explore&quot;&gt;Alternative reply &lt;strong&gt;· what if?&lt;/strong&gt;&lt;/div&gt;&lt;div class=&quot;branch-line nested&quot;&gt;A question inside the branch&lt;/div&gt;&lt;div class=&quot;branch-line&quot;&gt;Continue the original game&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/section&gt;&#x27;&#x27;&#x27;
+    fields=[(&#x27;payers&#x27;,&#x27;Paying subscribers&#x27;,&#x27;1000&#x27;,&#x27;1&#x27;),(&#x27;price&#x27;,&#x27;Price per subscriber / month&#x27;,&#x27;9&#x27;,&#x27;0.01&#x27;),(&#x27;sessions&#x27;,&#x27;Sessions / subscriber / month&#x27;,&#x27;20&#x27;,&#x27;1&#x27;),(&#x27;unit-cost&#x27;,&#x27;Variable cost per session&#x27;,&#x27;0.05&#x27;,&#x27;0.01&#x27;),(&#x27;fee&#x27;,&#x27;Assumed payment fee (%)&#x27;,&#x27;3&#x27;,&#x27;0.1&#x27;)]
+    inputs=&#x27;&#x27;.join(f&#x27;&lt;label for=&quot;{id}&quot;&gt;{label}&lt;input type=&quot;number&quot; id=&quot;{id}&quot; value=&quot;{value}&quot; min=&quot;0&quot; step=&quot;{step}&quot;&#x27;+(&#x27; max=&quot;100&quot;&#x27; if id==&#x27;fee&#x27; else &#x27;&#x27;)+&#x27;&gt;&lt;/label&gt;&#x27; for id,label,value,step in fields)
+    economics=&#x27;&lt;section class=&quot;interactive&quot;&gt;&lt;div class=&quot;interactive-head&quot;&gt;&lt;strong&gt;Monthly contribution model&lt;/strong&gt;&lt;small&gt;ILLUSTRATIVE ASSUMPTIONS&lt;/small&gt;&lt;/div&gt;&lt;form class=&quot;calculator&quot; id=&quot;economics&quot; onsubmit=&quot;return false&quot;&gt;&lt;div class=&quot;calculator-grid&quot;&gt;&lt;label for=&quot;currency&quot;&gt;Display currency, no conversion&lt;select id=&quot;currency&quot;&gt;&lt;option value=&quot;USD&quot;&gt;USD · US dollar&lt;/option&gt;&lt;option value=&quot;INR&quot;&gt;INR · Indian rupee&lt;/option&gt;&lt;option value=&quot;EUR&quot;&gt;EUR · euro&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;&#x27;+inputs+&#x27;&lt;/div&gt;&lt;div class=&quot;calc-results&quot; aria-live=&quot;polite&quot;&gt;&lt;div&gt;&lt;small&gt;SUBSCRIPTION REVENUE&lt;/small&gt;&lt;output id=&quot;revenue&quot;&gt;$9,000.00&lt;/output&gt;&lt;/div&gt;&lt;div&gt;&lt;small&gt;VARIABLE COST + FEES&lt;/small&gt;&lt;output id=&quot;variable-cost&quot;&gt;$1,270.00&lt;/output&gt;&lt;/div&gt;&lt;div&gt;&lt;small&gt;CONTRIBUTION BEFORE OVERHEAD&lt;/small&gt;&lt;output id=&quot;contribution&quot;&gt;$7,730.00&lt;/output&gt;&lt;/div&gt;&lt;/div&gt;&lt;p id=&quot;calc-error&quot; class=&quot;error&quot; role=&quot;status&quot;&gt;&lt;/p&gt;&lt;/form&gt;&lt;p class=&quot;disclosure&quot;&gt;Revenue = subscribers × monthly price. Variable cost = subscribers × sessions × cost/session + revenue × fee%. This is not net profit and excludes free-user costs.&lt;/p&gt;&lt;/section&gt;&#x27;
+    architecture=&#x27;&lt;div class=&quot;flow&quot; role=&quot;group&quot; aria-label=&quot;Proposed analysis flow&quot;&gt;&#x27;+&#x27;&#x27;.join(&#x27;&lt;div&gt;&lt;strong&gt;&#x27;+a+&#x27;&lt;/strong&gt;&lt;small&gt;&#x27;+b+&#x27;&lt;/small&gt;&lt;/div&gt;&#x27; for a,b in [(&#x27;Rules &amp; history&#x27;,&#x27;Validate and replay the selected position.&#x27;),(&#x27;Engine &amp; board facts&#x27;,&#x27;Compute bounded analysis and supported evidence.&#x27;),(&#x27;Explanation&#x27;,&#x27;Describe what the evidence supports.&#x27;),(&#x27;Learner action&#x27;,&#x27;Inspect, branch, compare and return.&#x27;)])+&#x27;&lt;/div&gt;&#x27;
+    cards=[]
+    for p in files:
+        rel=p.relative_to(ROOT).as_posix(); cat=category(Path(rel)); title=TITLES.get(rel,p.stem.replace(&#x27;-&#x27;,&#x27; &#x27;).replace(&#x27;_&#x27;,&#x27; &#x27;).title())
+        if rel.startswith(&#x27;docs/dossier/&#x27;) and p.suffix==&#x27;.md&#x27;: title=&#x27;Dossier source: &#x27;+p.stem.replace(&#x27;-&#x27;,&#x27; &#x27;).title()
+        cards.append(f&#x27;&lt;a class=&quot;document-card&quot; href=&quot;documents/{doc_name(p)}&quot; data-category=&quot;{cat}&quot; data-search=&quot;{html.escape((title+&quot; &quot;+rel+&quot; &quot;+cat).lower(),quote=True)}&quot;&gt;&lt;span class=&quot;doc-type&quot;&gt;{cat}&lt;/span&gt;&lt;strong&gt;{html.escape(title)}&lt;/strong&gt;&lt;small&gt;{html.escape(rel)}&lt;/small&gt;&lt;span class=&quot;doc-arrow&quot;&gt;Read full document →&lt;/span&gt;&lt;/a&gt;&#x27;)
+    cats=sorted({category(p.relative_to(ROOT)) for p in files})
+    library=&#x27;&lt;div class=&quot;library-controls&quot;&gt;&lt;label for=&quot;document-search&quot;&gt;Search the full inventory&lt;input id=&quot;document-search&quot; type=&quot;search&quot; placeholder=&quot;Try pricing, proposal, skills…&quot;&gt;&lt;/label&gt;&lt;label for=&quot;document-category&quot;&gt;Document type&lt;select id=&quot;document-category&quot;&gt;&lt;option value=&quot;&quot;&gt;All types&lt;/option&gt;&#x27;+&#x27;&#x27;.join(f&#x27;&lt;option&gt;{c}&lt;/option&gt;&#x27; for c in cats)+&#x27;&lt;/select&gt;&lt;/label&gt;&lt;/div&gt;&lt;div id=&quot;document-count&quot; class=&quot;result-count&quot; aria-live=&quot;polite&quot;&gt;&#x27;+str(len(files))+&#x27; documents&lt;/div&gt;&lt;div class=&quot;document-grid&quot;&gt;&#x27;+&#x27;&#x27;.join(cards)+&#x27;&lt;/div&gt;&lt;p id=&quot;no-documents&quot; class=&quot;empty-state&quot; hidden&gt;No documents match. Try a different title or choose all types.&lt;/p&gt;&#x27;
+    images=&#x27;&lt;div class=&quot;image-pair&quot;&gt;&#x27;+&#x27;&#x27;.join(f&#x27;&lt;figure&gt;&lt;a href=&quot;downloads/docs/research/sources/{name}&quot;&gt;&lt;img src=&quot;downloads/docs/research/sources/{name}&quot; alt=&quot;{caption}&quot; loading=&quot;lazy&quot;&gt;&lt;/a&gt;&lt;figcaption&gt;{caption}&lt;/figcaption&gt;&lt;/figure&gt;&#x27; for name,caption in [(&#x27;IMG_0860.png&#x27;,&#x27;Original lesson: the bishop attacks the knight and rook.&#x27;),(&#x27;IMG_0859.png&#x27;,&#x27;Original lesson: saving the rook is marked incorrect.&#x27;)])+&#x27;&lt;/div&gt;&#x27;
+    evidence=&#x27;&lt;div class=&quot;evidence-grid&quot;&gt;&#x27;+&#x27;&#x27;.join(&#x27;&lt;div class=&quot;evidence-card&quot;&gt;&lt;span class=&quot;chip &#x27;+state+&#x27;&quot;&gt;&#x27;+label+&#x27;&lt;/span&gt;&lt;strong&gt;&#x27;+title+&#x27;&lt;/strong&gt;&lt;p&gt;&#x27;+body+&#x27;&lt;/p&gt;&lt;/div&gt;&#x27; for state,label,title,body in [(&#x27;good&#x27;,&#x27;VERIFIED LOCALLY&#x27;,&#x27;Setup checks pass&#x27;,&#x27;180 skill links, two mirrors, helper self-test and strict OpenSpec structure validation.&#x27;),(&#x27;proposed&#x27;,&#x27;DRAFT&#x27;,&#x27;4 planning artifacts&#x27;,&#x27;Proposal, design, requirements and nine unperformed implementation tasks.&#x27;),(&#x27;proposed&#x27;,&#x27;INCOMPLETE&#x27;,&#x27;Initial Git commit&#x27;,&#x27;Earlier signing failed. No commit or remote at the start of this report run.&#x27;),(&#x27;&#x27;,&#x27;NOT DEMONSTRATED&#x27;,&#x27;Chess product outcomes&#x27;,&#x27;No playable app, product users, paid pilot or measured learning results.&#x27;)])+&#x27;&lt;/div&gt;&#x27;
+    receipt=&#x27;&lt;p&gt;&lt;a href=&quot;verification.json&quot;&gt;Open the report verification receipt&lt;/a&gt;. This records static and browser checks for the generated dossier, including their limits.&lt;/p&gt;&#x27;
+    return {&#x27;ORIGIN&#x27;:original,&#x27;PRODUCT_DEMO&#x27;:concept,&#x27;ECONOMICS&#x27;:economics,&#x27;ARCHITECTURE&#x27;:architecture,&#x27;LIBRARY&#x27;:library,&#x27;ORIGINAL_IMAGES&#x27;:images,&#x27;EVIDENCE&#x27;:evidence,&#x27;REPORT_RECEIPT&#x27;:receipt}
+
+
+def render_page(title, section, body, toc, slug, base=&#x27;.&#x27;, lede=&#x27;&#x27;, home=False, doc=False):
+    nav=&#x27;&#x27;.join(f&#x27;&lt;a class=&quot;nav-link&quot; href=&quot;{base}/{s}.html&quot;&#x27;+(&#x27; aria-current=&quot;page&quot;&#x27; if slug==s or doc and s==&#x27;library&#x27; else &#x27;&#x27;)+f&#x27;&gt;&lt;span class=&quot;nav-symbol&quot; aria-hidden=&quot;true&quot;&gt;{icon}&lt;/span&gt;{name}&lt;/a&gt;&#x27; for s,name,icon,*rest in CHAPTERS)
+    if home:
+        hero=&#x27;&lt;section class=&quot;hero&quot;&gt;&lt;div class=&quot;hero-copy&quot;&gt;&lt;div class=&quot;eyebrow&quot;&gt;ChessLab / Founder research edition&lt;/div&gt;&lt;h1&gt;Every move.&lt;br&gt;&lt;em&gt;Every why.&lt;/em&gt;&lt;/h1&gt;&lt;p&gt;A chess tutor you can question, explore and rewind. The research, the work, and an honest look at what it would take to build it.&lt;/p&gt;&lt;div class=&quot;hero-actions&quot;&gt;&lt;a class=&quot;button&quot; href=&quot;investor.html&quot;&gt;Read the investor memo &lt;span aria-hidden=&quot;true&quot;&gt;↗&lt;/span&gt;&lt;/a&gt;&lt;a class=&quot;text-link&quot; href=&quot;library.html&quot;&gt;Explore the documents →&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;hero-art&quot;&gt;&#x27;+board()+&#x27;&lt;div class=&quot;floating-note&quot;&gt;&lt;strong&gt;The recapture changes everything.&lt;/strong&gt;5 − 3 loses less than 3.&lt;/div&gt;&lt;/div&gt;&lt;/section&gt;&lt;div class=&quot;hero-badges&quot;&gt;&lt;span class=&quot;chip good&quot;&gt;Research preserved&lt;/span&gt;&lt;span class=&quot;chip good&quot;&gt;Setup verified&lt;/span&gt;&lt;span class=&quot;chip proposed&quot;&gt;Product proposed&lt;/span&gt;&lt;span class=&quot;chip&quot;&gt;No playable app yet&lt;/span&gt;&lt;/div&gt;&#x27;
+    else:
+        hero=f&#x27;&lt;header class=&quot;page-heading&quot;&gt;&lt;div class=&quot;eyebrow&quot;&gt;{html.escape(section)} / Research dossier&lt;/div&gt;&lt;h1&gt;{html.escape(title)}&lt;/h1&gt;&lt;p class=&quot;lede&quot;&gt;{html.escape(lede)}&lt;/p&gt;&lt;/header&gt;&#x27;
+    anchors=&#x27;&#x27;.join(f&#x27;&lt;a href=&quot;#{html.escape(id,quote=True)}&quot;&gt;{html.escape(text)}&lt;/a&gt;&#x27; for id,text in toc)
+    note=&#x27;Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.&#x27;
+    pagination=&#x27;&#x27;
+    if not doc:
+        index=next(i for i,c in enumerate(CHAPTERS) if c[0]==slug)
+        previous=CHAPTERS[index-1] if index else None; following=CHAPTERS[index+1] if index+1&lt;len(CHAPTERS) else None
+        pagination=&#x27;&lt;nav class=&quot;pagination&quot; aria-label=&quot;Adjacent chapters&quot;&gt;&#x27;+(f&#x27;&lt;a href=&quot;{previous[0]}.html&quot;&gt;&lt;small&gt;PREVIOUS CHAPTER&lt;/small&gt;← {previous[1]}&lt;/a&gt;&#x27; if previous else &#x27;&lt;span&gt;&lt;/span&gt;&#x27;)+(f&#x27;&lt;a href=&quot;{following[0]}.html&quot;&gt;&lt;small&gt;NEXT CHAPTER&lt;/small&gt;{following[1]} →&lt;/a&gt;&#x27; if following else &#x27;&lt;a href=&quot;index.html&quot;&gt;&lt;small&gt;RETURN TO OVERVIEW&lt;/small&gt;Back to the thesis ↑&lt;/a&gt;&#x27;)+&#x27;&lt;/nav&gt;&#x27;
+    return Template((ASSETS/&#x27;template.html&#x27;).read_text()).substitute(title=html.escape(title,quote=True),section=html.escape(section),base=base,body_class=&#x27;doc-reading&#x27; if doc else &#x27;&#x27;,nav=nav,hero=hero,content=body,toc=anchors,note=note,pagination=pagination)
+
+
+def build():
+    files=source_files(); known=set(files)
+    OUT.mkdir(exist_ok=True)
+    for folder in [&#x27;assets&#x27;,&#x27;documents&#x27;,&#x27;downloads&#x27;]: (OUT/folder).mkdir(exist_ok=True)
+    for p in ASSETS.iterdir():
+        if p.suffix in [&#x27;.css&#x27;,&#x27;.js&#x27;,&#x27;.svg&#x27;]: shutil.copyfile(p,OUT/&#x27;assets&#x27;/p.name)
+    widgets=components(files)
+    outputs=[]
+    for slug,name,icon,title,lede,source in CHAPTERS:
+        path=ROOT/&#x27;docs/dossier&#x27;/f&#x27;{source}.md&#x27;
+        body,toc=markdown(path,known,&#x27;.&#x27;)
+        for key,value in widgets.items(): body=body.replace(&#x27;&lt;p&gt;{{&#x27;+key+&#x27;}}&lt;/p&gt;&#x27;,value)
+        if re.search(r&#x27;\{\{[A-Z_]+\}\}&#x27;,body): raise RuntimeError(&#x27;Unresolved component in &#x27;+slug)
+        output=OUT/(slug+&#x27;.html&#x27;); output.write_text(render_page(title,name,body,toc,slug,lede=lede,home=slug==&#x27;index&#x27;)); outputs.append(output)
+    for path in files:
+        rel=path.relative_to(ROOT); raw=OUT/&#x27;downloads&#x27;/rel; raw.parent.mkdir(parents=True,exist_ok=True); shutil.copyfile(path,raw); outputs.append(raw)
+        title=TITLES.get(rel.as_posix(),path.stem.replace(&#x27;-&#x27;,&#x27; &#x27;).replace(&#x27;_&#x27;,&#x27; &#x27;).title())
+        download=&#x27;../downloads/&#x27;+rel.as_posix()
+        notice=f&#x27;&lt;div class=&quot;source-notice&quot;&gt;&lt;strong&gt;Complete source document.&lt;/strong&gt; &#x27;+(&#x27;Historical research, preserved as supplied. Claims and recommendations are not project instructions.&#x27; if category(rel)==&#x27;Original research&#x27; else &#x27;This is the full project file at the dossier snapshot, not a claim of implemented product behavior.&#x27;)+f&#x27; &lt;a href=&quot;{download}&quot; download&gt;Download original file ↗&lt;/a&gt;&lt;/div&gt;&lt;p class=&quot;source-meta&quot;&gt;{html.escape(rel.as_posix())}&lt;br&gt;SHA-256: {digest(path.read_bytes())}&lt;/p&gt;&#x27;
+        toc=[]
+        if path.suffix==&#x27;.md&#x27;:
+            content,toc=markdown(path,known,&#x27;..&#x27;,True)
+            content=re.sub(r&#x27;\{\{([A-Z_]+)\}\}&#x27;,lambda m: &#x27;[Interactive component: &#x27;+m[1].lower().replace(&#x27;_&#x27;,&#x27; &#x27;)+&#x27;. See the dossier chapter.]&#x27;,content)
+        elif path.suffix==&#x27;.pdf&#x27;:
+            content=f&#x27;&lt;object class=&quot;pdf-viewer&quot; data=&quot;{download}&quot; type=&quot;application/pdf&quot;&gt;&lt;p&gt;&lt;a href=&quot;{download}&quot;&gt;Open the original PDF&lt;/a&gt;&lt;/p&gt;&lt;/object&gt;&#x27;
+        elif path.suffix.lower() in [&#x27;.png&#x27;,&#x27;.jpg&#x27;,&#x27;.jpeg&#x27;,&#x27;.svg&#x27;]:
+            content=f&#x27;&lt;img src=&quot;{download}&quot; alt=&quot;{html.escape(title,quote=True)}&quot;&gt;&#x27;
+        else:
+            text=path.read_text()
+            if path.suffix==&#x27;.json&#x27;: text=json.dumps(json.loads(text),ensure_ascii=False,indent=2)
+            content=&#x27;&lt;pre&gt;&lt;code&gt;&#x27;+html.escape(text)+&#x27;&lt;/code&gt;&lt;/pre&gt;&#x27;
+        output=OUT/&#x27;documents&#x27;/doc_name(path); output.write_text(render_page(title,&#x27;Document library&#x27;,notice+content,toc,&#x27;library&#x27;,&#x27;..&#x27;,str(rel),doc=True)); outputs.append(output)
+    outputs += [p for p in (OUT/&#x27;assets&#x27;).iterdir() if p.is_file()]
+    inputs={p.relative_to(ROOT).as_posix():digest(p.read_bytes()) for p in files}
+    manifest={&#x27;edition&#x27;:&#x27;2026-09-05&#x27;,&#x27;generator&#x27;:&#x27;scripts/build_report.py&#x27;,&#x27;document_count&#x27;:len(files),&#x27;chapter_count&#x27;:len(CHAPTERS),&#x27;source_hashes&#x27;:inputs,&#x27;output_hashes&#x27;:{p.relative_to(OUT).as_posix():digest(p.read_bytes()) for p in sorted(outputs)}}
+    (OUT/&#x27;manifest.json&#x27;).write_text(json.dumps(manifest,indent=2)+&#x27;\n&#x27;)
+    print(f&#x27;Built {len(CHAPTERS)} chapters and {len(files)} full document pages in {OUT}&#x27;)
+
+
+class Links(HTMLParser):
+    def __init__(self): super().__init__(); self.links=[]; self.ids=set(); self.titles=0
+    def handle_starttag(self,tag,attrs):
+        a=dict(attrs)
+        if a.get(&#x27;id&#x27;): self.ids.add(a[&#x27;id&#x27;])
+        if tag==&#x27;title&#x27;: self.titles+=1
+        for name in [&#x27;href&#x27;,&#x27;src&#x27;,&#x27;data&#x27;]:
+            if a.get(name): self.links.append(a[name])
+
+
+def check():
+    manifest=json.loads((OUT/&#x27;manifest.json&#x27;).read_text())
+    for name,expected in manifest[&#x27;source_hashes&#x27;].items():
+        if not (ROOT/name).is_file() or digest((ROOT/name).read_bytes())!=expected: raise RuntimeError(&#x27;Changed source; rebuild: &#x27;+name)
+    current={p.relative_to(ROOT).as_posix() for p in source_files()}
+    if current != set(manifest[&#x27;source_hashes&#x27;]): raise RuntimeError(&#x27;Source inventory changed; rebuild&#x27;)
+    for name,expected in manifest[&#x27;output_hashes&#x27;].items():
+        if not (OUT/name).is_file() or digest((OUT/name).read_bytes())!=expected: raise RuntimeError(&#x27;Stale or edited output: &#x27;+name)
+    pages={p:Links() for p in OUT.rglob(&#x27;*.html&#x27;) if &#x27;downloads&#x27; not in p.parts}
+    for p,parsed in pages.items(): parsed.feed(p.read_text())
+    count=0
+    for path,parsed in pages.items():
+        if parsed.titles!=1: raise RuntimeError(&#x27;Missing/duplicate title: &#x27;+str(path))
+        for link in parsed.links:
+            url=urlsplit(link)
+            if url.scheme or url.netloc: continue
+            target=(path.parent/unquote(url.path)).resolve() if url.path else path
+            if not target.is_relative_to(OUT): raise RuntimeError(&#x27;Link leaves portable site: &#x27;+link)
+            if not target.exists(): raise RuntimeError(f&#x27;Broken link in {path.name}: {link}&#x27;)
+            if url.fragment and target in pages and unquote(url.fragment) not in pages[target].ids: raise RuntimeError(f&#x27;Broken anchor in {path.name}: {link}&#x27;)
+            count+=1
+    print(f&#x27;PASS: {len(pages)} HTML pages, {count} local links, all source/output hashes and source coverage&#x27;)
+    return {&#x27;html_pages&#x27;:len(pages),&#x27;local_links&#x27;:count,&#x27;documents&#x27;:manifest[&#x27;document_count&#x27;],&#x27;source_output_hashes&#x27;:&#x27;pass&#x27;,&#x27;scope&#x27;:&#x27;Static dossier only; not product functionality&#x27;}
+
+
+def bundle():
+    target=ROOT/&#x27;ChessLab-dossier.zip&#x27;
+    with zipfile.ZipFile(target,&#x27;w&#x27;,zipfile.ZIP_DEFLATED) as archive:
+        for path in sorted(OUT.rglob(&#x27;*&#x27;)):
+            if path.is_file(): archive.write(path,&#x27;ChessLab-dossier/&#x27;+path.relative_to(OUT).as_posix())
+    print(&#x27;Portable archive: &#x27;+str(target))
+
+
+if __name__==&#x27;__main__&#x27;:
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(&#x27;--check&#x27;,action=&#x27;store_true&#x27;); parser.add_argument(&#x27;--zip&#x27;,action=&#x27;store_true&#x27;)
+    args=parser.parse_args()
+    try:
+        if args.check: check()
+        elif args.zip: check(); bundle()
+        else: build()
+    except (RuntimeError,subprocess.CalledProcessError) as error:
+        sys.exit(str(error))
+</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Snapshot: September 5, 2026</span></footer>
+</div>
+</body></html>

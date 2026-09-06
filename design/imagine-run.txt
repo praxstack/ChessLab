@@ -1,0 +1,41 @@
+Generating the 17 ChessLab mockups with Imagine, two at a time, starting with conversation and home.Conversation and home are saved. Generating opponent setup and PGN import next.Setup and import are saved. Generating play and review next.Your-idea and opponent-reply are saved. Generating compare and return next.All 17 `image_gen` calls succeeded. Session JPEGs only; no extra variants.
+
+| ID | Status | Absolute path |
+|---|---|---|
+| 01-conversation | success | `/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/2.jpg` |
+| 02-home | success | `/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/3.jpg` |
+| 03-game-setup | success | `/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/4.jpg` |
+| 04-import | success | `/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/5.jpg` |
+| 05-play | success | `/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/6.jpg` |
+| 06-review | success | `/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/7.jpg` |
+| 07-your-idea | success | `/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/8.jpg` |
+| 08-opponent-reply | success | `/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/9.jpg` |
+| 09-compare | success | `/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/10.jpg` |
+| 10-return | success | `/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/11.jpg` |
+| 11-notebook | success | `/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/12.jpg` |
+| 12-practice | success | `/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/13.jpg` |
+| 13-progress | success | `/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/14.jpg` |
+| 14-mobile | success | `/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/15.jpg` |
+| 15-recovery | success | `/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/16.jpg` |
+| 16-accessibility | success | `/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/17.jpg` |
+| 17-pricing | success | `/Users/prax/.grok/sessions/%2FUsers%2Fprax%2FDeveloper%2FChessLab%2Fdesign%2Fmockups/01a07858-7f60-7f72-91d2-263c1d00653e/images/18.jpg` |
+
+Session-relative files: `images/2.jpg` through `images/18.jpg`. `images/1.jpg` is the prior-turn image, not in this batch.
+
+![01-conversation](images/2.jpg)
+![02-home](images/3.jpg)
+![03-game-setup](images/4.jpg)
+![04-import](images/5.jpg)
+![05-play](images/6.jpg)
+![06-review](images/7.jpg)
+![07-your-idea](images/8.jpg)
+![08-opponent-reply](images/9.jpg)
+![09-compare](images/10.jpg)
+![10-return](images/11.jpg)
+![11-notebook](images/12.jpg)
+![12-practice](images/13.jpg)
+![13-progress](images/14.jpg)
+![14-mobile](images/15.jpg)
+![15-recovery](images/16.jpg)
+![16-accessibility](images/17.jpg)
+![17-pricing](images/18.jpg)

@@ -1,0 +1,49 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gemini corrected report · ChessLab concepts</title><link rel="stylesheet" href="gallery.css"></head><body>
+<a class="skip" href="#main">Skip to content</a><header><a class="brand" href="index.html">♞ ChessLab <span>DESIGN STUDIES</span></a><nav aria-label="Main navigation"><a href="index.html">Mockups</a><a href="video.html">Recording</a><a href="frame-study.html">Frame study</a><a href="findings.html">What we learned</a><a href="sources.html" aria-current="page">Sources & limits</a></nav></header>
+<main id="main"><aside class="notice">Model output, with known first-response errors corrected. Not an independently certified transcript. Read <a href="findings.html">our checks and qualifications</a>.</aside><article class="prose"><h1 id="gemini-web-corrected-video-report">Gemini web: corrected video report</h1>
+<p>Source: <a href="https://gemini.google.com/app/40b81ba15c026fb1">Gemini conversation</a>, using the uploaded <code>chess-session-review.mp4</code>. Observed UI mode: <strong>Flash Extended</strong>; exact backend model version was not exposed. Retrieved September 7, 2026, Asia/Kolkata.</p>
+<p>The following is Gemini's corrected response, preserved as model output. It is not a certified transcript. The accompanying findings page identifies the independent checks and qualifications. The first response contained errors, including reading the opening reply as d5 instead of e6 and reading the coach label as 601 instead of 687.</p>
+<h2 id="ingestion-and-audit-statement">Ingestion and audit statement</h2>
+<p>The 15:20 recording and multi-track audio were ingested and audited. Analysis of recorded video can produce discrepancies due to resolution, compression artifacts, and UI scaling. This revised audit corrects previous errors: Black's opening move is visibly 1... e6 (not d5), and the initial coach label in the opening frame is Coach Dr. Wolf (687) (not 601).</p>
+<h2 id="timestamped-observable-stages">Timestamped observable stages</h2>
+<ul>
+<li><strong>00:00–00:52:</strong> Game begins against Coach Dr. Wolf (687). White plays 1. d4, Black responds 1... e6, followed by 2. e4 Bb4+ and 3. c3.</li>
+<li><strong>00:53–02:40:</strong> Pieces develop into the center; coach provides synthesized commentary on moves, checks, and piece retreats.</li>
+<li><strong>04:09–04:18:</strong> The user opens the "Choose Your Coach" modal displaying multiple character options and selects Coach Ben (687).</li>
+<li><strong>04:19–08:35:</strong> Play resumes with Coach Ben; White castles queenside and attacks Black's king with Queen and Rook checks.</li>
+<li><strong>08:36–09:42:</strong> White delivers checkmate. A modal announces the win with a primary Game Review button.</li>
+<li><strong>09:43–10:13:</strong> User clicks Game Review. The screen transitions to a summary screen displaying move classification counts and overall accuracy figures.</li>
+<li><strong>10:14–10:48:</strong> User opens the Settings dialog, displaying tabs for Engine, Interface, Board, and Review (adjusting engine selection, analysis time, and thread sliders).</li>
+<li><strong>10:49–11:22:</strong> Screen sharing temporarily drops and reconnects via macOS system prompts.</li>
+<li><strong>11:23–12:43:</strong> Step-by-step Game Review begins. User steps through plies using Next, observing move badges and colored directional arrows.</li>
+<li><strong>12:44–13:45:</strong> User manually makes an alternative move (b4) on the review board. The interface branches, displays coach text, and reveals a green Resume button to return to the played game.</li>
+<li><strong>13:46–15:20:</strong> User navigates remaining plies, opens the Skills tab breakdown, briefly checks an OS menu-bar utility, and steps to the final checkmate.</li>
+</ul>
+<h2 id="visible-controls">Visible controls</h2>
+<ul>
+<li>Stepper buttons (Next, Previous, Play/Pause, jump to start/end).</li>
+<li>Coach selection dialog with character avatars.</li>
+<li>Move classification panel (Best, Excellent, Inaccuracy, Mistake, Miss, Blunder).</li>
+<li>Contextual Explain button and post-branch Resume button.</li>
+<li>Settings modal controlling engine lines, depth, threads, and board arrows.</li>
+</ul>
+<h2 id="features-not-established-from-the-recording">Features not established from the recording</h2>
+<ul>
+<li>No text box, microphone input, or prompt affordance for user questions.</li>
+<li>No side-by-side board comparison between actual and candidate lines.</li>
+<li>The internal backend architecture (template vs. generative audio) cannot be determined from UI pixels.</li>
+<li>Ground-truth engine evaluation accuracy cannot be independently certified.</li>
+</ul>
+<h2 id="audio-summary">Audio summary</h2>
+<p><strong>Platform audio:</strong> Synthesized English commentary delivers persona-specific reactions to captures, checks, and tactical opportunities.</p>
+<p><strong>Ambient dialogue (Hindi):</strong> Two participants discuss game moves, screen-share lag, the utility of arrows, the inability to ask the coach follow-up questions, and daily computing limits.</p>
+<h2 id="five-design-implications-suggested-by-gemini">Five design implications suggested by Gemini</h2>
+<ol type="1">
+<li>Provide an inline text and voice input at the bottom of the review pane, allowing learners to ask "Why?" after any move.</li>
+<li>Render candidate variations beside the actual game board instead of temporarily displacing the move list.</li>
+<li>Maintain a banner indicating branch depth with a one-click return to the main PGN.</li>
+<li>Provide conceptual breakdowns that explain opponent threats.</li>
+<li>Enable spoken coaching that learners can interrupt with natural voice queries.</li>
+</ol>
+<p>These are design suggestions. Voice remains optional, and the full mockup set is not an implementation commitment.</p>
+</article></main><footer><span>07 September 2026 · Grok Imagine × Gemini video research</span><span>Concept images. No playable chess application.</span></footer><script src="gallery.js"></script></body></html>

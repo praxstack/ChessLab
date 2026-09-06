@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Spec · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/explore-one-mistake/specs/mistake-exploration/spec.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/explore-one-mistake/specs/mistake-exploration/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/explore-one-mistake/specs/mistake-exploration/spec.md<br>SHA-256: 85da5f9a6c2d1c0cd371fe026f745438d8ab8a7af375bc23f0af5d3a76a9d8a9</p><h3 id="purpose">Purpose</h3>
+<p>Help learners inspect a confusing move through legal alternatives and board evidence while preserving the original game and their exploration history.</p>
+<h3 id="added-requirements">ADDED Requirements</h3>
+<h4 id="requirement-cl-001-preserve-imported-game-state">Requirement: CL-001 Preserve imported game state</h4>
+<p>The system SHALL import a completed standard-chess PGN, preserve its original mainline, and reconstruct each position with its move history. It SHALL reject invalid input without replacing the existing study. Imported comments SHALL be treated as display data, not executable instructions.</p>
+<h5 id="scenario-import-and-revisit">Scenario: Import and revisit</h5>
+<ul>
+<li><strong>WHEN</strong> a learner imports a valid completed game and selects an earlier move</li>
+<li><strong>THEN</strong> the board, side to move, castling rights, en-passant state and draw-relevant history match replay of the original game to that move</li>
+</ul>
+<h5 id="scenario-invalid-or-ongoing-import">Scenario: Invalid or ongoing import</h5>
+<ul>
+<li><strong>WHEN</strong> a learner submits malformed PGN, an illegal move sequence, or a game marked ongoing</li>
+<li><strong>THEN</strong> the system explains the rejection and preserves the current study unchanged</li>
+</ul>
+<h4 id="requirement-cl-002-explore-nested-legal-alternatives">Requirement: CL-002 Explore nested legal alternatives</h4>
+<p>The system SHALL permit legal alternatives for either side at any selected node, including nodes inside an existing branch. Alternatives SHALL leave the original mainline and sibling branches unchanged.</p>
+<h5 id="scenario-alternative-inside-an-alternative">Scenario: Alternative inside an alternative</h5>
+<ul>
+<li><strong>WHEN</strong> a learner branches at a snapshot, plays a reply, and creates a second alternative inside that branch</li>
+<li><strong>THEN</strong> both branches remain navigable with their correct parent positions and the original game remains intact</li>
+</ul>
+<h5 id="scenario-illegal-move">Scenario: Illegal move</h5>
+<ul>
+<li><strong>WHEN</strong> a proposed move is illegal in the selected position</li>
+<li><strong>THEN</strong> no node is created, the board remains unchanged, and the learner receives a reason or legal-move guidance</li>
+</ul>
+<h4 id="requirement-cl-003-return-and-compare">Requirement: CL-003 Return and compare</h4>
+<p>The system SHALL distinguish the selected branch from the actual game, return to the exploration anchor or a selected actual-game node, and compare two lines from their common position without changing either line.</p>
+<h5 id="scenario-return-from-a-nested-branch">Scenario: Return from a nested branch</h5>
+<ul>
+<li><strong>WHEN</strong> the learner requests return to the anchor after exploring nested alternatives</li>
+<li><strong>THEN</strong> the exact anchor position, history, and associated question are restored and all explored branches remain available</li>
+</ul>
+<h5 id="scenario-compare-outcomes">Scenario: Compare outcomes</h5>
+<ul>
+<li><strong>WHEN</strong> the learner selects two continuations from the same position</li>
+<li><strong>THEN</strong> each line can be replayed and its material changes are labeled from the same player's perspective; engine estimates show their search limits</li>
+</ul>
+<h4 id="requirement-cl-004-attach-explanations-to-inspectable-evidence">Requirement: CL-004 Attach explanations to inspectable evidence</h4>
+<p>The system SHALL attach a question, learner prediction and explanation to the selected node. Every displayed move, capture, defender and material claim SHALL agree with replayed state. The first prototype SHALL disclose its supported explanation scope and distinguish an illustrative continuation from a forced result.</p>
+<h5 id="scenario-inspect-a-trade">Scenario: Inspect a trade</h5>
+<ul>
+<li><strong>WHEN</strong> the learner requests the supported capture-sequence explanation</li>
+<li><strong>THEN</strong> the board replays the full stated sequence, highlights the relevant pieces, and displays the material change after captures and recaptures</li>
+</ul>
+<h5 id="scenario-unsupported-answer-or-failed-analysis">Scenario: Unsupported answer or failed analysis</h5>
+<ul>
+<li><strong>WHEN</strong> no validated evidence supports a requested claim or analysis fails</li>
+<li><strong>THEN</strong> the system identifies the limitation, offers manual exploration, preserves the question, and does not invent a continuation or tactical verdict</li>
+</ul>
+<h4 id="requirement-cl-005-preserve-and-export-the-study">Requirement: CL-005 Preserve and export the study</h4>
+<p>The system SHALL save the actual game, branches, anchors and node questions locally, restore them after reload, and offer a portable study export. It SHALL disclose persistence failures before representing the work as saved.</p>
+<h5 id="scenario-reload-and-export">Scenario: Reload and export</h5>
+<ul>
+<li><strong>WHEN</strong> a saved study is reloaded or its export is imported into a fresh session</li>
+<li><strong>THEN</strong> the same actual-game moves, branch relationships and questions can be navigated and replayed</li>
+</ul>
+<h5 id="scenario-storage-failure">Scenario: Storage failure</h5>
+<ul>
+<li><strong>WHEN</strong> local storage rejects a save</li>
+<li><strong>THEN</strong> the current study remains usable in memory, the unsaved state is visible, and the learner can export it</li>
+</ul>
+<h4 id="requirement-cl-006-support-accessible-learning-controls">Requirement: CL-006 Support accessible learning controls</h4>
+<p>The system SHALL provide keyboard operation for board moves and branch navigation, visible focus, descriptive labels and a text equivalent for tactical overlays. Meaning SHALL not depend on color alone.</p>
+<h5 id="scenario-explore-without-dragging">Scenario: Explore without dragging</h5>
+<ul>
+<li><strong>WHEN</strong> a learner operates the board and return controls using only a keyboard</li>
+<li><strong>THEN</strong> they can select a legal move, explore a branch and return, with the selected position and control state available as text</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Snapshot: September 5, 2026</span></footer>
+</div>
+</body></html>

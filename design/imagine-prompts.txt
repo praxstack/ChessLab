@@ -1,0 +1,54 @@
+Generate actual Imagine image_gen UI mockups for ChessLab, not code or prose substitutes. Use the exact 17 distinct scenarios below. One image per scenario, 16:9 landscape except 14-mobile portrait 9:16. A quiet sophisticated BLUE learning product: pale cool blue-white backgrounds, dark navy text/sidebar, cobalt actions, subtle rose for alternative lines, restrained editorial serif headings with humanist sans-serif controls. DO NOT PRINT palette hex codes or font/style names on the UI. DO NOT draw physical cutlery or literal forks to represent branching. Avoid browser chrome, photo-real environments, floating decorative pieces, green competitor branding, random icons and promotional statistics. Keep 2D flat interface, crisp readable text, consistent navigation Study / Play / Review / Notebook. These are visual concepts, not engine-verified positions. Use simple illustrative boards, never promise a specific tactic or rating improvement. Prior image had stray palette codes, decorative forks, and unwanted Humanist nav text: regenerate scenario 01 cleanly as part of this batch.
+
+Use image_gen once for each scenario, maximum two concurrent generations. Do not spawn agents, run shell commands, read unrelated files, change settings, or modify application/spec files. The tool auto-saves JPEGs in session images; that is fine. Return a compact mapping from each scenario id to the ACTUAL generated file absolute path and tool status. Never claim generated screenshots exist without tool success. Stop after the listed 17 images; no unsolicited extra variants.
+
+01-conversation: Question the coach
+A desktop learning workspace. Board on left, large conversation panel on right. Learner asks What if they do not capture? Coach says Let us test another reply. Visible follow-up composer and mic. Compact line tree below with Actual game, Your idea and Opponent alternative. Return to game stays visible. No decorative forks or branching tendrils.
+
+02-home: Choose how to learn
+A welcoming study home with a modest heading What would you like to understand? Three clear actions Play a learning game, Review a completed game, Open a saved study. A small Continue your study row and optional New to chess? setup. This screen is about starting and returning, not a giant chessboard. No invented user statistics.
+
+03-game-setup: Choose your opponent
+AI game setup with difficulty choices Gentle, Balanced, Challenging; no promised Elo calibration. White or Black choice, untimed default, coaching preference Ask when I pause versus Offer hints. Primary Start learning game. A compact preview of the workspace, no need for full board.
+
+04-import: Bring a completed game
+PGN import screen with drop zone Choose PGN file, Paste PGN tab, parsed preview with players, result and move count explicitly labeled Example game. CTA Open review. Small note Completed games only. Keep the current saved study visible and safe. No fictional connected-account claims.
+
+05-play: Play and pause
+AI game in progress, blue board left, move list and quiet coach panel right. Primary Pause and ask, optional Hint and Undo. Coach stays quiet until asked. Display AI practice and Untimed. Show move navigation without suggesting assistance during external human games.
+
+06-review: Find the turning point
+Completed-game review overview with a restrained evaluation line chart and selected moment cards. Select a confusing move. Main selected card What did you expect here? with a text field for the learner prediction. Continue to position button. All metric labels are illustrative. No celebratory fabricated improvement statistics.
+
+07-your-idea: Test your own move
+A paused study with a blue board and clearly selected Your idea tab. A compact original-position thumbnail, alternative move arrow, coach says What reply are you expecting? A text field Your prediction and a button Explore this line. Persistent Original game preserved badge. Board is illustrative, do not write a claimed forced tactic.
+
+08-opponent-reply: Challenge the reply
+Nested what-if exploration. Main prominent question What if Black plays something else? Board left, two candidate reply tiles right, coach conversation and writable composer. Breadcrumb Actual game / Your idea / Opponent alternative. Allow choosing a legal reply for the side whose turn it is. Show a clear Back one step and Return to game.
+
+09-compare: Compare the consequences
+Two same-size study boards side by side labeled Played line and Your alternative. Synchronized move-step controls, a concise explanation difference panel underneath with Material, Threats and What changed. Ask about this difference composer. No made-up numerical engine verdicts. Clean analytical workspace.
+
+10-return: Return without losing your work
+A clear return-to-game state: large actual-game board restored; a non-blocking message Back at your original position; two saved branches visible in a compact study drawer. Resume AI game or Continue review primary action. Previously asked questions are attached to branches. No discard dialog needed to return.
+
+11-notebook: Keep the useful discovery
+Study notebook screen without a dominant board. Search saved studies, cards with titles Why my defender mattered and A different reply, small position thumbnails, branch counts labeled Example study, last-opened position. Selected note contains My takeaway, Saved questions, Reopen this position, Export study. Save status visible.
+
+12-practice: Try the lesson again
+Practice screen with one related board position and a short prompt What would you check before moving? Prediction input and Reveal a hint. Below, After your attempt: compare your reasoning. No hearts or punishment. No answer arrows shown before learner requests a hint.
+
+13-progress: See what you can explain
+Learning reflection dashboard, no dominant board. Sections Reviewed, Tried again, Still unclear. Example concepts Defenders, Exchanges, King safety. A prominent You explained this in your own words example note. Clearly mark Sample data. Avoid Elo gain promises and fake testimonials. Next useful practice CTA.
+
+14-mobile: Ask while looking at the board
+Portrait mobile UI shown as one clean device-free screen, not a phone on a desk. Blue square board top, clear selected position and branch breadcrumb; expandable chat bottom sheet with What if they move the knight? message. Composer supports text and microphone. Voice transcript preview with Edit and Send before submission. Thumb-friendly Return to game. Show voice permission only when user requests dictation.
+
+15-recovery: Recover without losing the study
+A landscape UX state sheet with THREE clearly separated readable panels. Panel one Invalid PGN at move 12, edit input and retry; existing study preserved. Panel two Coach unavailable, continue exploring the board and retry explanation. Panel three Could not save, keep study open with Export a copy. No false success or lost-work reassurance without evidence.
+
+16-accessibility: Make the workspace yours
+Settings screen with large text toggle, high contrast, reduced motion, coordinate labels, text equivalents for arrows, keyboard move entry. Show focus ring on an actual control and a compact sample board announcing White knight, f3, selected. Coaching detail Short or Step by step. Controls use text labels as well as color.
+
+17-pricing: Make the value and limits clear
+Pricing experiment concept with two restrained plan columns Free exploration and Guided study. Free includes board exploration and local studies; paid concept includes conversational coaching with clearly described usage allowance. Price placeholder To be tested, not an actual offer. Link What is included? and Cancel any time concept. Avoid fabricated user counts, sales badges and pretend checkout.

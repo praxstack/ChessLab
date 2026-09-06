@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Proposal · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Proposal</h1><p class="lede">openspec/changes/explore-one-mistake/proposal.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Proposal"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/explore-one-mistake/proposal.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/explore-one-mistake/proposal.md<br>SHA-256: 479bf3ccecba02e57713fd7bb3355d1fac15226fc69ebb7b7b5a80c14ae100e7</p><h3 id="why">Why</h3>
+<p>Players can recognize an engine's recommended move without understanding why their own idea fails. ChessLab should let them test an explanation by playing alternatives for either side and returning to their original game.</p>
+<p>Status: draft recommendation captured during project setup, not approved for implementation. No application behavior or learning outcome is verified.</p>
+<h3 id="what-changes">What Changes</h3>
+<ul>
+<li>Import a completed standard-chess PGN and preserve its original move sequence.</li>
+<li>Navigate to a snapshot, create alternatives inside alternatives, compare two lines, and return to the exact anchor or actual-game node.</li>
+<li>Attach a learner's question and prediction to a node. Show replayable evidence for a narrow set of capture/defense explanations with arrows and material changes.</li>
+<li>Preserve the study locally across reloads and allow export. Handle invalid data and failed saves without silently losing work.</li>
+</ul>
+<h3 id="capabilities">Capabilities</h3>
+<h4 id="new-capabilities">New Capabilities</h4>
+<ul>
+<li><code>mistake-exploration</code>: completed-game import, nested legal branches, evidence-backed inspection, comparison, and durable return to the actual game.</li>
+</ul>
+<h4 id="modified-capabilities">Modified Capabilities</h4>
+<p>None. No existing product specifications.</p>
+<h3 id="impact">Impact</h3>
+<p>A first browser prototype will need a board, an established rules library, local engine execution, and local persistence. Specific dependency versions and application licensing must be selected before implementation. No cloud account or API key is required for the first deterministic demonstration; model-assisted free-form answers can follow the same evidence boundary.</p>
+<h3 id="non-goals">Non-goals</h3>
+<p>This experiment excludes matchmaking, external live-game assistance, accounts, cloud sync, native clients, subscriptions, voice, human-model training and coach collaboration. Adjustable AI games remain part of the full vision, deferred from this first experiment. Fixed evidence explanations in the prototype must not be presented as unrestricted AI Q&amp;A.</p>
+<h3 id="open-decisions">Open decisions</h3>
+<p>Confirm the first implementation scope, choose the web dependencies and their licenses, and reconstruct educator-reviewed legal positions. Define a separate learner experiment before claiming improved learning or demand. The larger roadmap and TAM estimates are not delivery commitments.</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Snapshot: September 5, 2026</span></footer>
+</div>
+</body></html>

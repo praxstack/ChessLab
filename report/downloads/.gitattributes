@@ -1,0 +1,7 @@
+# Preserve supplied source bytes and their intentional Markdown hard breaks.
+docs/research/sources/* -text
+docs/research/sources/*.md whitespace=-blank-at-eol,-blank-at-eof
+
+# Preserve captured model output and mirrored source documents as received.
+design/video/*.md whitespace=-blank-at-eol,-blank-at-eof
+report/downloads/docs/research/sources/*.md whitespace=-blank-at-eol,-blank-at-eof

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Architecture · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Architecture</h1><p class="lede">docs/dossier/architecture.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Architecture"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/docs/dossier/architecture.md" download>Download original file ↗</a></div><p class="source-meta">docs/dossier/architecture.md<br>SHA-256: 02fc4886449157ac62185c4dd5fd4bdd20acf2987250bc30926319d9c98033c8</p><h3 id="keep-chess-authority-separate-from-explanation">Keep chess authority separate from explanation</h3>
+<p>An established rules library owns legal moves and state. Stockfish supplies search results with stated limits. Deterministic extraction supplies inspectable facts about captures, material and supported piece relationships. A language model can explain those facts; it must not invent missing board evidence.</p>
+<p>[Interactive component: architecture. See the dossier chapter.]</p>
+<h3 id="the-simplest-credible-initial-architecture">The simplest credible initial architecture</h3>
+<p>One browser application can hold the board, original game, variation tree, questions, local engine worker and local storage. The initial deterministic demonstration does not need an account service, queue, cloud database, model gateway, vector store or new model training.</p>
+<p>The existing draft recommends TypeScript, a rules library such as chess.js, a suitable board component, a worker-based Stockfish integration and IndexedDB. No application dependencies or versions are installed or accepted yet. These are design recommendations, distinct from the Python/Pandoc tooling used to generate this report.</p>
+<h3 id="state-that-cannot-be-hand-waved-away">State that cannot be hand-waved away</h3>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Record</th>
+<th>Necessary responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Original game</td>
+<td>Preserve imported moves, source and completion status</td>
+</tr>
+<tr>
+<td>Snapshot</td>
+<td>Preserve enough lineage to reconstruct the full rule state</td>
+</tr>
+<tr>
+<td>Branch</td>
+<td>Attach legal moves to the correct parent without modifying siblings</td>
+</tr>
+<tr>
+<td>Selected node and anchor</td>
+<td>Keep “where I am” separate from “where I want to return”</td>
+</tr>
+<tr>
+<td>Analysis result</td>
+<td>Record engine identity, limits, score perspective and the node/request it belongs to</td>
+</tr>
+<tr>
+<td>Explanation</td>
+<td>Attach text and visual commands to specific evidence and the correct question</td>
+</tr>
+<tr>
+<td>Study export</td>
+<td>Preserve branches and learning metadata, not only the mainline PGN</td>
+</tr>
+</tbody>
+</table></div>
+<p>FEN alone does not preserve repetition history. Two identical boards can belong to different histories or questions. Do not merge their study nodes simply because the board matches. Engine-result caching can be evaluated separately. <a href="https://official-stockfish.github.io/docs/stockfish-wiki/UCI-Protocol-and-Stockfish-Commands.html" rel="noreferrer noopener">Stockfish position-history guidance</a>.</p>
+<p>A late engine response must not annotate the position the learner selected after the request began. Save failures must be visible, with the current work retained in memory and export available. Invalid PGN or study imports must not replace the current valid study.</p>
+<h3 id="what-explainable-can-honestly-mean">What “explainable” can honestly mean</h3>
+<p>A replayed line proves that those moves can be executed and that the stated captures occurred. It does not prove that every alternative loses, that a move is forced, or that a strategic explanation is the best teaching explanation. Label engine scores as estimates at their search limits and distinguish an example continuation from a forced result.</p>
+<p>The motivating report exposes this problem. Its knight is already on a3, yet parts of the report propose <code>Na3</code>. The screenshots support the placement of the bishop, rook, knight and defender. They do not establish the report's invented evaluation numbers or a complete engine-verified analysis. The HTML arithmetic illustration is expressly conditional, not a playable or verified puzzle.</p>
+<h3 id="adjustable-opponents">Adjustable opponents</h3>
+<p>Stockfish offers strength controls, but an engine's calibrated setting is not automatically an online human rating. Human-move models address a different question: what players at a level tend to choose. <a href="https://official-stockfish.github.io/docs/stockfish-wiki/UCI-Protocol-and-Stockfish-Commands.html" rel="noreferrer noopener">Stockfish interface</a>.</p>
+<p>A current research correction matters: the official Maia-2 repository now recommends Maia-3 for new projects. The supplied report's Maia-2 recommendation should therefore be revisited when sparring is implemented. Model weights, licenses, hardware needs and calibration still require direct evaluation; no Maia model was installed here. <a href="https://github.com/CSSLab/maia2" rel="noreferrer noopener">Official Maia-2 repository</a>.</p>
+<h3 id="boundaries-before-a-public-release">Boundaries before a public release</h3>
+<ul>
+<li>Keep imported text and PGN comments as data. Render them safely and prevent them from changing agent instructions.</li>
+<li>Do not send provider secrets to browser code. If hosted model answers are introduced, put credentials behind an appropriate server boundary.</li>
+<li>Review licensing for the rules library, board, engine build, model weights and imported content. Maintain exact-source provenance for distributed components.</li>
+<li>Provide export, deletion and understandable retention rules before accumulating learner histories.</li>
+<li>Restrict platform integrations to permitted completed-game workflows. External assistance in ongoing human games conflicts with platform fair-play rules. <a href="https://www.chess.com/legal/fair-play" rel="noreferrer noopener">Chess.com</a> · <a href="https://lichess.org/page/fair-play" rel="noreferrer noopener">Lichess</a>.</li>
+</ul>
+<p>A raw PGN result marker is not a trustworthy universal detector of a live game. Avoid advertising an infallible “Fair Play Lock.” The first product should simply avoid live-board overlays and live-human-game integration.</p>
+<h3 id="roadmap-with-evidence-at-each-step">Roadmap with evidence at each step</h3>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Build or learn</th>
+<th>Evidence to move forward</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Current</td>
+<td>Research, skill setup, draft OpenSpec and this dossier</td>
+<td>Files and setup/report checks only</td>
+</tr>
+<tr>
+<td>Interaction prototype</td>
+<td>One legal completed-game exploration</td>
+<td>Real learner can branch, compare and return</td>
+</tr>
+<tr>
+<td>Teaching pilot</td>
+<td>Supported explanations and related retries</td>
+<td>Correct explanations and observed independent understanding</td>
+</tr>
+<tr>
+<td>Repeat-use pilot</td>
+<td>Reliable saves, imports and follow-up practice</td>
+<td>Learners return after subsequent games</td>
+</tr>
+<tr>
+<td>Commercial test</td>
+<td>Concrete paid offer and measured support/serving costs</td>
+<td>Transactions, cancellation reasons and contribution economics</td>
+</tr>
+<tr>
+<td>Expansion</td>
+<td>In-product AI games, broader Q&amp;A, collaboration or sync</td>
+<td>A demonstrated need, with scope and budget agreed</td>
+</tr>
+</tbody>
+</table></div>
+<p>The source's six-month roadmap, service diagram and broader feature inventory remain available in full in the library. They are not the minimum architecture or an approved delivery schedule.</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Snapshot: September 5, 2026</span></footer>
+</div>
+</body></html>

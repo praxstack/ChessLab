@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Check Report Browser · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Check Report Browser</h1><p class="lede">scripts/check_report_browser.cjs</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Check Report Browser"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/check_report_browser.cjs" download>Download original file ↗</a></div><p class="source-meta">scripts/check_report_browser.cjs<br>SHA-256: 6e90055e141a78446b707f8b1064712ff6038bfc656f40d811faf29c45b83c93</p><pre><code>/* Check the reading site with the already-installed Playwright runtime. */
+const assert = require(&#x27;node:assert/strict&#x27;);
+const fs = require(&#x27;node:fs&#x27;);
+const path = require(&#x27;node:path&#x27;);
+const os = require(&#x27;node:os&#x27;);
+const root = path.resolve(__dirname, &#x27;..&#x27;);
+const packageRoot = process.env.CHESSLAB_PLAYWRIGHT_ROOT || path.join(os.homedir(), &#x27;.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright&#x27;);
+const { chromium } = require(packageRoot);
+
+(async () =&gt; {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1050 } });
+  const errors = [];
+  const requests = [];
+  page.on(&#x27;pageerror&#x27;, error =&gt; errors.push(error.message));
+  page.on(&#x27;request&#x27;, request =&gt; { if (/^https?:/.test(request.url())) requests.push(request.url()); });
+  const base = &#x27;file://&#x27; + path.join(root, &#x27;report&#x27;) + &#x27;/&#x27;;
+  const chapters = [&#x27;index&#x27;,&#x27;product&#x27;,&#x27;market&#x27;,&#x27;pricing&#x27;,&#x27;investor&#x27;,&#x27;architecture&#x27;,&#x27;delivery&#x27;,&#x27;discussion&#x27;,&#x27;library&#x27;];
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, &#x27;report/manifest.json&#x27;)));
+  const htmlPages = Object.keys(manifest.output_hashes).filter(p =&gt; p.endsWith(&#x27;.html&#x27;) &amp;&amp; !p.startsWith(&#x27;downloads/&#x27;));
+  try {
+    for (const filename of htmlPages) {
+      await page.goto(base + filename);
+      assert.match(await page.title(), /ChessLab dossier$/);
+      assert.equal(await page.locator(&#x27;main&#x27;).count(), 1);
+      assert.ok(await page.locator(&#x27;article&#x27;).innerText());
+      assert.equal(await page.evaluate(() =&gt; document.documentElement.scrollWidth &lt;= innerWidth + 1), true, filename + &#x27; overflows desktop&#x27;);
+      assert.equal(await page.locator(&#x27;[aria-current=&quot;page&quot;]&#x27;).count(), 1);
+      const images = await page.locator(&#x27;img&#x27;).evaluateAll(nodes =&gt; nodes.filter(n =&gt; !n.getAttribute(&#x27;alt&#x27;)).length);
+      assert.equal(images, 0, filename + &#x27; has image without alt text&#x27;);
+    }
+    await page.goto(base + &#x27;index.html&#x27;);
+    await page.getByRole(&#x27;button&#x27;, {name: /Trade rook for bishop/}).click();
+    assert.match(await page.locator(&#x27;#exchange-result&#x27;).innerText(), /5 − 3 = 2/);
+    await page.getByRole(&#x27;button&#x27;, {name: /Lose the knight/}).click();
+    assert.match(await page.locator(&#x27;#exchange-result&#x27;).innerText(), /3 points lost/);
+    const squareSizes = await page.locator(&#x27;.sq&#x27;).evaluateAll(nodes =&gt; nodes.map(n =&gt; ({w:n.offsetWidth,h:n.offsetHeight})));
+    assert.ok(squareSizes.every(s =&gt; Math.abs(s.w-s.h) &lt;= 1), &#x27;Board cells must be square&#x27;);
+    await page.goto(base + &#x27;product.html&#x27;);
+    await page.getByRole(&#x27;button&#x27;, {name:&#x27;Explore&#x27;,exact:true}).click();
+    assert.equal(await page.locator(&#x27;#concept-title&#x27;).innerText(), &#x27;Explore a different reply&#x27;);
+    await page.getByRole(&#x27;button&#x27;, {name:&#x27;Return&#x27;,exact:true}).click();
+    assert.equal(await page.locator(&#x27;#concept-title&#x27;).innerText(), &#x27;Return to the actual game&#x27;);
+    await page.goto(base + &#x27;pricing.html&#x27;);
+    assert.equal(await page.locator(&#x27;#contribution&#x27;).innerText(), &#x27;$7,730.00&#x27;);
+    await page.locator(&#x27;#payers&#x27;).fill(&#x27;0&#x27;);
+    assert.equal(await page.locator(&#x27;#revenue&#x27;).innerText(), &#x27;$0.00&#x27;);
+    await page.locator(&#x27;#payers&#x27;).fill(&#x27;100&#x27;);
+    await page.locator(&#x27;#price&#x27;).fill(&#x27;10&#x27;);
+    await page.locator(&#x27;#sessions&#x27;).fill(&#x27;10&#x27;);
+    await page.locator(&#x27;#unit-cost&#x27;).fill(&#x27;1&#x27;);
+    await page.locator(&#x27;#fee&#x27;).fill(&#x27;5&#x27;);
+    assert.equal(await page.locator(&#x27;#contribution&#x27;).innerText(), &#x27;-$50.00&#x27;);
+    await page.locator(&#x27;#fee&#x27;).fill(&#x27;101&#x27;);
+    assert.equal(await page.locator(&#x27;#revenue&#x27;).innerText(), &#x27;—&#x27;);
+    assert.match(await page.locator(&#x27;#calc-error&#x27;).innerText(), /0–100%/);
+    await page.locator(&#x27;#fee&#x27;).fill(&#x27;5&#x27;);
+    await page.locator(&#x27;#currency&#x27;).selectOption(&#x27;INR&#x27;);
+    assert.match(await page.locator(&#x27;#revenue&#x27;).innerText(), /₹1,000/);
+    await page.goto(base + &#x27;library.html&#x27;);
+    await page.locator(&#x27;#document-search&#x27;).fill(&#x27;startup research&#x27;);
+    assert.equal(await page.locator(&#x27;.document-card:visible&#x27;).count(), 2);
+    await page.locator(&#x27;#document-search&#x27;).fill(&#x27;no-such-document-123&#x27;);
+    assert.equal(await page.locator(&#x27;.document-card:visible&#x27;).count(), 0);
+    assert.equal(await page.locator(&#x27;#no-documents&#x27;).isVisible(), true);
+    await page.locator(&#x27;#document-search&#x27;).fill(&#x27;&#x27;);
+    await page.locator(&#x27;#document-category&#x27;).selectOption(&#x27;OpenSpec&#x27;);
+    assert.equal(await page.locator(&#x27;.document-card:visible&#x27;).count(), 6);
+    for (const width of [390, 320]) {
+      await page.setViewportSize({ width, height: 844 });
+      for (const chapter of chapters) {
+        await page.goto(base + chapter + &#x27;.html&#x27;);
+        assert.equal(await page.evaluate(() =&gt; document.documentElement.scrollWidth &lt;= innerWidth + 1), true, chapter + &#x27; overflows &#x27; + width);
+      }
+    }
+    await page.goto(base + &#x27;index.html&#x27;);
+    await page.getByRole(&#x27;button&#x27;,{name:/Chapters/}).click();
+    assert.equal(await page.locator(&#x27;#chapter-nav&#x27;).isVisible(), true);
+    await page.getByRole(&#x27;link&#x27;,{name:&#x27;Investor memo&#x27;,exact:true}).click();
+    assert.match(page.url(), /investor.html$/);
+    await page.emulateMedia({ reducedMotion:&#x27;reduce&#x27;, media:&#x27;print&#x27; });
+    assert.equal(await page.locator(&#x27;.sidebar&#x27;).isVisible(), false);
+    await page.emulateMedia({ media:&#x27;screen&#x27; });
+    await page.goto(base+&#x27;index.html&#x27;);
+    await page.setViewportSize({width:390,height:844});
+    await page.screenshot({path:path.join(root,&#x27;report-mobile.png&#x27;),fullPage:false});
+    await page.setViewportSize({width:1440,height:1050});
+    await page.screenshot({path:path.join(root,&#x27;report-desktop.png&#x27;),fullPage:false});
+    assert.deepEqual(errors, []);
+    assert.deepEqual(requests, [], &#x27;Local site should not request external runtime resources&#x27;);
+    const result = {status:&#x27;pass&#x27;,checked_at:new Date().toISOString(),html_pages_opened:htmlPages.length,chapter_mobile_widths:[390,320],checks:[&#x27;file:// operation&#x27;,&#x27;desktop overflow&#x27;,&#x27;navigation&#x27;,&#x27;document search and filter&#x27;,&#x27;exchange arithmetic&#x27;,&#x27;product concept controls&#x27;,&#x27;pricing defaults, zero, negative margin and invalid input&#x27;,&#x27;currency display&#x27;,&#x27;mobile navigation&#x27;,&#x27;print layout&#x27;,&#x27;no JavaScript page errors&#x27;,&#x27;no HTTP(S) runtime requests&#x27;],limitations:[&#x27;No chess engine or product functionality tested&#x27;,&#x27;Not a full accessibility audit&#x27;,&#x27;External source links were not crawled as part of browser tests&#x27;,&#x27;Full behavioral skill benchmarks were not run&#x27;]};
+    result.manifest_sha256 = require(&#x27;node:crypto&#x27;).createHash(&#x27;sha256&#x27;).update(fs.readFileSync(path.join(root,&#x27;report/manifest.json&#x27;))).digest(&#x27;hex&#x27;);
+    fs.writeFileSync(path.join(root,&#x27;report/verification.json&#x27;),JSON.stringify(result,null,2)+&#x27;\n&#x27;);
+    console.log(&#x27;PASS: &#x27;+htmlPages.length+&#x27; document/chapter pages; offline interactions, desktop/mobile, print and no external runtime requests&#x27;);
+  } finally { await browser.close(); }
+})().catch(error =&gt; { console.error(error); process.exit(1); });
+</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Snapshot: September 5, 2026</span></footer>
+</div>
+</body></html>

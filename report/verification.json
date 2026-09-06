@@ -1,0 +1,40 @@
+{
+  "status": "pass",
+  "checked_at": "2026-09-05T16:20:38.226Z",
+  "html_pages_opened": 53,
+  "chapter_mobile_widths": [
+    390,
+    320
+  ],
+  "checks": [
+    "file:// operation",
+    "desktop overflow",
+    "navigation",
+    "document search and filter",
+    "exchange arithmetic",
+    "product concept controls",
+    "pricing defaults, zero, negative margin and invalid input",
+    "currency display",
+    "mobile navigation",
+    "print layout",
+    "no JavaScript page errors",
+    "no HTTP(S) runtime requests"
+  ],
+  "limitations": [
+    "No chess engine or product functionality tested",
+    "Not a full accessibility audit",
+    "External source links were not crawled as part of browser tests",
+    "Full behavioral skill benchmarks were not run"
+  ],
+  "manifest_sha256": "ec7651d314a330008f9e21755657684545f47cfb0a978724ae6ec9ee2ad3bc9a",
+  "historical_receipt_note": "The original browser results above describe the 2026-09-05 build and its recorded manifest. They were not rerun during the archive commit.",
+  "archive_checks": {
+    "checked_at_utc": "2026-09-06T22:11:36.989571+00:00",
+    "manifest_sha256": "3a0e4da6571bee258bffbb716f58323b23409d85bad6d2b8ef2ea510922cff59",
+    "static_dossier": "PASS: 54 HTML pages, 1180 local links, source/output hashes and inventory",
+    "static_design_gallery": "PASS: 27 HTML pages, 651 local links, image receipts, frame inventory, hashes, full-duration audio/video",
+    "just_test": "passed",
+    "openspec_validation": "passed separately",
+    "just_check": "fails on existing global gstack-cso entrypoint hash drift; manifest unchanged"
+  }
+}

@@ -1,0 +1,104 @@
+[
+  {
+    "id": "01-conversation",
+    "title": "Question the coach",
+    "phase": "Explore",
+    "brief": "A desktop learning workspace. Board on left, large conversation panel on right. Learner asks What if they do not capture? Coach says Let us test another reply. Visible follow-up composer and mic. Compact line tree below with Actual game, Your idea and Opponent alternative. Return to game stays visible. No decorative forks or branching tendrils."
+  },
+  {
+    "id": "02-home",
+    "title": "Choose how to learn",
+    "phase": "Start",
+    "brief": "A welcoming study home with a modest heading What would you like to understand? Three clear actions Play a learning game, Review a completed game, Open a saved study. A small Continue your study row and optional New to chess? setup. This screen is about starting and returning, not a giant chessboard. No invented user statistics."
+  },
+  {
+    "id": "03-game-setup",
+    "title": "Choose your opponent",
+    "phase": "Start",
+    "brief": "AI game setup with difficulty choices Gentle, Balanced, Challenging; no promised Elo calibration. White or Black choice, untimed default, coaching preference Ask when I pause versus Offer hints. Primary Start learning game. A compact preview of the workspace, no need for full board."
+  },
+  {
+    "id": "04-import",
+    "title": "Bring a completed game",
+    "phase": "Start",
+    "brief": "PGN import screen with drop zone Choose PGN file, Paste PGN tab, parsed preview with players, result and move count explicitly labeled Example game. CTA Open review. Small note Completed games only. Keep the current saved study visible and safe. No fictional connected-account claims."
+  },
+  {
+    "id": "05-play",
+    "title": "Play and pause",
+    "phase": "Play",
+    "brief": "AI game in progress, blue board left, move list and quiet coach panel right. Primary Pause and ask, optional Hint and Undo. Coach stays quiet until asked. Display AI practice and Untimed. Show move navigation without suggesting assistance during external human games."
+  },
+  {
+    "id": "06-review",
+    "title": "Find the turning point",
+    "phase": "Review",
+    "brief": "Completed-game review overview with a restrained evaluation line chart and selected moment cards. Select a confusing move. Main selected card What did you expect here? with a text field for the learner prediction. Continue to position button. All metric labels are illustrative. No celebratory fabricated improvement statistics."
+  },
+  {
+    "id": "07-your-idea",
+    "title": "Test your own move",
+    "phase": "Explore",
+    "brief": "A paused study with a blue board and clearly selected Your idea tab. A compact original-position thumbnail, alternative move arrow, coach says What reply are you expecting? A text field Your prediction and a button Explore this line. Persistent Original game preserved badge. Board is illustrative, do not write a claimed forced tactic."
+  },
+  {
+    "id": "08-opponent-reply",
+    "title": "Challenge the reply",
+    "phase": "Explore",
+    "brief": "Nested what-if exploration. Main prominent question What if Black plays something else? Board left, two candidate reply tiles right, coach conversation and writable composer. Breadcrumb Actual game / Your idea / Opponent alternative. Allow choosing a legal reply for the side whose turn it is. Show a clear Back one step and Return to game."
+  },
+  {
+    "id": "09-compare",
+    "title": "Compare the consequences",
+    "phase": "Explore",
+    "brief": "Two same-size study boards side by side labeled Played line and Your alternative. Synchronized move-step controls, a concise explanation difference panel underneath with Material, Threats and What changed. Ask about this difference composer. No made-up numerical engine verdicts. Clean analytical workspace."
+  },
+  {
+    "id": "10-return",
+    "title": "Return without losing your work",
+    "phase": "Explore",
+    "brief": "A clear return-to-game state: large actual-game board restored; a non-blocking message Back at your original position; two saved branches visible in a compact study drawer. Resume AI game or Continue review primary action. Previously asked questions are attached to branches. No discard dialog needed to return."
+  },
+  {
+    "id": "11-notebook",
+    "title": "Keep the useful discovery",
+    "phase": "Remember",
+    "brief": "Study notebook screen without a dominant board. Search saved studies, cards with titles Why my defender mattered and A different reply, small position thumbnails, branch counts labeled Example study, last-opened position. Selected note contains My takeaway, Saved questions, Reopen this position, Export study. Save status visible."
+  },
+  {
+    "id": "12-practice",
+    "title": "Try the lesson again",
+    "phase": "Remember",
+    "brief": "Practice screen with one related board position and a short prompt What would you check before moving? Prediction input and Reveal a hint. Below, After your attempt: compare your reasoning. No hearts or punishment. No answer arrows shown before learner requests a hint."
+  },
+  {
+    "id": "13-progress",
+    "title": "See what you can explain",
+    "phase": "Remember",
+    "brief": "Learning reflection dashboard, no dominant board. Sections Reviewed, Tried again, Still unclear. Example concepts Defenders, Exchanges, King safety. A prominent You explained this in your own words example note. Clearly mark Sample data. Avoid Elo gain promises and fake testimonials. Next useful practice CTA."
+  },
+  {
+    "id": "14-mobile",
+    "title": "Ask while looking at the board",
+    "phase": "Mobile",
+    "brief": "Portrait mobile UI shown as one clean device-free screen, not a phone on a desk. Blue square board top, clear selected position and branch breadcrumb; expandable chat bottom sheet with What if they move the knight? message. Composer supports text and microphone. Voice transcript preview with Edit and Send before submission. Thumb-friendly Return to game. Show voice permission only when user requests dictation."
+  },
+  {
+    "id": "15-recovery",
+    "title": "Recover without losing the study",
+    "phase": "Support",
+    "brief": "A landscape UX state sheet with THREE clearly separated readable panels. Panel one Invalid PGN at move 12, edit input and retry; existing study preserved. Panel two Coach unavailable, continue exploring the board and retry explanation. Panel three Could not save, keep study open with Export a copy. No false success or lost-work reassurance without evidence."
+  },
+  {
+    "id": "16-accessibility",
+    "title": "Make the workspace yours",
+    "phase": "Support",
+    "brief": "Settings screen with large text toggle, high contrast, reduced motion, coordinate labels, text equivalents for arrows, keyboard move entry. Show focus ring on an actual control and a compact sample board announcing White knight, f3, selected. Coaching detail Short or Step by step. Controls use text labels as well as color."
+  },
+  {
+    "id": "17-pricing",
+    "title": "Make the value and limits clear",
+    "phase": "Support",
+    "brief": "Pricing experiment concept with two restrained plan columns Free exploration and Guided study. Free includes board exploration and local studies; paid concept includes conversational coaching with clearly described usage allowance. Price placeholder To be tested, not an actual offer. Link What is included? and Cancel any time concept. Avoid fabricated user counts, sales badges and pretend checkout."
+  }
+]

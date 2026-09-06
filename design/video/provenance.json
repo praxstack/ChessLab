@@ -1,0 +1,21 @@
+{
+  "source": "/Users/prax/Desktop/Screen Recording 2026-09-07 at 12.48.45\u202fAM.mov",
+  "original_bytes": 666959711,
+  "compressed_bytes": 14991991,
+  "reduction_percent": 97.75,
+  "original_sha256": "688deb5aa6e003b8e0aec52986a78eec9864da236d3dc26f78c91ffc7c8bfb8f",
+  "compressed_sha256": "eda0fc8a904530a3bfce02d107cd33af456b718b99ee09b4b8e37ed7047b99bf",
+  "original_duration_seconds": 919.599375,
+  "compressed_duration_seconds": 919.583333,
+  "compressed_resolution": [
+    1600,
+    1036
+  ],
+  "compressed_fps": 12,
+  "audio": "AAC 64 kbps retained; not transcribed locally",
+  "command": "ffmpeg -i SOURCE -vf scale=1600:-2,fps=12 -c:v libx264 -preset veryfast -crf 27 -c:a aac -b:a 64k -movflags +faststart OUTPUT",
+  "gemini_route": "Antigravity view_file was denied by its pre-tool hook; Gemini web received the full MP4 and returned a response",
+  "gemini_conversation": "https://gemini.google.com/app/40b81ba15c026fb1",
+  "gemini_web_mode": "Flash Extended (exact backend version not exposed in observed UI)",
+  "manual_verification": "Targeted still-frame inspection, not a frame-by-frame or independently transcribed audio audit"
+}
