@@ -1,5 +1,13 @@
 import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
+import {resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
+const engineDirectory = resolve(process.env.CHESSLAB_ENGINES_DIR || fileURLToPath(new URL('../data/engines', import.meta.url)));
+const analysisCommands = {
+  stockfish18: () => [resolve(engineDirectory, 'stockfish18/stockfish'), []],
+  stockfish16: () => [resolve(engineDirectory, 'stockfish16/stockfish'), []],
+  'stockfish18-lite': () => [process.execPath, [resolve(engineDirectory, 'stockfish18-lite/stockfish-18-lite.js')]],
+};
 import { Chess } from 'chess.js';
 
 const UCI_MOVE = /^[a-h][1-8][a-h][1-8][qrbn]?$/;
@@ -45,27 +53,36 @@ function bounded(value, fallback, min, max, name) {
   return value;
 }
 
-async function withSlot(work) {
+const canceled = () => failure('Analysis canceled.', 499);
+async function withSlot(work, signal) {
+  if (signal?.aborted) throw canceled();
   if (closed) throw failure('Chess engine is shutting down.', 503);
   if (active >= 2) {
     if (waiting.length >= 8) throw failure('Chess engine is busy. Try again shortly.', 503);
     await new Promise((resolve, reject) => {
-      const entry = { resolve, reject, timer: null };
-      entry.timer = setTimeout(() => {
+      const cleanup = () => signal?.removeEventListener('abort', abort);
+      const entry = { resolve, reject, timer: null, cleanup };
+      const remove = error => {
         const index = waiting.indexOf(entry);
         if (index !== -1) waiting.splice(index, 1);
-        reject(failure('Chess engine queue timed out. Try again shortly.', 503));
+        clearTimeout(entry.timer); cleanup(); reject(error);
+      };
+      const abort = () => remove(canceled());
+      entry.timer = setTimeout(() => {
+        remove(failure('Chess engine queue timed out. Try again shortly.', 503));
       }, 15000);
       waiting.push(entry);
+      signal?.addEventListener('abort', abort, {once:true});
     });
   } else active++;
   try {
     if (closed) throw failure('Chess engine is shutting down.', 503);
+    if (signal?.aborted) throw canceled();
     return await work();
   }
   finally {
     const next = waiting.shift();
-    if (next) { clearTimeout(next.timer); next.resolve(); }
+    if (next) { clearTimeout(next.timer); next.cleanup(); next.resolve(); }
     else active--;
   }
 }
@@ -74,22 +91,27 @@ function enginePath() {
   return process.env.STOCKFISH_PATH || ['/opt/homebrew/bin/stockfish', '/usr/local/bin/stockfish', '/usr/games/stockfish'].find(existsSync) || 'stockfish';
 }
 
-function runUci({ moves, initialFen, board, movetime, lines, skill } = {}) {
+function runUci({ moves, initialFen, board, movetime, lines, skill, engineId, threads=1, signal } = {}) {
   // ponytail: fresh processes isolate searches; pool them if startup time becomes material.
   return new Promise((resolve, reject) => {
-    const child = spawn(enginePath(), [], { stdio: ['pipe', 'pipe', 'pipe'], shell: false });
+    if (signal?.aborted) return reject(canceled());
+    const [executable,args] = analysisCommands[engineId]?.() || [enginePath(), []];
+    const child = spawn(executable, args, { stdio: ['pipe', 'pipe', 'pipe'], shell: false });
     children.add(child);
     let settled = false;
     let phase = 'uci';
     let buffer = '';
     let totalBytes = 0;
     let name = '';
-    const variations = new Map();
+    const iterations = new Map();
     const timer = setTimeout(() => finish(failure('Stockfish search timed out. Try again.', 503)), (movetime || 0) + 4000);
+    const abort = () => finish(canceled());
+    signal?.addEventListener('abort', abort, {once:true});
     function finish(error, result) {
       if (settled) return;
       settled = true;
       clearTimeout(timer);
+      signal?.removeEventListener('abort', abort);
       children.delete(child);
       child.kill('SIGKILL');
       if (error) reject(error); else resolve(result);
@@ -102,7 +124,7 @@ function runUci({ moves, initialFen, board, movetime, lines, skill } = {}) {
       if (phase === 'uci' && line === 'uciok') {
         if (!name.toLowerCase().includes('stockfish')) return finish(failure('Configured engine did not identify as Stockfish.', 503));
         phase = 'ready';
-        write('setoption name Threads value 1');
+        write(`setoption name Threads value ${threads}`);
         write('setoption name Hash value 32');
         write(`setoption name MultiPV value ${lines || 1}`);
         write(`setoption name Skill Level value ${skill ?? 20}`);
@@ -128,12 +150,19 @@ function runUci({ moves, initialFen, board, movetime, lines, skill } = {}) {
         try {
           for (const move of candidateMoves) san.push(candidate.move(moveObject(move)).san);
         } catch { return; }
-        if (candidateMoves.length) variations.set(index, { move: candidateMoves[0], moves: candidateMoves, san, score: { type: match[1], value }, depth: Number(depth[1]) });
+        if (candidateMoves.length) {
+          const searchedDepth=Number(depth[1]);
+          if (!iterations.has(searchedDepth)) iterations.set(searchedDepth,new Map());
+          iterations.get(searchedDepth).set(index, { move: candidateMoves[0], moves: candidateMoves, san, score: { type: match[1], value }, depth: searchedDepth });
+        }
       } else if (phase === 'search' && line.startsWith('bestmove ')) {
         const bestmove = line.split(/\s+/)[1];
         try { replay([...moves, bestmove], initialFen); }
         catch { return finish(failure('Stockfish returned an invalid move.', 503)); }
-        const resultLines = [...variations.entries()].sort((a, b) => a[0] - b[0]).map(([, value]) => value);
+        // Rank changes during an unfinished MultiPV iteration must not duplicate candidates.
+        const ranked=[...iterations.entries()].sort((a,b)=>b[0]-a[0]).map(([,entries])=>[...entries.entries()].sort((a,b)=>a[0]-b[0]).map(([,value])=>value));
+        const complete=ranked.find(entries=>entries.length===Math.min(lines,board.moves().length)&&new Set(entries.map(line=>line.move)).size===entries.length);
+        const resultLines = complete || (ranked[0]||[]).filter((line,index,all)=>all.findIndex(item=>item.move===line.move)===index);
         if (!resultLines.length) return finish(failure('Stockfish returned no usable analysis. Try again.', 503));
         finish(null, { name, bestmove, lines: resultLines });
       }
@@ -221,13 +250,16 @@ export async function engineStatus() {
   catch { return { available: false, name: 'Stockfish' }; }
 }
 
-export async function analyze(input) {
+export async function analyze(input, {signal} = {}) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) throw failure('Provide an analysis request object.');
   const moves = Array.isArray(input.moves) ? [...input.moves] : input.moves;
   const initialFen = input.initialFen ?? null;
   const board = replay(moves, initialFen);
-  const movetime = bounded(input.movetime, 350, 50, 2000, 'movetime');
-  const lines = bounded(input.lines, 3, 1, 3, 'lines');
+  const engineId = input.engineId;
+  if (engineId !== undefined && (typeof engineId !== 'string' || (engineId !== 'stockfish19' && !Object.hasOwn(analysisCommands, engineId)))) throw failure('Choose an installed analysis engine.');
+  const threads = bounded(input.threads, 1, 1, engineId ? 8 : 1, 'threads');
+  const movetime = bounded(input.movetime, 350, 50, engineId ? 90000 : 2000, 'movetime');
+  const lines = bounded(input.lines, 3, 1, engineId ? 5 : 3, 'lines');
   const skill = bounded(input.skill, 20, 0, 20, 'skill');
   const playedMove = input.playedMove;
   let afterBoard;
@@ -236,13 +268,13 @@ export async function analyze(input) {
     afterBoard = replay([...moves, playedMove], initialFen);
   }
   return withSlot(async () => {
-    const result = await runUci({ moves, initialFen, board, movetime, lines, skill });
+    const result = await runUci({ moves, initialFen, board, movetime, lines, skill, engineId, threads, signal });
     const positionFacts = facts(board);
     const materialText = `Material: White ${positionFacts.material.white}, Black ${positionFacts.material.black}.`;
     const explanation = board.isGameOver() ? `${terminalText(board)} ${materialText}` : `${board.turn() === 'w' ? 'White' : 'Black'} to move${positionFacts.inCheck ? ', in check' : ''}. ${moveEvidence(board, result.bestmove).text} ${lineEvidence(board, result.lines[0].moves)} ${scoreText(result.lines[0].score)}`;
-    const analysis = { engine: result.name, fen: board.fen(), turn: board.turn(), bestmove: result.bestmove, lines: result.lines, limits: { movetime, lines }, facts: positionFacts, explanation };
+    const analysis = { engine: result.name, fen: board.fen(), turn: board.turn(), bestmove: result.bestmove, lines: result.lines, limits: { movetime, lines, ...(engineId ? {threads,engineId} : {}) }, facts: positionFacts, explanation };
     if (afterBoard) {
-      const after = await runUci({ moves: [...moves, playedMove], initialFen, board: afterBoard, movetime, lines: 1, skill: 20 });
+      const after = await runUci({ moves: [...moves, playedMove], initialFen, board: afterBoard, movetime, lines: 1, skill: 20, engineId, threads, signal });
       const beforeScore = result.lines[0]?.score;
       const afterScore = after.lines[0]?.score ?? (afterBoard.isGameOver() && !afterBoard.isCheckmate() ? { type: 'cp', value: 0 } : null);
       const lossCp = beforeScore?.type === 'cp' && afterScore?.type === 'cp' ? Math.max(0, Math.round((beforeScore.value - afterScore.value) * (board.turn() === 'w' ? 1 : -1))) : null;
@@ -255,11 +287,11 @@ export async function analyze(input) {
       analysis.played = { move: playedMove, san: evidence.san, classification, lossCp, afterScore, explanation: `${evidence.text} ${continuation} ${lossText}` };
     }
     return analysis;
-  });
+  }, signal);
 }
 
 export function closeEngine() {
   closed = true;
-  for (const entry of waiting.splice(0)) { clearTimeout(entry.timer); entry.reject(failure('Chess engine is shutting down.', 503)); }
+  for (const entry of waiting.splice(0)) { clearTimeout(entry.timer); entry.cleanup(); entry.reject(failure('Chess engine is shutting down.', 503)); }
   for (const child of children) child.kill('SIGKILL');
 }

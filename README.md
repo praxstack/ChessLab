@@ -2,7 +2,7 @@
 
 Play a bot, review a decision, try a different line, and return to the actual game.
 
-ChessLab now has a local web application with a large blue board, five bot levels, server analysis, saved variations, PGN import/export and accounts on the same server. Six original introductory lessons and six puzzles provide a small practice collection. The coach explains engine evidence. Learner questions are saved notes, not a free-form conversational AI.
+ChessLab now has a local web application with a large blue board, 17 bot profiles, multiple installed engine choices, clocks and assistance, server analysis, saved variations, PGN import/export and accounts on the same server. Six original introductory lessons and six puzzles provide a small practice collection. The coach explains engine evidence. Learner questions are saved notes, not a free-form conversational AI.
 
 The current build follows the user's platform-first direction: bot and coach play first. Human multiplayer and billing are deferred. It does not reproduce Chess.com's full platform, content library or scoring system. The full branching conversational tutor remains the longer-term objective.
 

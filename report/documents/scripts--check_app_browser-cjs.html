@@ -20,7 +20,7 @@
 <header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
 <main id="main" tabindex="-1">
 <header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Check App Browser</h1><p class="lede">scripts/check_app_browser.cjs</p></header>
-<div class="reading-layout"><article class="prose" aria-label="Check App Browser"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/check_app_browser.cjs" download>Download original file ↗</a></div><p class="source-meta">scripts/check_app_browser.cjs<br>SHA-256: 0103c0f53263bd0c32c085d289dacd2dd3fa2977548001e93666a1c6d6bec6a3</p><pre><code>/* Run after `npm run build`; uses a fresh database and the real server engine. */
+<div class="reading-layout"><article class="prose" aria-label="Check App Browser"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/check_app_browser.cjs" download>Download original file ↗</a></div><p class="source-meta">scripts/check_app_browser.cjs<br>SHA-256: 2543ad47d3a0843ac4cb5d8300d8cb8d85a2c667deae3047d27143888ead0ffb</p><pre><code>/* Run after `npm run build`; uses a fresh database and the real server engine. */
 const assert = require(&#x27;node:assert/strict&#x27;);
 const fs = require(&#x27;node:fs&#x27;);
 const path = require(&#x27;node:path&#x27;);
@@ -83,8 +83,8 @@ const { chromium } = require(packageRoot);
     const cookie = (await context.cookies(base)).find(item =&gt; item.name === &#x27;chesslab_session&#x27;);
     assert.ok(cookie?.httpOnly &amp;&amp; cookie.sameSite === &#x27;Strict&#x27;, &#x27;Session must be HttpOnly and SameSite=Strict.&#x27;);
 
-    await page.getByRole(&#x27;combobox&#x27;, { name: &#x27;BOT DIFFICULTY&#x27;, exact: true }).selectOption(&#x27;1&#x27;);
-    const created = await actionResponse(&#x27;/api/games&#x27;, () =&gt; page.locator(&#x27;.welcome-panel&#x27;).getByRole(&#x27;button&#x27;, { name: &#x27;Play coach&#x27;, exact: true }).click(), 201);
+    await page.getByRole(&#x27;button&#x27;, { name: &#x27;Play Martin, 250&#x27;, exact: true }).click();
+    const created = await actionResponse(&#x27;/api/games&#x27;, () =&gt; page.locator(&#x27;.welcome-panel&#x27;).getByRole(&#x27;button&#x27;, { name: &#x27;Play Martin&#x27;, exact: true }).click(), 201);
     const gameRoute = `/api/games/${created.game.id}`;
     const humanResponse = responseFor(`${gameRoute}/move`);
     const replied = await actionResponse(`${gameRoute}/bot`, () =&gt; enterMove(&#x27;e4&#x27;));

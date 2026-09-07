@@ -1,6 +1,6 @@
 # Running ChessLab
 
-ChessLab is a local web application for bot play and review. The browser uses React and chess.js. One Node server validates games, runs native Stockfish, and stores accounts, games and learning progress in SQLite.
+ChessLab is a local web application for bot play and review. The browser uses React and chess.js. One Node server validates games, runs installed chess engines and human-move models, and stores accounts, games and learning progress in SQLite.
 
 ## Install and start
 
@@ -40,7 +40,7 @@ Run commands from the repository root. Keep `.env` and `data/` out of Git. The r
 
 ## Play and review
 
-Choose White or Black and one of five practice levels, then select **Play coach**. An account is required to save a game. Usernames use 3 to 32 letters, digits, underscores or hyphens; passwords use 10 to 128 characters. Accounts work on this server only. There is no email provider, password recovery or cloud sync.
+Choose a bot portrait or the **Engines** tab. In **Game options**, select the opponent engine, target strength, color, clock and assistance, then press **Play**. An account is required to save a game. Usernames use 3 to 32 letters, digits, underscores or hyphens; passwords use 10 to 128 characters. Accounts work on this server only. There is no email provider, password recovery or cloud sync.
 
 Click a piece and destination, drag a piece, or enter SAN such as `Nf3` or UCI such as `g1f3` below the board. Promotion opens a piece choice. The server validates moves and rejects stale revisions. If the engine fails, your saved move remains available and the interface offers a retry when it is the coach's turn.
 
@@ -54,37 +54,43 @@ Use **Import** to paste a completed PGN or choose a file up to 50 KB. Invalid im
 
 ## Engine inventory and difficulty
 
-Exactly one engine was installed for this application: Stockfish 19, at `/opt/homebrew/bin/stockfish`. Its native executable includes its evaluation network. No other chess engine or separate model weights were installed or integrated. chess.js is a legal-move library, not another opponent engine.
+The server now has Stockfish 19, Stockfish 18, Stockfish 18 Lite WASM Multithreaded, Stockfish 16, Lc0 0.32.1 and its network, Maia3 (5M, 23M and 79M weights), and Maia2 (rapid and blitz weights). The engine menu lists runtime configurations that pass an actual identity and ready handshake. Readiness checks run sequentially to reduce memory pressure; successful results are cached for five minutes, while moves still validate the selected engine on every request. chess.js validates legal moves; it is not another opponent engine. See the [installation receipt](../references/engine-installation.json) for versions, sources, sizes, hashes and legal-move smoke results.
 
-The recorded Chess.com settings mention Stockfish 16/18/Lite, Torch Human/4/Lite and Komodo Dragon. Research also discusses Maia versions, ChessCoach and AlphaZero work, plus products such as Fritz. Those references are not download receipts or working integrations.
+On this Apple Silicon Mac, Stockfish 19 remains the Homebrew installation. The other engines and model runtime live under ignored `data/engines/`. Install or reproduce them with:
 
-The five available levels are settings of the same Stockfish engine:
+```sh
+python3 scripts/install_engines.py
+```
 
-| Bot difficulty | Stockfish skill | Search time per reply |
-| --- | ---: | ---: |
-| 1 · First steps | 0 | 80 ms |
-| 2 · Easygoing | 4 | 150 ms |
-| 3 · Club practice | 8 | 250 ms |
-| 4 · Challenging | 14 | 400 ms |
-| 5 · Full strength | 20 | 700 ms |
+The installer is currently for Apple Silicon macOS. It downloads official releases or pinned upstream source/model revisions and creates an isolated Python environment. Executables, model weights and accounts are excluded from Git. A different server needs its own installation; cloning the repository does not install models automatically.
 
-These values have not been calibrated to human Elo. Full strength means skill 20 with a 700 ms search, not unlimited analysis. Lower Stockfish skill can select a weaker move, as described in its [official UCI documentation](https://official-stockfish.github.io/docs/stockfish-wiki/UCI-Protocol-and-Stockfish-Commands.html#skill-level).
+Target strength is a challenge setting from 250 to 3200 (from 100 for New to Chess profiles), not measured human Elo. Raw engine selection maps the 25 observed reference levels, from 250 to 3200. Yoko Ono’s “Play It By Trust” and the Mechanical Turk’s “?” remain reference labels; their local target starts at an adjustable 1500. Stockfish uses native skill and bounded search. Below 1100, a disclosed local novice policy can replace its successful engine choice with a legal sampled move; aggressive and solid style labels bias that policy. Its receipt retains the engine's original choice. Maia uses the upstream rating conditioning; Maia2 groups ratings below 1100 and at least 2000 into outer bins. Maia3's accepted conditioning range is not proof of a validated training range. Lc0 uses bounded native search, not a calibrated rating control. Styles outside the novice policy affect scripted context, not a reproduced proprietary personality.
 
-To play, choose **New game**, White or Black, and **Bot difficulty**, then **Start game**. On the initial screen the start button is **Play coach**. Create or sign into a local account when prompted. Click a piece and destination, drag, or type a move. Difficulty is chosen for a new game; the analysis settings do not change an existing opponent.
+On each turn the server checks account ownership, revision, turn and legality, then saves the human move. It passes full game history to the selected engine, validates the returned move and saves the reply. An engine failure preserves the game and provides a retry; it never silently substitutes another engine. Maia processes currently start cold for each request, taking roughly three to seven seconds on this Mac. Opponent work is bounded to one cold process at a time with a short bounded queue (Stockfish review separately admits two searches). Review and assistance use Stockfish 19. Analysis independently selects Stockfish 18, 18 Lite, 19 or 16, with up to five lines and eight threads. Maximum review permits 90 seconds per position; abandoning a request cancels queued work and native searches.
 
-For each turn, the browser submits your move. The server checks ownership, revision, turn and legality, then saves it. It starts native Stockfish, supplies the complete move history and the selected skill/time limit, validates the returned move and saves the reply. The browser shows the updated position. No language model chooses moves or generates free-form coaching here.
+Old saved games retain their five Stockfish presets: skill 0/4/8/14/20 and search 80/150/250/400/700 ms. New games use the expanded setup. Difficulty changes apply to a new game; review settings do not change an existing opponent.
 
-## Difference from Chess.com's bot platform
+## Bot setup, clocks and assistance
 
-This is not a complete one-to-one bot-play clone. The current app has five generic fixed presets. It does not reproduce Chess.com's bot roster, personality behavior, adaptive strength, rating slider, time controls, bot chat, crowns or complete in-game assistance workflow. Reproducing those behaviors requires further implementation and testing; adding engine names to a selector would not do it.
+166 observed profiles are grouped into twelve public roster categories. Names, portraits and reference ratings were observed in the public Chess.com roster. Their playing behavior is a local implementation. The engine selector lets you choose what actually runs behind a profile. Adaptive profiles adjust the target by up to 350 points from their base according to the current material balance; this is a simple disclosed practice rule, not a learned rating estimator.
 
-Chess.com's [current bot documentation](https://support.chess.com/en/articles/8614091-how-can-i-play-against-the-chess-com-bots) describes over 100 personalities powered by Komodo. Multiple named bots therefore do not imply a separately downloaded engine for each bot. This documentation is a provider claim, not access to its implementation or permission to use proprietary engine code.
+Choose White, Black or random, an untimed game or one of the timed presets with increments. Server time decides flag fall across reloads and delayed replies. Clocks keep running when you navigate away or review; they do not pause the game. An expired clock resolves the game, and a late engine reply cannot overwrite it.
+
+**Hint** shows a legal engine suggestion and counts as help. **Undo** restores your prior turn and its saved clocks, while preserving assistance usage. Undo is refused if it would invalidate saved variations. The settings independently enable contextual bot chat, evaluation, threat arrows, suggestion arrows, move feedback and engine lines. Bot chat is scripted; it is not free-form conversation. **Rematch** creates a separate saved game with the same setup.
+
+A win against a roster bot earns three crowns without help, two after one to three hints or undos, and one after more help, opening engine review during play, or with automatic assistance enabled. Chat does not reduce crowns. The best result is saved for each bot on that account. These are local results, with no ranked ladder or anti-cheat claims.
+
+## Difference from Chess.com's platform
+
+This remains an incomplete one-to-one clone. It now has an actual multi-engine roster and the bot-play controls above, but not Chess.com's full roster, exact personality code, proprietary coach/classification system, complete curriculum or every visual setting. Installing multiple engines does not reproduce those systems.
+
+Torch and newer Komodo Dragon versions require separate availability; the [engine availability record](../references/engine-availability.md) records the observed upstream limits. The app does not label unavailable proprietary engines as installed.
 
 ## Piece artwork correction
 
 At the user's request, the custom SVG pieces were replaced with the twelve original PNG images used by Chess.com's standard analysis board, theme ID `ejgfv`: pawn, knight, bishop, rook, queen and king, in both colors. Their URLs were read from the rendered [Chess.com analysis board](https://www.chess.com/analysis), then the files were downloaded without alteration. They are served locally from `web/public/pieces/chesscom/` and total 93,344 bytes. This is one complete piece set, not every Chess.com theme.
 
-`references/chesscom-piece-assets.json` records the source URLs, retrieval time, dimensions and SHA-256 hashes. These remain third-party Chess.com assets; no open-source redistribution license is asserted. The blue board remains. The difficulty label changed from “Choose your pace” to “Bot difficulty.”
+`references/chesscom-piece-assets.json` records the source URLs, retrieval time, dimensions and SHA-256 hashes. These remain third-party Chess.com assets; no open-source redistribution license is asserted. Green is the default; Blue remains selectable on the board. The difficulty label changed from “Choose your pace” to “Bot difficulty.”
 
 ## Practice collection
 
@@ -110,11 +116,11 @@ just e2e
 
 If the engine is unavailable, verify `STOCKFISH_PATH` and run the executable directly. A missing or failing engine produces an error; the application does not substitute a fabricated move or explanation. If port 8770 is already in use, stop the other server or set a different `PORT` and open that address. If production mode reports a missing build, run `npm run build`.
 
-`just check` also checks agent skill hashes. The known `gstack-cso` source drift is a setup verification failure. Do not silently regenerate its stored hash to make the check pass. Review the changed installed entrypoint before updating the manifest.
+`just check` also checks agent skill hashes. The latest check stops at a missing installed Pstack `unslop` source; an earlier check also recorded `gstack-cso` source drift. These are setup verification failures. Do not silently regenerate its stored hash to make the check pass. Review the changed installed entrypoint before updating the manifest.
 
 ## Current limits
 
-Human multiplayer, billing and public hosting remain deferred. Five bot levels are uncalibrated Stockfish settings, not human Elo ratings. The coach uses deterministic evidence wording and engine estimates. It does not provide unrestricted language-model conversation. Questions are saved learner notes.
+Human multiplayer and billing remain deferred. Owner-private Sites hosting uses a protected HTTPS connection to this Mac; continued remote availability requires the native service and tunnel to remain running. The hosted account database is separate from local development data. Target strengths and reference bot ratings are uncalibrated, not measured human Elo ratings. The coach uses deterministic evidence wording and engine estimates. It does not provide unrestricted language-model conversation. Questions are saved learner notes.
 
 A candidate continuation demonstrates a legal line at a bounded search. It does not prove that every reply is forced, and additional search can change a score or move classification. The app does not copy Chess.com's classification algorithm or claim its accuracy metrics. The current labels use estimated mover loss: 50 centipawns for inaccuracy, 150 for mistake and 300 for blunder. Short searches and mate scores require separate interpretation. The interface sends position histories to the local server; it downloads no engine binary, neural weights or model to the browser.
 

@@ -1,0 +1,118 @@
+{
+  "retrievedAt": "2026-09-06T23:05:50.088861+00:00",
+  "sourcePage": "https://www.chess.com/analysis",
+  "sourceEvidence": "URLs read from rendered piece backgrounds in the browser",
+  "themeId": "ejgfv",
+  "scope": "All six piece types in both colors from the standard analysis board, not all theme collections",
+  "rights": "Third-party Chess.com assets copied at user request for this private prototype. No open-source redistribution license is asserted.",
+  "assets": [
+    {
+      "piece": "wp",
+      "source": "https://assets-themes.chess.com/image/ejgfv/150/wp.png",
+      "file": "web/public/pieces/chesscom/wp.png",
+      "bytes": 5667,
+      "width": 150,
+      "height": 150,
+      "sha256": "8756692941f9b24d73d716ac24ac1c1d135fceac7e7cd090aa1525525e0292e2"
+    },
+    {
+      "piece": "wn",
+      "source": "https://assets-themes.chess.com/image/ejgfv/150/wn.png",
+      "file": "web/public/pieces/chesscom/wn.png",
+      "bytes": 8305,
+      "width": 150,
+      "height": 150,
+      "sha256": "8a1747138739634db1a836e7edccb9ddcce13026ba6bf649d3153299fca36c0b"
+    },
+    {
+      "piece": "wb",
+      "source": "https://assets-themes.chess.com/image/ejgfv/150/wb.png",
+      "file": "web/public/pieces/chesscom/wb.png",
+      "bytes": 8004,
+      "width": 150,
+      "height": 150,
+      "sha256": "c7fd4cf45ede0f374705377496f7f71d95441d6d2e9805ba61685a15ca0e6286"
+    },
+    {
+      "piece": "wr",
+      "source": "https://assets-themes.chess.com/image/ejgfv/150/wr.png",
+      "file": "web/public/pieces/chesscom/wr.png",
+      "bytes": 7782,
+      "width": 150,
+      "height": 150,
+      "sha256": "1dc206303e3cfbcb71163d8e9eefbbc90b3d504c5e7ebaaaede7761fc1bf1f9d"
+    },
+    {
+      "piece": "wq",
+      "source": "https://assets-themes.chess.com/image/ejgfv/150/wq.png",
+      "file": "web/public/pieces/chesscom/wq.png",
+      "bytes": 10615,
+      "width": 150,
+      "height": 150,
+      "sha256": "48e2b72f915d502773d3fe5ac28d1d2eaa61f0200dedecb6d9c5352d07573f07"
+    },
+    {
+      "piece": "wk",
+      "source": "https://assets-themes.chess.com/image/ejgfv/150/wk.png",
+      "file": "web/public/pieces/chesscom/wk.png",
+      "bytes": 8633,
+      "width": 150,
+      "height": 150,
+      "sha256": "02ecadd7778df4549a406d32d1d26c395a438c641639b1e83953bf844be51b28"
+    },
+    {
+      "piece": "bp",
+      "source": "https://assets-themes.chess.com/image/ejgfv/150/bp.png",
+      "file": "web/public/pieces/chesscom/bp.png",
+      "bytes": 5181,
+      "width": 150,
+      "height": 150,
+      "sha256": "aa7fc9d5b41cc83d33876d90e07bfd547c631bfe28ff0e7af9afd5d20fbe9fb4"
+    },
+    {
+      "piece": "bn",
+      "source": "https://assets-themes.chess.com/image/ejgfv/150/bn.png",
+      "file": "web/public/pieces/chesscom/bn.png",
+      "bytes": 7561,
+      "width": 150,
+      "height": 150,
+      "sha256": "884e0790a18d627514fe456ab31e89bfd1be079df567aeee1632f1914339bbee"
+    },
+    {
+      "piece": "bb",
+      "source": "https://assets-themes.chess.com/image/ejgfv/150/bb.png",
+      "file": "web/public/pieces/chesscom/bb.png",
+      "bytes": 7533,
+      "width": 150,
+      "height": 150,
+      "sha256": "9d477cebf4aacbfbccc0f963bacca68ec6d6716030d29f4dbf3532fe281338db"
+    },
+    {
+      "piece": "br",
+      "source": "https://assets-themes.chess.com/image/ejgfv/150/br.png",
+      "file": "web/public/pieces/chesscom/br.png",
+      "bytes": 6933,
+      "width": 150,
+      "height": 150,
+      "sha256": "15f53d5da900d2ea378e3075f7d035388b2c128f97b369ea638bf9e5aa9f3f06"
+    },
+    {
+      "piece": "bq",
+      "source": "https://assets-themes.chess.com/image/ejgfv/150/bq.png",
+      "file": "web/public/pieces/chesscom/bq.png",
+      "bytes": 9161,
+      "width": 150,
+      "height": 150,
+      "sha256": "c4f80cab0d982aa817d6f08785d7498876cb41de0fc030a045d4cc5cf77bdbe1"
+    },
+    {
+      "piece": "bk",
+      "source": "https://assets-themes.chess.com/image/ejgfv/150/bk.png",
+      "file": "web/public/pieces/chesscom/bk.png",
+      "bytes": 7969,
+      "width": 150,
+      "height": 150,
+      "sha256": "50e85d684b3ff1c5c5dd5af58d87053e198261176e2d013e04571b333cb87d33"
+    }
+  ]
+}

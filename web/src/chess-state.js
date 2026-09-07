@@ -55,3 +55,23 @@ export function studyLimitError(branches) {
   if (branches.reduce((total, branch) => total + branch.moves.length, 0) > 5000) return 'A study can contain at most 5,000 stored moves, including each branch history. Your existing study is unchanged.';
   return null;
 }
+
+// Clock polling merges server game state without replacing the current study draft.
+export function mergePolledGame(current, incoming) {
+  if (!current || current.id !== incoming.id || incoming.revision < current.revision) return current;
+  return {...incoming, study:current.study, studyRevision:current.studyRevision};
+}
+export function clockText(game, color, now = Date.now()) {
+  if (!game?.timeControl?.initialSeconds) return '∞';
+  const clock=game.clock;
+  if (!clock) return '—';
+  const active=game.moves.length%2===0?'w':'b';
+  const elapsed=!game.result && active===color && clock.activeSince ? Math.max(0,now-clock.activeSince) : 0;
+  const seconds=Math.ceil(Math.max(0,(color==='w'?clock.whiteMs:clock.blackMs)-elapsed)/1000);
+  return `${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
+}
+
+export function rematchOptions(game, fallback) {
+  if (game.legacyStrength || !game.engineId) return {color:game.color, level:game.level};
+  return {botId:game.botId??null,engineId:game.engineId,rating:game.rating??fallback.rating,color:game.color,timeControl:game.timeControl??fallback.timeControl,assistance:game.assistance??fallback.assistance};
+}

@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Install Engines · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Install Engines</h1><p class="lede">scripts/install_engines.py</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Install Engines"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/install_engines.py" download>Download original file ↗</a></div><p class="source-meta">scripts/install_engines.py<br>SHA-256: 432e6f4a3a61b2b41470462c6fd4a19bbdc3bd1959e85c7dfc4689171e914f2e</p><pre><code>#!/usr/bin/env python3
+&quot;&quot;&quot;Install local opponent engines, or expose the official Maia2 model through UCI.
+
+Usage: python3 scripts/install_engines.py [stockfish18 stockfish18-lite stockfish16 lc0 maia]
+       python3 scripts/install_engines.py --verify
+Runtime files, upstream licenses, hashes and smoke receipts stay in ignored data/engines.
+Requires Python 3.11+, Apple Silicon macOS, uv, Homebrew and Xcode command-line tools.
+&quot;&quot;&quot;
+import contextlib
+import hashlib
+import json
+import os
+from pathlib import Path
+import platform
+import shutil
+import subprocess
+import sys
+import tarfile
+import time
+import urllib.request
+
+ROOT = Path(__file__).resolve().parents[1]
+DATA = Path(os.environ.get(&quot;CHESSLAB_ENGINES_DIR&quot;, ROOT / &quot;data&quot; / &quot;engines&quot;)).resolve()
+PYTHON = DATA / &quot;python&quot; / &quot;bin&quot; / &quot;python&quot;
+MAIA3_COMMIT = &quot;1e13597c42d4858b7cfd7cfdae01e297263364b2&quot;
+MAIA2_COMMIT = &quot;67bee6ce7e2f264344fe6d2026a2e18c76a82efa&quot;
+LC0_NET = &quot;https://storage.lczero.org/files/networks-contrib/t1-256x10-distilled-swa-2432500.pb.gz&quot;
+DOWNLOAD_HASHES = {
+    &quot;stockfish-18-lite.js&quot;: &quot;f79e667c9d56ee768aca35e8343f91548ceef6a732f67cd82f267cf9eab7f665&quot;,
+    &quot;stockfish-18-lite.wasm&quot;: &quot;d50136919dcd90e75eb8df78b255d47d618962b670028b38961343f6eb409174&quot;,
+    &quot;stockfish18.tar&quot;: &quot;4d77c4aa3ad9bd1ea8111f2ac5a4620fe7ebf998d6893bf828d49ccd579c8cb0&quot;,
+    &quot;stockfish16-source.tar.gz&quot;: &quot;a1600ebdaf4e324ba3e10cec2e0c9a810dc64c6f0db5cc955b2fd5e1eefa1cc6&quot;,
+    &quot;weights.pb.gz&quot;: &quot;bc27a6cae8ad36f2b9a80a6ad9dabb0d6fda25b1e7f481a79bc359e14f563406&quot;,
+}
+
+
+def run(*command, **kwargs):
+    return subprocess.run([str(x) for x in command], check=True, **kwargs)
+
+
+def sha256(path):
+    with open(path, &quot;rb&quot;) as handle:
+        return hashlib.file_digest(handle, &quot;sha256&quot;).hexdigest()
+
+
+def download(url, path):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if not path.exists():
+        print(f&quot;Downloading {url}&quot;, flush=True)
+        temporary = path.with_suffix(path.suffix + &quot;.part&quot;)
+        request = urllib.request.Request(url, headers={&quot;User-Agent&quot;: &quot;Mozilla/5.0 ChessLab engine installer&quot;})
+        with urllib.request.urlopen(request, timeout=60) as response, open(temporary, &quot;wb&quot;) as out:
+            shutil.copyfileobj(response, out)
+        temporary.replace(path)
+    if path.name in DOWNLOAD_HASHES and sha256(path) != DOWNLOAD_HASHES[path.name]:
+        raise RuntimeError(f&quot;Checksum mismatch for {path.name}; refusing to install.&quot;)
+    return path
+
+
+def extract(archive, target):
+    target.mkdir(parents=True, exist_ok=True)
+    with tarfile.open(archive) as tar:
+        # No links/devices or archive paths outside this engine&#x27;s directory.
+        members = [item for item in tar.getmembers() if item.isfile() or item.isdir()]
+        for item in members:
+            if not (target / item.name).resolve().is_relative_to(target.resolve()):
+                raise ValueError(&quot;Unsafe archive path&quot;)
+        tar.extractall(target, members=members, filter=&quot;data&quot;)
+
+
+def record(engine_id, version, sources, files, **extra):
+    path = DATA / &quot;manifest.json&quot;
+    manifest = json.loads(path.read_text()) if path.exists() else {&quot;engines&quot;: {}}
+    manifest[&quot;engines&quot;][engine_id] = {
+        &quot;version&quot;: version, &quot;sources&quot;: sources,
+        &quot;files&quot;: [{&quot;path&quot;: str(file.relative_to(ROOT) if file.is_relative_to(ROOT) else file), &quot;sha256&quot;: sha256(file), &quot;bytes&quot;: file.stat().st_size} for file in files],
+        &quot;installedAt&quot;: time.strftime(&quot;%Y-%m-%dT%H:%M:%SZ&quot;, time.gmtime()), **extra,
+    }
+    temporary = path.with_suffix(&quot;.tmp&quot;)
+    temporary.write_text(json.dumps(manifest, indent=2) + &quot;\n&quot;)
+    temporary.replace(path)
+
+
+def stockfish(version):
+    dest = DATA / f&quot;stockfish{version}&quot;
+    if version == 18:
+        url = &quot;https://github.com/official-stockfish/Stockfish/releases/download/sf_18/stockfish-macos-m1-apple-silicon.tar&quot;
+        archive = download(url, DATA / &quot;downloads&quot; / &quot;stockfish18.tar&quot;)
+        extract(archive, dest / &quot;upstream&quot;)
+        binary = next((dest / &quot;upstream&quot;).rglob(&quot;stockfish-macos-m1-apple-silicon&quot;))
+    else:
+        url = &quot;https://github.com/official-stockfish/Stockfish/archive/refs/tags/sf_16.tar.gz&quot;
+        archive = download(url, DATA / &quot;downloads&quot; / &quot;stockfish16-source.tar.gz&quot;)
+        extract(archive, dest / &quot;upstream&quot;)
+        source = dest / &quot;upstream&quot; / &quot;Stockfish-sf_16&quot; / &quot;src&quot;
+        run(&quot;make&quot;, &quot;-j4&quot;, &quot;build&quot;, &quot;ARCH=apple-silicon&quot;, &quot;COMP=clang&quot;, cwd=source)
+        binary = source / &quot;stockfish&quot;
+    dest.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(binary, dest / &quot;stockfish&quot;)
+    (dest / &quot;stockfish&quot;).chmod(0o755)
+    record(f&quot;stockfish{version}&quot;, str(version), [url], [archive, dest / &quot;stockfish&quot;], license=&quot;GPL-3.0&quot;)
+
+
+def stockfish_lite():
+    dest = DATA / &quot;stockfish18-lite&quot;
+    base = &quot;https://github.com/nmrugg/stockfish.js/releases/download/v18.0.0/&quot;
+    names = [&quot;stockfish-18-lite.js&quot;, &quot;stockfish-18-lite.wasm&quot;]
+    files = [download(base + name, dest / name) for name in names]
+    # The release is CommonJS even inside this application&#x27;s ESM package.
+    (dest / &quot;package.json&quot;).write_text(&#x27;{&quot;type&quot;:&quot;commonjs&quot;}\n&#x27;)
+    license_url = &quot;https://raw.githubusercontent.com/nmrugg/stockfish.js/31a98753a5d932511693f44775da908377c24513/Copying.txt&quot;
+    files.append(download(license_url, dest / &quot;Copying.txt&quot;))
+    record(&quot;stockfish18-lite&quot;, &quot;18.0.0 / Lite WASM Multithreaded&quot;, [base + name for name in names] + [license_url], files, license=&quot;GPL-3.0&quot;, sourceCommit=&quot;31a98753a5d932511693f44775da908377c24513&quot;)
+
+
+def lc0():
+    info = json.loads(subprocess.check_output([&quot;brew&quot;, &quot;info&quot;, &quot;--json=v2&quot;, &quot;lc0&quot;]))[&quot;formulae&quot;][0]
+    if info[&quot;versions&quot;][&quot;stable&quot;] != &quot;0.32.1&quot;:
+        raise RuntimeError(&quot;Review the changed Homebrew Lc0 version before updating this installer.&quot;)
+    run(&quot;brew&quot;, &quot;fetch&quot;, &quot;--force-bottle&quot;, &quot;lc0&quot;)
+    archive = Path(subprocess.check_output([&quot;brew&quot;, &quot;--cache&quot;, &quot;lc0&quot;], text=True).strip())
+    expected = {item[&quot;sha256&quot;] for item in info[&quot;bottle&quot;][&quot;stable&quot;][&quot;files&quot;].values()}
+    if sha256(archive) not in expected:
+        raise RuntimeError(&quot;Lc0 bottle checksum differs from Homebrew&#x27;s published checksum.&quot;)
+    dest = DATA / &quot;lc0&quot;
+    extract(archive, dest / &quot;upstream&quot;)
+    binary = next((dest / &quot;upstream&quot;).glob(&quot;lc0/*/libexec/lc0&quot;))
+    shutil.copy2(binary, dest / &quot;lc0&quot;)
+    (dest / &quot;lc0&quot;).chmod(0o755)
+    weights = download(LC0_NET, dest / &quot;weights.pb.gz&quot;)
+    record(&quot;lc0&quot;, &quot;0.32.1 / T1-256x10-distilled-swa-2432500&quot;, [&quot;https://github.com/LeelaChessZero/lc0/tree/v0.32.1&quot;, &quot;https://formulae.brew.sh/formula/lc0&quot;, LC0_NET], [dest / &quot;lc0&quot;, weights], license=&quot;GPL-3.0-or-later&quot;, bottleSha256=sha256(archive))
+
+
+def maia():
+    sources = [f&quot;git+https://github.com/CSSLab/maia3.git@{MAIA3_COMMIT}&quot;, f&quot;git+https://github.com/CSSLab/maia2.git@{MAIA2_COMMIT}&quot;]
+    if not PYTHON.exists():
+        run(&quot;uv&quot;, &quot;venv&quot;, &quot;--python&quot;, &quot;3.12&quot;, DATA / &quot;python&quot;)
+    run(&quot;uv&quot;, &quot;pip&quot;, &quot;install&quot;, &quot;--python&quot;, PYTHON, *sources)
+    run(PYTHON, __file__, &quot;--cache-maia&quot;)
+    packages = subprocess.check_output([&quot;uv&quot;, &quot;pip&quot;, &quot;freeze&quot;, &quot;--python&quot;, str(PYTHON)], text=True)
+    (DATA / &quot;python-packages.txt&quot;).write_text(packages)
+
+
+def cache_maia():
+    from huggingface_hub import hf_hub_download
+    from maia2 import model
+    for size in [5, 23, 79]:
+        repo = f&quot;UofTCSSLab/Maia3-{size}M&quot;
+        metadata = json.load(urllib.request.urlopen(f&quot;https://huggingface.co/api/models/{repo}&quot;))
+        names = [x[&quot;rfilename&quot;] for x in metadata[&quot;siblings&quot;] if x[&quot;rfilename&quot;].endswith(&quot;.pt&quot;)]
+        if len(names) != 1:
+            raise RuntimeError(f&quot;Expected one checkpoint in {repo}, found {names}&quot;)
+        file = Path(hf_hub_download(repo, names[0], revision=metadata[&quot;sha&quot;], local_dir=DATA / &quot;maia3&quot;))
+        target = DATA / &quot;maia3&quot; / f&quot;maia3-{size}m.pt&quot;
+        if file != target:
+            shutil.copy2(file, target)
+        record(&quot;maia3&quot; if size == 79 else f&quot;maia3-{size}m&quot;, f&quot;0.1.0 / {size}M&quot;, [f&quot;https://github.com/CSSLab/maia3/tree/{MAIA3_COMMIT}&quot;, f&quot;https://huggingface.co/{repo}/tree/{metadata[&#x27;sha&#x27;]}&quot;], [target], license=&quot;AGPL-3.0&quot;, sourceCommit=MAIA3_COMMIT, modelRevision=metadata[&quot;sha&quot;])
+    for kind in [&quot;rapid&quot;, &quot;blitz&quot;]:
+        model.from_pretrained(kind, device=&quot;cpu&quot;, save_root=str(DATA / &quot;maia2&quot;))
+        record(&quot;maia2&quot; if kind == &quot;rapid&quot; else &quot;maia2-blitz&quot;, f&quot;0.11.0 / {kind}&quot;, [f&quot;https://github.com/CSSLab/maia2/tree/{MAIA2_COMMIT}&quot;, model._MODEL_ASSETS[kind][&quot;url&quot;]], [DATA / &quot;maia2&quot; / f&quot;{kind}_model.pt&quot;], license=&quot;MIT&quot;, sourceCommit=MAIA2_COMMIT)
+
+
+def maia2_uci(kind=&quot;rapid&quot;):
+    &quot;&quot;&quot;Replay complete UCI history; Maia2 itself conditions on the resulting FEN.&quot;&quot;&quot;
+    import chess
+    import random
+    import torch
+    from maia2 import inference, model
+    torch.set_num_threads(1)
+    board, engine, prepared, rating = chess.Board(), None, None, 1500
+    for raw in sys.stdin:
+        command = raw.strip()
+        if command == &quot;uci&quot;:
+            print(f&quot;id name Maia2 0.11.0 {kind}\noption name Elo type spin default 1500 min 0 max 5000\nuciok&quot;, flush=True)
+        elif command == &quot;isready&quot;:
+            if engine is None:
+                checkpoint = DATA / &quot;maia2&quot; / f&quot;{kind}_model.pt&quot;
+                if not checkpoint.is_file() or sha256(checkpoint) != model._MODEL_ASSETS[kind][&quot;sha256&quot;]:
+                    raise RuntimeError(&quot;Install the verified Maia2 checkpoint before starting the server.&quot;)
+                with contextlib.redirect_stdout(sys.stderr):
+                    engine = model.from_pretrained(kind, device=&quot;cpu&quot;, save_root=str(DATA / &quot;maia2&quot;))
+                    engine.eval()
+                    prepared = inference.prepare()
+            print(&quot;readyok&quot;, flush=True)
+        elif command.startswith(&quot;setoption name Elo value &quot;):
+            rating = int(command.rsplit(&quot; &quot;, 1)[1])
+        elif command == &quot;ucinewgame&quot;:
+            board = chess.Board()
+        elif command.startswith(&quot;position &quot;):
+            start, _, history = command[9:].partition(&quot; moves &quot;)
+            board = chess.Board() if start == &quot;startpos&quot; else chess.Board(start.removeprefix(&quot;fen &quot;))
+            for move in history.split():
+                board.push_uci(move)
+        elif command.startswith(&quot;go &quot;):
+            with contextlib.redirect_stdout(sys.stderr), torch.inference_mode():
+                probabilities, _ = inference.inference_each(engine, prepared, board.fen(), rating, rating)
+            legal = {move: weight for move, weight in probabilities.items() if chess.Move.from_uci(move) in board.legal_moves}
+            move = random.choices(list(legal), weights=list(legal.values()), k=1)[0] if legal else &quot;0000&quot;
+            print(f&quot;bestmove {move}&quot;, flush=True)
+        elif command == &quot;quit&quot;:
+            break
+
+
+def verify():
+    &quot;&quot;&quot;Save live readiness, move legality and search-time receipts for installed engines.&quot;&quot;&quot;
+    configured = os.environ.get(&quot;STOCKFISH_PATH&quot;) or next((str(path) for path in [Path(&quot;/opt/homebrew/bin/stockfish&quot;), Path(&quot;/usr/local/bin/stockfish&quot;), Path(&quot;/usr/games/stockfish&quot;)] if path.exists()), &quot;stockfish&quot;)
+    stockfish_path = Path(shutil.which(configured) or configured).resolve()
+    identity = subprocess.run([str(stockfish_path)], input=&quot;uci\nquit\n&quot;, capture_output=True, text=True, check=True, timeout=8).stdout
+    if &quot;id name Stockfish 19\n&quot; not in identity:
+        raise RuntimeError(&quot;The configured existing Stockfish must identify as version 19 before recording it.&quot;)
+    record(&quot;stockfish19&quot;, &quot;19&quot;, [&quot;https://github.com/official-stockfish/Stockfish/releases/tag/sf_19&quot;], [stockfish_path], license=&quot;GPL-3.0&quot;, installation=&quot;Existing server installation; version checked by the live adapter below.&quot;)
+    code = r&#x27;&#x27;&#x27;
+import { readFile, writeFile } from &#x27;node:fs/promises&#x27;;
+import { listOpponentEngines, chooseOpponentMove, closeOpponentEngines } from &#x27;./server/opponent-engines.mjs&#x27;;
+import { replay } from &#x27;./server/engine.mjs&#x27;;
+const path = (process.env.CHESSLAB_ENGINES_DIR || &#x27;data/engines&#x27;) + &#x27;/manifest.json&#x27;;
+const manifest = JSON.parse(await readFile(path, &#x27;utf8&#x27;));
+const moves = [&#x27;e2e4&#x27;,&#x27;e7e5&#x27;,&#x27;g1f3&#x27;,&#x27;b8c6&#x27;,&#x27;f1b5&#x27;,&#x27;a7a6&#x27;];
+try {
+  for (const entry of await listOpponentEngines()) {
+    if (!entry.available) throw new Error(entry.id + &#x27;: &#x27; + entry.reason);
+    const started = performance.now();
+    const result = await chooseOpponentMove({ engineId: entry.id, moves, movetime: 100, rating: 1500 });
+    const after = replay([...moves, result.move]);
+    const receipt = { ...result, moves, initialFen: null, afterFen: after.fen(), elapsedMs: Math.round(performance.now()-started), verifiedAt: new Date().toISOString() };
+    manifest.engines[entry.id] = { ...manifest.engines[entry.id], version: entry.version, smoke: receipt };
+    console.log(JSON.stringify(receipt));
+  }
+  await writeFile(path, JSON.stringify(manifest,null,2)+&#x27;\n&#x27;);
+} finally { closeOpponentEngines(); }
+&#x27;&#x27;&#x27;
+    run(&quot;node&quot;, &quot;--input-type=module&quot;, &quot;-e&quot;, code, cwd=ROOT)
+
+
+if __name__ == &quot;__main__&quot;:
+    DATA.mkdir(parents=True, exist_ok=True)
+    if sys.argv[1:2] == [&quot;--maia2-uci&quot;] and sys.argv[2:] in [[], [&quot;rapid&quot;], [&quot;blitz&quot;]]:
+        maia2_uci(sys.argv[2] if len(sys.argv) &gt; 2 else &quot;rapid&quot;)
+    elif sys.argv[1:] == [&quot;--cache-maia&quot;]:
+        cache_maia()
+    elif sys.argv[1:] == [&quot;--verify&quot;]:
+        verify()
+    else:
+        if platform.system() != &quot;Darwin&quot; or platform.machine() != &quot;arm64&quot;:
+            raise SystemExit(&quot;This pinned installer targets Apple Silicon macOS.&quot;)
+        actions = {&quot;stockfish18&quot;: lambda: stockfish(18), &quot;stockfish18-lite&quot;: stockfish_lite, &quot;stockfish16&quot;: lambda: stockfish(16), &quot;lc0&quot;: lc0, &quot;maia&quot;: maia}
+        selected = sys.argv[1:] or list(actions)
+        if any(name not in actions for name in selected):
+            raise SystemExit(f&quot;Choose from: {&#x27;, &#x27;.join(actions)}&quot;)
+        for name in selected:
+            actions[name]()
+        if not sys.argv[1:]:
+            verify()
+</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

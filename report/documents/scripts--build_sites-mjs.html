@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Build Sites · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Build Sites</h1><p class="lede">scripts/build_sites.mjs</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Build Sites"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/build_sites.mjs" download>Download original file ↗</a></div><p class="source-meta">scripts/build_sites.mjs<br>SHA-256: 3e0da8d9381858673abbd6a4295682139237561cb95d7bd38cc1312e7b7fd664</p><pre><code>import {cp,mkdir,rm} from &#x27;node:fs/promises&#x27;;
+await mkdir(&#x27;dist/server&#x27;,{recursive:true});
+await cp(&#x27;server/sites-worker.mjs&#x27;,&#x27;dist/server/index.js&#x27;);
+await rm(&#x27;dist/client&#x27;,{recursive:true,force:true});
+await cp(&#x27;web/dist&#x27;,&#x27;dist/client&#x27;,{recursive:true});
+console.log(&#x27;Sites worker and web assets prepared.&#x27;);
+</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

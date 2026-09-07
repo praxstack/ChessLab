@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Design · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Design</h1><p class="lede">openspec/changes/expand-bot-platform/design.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Design"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/expand-bot-platform/design.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/expand-bot-platform/design.md<br>SHA-256: f2a8511f4c38ddd485084fa0f9733c6109fb8250b58188d30d55eee5c0216c26</p><h3 id="context">Context</h3>
+<p>Baseline e2f5a2d has one Stockfish engine, five presets, saved games and nested review. The user explicitly authorized this expansion on 7 September 2026. Earlier specs/evaluators remain unchanged. Original protected behavior: legal history, ownership, revision conflicts, saved branches/notes, learning progress and no browser engine/model download.</p>
+<h3 id="goals--non-goals">Goals / Non-Goals</h3>
+<p>Connect actual installed engines to selectable bot games, and implement the bot-play workflow beyond the old presets. Private platform remains the delivery target. Exact proprietary Chess.com bot weights/behavior cannot be inferred from portraits or ratings. No invented engine availability, billing or human games.</p>
+<h3 id="decisions">Decisions</h3>
+<p>Use the existing Node/React/SQLite application. Native engines and model weights live in ignored data/engines with source/version/hash receipts and an installer. A bounded opponent adapter supports Stockfish versions, Maia and Lc0 where installations run successfully. Existing Stockfish analysis remains the teaching source. Unsupported engines are listed with concrete reasons and disabled.</p>
+<p>A server catalog supplies bots and available engines. Games retain bot and engine identity, target/current rating, chosen assistance, contextual scripted chat, clock balances, help usage and earned crowns. Clocks use server time; reload and tabs cannot reset them. Store revisions protect asynchronous bot and hint replies. Undo rewinds a completed user turn, records assistance and restores that turn's clock; it must not destroy saved study branches. If a saved branch depends on moves to be removed, reject undo with an explanation.</p>
+<p>Adaptive practice adjusts target strength from material balance. Stockfish beginner practice may mix legal weaker moves; ratings are targets without a demonstrated Chess.com equivalence. Crowns record local progress: a win without assistance earns three, limited hints/undo two, more help or automatic assistance one. Repeated reads cannot duplicate awards.</p>
+<h3 id="api-additions">API additions</h3>
+<p>GET /api/bots returns {bots,engines}. Existing /api/games POST additionally accepts botId, engineId, rating 250..3200, random color, timeControl {initialSeconds,incrementSeconds}, assistance {chat,evaluation,threats,suggestions,feedback,engine}. Legacy level requests continue working. Games add clock {whiteMs,blackMs,activeSince}, clockHistory, botName, currentRating, resultReason, hintsUsed, undosUsed, crownsAwarded and chat array. GET /api/games/:id settles timeout. POST /hint returns {game,move,san,explanation}; /undo returns {game}; /assist returns {analysis,threats,game}. All require ownership and expected revision. progress.bots maps botId to best crown count when any have been earned.</p>
+<h3 id="risks--trade-offs">Risks / Trade-offs</h3>
+<p>Model startup and availability differ by platform. Inference is tested locally; no public scaling claim. Proprietary Torch/Komodo access is evaluated through official sources only. Target strength and scripted personalities remain local implementations, not the vendor's hidden policies. Undo must preserve saved studies or reject the operation. Stop unproductive engine install attempts after two identical failures, record the blocker and continue independent installations. Do not weaken prior tests to hide regression.</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

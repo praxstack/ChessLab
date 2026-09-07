@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Check Engine Games · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Check Engine Games</h1><p class="lede">scripts/check_engine_games.mjs</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Check Engine Games"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/check_engine_games.mjs" download>Download original file ↗</a></div><p class="source-meta">scripts/check_engine_games.mjs<br>SHA-256: 3d8f847d643643bfb4ab620143be0d131a264f94d614d7ca15a44e2105e40a59</p><pre><code>import assert from &#x27;node:assert/strict&#x27;;
+import {mkdtempSync,rmSync} from &#x27;node:fs&#x27;;
+import {tmpdir} from &#x27;node:os&#x27;;
+import {join} from &#x27;node:path&#x27;;
+import {createApp} from &#x27;../server/app.mjs&#x27;;
+import {replay,closeEngine} from &#x27;../server/engine.mjs&#x27;;
+import {closeOpponentEngines} from &#x27;../server/opponent-engines.mjs&#x27;;
+const folder=mkdtempSync(join(tmpdir(),&#x27;chesslab-engine-games-&#x27;));
+const state=createApp({databasePath:join(folder,&#x27;games.sqlite&#x27;)});
+const server=state.app.listen(0,&#x27;127.0.0.1&#x27;);await new Promise(r=&gt;server.once(&#x27;listening&#x27;,r));
+const base=`http://127.0.0.1:${server.address().port}`;let cookie;
+async function request(path,body){const response=await fetch(base+path,{method:body?&#x27;POST&#x27;:&#x27;GET&#x27;,headers:{...(cookie?{cookie}:{}),...(body?{&#x27;Content-Type&#x27;:&#x27;application/json&#x27;}:{})},body:body?JSON.stringify(body):undefined});cookie=response.headers.get(&#x27;set-cookie&#x27;)?.split(&#x27;;&#x27;)[0]||cookie;const result=await response.json();assert.ok(response.ok,`${path}: ${JSON.stringify(result)}`);return result;}
+try{
+ await request(&#x27;/api/register&#x27;,{username:&#x27;enginecheck&#x27;,password:&#x27;temporary-engine-check&#x27;});
+ const {engines}=await request(&#x27;/api/bots&#x27;);const results=[];
+ for(const engine of engines){assert.equal(engine.available,true,`${engine.id}: ${engine.reason}`);const start=performance.now();let {game}=await request(&#x27;/api/games&#x27;,{engineId:engine.id,color:&#x27;b&#x27;,rating:1500});game=(await request(`/api/games/${game.id}/bot`,{revision:game.revision})).game;assert.equal(game.moves.length,1);assert.equal(game.lastEngineDecision.engineId,engine.id);replay(game.moves,game.initialFen);const saved=(await request(`/api/games/${game.id}`)).game;assert.deepEqual(saved.moves,game.moves);results.push({engineId:engine.id,engine:game.lastEngineDecision.engine,move:game.moves[0],elapsedMs:Math.round(performance.now()-start),saved:true});}
+ console.log(JSON.stringify({verifiedAt:new Date().toISOString(),scope:&#x27;Real engine moves through authenticated game API in an isolated temporary database&#x27;,results},null,2));
+}finally{await new Promise(r=&gt;server.close(r));state.close();closeEngine();closeOpponentEngines();rmSync(folder,{recursive:true,force:true});}
+</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

@@ -1,0 +1,78 @@
+{
+  "page": "https://www.chess.com/play/computer",
+  "observed": "2026-09-07",
+  "assets": [
+    {
+      "contentType": "image/svg+xml",
+      "id": "af8f3e387e0b8fc2",
+      "kind": "image",
+      "name": "play-white.svg",
+      "path": "/icons/play-white.svg",
+      "url": "https://assets-ds.chess.com/color-icons/play-white.svg",
+      "sha256": "284058b7a3c0379352d9d4bf410dfd23b9a361ef8a2f91cb9a1d1f7e0d29c7a8"
+    },
+    {
+      "contentType": "image/svg+xml",
+      "id": "e094161c484dceb6",
+      "kind": "image",
+      "name": "puzzle-piece.svg",
+      "path": "/icons/puzzle-piece.svg",
+      "url": "https://assets-ds.chess.com/color-icons/puzzle-piece.svg",
+      "sha256": "351e27c7be896b7bf7acc4ed1354a9f18d67ad50d21e02a3f808f7893a07bd1a"
+    },
+    {
+      "contentType": "image/svg+xml",
+      "id": "edae727450a256f2",
+      "kind": "image",
+      "name": "lessons.svg",
+      "path": "/icons/lessons.svg",
+      "url": "https://assets-ds.chess.com/color-icons/lessons.svg",
+      "sha256": "2b3cb07468df7f0d58a8cd1d98b3cad523444f41a20f85075d1d0fb8e5212666"
+    },
+    {
+      "contentType": "image/svg+xml",
+      "id": "9d3354c019233d24",
+      "kind": "image",
+      "name": "binoculars.svg",
+      "path": "/icons/binoculars.svg",
+      "url": "https://assets-ds.chess.com/color-icons/binoculars.svg",
+      "sha256": "7ab5f03602faeb31263e16d4ee9e2952dedac05a0ff5d1ce39642cdad4a328f5"
+    },
+    {
+      "contentType": "image/svg+xml",
+      "id": "58a8c851e53390b1",
+      "kind": "image",
+      "name": "training.svg",
+      "path": "/icons/training.svg",
+      "url": "https://assets-ds.chess.com/color-icons/training.svg",
+      "sha256": "22b02e8dd15e5b1e4a40d32b62e31e6d0aa7a96a0cbf89400048aa9e9c22f7ad"
+    },
+    {
+      "contentType": "image/svg+xml",
+      "id": "e30d855c1781e703",
+      "kind": "image",
+      "name": "friends.svg",
+      "path": "/icons/friends.svg",
+      "url": "https://assets-ds.chess.com/color-icons/friends.svg",
+      "sha256": "1f980388e543aec8174ae6763468770b0f7851bb0601421887f1841098cbe013"
+    },
+    {
+      "contentType": "image/svg+xml",
+      "id": "c26dc0e73d662be8",
+      "kind": "image",
+      "name": "ellipsis.svg",
+      "path": "/icons/ellipsis.svg",
+      "url": "https://assets-ds.chess.com/color-icons/ellipsis.svg",
+      "sha256": "859b89f15b09774fc3636700b5a45124b8182c09c020a3fa922731ccf56e58c9"
+    },
+    {
+      "contentType": "image/svg+xml",
+      "id": "ae06088dc8e5091d",
+      "kind": "image",
+      "name": "device-bot.svg",
+      "path": "/icons/device-bot.svg",
+      "url": "https://assets-ds.chess.com/color-icons/device-bot.svg",
+      "sha256": "38b5d8d559a6e017fa72af8bcb0ae38ae60c96a4c163e0e10909e62d7d0c65d1"
+    }
+  ]
+}

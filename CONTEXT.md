@@ -8,9 +8,15 @@ The learner plays an AI opponent at a chosen difficulty. Every move can be revis
 
 The board and explanation must agree. Arrows, highlighted pieces, capture sequences and material comparisons help explain the reasoning. Questions belong to the position and branch where they were asked. The tutor should support active calculation and learning rather than only reveal engine recommendations.
 
-## Current build direction — updated 7 September 2026
+## Current build direction — updated 8 September 2026
 
-The user now requests a Chess.com-like web platform before adding the original conversational differentiation. Their latest clarification prioritizes coach/bot play and defers actual human multiplayer; billing is last. The first application stage is specified in `openspec/changes/build-coach-web-platform/`: server-side Stockfish (no browser engine download), legal bot play, guided review, saved games, settings, and introductory puzzles/lessons. Implementation and a private GitHub repository are explicitly authorized. The earlier proposal below is retained as historical context, not the controlling build sequence.
+The user now requests one-to-one Chess.com web reference parity excluding human multiplayer before adding the original conversational differentiation. Their latest clarification prioritizes coach/bot play and defers actual human multiplayer; billing is last. The first application stage is specified in `openspec/changes/build-coach-web-platform/`: server-side Stockfish (no browser engine download), legal bot play, guided review, saved games, settings, and introductory puzzles/lessons. Implementation and a private GitHub repository are explicitly authorized. The earlier proposal below is retained as historical context, not the controlling build sequence.
+
+## Current expansion
+
+The user subsequently rejected the generic five-preset baseline and explicitly instructed installing the referenced engines and building the fuller bot-play experience. `openspec/changes/expand-bot-platform/` records this additive implementation: actual available engine integrations, a bot roster, clocks, assistance, undo, adaptive practice and saved crowns. Previous saved-game/study behavior is protected; proprietary engine availability must be reported from evidence.
+
+The current `match-nonmultiplayer-platform` change records the complete observed public roster, original assets, independent review/analysis controls and private Sites delivery. Full reference parity remains the success definition; working local profiles do not establish proprietary behavioral equivalence.
 
 ## Earlier proposed first experiment
 
@@ -40,4 +46,4 @@ Analyze completed games, study positions and this product's AI games. Do not bui
 
 ## Open decisions
 
-The user has authorized the coach/bot platform implementation and a private GitHub push. Hosting, business model, commercial license, pricing, target audience and learning-experiment thresholds remain undecided. Human multiplayer comes after the bot/coach stage and billing comes last. Research market-size figures are scenarios, not validated demand. Local functional tests do not establish learning outcomes or full Chess.com parity.
+The user has authorized the coach/bot platform implementation and a private GitHub push. Hosting now uses owner-private Sites with a protected native service on this Mac; business model, commercial license, pricing, target audience and learning-experiment thresholds remain undecided. Human multiplayer comes after the bot/coach stage and billing comes last. Research market-size figures are scenarios, not validated demand. Local functional tests do not establish learning outcomes or full Chess.com parity.

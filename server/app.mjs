@@ -2,11 +2,15 @@ import express from 'express';
 import { DatabaseSync } from 'node:sqlite';
 import { randomBytes, randomUUID, scrypt, timingSafeEqual, createHash } from 'node:crypto';
 import { promisify } from 'node:util';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { Chess } from 'chess.js';
 import * as engine from './engine.mjs';
+import * as opponents from './opponent-engines.mjs';
+import {setupOptions,beginClock,settleClock,finishMoveClock,crownsFor,adaptiveRating,addBotChat,undoTurn,attackedPieces} from './bot-game.mjs';
+const profiles = JSON.parse(readFileSync(new URL('./bot-profiles.json',import.meta.url),'utf8'));
 import { lessons, puzzles, catalog } from './content.mjs';
+import {hostingGuard} from './hosting.mjs';
 
 const derive = promisify(scrypt);
 const hash = value => createHash('sha256').update(value).digest('hex');
@@ -49,7 +53,7 @@ function validateStudy(study, game) {
  return {version:1,branches,selectedBranchId:selected,anchorPly:study.anchorPly};
 }
 
-export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('data/chesslab.sqlite'), engineApi = engine} = {}) {
+export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('data/chesslab.sqlite'), engineApi = engine, opponentApi = opponents, nowMs = Date.now} = {}) {
  if (databasePath !== ':memory:') mkdirSync(dirname(databasePath), {recursive:true});
  const db = new DatabaseSync(databasePath);
  db.exec(`PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON; PRAGMA busy_timeout=5000;
@@ -57,8 +61,10 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
  CREATE TABLE IF NOT EXISTS sessions (token_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), expires_at INTEGER NOT NULL);
  CREATE TABLE IF NOT EXISTS games (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), revision INTEGER NOT NULL, data TEXT NOT NULL);
  CREATE INDEX IF NOT EXISTS games_owner ON games(user_id);
- CREATE TABLE IF NOT EXISTS progress (user_id TEXT NOT NULL REFERENCES users(id), kind TEXT NOT NULL, item_id TEXT NOT NULL, PRIMARY KEY(user_id,kind,item_id));`);
+ CREATE TABLE IF NOT EXISTS progress (user_id TEXT NOT NULL REFERENCES users(id), kind TEXT NOT NULL, item_id TEXT NOT NULL, PRIMARY KEY(user_id,kind,item_id));
+ CREATE TABLE IF NOT EXISTS bot_results (user_id TEXT NOT NULL REFERENCES users(id), bot_id TEXT NOT NULL, crowns INTEGER NOT NULL CHECK(crowns BETWEEN 1 AND 3), PRIMARY KEY(user_id,bot_id));`);
  const app = express(); app.disable('x-powered-by');
+ app.use(hostingGuard());
  const rateWindows = new Map(); const pendingBot = new Set();
  function limit(key, max, period = 60000) {
   const stamp = Date.now(); const bucket = rateWindows.get(key);
@@ -75,7 +81,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
    const origin = req.get('origin');
    if (origin) {
     let requestOrigin; try { requestOrigin = new URL(origin).origin; } catch { return res.status(403).json({error:'This request came from an invalid origin.'}); }
-    if (requestOrigin !== `${req.protocol}://${req.get('host')}`) return res.status(403).json({error:'Cross-origin changes are not allowed.'});
+    if (requestOrigin !== (process.env.PUBLIC_ORIGIN || `${req.protocol}://${req.get('host')}`)) return res.status(403).json({error:'Cross-origin changes are not allowed.'});
    }
    if (req.get('sec-fetch-site') === 'cross-site') return res.status(403).json({error:'Cross-site changes are not allowed.'});
    if (!req.is('application/json')) return res.status(415).json({error:'Use JSON for this request.'});
@@ -92,7 +98,8 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
  });
  const progress = userId => {
   const rows = userId ? db.prepare('SELECT kind,item_id FROM progress WHERE user_id=?').all(userId) : [];
-  return {lessons:rows.filter(x=>x.kind==='lesson').map(x=>x.item_id),puzzles:rows.filter(x=>x.kind==='puzzle').map(x=>x.item_id)};
+  const bots = userId ? Object.fromEntries(db.prepare('SELECT bot_id,crowns FROM bot_results WHERE user_id=?').all(userId).map(r=>[r.bot_id,r.crowns])) : {};
+  return {...(Object.keys(bots).length?{bots}:{}),lessons:rows.filter(x=>x.kind==='lesson').map(x=>x.item_id),puzzles:rows.filter(x=>x.kind==='puzzle').map(x=>x.item_id)};
  };
  const me = user => ({user:user || null,progress:progress(user?.id)});
  function requireUser(req,res,next) { if (!req.user) return res.status(401).json({error:'Sign in to save your game and progress.'}); next(); }
@@ -103,6 +110,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   res.cookie('chesslab_session',token,{httpOnly:true,sameSite:'strict',secure:process.env.COOKIE_SECURE==='1',maxAge:7*86400000,path:'/'});
  }
  app.get('/api/status',async(req,res)=>res.json({engine:await engineApi.engineStatus(),billingEnabled:false}));
+ app.get('/api/bots',async(req,res)=>res.json({bots:profiles,engines:await opponentApi.listOpponentEngines()}));
  app.get('/api/me',(req,res)=>res.json(me(req.user)));
  app.post('/api/register',async(req,res)=>{
   limit(`auth:${req.ip}`,15);
@@ -139,8 +147,14 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
  const storeGame = (userId,game,oldRevision) => {
   const current = db.prepare('SELECT data FROM games WHERE id=? AND user_id=?').get(game.id,userId);
   if (!current) fail(404,'This game was not found.');
-  const next = {...game,study:JSON.parse(current.data).study,studyRevision:JSON.parse(current.data).studyRevision || 0,revision:oldRevision+1,updatedAt:now()};
-  if (!db.prepare('UPDATE games SET revision=?,data=? WHERE id=? AND user_id=? AND revision=?').run(next.revision,JSON.stringify(next),next.id,userId,oldRevision).changes) fail(409,'This game changed while the request was running. Reload it to continue.');
+  const next = {...game,reviewUsed:game.reviewUsed||JSON.parse(current.data).reviewUsed||false,study:JSON.parse(current.data).study,studyRevision:JSON.parse(current.data).studyRevision || 0,revision:oldRevision+1,updatedAt:now()};
+  next.crownsAwarded=crownsFor(next);
+  db.exec('BEGIN IMMEDIATE');
+  try {
+   if (!db.prepare('UPDATE games SET revision=?,data=? WHERE id=? AND user_id=? AND revision=?').run(next.revision,JSON.stringify(next),next.id,userId,oldRevision).changes) fail(409,'This game changed while the request was running. Reload it to continue.');
+   if(next.crownsAwarded)db.prepare('INSERT INTO bot_results VALUES (?,?,?) ON CONFLICT(user_id,bot_id) DO UPDATE SET crowns=MAX(crowns,excluded.crowns)').run(userId,next.botId,next.crownsAwarded);
+   db.exec('COMMIT');
+  }catch(error){db.exec('ROLLBACK');throw error;}
   return next;
  };
  const insertGame = (userId,values) => {
@@ -149,40 +163,89 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   db.prepare('INSERT INTO games VALUES (?,?,?,?)').run(game.id,userId,game.revision,JSON.stringify(game)); return game;
  };
  app.get('/api/games',(req,res)=>res.json({games:db.prepare('SELECT data FROM games WHERE user_id=? ORDER BY rowid DESC').all(req.user.id).map(row=>JSON.parse(row.data))}));
- app.post('/api/games',(req,res)=>{
-  const {color='w',level=2,title} = req.body;
-  if (!['w','b'].includes(color) || !Number.isInteger(level) || level<1 || level>5 || (title!==undefined && (typeof title!=='string'||title.length>100))) fail(400,'Choose White or Black and a bot level from 1 to 5.');
-  res.status(201).json({game:insertGame(req.user.id,{color,level,title:title || `Practice · level ${level}`})});
+ const liveGame=req=>{
+  const game=owned(req);
+  return settleClock(game,nowMs())?storeGame(req.user.id,game,game.revision):game;
+ };
+ const playable=(req,game)=>{
+  expected(req,game);
+  if(game.result||game.source!=='bot')fail(409,'This game is available for review, not further play.');
+  return replay(game.moves,game.initialFen);
+ };
+ app.post('/api/games',async(req,res)=>{
+  const values=setupOptions(req.body,profiles);
+  if(!values.legacyStrength){
+   const selected=(await opponentApi.listOpponentEngines()).find(e=>e.id===values.engineId);
+   if(!selected)fail(400,'Choose an engine from the current catalog.');
+   if(!selected.available)fail(503,selected.reason||'This engine is unavailable on the server.');
+  }
+  beginClock(values,nowMs());
+  res.status(201).json({game:insertGame(req.user.id,values)});
  });
- app.get('/api/games/:id',(req,res)=>res.json({game:owned(req)}));
+ app.get('/api/games/:id',(req,res)=>res.json({game:liveGame(req)}));
  app.post('/api/games/:id/move',(req,res)=>{
-  const game=owned(req);expected(req,game);
-  if (game.result || game.source!=='bot') fail(409,'This game is available for review, not further play.');
-  const chess=replay(game.moves,game.initialFen);
-  if (chess.turn()!==game.color) fail(409,'Wait for your opponent to move.');
-  if (game.moves.length>=1000) fail(400,'This game has reached the move limit.');
+  const game=liveGame(req),chess=playable(req,game);
+  if(chess.turn()!==game.color)fail(409,'Wait for your opponent to move.');
+  if(game.moves.length>=1000)fail(400,'This game has reached the move limit.');
   const move=moveOn(chess,req.body.move);game.moves.push(uci(move));game.result=gameResult(chess);
+  finishMoveClock(game,move.color,nowMs());
   res.json({game:storeGame(req.user.id,game,game.revision)});
  });
  app.post('/api/games/:id/bot',async(req,res)=>{
-  const game=owned(req);expected(req,game);
-  if (game.result || game.source!=='bot') fail(409,'This game is available for review, not further play.');
-  const chess=replay(game.moves,game.initialFen);
-  if (chess.turn()===game.color) fail(409,'It is your turn.');
-  if (pendingBot.has(game.id)) fail(409,'The opponent is already thinking.');
-  if (game.moves.length>=1000) fail(400,'This game has reached the move limit.');
+  let game=liveGame(req);const chess=playable(req,game);
+  if(chess.turn()===game.color)fail(409,'It is your turn.');
+  if(pendingBot.has(game.id))fail(409,'The opponent is already thinking.');
+  if(game.moves.length>=1000)fail(400,'This game has reached the move limit.');
   pendingBot.add(game.id);
   try {
-   const analysis=await engineApi.analyze({moves:game.moves,initialFen:game.initialFen,movetime:[80,150,250,400,700][game.level-1],lines:1,skill:[0,4,8,14,20][game.level-1]});
-   if (!analysis.bestmove) fail(503,'The engine returned no move. Retry the opponent turn.');
-   const move=moveOn(chess,analysis.bestmove);game.moves.push(uci(move));game.result=gameResult(chess);
+   game.currentRating=adaptiveRating(game);
+   let decision;
+   if(game.legacyStrength||!game.engineId){
+    const analysis=await engineApi.analyze({moves:game.moves,initialFen:game.initialFen,movetime:[80,150,250,400,700][game.level-1],lines:1,skill:[0,4,8,14,20][game.level-1]});
+    decision={move:analysis.bestmove,engine:analysis.engine,engineId:'stockfish19'};
+   }else decision=await opponentApi.chooseOpponentMove({engineId:game.engineId,moves:game.moves,initialFen:game.initialFen,rating:game.currentRating,...(game.botId&&game.rating<250?{profileRating:game.rating}:{}),skill:Math.max(0,Math.min(20,Math.round((game.currentRating-600)/110))),movetime:Math.max(80,Math.min(1200,Math.round(game.currentRating/3))),style:game.style});
+   if(!decision.move)fail(503,'The engine returned no move. Retry the opponent turn.');
+   const fresh=owned(req);expected(req,fresh);
+   if(settleClock(fresh,nowMs()))return res.json({game:storeGame(req.user.id,fresh,fresh.revision)});
+   game={...fresh,currentRating:game.currentRating,lastEngineDecision:decision};
+   const move=moveOn(chess,decision.move);game.moves.push(uci(move));game.result=gameResult(chess);
+   finishMoveClock(game,move.color,nowMs());addBotChat(game,move);
    res.json({game:storeGame(req.user.id,game,game.revision)});
-  } finally {pendingBot.delete(game.id);}
+  }finally{pendingBot.delete(game.id);}
  });
  app.post('/api/games/:id/resign',(req,res)=>{
-  const game=owned(req);expected(req,game);
-  if(game.result || game.source!=='bot') fail(409,'This game has already ended or is an imported review.');
-  game.result=game.color==='w'?'0-1':'1-0';res.json({game:storeGame(req.user.id,game,game.revision)});
+  const game=liveGame(req);playable(req,game);
+  game.result=game.color==='w'?'0-1':'1-0';game.resultReason='Resignation';if(game.clock)game.clock.activeSince=null;
+  res.json({game:storeGame(req.user.id,game,game.revision)});
+ });
+ app.post('/api/games/:id/undo',(req,res)=>{
+  const game=liveGame(req);playable(req,game);
+  if(pendingBot.has(game.id))fail(409,'Wait for the opponent to finish before taking back a turn.');
+  undoTurn(game,nowMs());game.currentRating=adaptiveRating(game);
+  res.json({game:storeGame(req.user.id,game,game.revision)});
+ });
+ app.post('/api/games/:id/hint',async(req,res)=>{
+  limit(`analysis:${req.user.id}`,100);
+  const game=liveGame(req),chess=playable(req,game);
+  if(chess.turn()!==game.color)fail(409,'Wait for your turn before asking for a hint.');
+  const analysis=await engineApi.analyze({moves:game.moves,initialFen:game.initialFen,movetime:400,lines:1});
+  if(!analysis.bestmove)fail(503,'The coach returned no hint. Try again.');
+  const move=moveOn(chess,analysis.bestmove),fresh=owned(req);expected(req,fresh);
+  if(settleClock(fresh,nowMs()))return res.json({game:storeGame(req.user.id,fresh,fresh.revision)});
+  fresh.hintsUsed=(fresh.hintsUsed||0)+1;
+  res.json({move:uci(move),san:move.san,explanation:analysis.explanation||`Consider ${move.san}. Check the opponent's replies before committing.`,game:storeGame(req.user.id,fresh,fresh.revision)});
+ });
+ app.post('/api/games/:id/assist',async(req,res)=>{
+  limit(`analysis:${req.user.id}`,100);
+  const game=liveGame(req),chess=playable(req,game);
+  if(chess.turn()!==game.color)fail(409,'Assistance is available on your turn.');
+  const help=game.assistance||{};
+  const analysis=(help.evaluation||help.suggestions||help.engine)?await engineApi.analyze({moves:game.moves,initialFen:game.initialFen,movetime:350,lines:help.engine?3:1}):null;
+  const lastPlayerPly=game.moves.length-2;
+  const feedback=help.feedback&&lastPlayerPly>=0?await engineApi.analyze({moves:game.moves.slice(0,lastPlayerPly),initialFen:game.initialFen,playedMove:game.moves[lastPlayerPly],movetime:350,lines:1}):null;
+  const fresh=owned(req);expected(req,fresh);
+  if(settleClock(fresh,nowMs()))return res.json({analysis:null,feedback:null,threats:[],game:storeGame(req.user.id,fresh,fresh.revision)});
+  res.json({analysis,feedback,threats:help.threats?attackedPieces(game):[],game:fresh});
  });
  app.post('/api/import',(req,res)=>{
   const {pgn}=req.body;
@@ -197,7 +260,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
  });
  app.get('/api/games/:id/pgn',(req,res)=>{
   const game=owned(req);const chess=replay(game.moves,game.initialFen);
-  for (const [key,value] of Object.entries({Event:'ChessLab study',White:game.color==='w'?req.user.username:'ChessLab bot',Black:game.color==='b'?req.user.username:'ChessLab bot',Result:game.result || '*'})) chess.setHeader(key,value);
+  for (const [key,value] of Object.entries({Event:'ChessLab study',White:game.color==='w'?req.user.username:(game.botName||'ChessLab bot'),Black:game.color==='b'?req.user.username:(game.botName||'ChessLab bot'),Result:game.result || '*'})) chess.setHeader(key,value);
   if(game.source==='import') {chess.setHeader('White',game.headers?.White || 'Imported White');chess.setHeader('Black',game.headers?.Black || 'Imported Black');}
   res.type('text/plain').set('Content-Disposition',`attachment; filename="chesslab-${game.id}.pgn"`).send(chess.pgn());
  });
@@ -209,7 +272,21 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   db.prepare('UPDATE games SET data=? WHERE id=? AND user_id=?').run(JSON.stringify({...game,updatedAt:now()}),game.id,req.user.id);
   res.json({game});
  });
- app.post('/api/analyze',async(req,res)=>{limit(`analysis:${req.user.id}`,100);res.json(await engineApi.analyze(req.body));});
+ app.post('/api/analyze',async(req,res)=>{
+  limit(`analysis:${req.user.id}`,100);
+  if(req.body.gameId!==undefined){
+   if(typeof req.body.gameId!=='string')fail(400,'Invalid game identifier.');
+   const row=db.prepare('SELECT data FROM games WHERE id=? AND user_id=?').get(req.body.gameId,req.user.id);
+   if(!row)fail(404,'This saved game was not found.');
+   const game=JSON.parse(row.data);
+   if(game.source==='bot'&&!game.result&&!game.reviewUsed){game.reviewUsed=true;db.prepare('UPDATE games SET data=? WHERE id=? AND user_id=?').run(JSON.stringify(game),game.id,req.user.id);}
+  }
+  const controller=new AbortController();
+  const cancel=()=>{if(!res.writableEnded)controller.abort();};
+  res.once('close',cancel);
+  try {res.json(await engineApi.analyze(req.body,{signal:controller.signal}));}
+  finally {res.removeListener('close',cancel);}
+ });
  app.post('/api/lessons/:id/answer',(req,res)=>{
   const lesson=lessons.find(x=>x.id===req.params.id);if(!lesson)fail(404,'Lesson not found.');
   if(!Number.isInteger(req.body.choice)||req.body.choice<0||req.body.choice>=lesson.choices.length)fail(400,'Choose one of the answers.');

@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Engine Installation · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Engine Installation</h1><p class="lede">references/engine-installation.json</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Engine Installation"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/references/engine-installation.json" download>Download original file ↗</a></div><p class="source-meta">references/engine-installation.json<br>SHA-256: 02f9af95a6d6ffc89e3fc4946c400e6dc25f7e73959e9bbb084d911d1e02c53b</p><pre><code>{
+  &quot;engines&quot;: {
+    &quot;maia3-5m&quot;: {
+      &quot;version&quot;: &quot;0.1.0 / 5M&quot;,
+      &quot;sources&quot;: [
+        &quot;https://github.com/CSSLab/maia3/tree/1e13597c42d4858b7cfd7cfdae01e297263364b2&quot;,
+        &quot;https://huggingface.co/UofTCSSLab/Maia3-5M/tree/b6559de2398d7140b985f28fd2c19fb5e47ddabe&quot;
+      ],
+      &quot;files&quot;: [
+        {
+          &quot;path&quot;: &quot;data/engines/maia3/maia3-5m.pt&quot;,
+          &quot;sha256&quot;: &quot;ba14208b2992d85502f5fb501934abf6aaaeb355e9f3fdf90e326911f562524f&quot;,
+          &quot;bytes&quot;: 20968049
+        }
+      ],
+      &quot;installedAt&quot;: &quot;2026-09-06T23:31:53Z&quot;,
+      &quot;license&quot;: &quot;AGPL-3.0&quot;,
+      &quot;sourceCommit&quot;: &quot;1e13597c42d4858b7cfd7cfdae01e297263364b2&quot;,
+      &quot;modelRevision&quot;: &quot;b6559de2398d7140b985f28fd2c19fb5e47ddabe&quot;,
+      &quot;smoke&quot;: {
+        &quot;move&quot;: &quot;b5a4&quot;,
+        &quot;engine&quot;: &quot;Maia3&quot;,
+        &quot;engineId&quot;: &quot;maia3-5m&quot;,
+        &quot;requestedRating&quot;: 1500,
+        &quot;modelRating&quot;: 1500,
+        &quot;policy&quot;: {
+          &quot;id&quot;: &quot;maia-model&quot;,
+          &quot;calibrated&quot;: false
+        },
+        &quot;moves&quot;: [
+          &quot;e2e4&quot;,
+          &quot;e7e5&quot;,
+          &quot;g1f3&quot;,
+          &quot;b8c6&quot;,
+          &quot;f1b5&quot;,
+          &quot;a7a6&quot;
+        ],
+        &quot;initialFen&quot;: null,
+        &quot;afterFen&quot;: &quot;r1bqkbnr/1ppp1ppp/p1n5/4p3/B3P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 4&quot;,
+        &quot;elapsedMs&quot;: 5914,
+        &quot;verifiedAt&quot;: &quot;2026-09-06T23:46:03.721Z&quot;
+      }
+    },
+    &quot;stockfish18&quot;: {
+      &quot;version&quot;: &quot;18&quot;,
+      &quot;sources&quot;: [
+        &quot;https://github.com/official-stockfish/Stockfish/releases/download/sf_18/stockfish-macos-m1-apple-silicon.tar&quot;
+      ],
+      &quot;files&quot;: [
+        {
+          &quot;path&quot;: &quot;data/engines/downloads/stockfish18.tar&quot;,
+          &quot;sha256&quot;: &quot;4d77c4aa3ad9bd1ea8111f2ac5a4620fe7ebf998d6893bf828d49ccd579c8cb0&quot;,
+          &quot;bytes&quot;: 115322880
+        },
+        {
+          &quot;path&quot;: &quot;data/engines/stockfish18/stockfish&quot;,
+          &quot;sha256&quot;: &quot;bc0cac905ecdf2147fe22055c733bcd999b1e3f7c399fbaf7fb9055786563590&quot;,
+          &quot;bytes&quot;: 113853992
+        }
+      ],
+      &quot;installedAt&quot;: &quot;2026-09-06T23:32:02Z&quot;,
+      &quot;license&quot;: &quot;GPL-3.0&quot;,
+      &quot;smoke&quot;: {
+        &quot;move&quot;: &quot;b5c6&quot;,
+        &quot;engine&quot;: &quot;Stockfish 18&quot;,
+        &quot;engineId&quot;: &quot;stockfish18&quot;,
+        &quot;baseMove&quot;: &quot;b5c6&quot;,
+        &quot;policy&quot;: {
+          &quot;id&quot;: &quot;stockfish-skill&quot;,
+          &quot;applied&quot;: false,
+          &quot;probability&quot;: 0,
+          &quot;skill&quot;: 20,
+          &quot;style&quot;: &quot;balanced&quot;,
+          &quot;calibrated&quot;: false
+        },
+        &quot;moves&quot;: [
+          &quot;e2e4&quot;,
+          &quot;e7e5&quot;,
+          &quot;g1f3&quot;,
+          &quot;b8c6&quot;,
+          &quot;f1b5&quot;,
+          &quot;a7a6&quot;
+        ],
+        &quot;initialFen&quot;: null,
+        &quot;afterFen&quot;: &quot;r1bqkbnr/1ppp1ppp/p1B5/4p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 4&quot;,
+        &quot;elapsedMs&quot;: 979,
+        &quot;verifiedAt&quot;: &quot;2026-09-06T23:45:45.091Z&quot;
+      }
+    },
+    &quot;maia3-23m&quot;: {
+      &quot;version&quot;: &quot;0.1.0 / 23M&quot;,
+      &quot;sources&quot;: [
+        &quot;https://github.com/CSSLab/maia3/tree/1e13597c42d4858b7cfd7cfdae01e297263364b2&quot;,
+        &quot;https://huggingface.co/UofTCSSLab/Maia3-23M/tree/51a0145a8178046f7de23119160b136672deeb2b&quot;
+      ],
+      &quot;files&quot;: [
+        {
+          &quot;path&quot;: &quot;data/engines/maia3/maia3-23m.pt&quot;,
+          &quot;sha256&quot;: &quot;bce6cd1af5f0399ac7eed33fabb7a6a2ef6193662c2740f262bf93af7bfb3569&quot;,
+          &quot;bytes&quot;: 91799307
+        }
+      ],
+      &quot;installedAt&quot;: &quot;2026-09-06T23:32:07Z&quot;,
+      &quot;license&quot;: &quot;AGPL-3.0&quot;,
+      &quot;sourceCommit&quot;: &quot;1e13597c42d4858b7cfd7cfdae01e297263364b2&quot;,
+      &quot;modelRevision&quot;: &quot;51a0145a8178046f7de23119160b136672deeb2b&quot;,
+      &quot;smoke&quot;: {
+        &quot;move&quot;: &quot;b5a4&quot;,
+        &quot;engine&quot;: &quot;Maia3&quot;,
+        &quot;engineId&quot;: &quot;maia3-23m&quot;,
+        &quot;requestedRating&quot;: 1500,
+        &quot;modelRating&quot;: 1500,
+        &quot;policy&quot;: {
+          &quot;id&quot;: &quot;maia-model&quot;,
+          &quot;calibrated&quot;: false
+        },
+        &quot;moves&quot;: [
+          &quot;e2e4&quot;,
+          &quot;e7e5&quot;,
+          &quot;g1f3&quot;,
+          &quot;b8c6&quot;,
+          &quot;f1b5&quot;,
+          &quot;a7a6&quot;
+        ],
+        &quot;initialFen&quot;: null,
+        &quot;afterFen&quot;: &quot;r1bqkbnr/1ppp1ppp/p1n5/4p3/B3P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 4&quot;,
+        &quot;elapsedMs&quot;: 5616,
+        &quot;verifiedAt&quot;: &quot;2026-09-06T23:45:57.807Z&quot;
+      }
+    },
+    &quot;maia3&quot;: {
+      &quot;version&quot;: &quot;0.1.0 / 79M&quot;,
+      &quot;sources&quot;: [
+        &quot;https://github.com/CSSLab/maia3/tree/1e13597c42d4858b7cfd7cfdae01e297263364b2&quot;,
+        &quot;https://huggingface.co/UofTCSSLab/Maia3-79M/tree/a107d6ceb7b298cb04ae1da4edffe2939858b894&quot;
+      ],
+      &quot;files&quot;: [
+        {
+          &quot;path&quot;: &quot;data/engines/maia3/maia3-79m.pt&quot;,
+          &quot;sha256&quot;: &quot;3fc6181d5db789b45a15305732148757ae74efa3e0028e81ba335b462dac45c2&quot;,
+          &quot;bytes&quot;: 315651851
+        }
+      ],
+      &quot;installedAt&quot;: &quot;2026-09-06T23:32:27Z&quot;,
+      &quot;license&quot;: &quot;AGPL-3.0&quot;,
+      &quot;sourceCommit&quot;: &quot;1e13597c42d4858b7cfd7cfdae01e297263364b2&quot;,
+      &quot;modelRevision&quot;: &quot;a107d6ceb7b298cb04ae1da4edffe2939858b894&quot;,
+      &quot;smoke&quot;: {
+        &quot;move&quot;: &quot;b5a4&quot;,
+        &quot;engine&quot;: &quot;Maia3&quot;,
+        &quot;engineId&quot;: &quot;maia3&quot;,
+        &quot;requestedRating&quot;: 1500,
+        &quot;modelRating&quot;: 1500,
+        &quot;policy&quot;: {
+          &quot;id&quot;: &quot;maia-model&quot;,
+          &quot;calibrated&quot;: false
+        },
+        &quot;moves&quot;: [
+          &quot;e2e4&quot;,
+          &quot;e7e5&quot;,
+          &quot;g1f3&quot;,
+          &quot;b8c6&quot;,
+          &quot;f1b5&quot;,
+          &quot;a7a6&quot;
+        ],
+        &quot;initialFen&quot;: null,
+        &quot;afterFen&quot;: &quot;r1bqkbnr/1ppp1ppp/p1n5/4p3/B3P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 4&quot;,
+        &quot;elapsedMs&quot;: 6193,
+        &quot;verifiedAt&quot;: &quot;2026-09-06T23:45:52.190Z&quot;
+      }
+    },
+    &quot;stockfish16&quot;: {
+      &quot;version&quot;: &quot;16&quot;,
+      &quot;sources&quot;: [
+        &quot;https://github.com/official-stockfish/Stockfish/archive/refs/tags/sf_16.tar.gz&quot;
+      ],
+      &quot;files&quot;: [
+        {
+          &quot;path&quot;: &quot;data/engines/downloads/stockfish16-source.tar.gz&quot;,
+          &quot;sha256&quot;: &quot;a1600ebdaf4e324ba3e10cec2e0c9a810dc64c6f0db5cc955b2fd5e1eefa1cc6&quot;,
+          &quot;bytes&quot;: 195462
+        },
+        {
+          &quot;path&quot;: &quot;data/engines/stockfish16/stockfish&quot;,
+          &quot;sha256&quot;: &quot;56f180703e82b1e647990d24499d3a5d2be3a374a89356748219bfbeeca0c6a9&quot;,
+          &quot;bytes&quot;: 40832008
+        }
+      ],
+      &quot;installedAt&quot;: &quot;2026-09-06T23:32:53Z&quot;,
+      &quot;license&quot;: &quot;GPL-3.0&quot;,
+      &quot;smoke&quot;: {
+        &quot;move&quot;: &quot;b5c6&quot;,
+        &quot;engine&quot;: &quot;Stockfish 16&quot;,
+        &quot;engineId&quot;: &quot;stockfish16&quot;,
+        &quot;baseMove&quot;: &quot;b5c6&quot;,
+        &quot;policy&quot;: {
+          &quot;id&quot;: &quot;stockfish-skill&quot;,
+          &quot;applied&quot;: false,
+          &quot;probability&quot;: 0,
+          &quot;skill&quot;: 20,
+          &quot;style&quot;: &quot;balanced&quot;,
+          &quot;calibrated&quot;: false
+        },
+        &quot;moves&quot;: [
+          &quot;e2e4&quot;,
+          &quot;e7e5&quot;,
+          &quot;g1f3&quot;,
+          &quot;b8c6&quot;,
+          &quot;f1b5&quot;,
+          &quot;a7a6&quot;
+        ],
+        &quot;initialFen&quot;: null,
+        &quot;afterFen&quot;: &quot;r1bqkbnr/1ppp1ppp/p1B5/4p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 4&quot;,
+        &quot;elapsedMs&quot;: 904,
+        &quot;verifiedAt&quot;: &quot;2026-09-06T23:45:45.996Z&quot;
+      }
+    },
+    &quot;maia2&quot;: {
+      &quot;version&quot;: &quot;0.11.0 / rapid&quot;,
+      &quot;sources&quot;: [
+        &quot;https://github.com/CSSLab/maia2/tree/67bee6ce7e2f264344fe6d2026a2e18c76a82efa&quot;,
+        &quot;https://drive.google.com/uc?id=1gbC1-c7c0EQOPPAVpGWubezeEW8grVwc&quot;,
+        &quot;https://drive.google.com/uc?id=1X-Z4J3PX3MQFJoa8gRt3aL8CIH0PWoyt&quot;
+      ],
+      &quot;files&quot;: [
+        {
+          &quot;path&quot;: &quot;data/engines/maia2/rapid_model.pt&quot;,
+          &quot;sha256&quot;: &quot;65aae8465eed5e65df66a24ea7370715579f9e5435098d06fe18bdb1e267e997&quot;,
+          &quot;bytes&quot;: 279704570
+        }
+      ],
+      &quot;installedAt&quot;: &quot;2026-09-06T23:33:08Z&quot;,
+      &quot;license&quot;: &quot;MIT&quot;,
+      &quot;sourceCommit&quot;: &quot;67bee6ce7e2f264344fe6d2026a2e18c76a82efa&quot;,
+      &quot;smoke&quot;: {
+        &quot;move&quot;: &quot;b5c4&quot;,
+        &quot;engine&quot;: &quot;Maia2 0.11.0 rapid&quot;,
+        &quot;engineId&quot;: &quot;maia2&quot;,
+        &quot;requestedRating&quot;: 1500,
+        &quot;modelRating&quot;: 1500,
+        &quot;policy&quot;: {
+          &quot;id&quot;: &quot;maia-model&quot;,
+          &quot;calibrated&quot;: false
+        },
+        &quot;moves&quot;: [
+          &quot;e2e4&quot;,
+          &quot;e7e5&quot;,
+          &quot;g1f3&quot;,
+          &quot;b8c6&quot;,
+          &quot;f1b5&quot;,
+          &quot;a7a6&quot;
+        ],
+        &quot;initialFen&quot;: null,
+        &quot;afterFen&quot;: &quot;r1bqkbnr/1ppp1ppp/p1n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 4&quot;,
+        &quot;elapsedMs&quot;: 4713,
+        &quot;verifiedAt&quot;: &quot;2026-09-06T23:46:08.434Z&quot;
+      }
+    },
+    &quot;lc0&quot;: {
+      &quot;version&quot;: &quot;0.32.1 / T1-256x10-distilled-swa-2432500&quot;,
+      &quot;sources&quot;: [
+        &quot;https://github.com/LeelaChessZero/lc0/tree/v0.32.1&quot;,
+        &quot;https://formulae.brew.sh/formula/lc0&quot;,
+        &quot;https://storage.lczero.org/files/networks-contrib/t1-256x10-distilled-swa-2432500.pb.gz&quot;
+      ],
+      &quot;files&quot;: [
+        {
+          &quot;path&quot;: &quot;data/engines/lc0/lc0&quot;,
+          &quot;sha256&quot;: &quot;5e3005ed5cdb00cbaf6c8086973bebc2acb67202a5f22ce3c8e82e173eb5ce82&quot;,
+          &quot;bytes&quot;: 1832416
+        },
+        {
+          &quot;path&quot;: &quot;data/engines/lc0/weights.pb.gz&quot;,
+          &quot;sha256&quot;: &quot;bc27a6cae8ad36f2b9a80a6ad9dabb0d6fda25b1e7f481a79bc359e14f563406&quot;,
+          &quot;bytes&quot;: 37118673
+        }
+      ],
+      &quot;installedAt&quot;: &quot;2026-09-06T23:35:26Z&quot;,
+      &quot;license&quot;: &quot;GPL-3.0-or-later&quot;,
+      &quot;bottleSha256&quot;: &quot;9af0c3404413f7d61bdabebed5b36f18cd46d38d67435add1737ea07c0c09849&quot;,
+      &quot;smoke&quot;: {
+        &quot;move&quot;: &quot;b5a4&quot;,
+        &quot;engine&quot;: &quot;Lc0 v0.32.1+git.dirty&quot;,
+        &quot;engineId&quot;: &quot;lc0&quot;,
+        &quot;policy&quot;: {
+          &quot;id&quot;: &quot;lc0-search-budget&quot;,
+          &quot;nodes&quot;: 18,
+          &quot;movetime&quot;: 100,
+          &quot;calibrated&quot;: false
+        },
+        &quot;moves&quot;: [
+          &quot;e2e4&quot;,
+          &quot;e7e5&quot;,
+          &quot;g1f3&quot;,
+          &quot;b8c6&quot;,
+          &quot;f1b5&quot;,
+          &quot;a7a6&quot;
+        ],
+        &quot;initialFen&quot;: null,
+        &quot;afterFen&quot;: &quot;r1bqkbnr/1ppp1ppp/p1n5/4p3/B3P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 4&quot;,
+        &quot;elapsedMs&quot;: 451,
+        &quot;verifiedAt&quot;: &quot;2026-09-06T23:46:13.389Z&quot;
+      }
+    },
+    &quot;stockfish19&quot;: {
+      &quot;version&quot;: &quot;19&quot;,
+      &quot;sources&quot;: [
+        &quot;https://github.com/official-stockfish/Stockfish/releases/tag/sf_19&quot;
+      ],
+      &quot;files&quot;: [
+        {
+          &quot;path&quot;: &quot;/opt/homebrew/Cellar/stockfish/19/bin/stockfish&quot;,
+          &quot;sha256&quot;: &quot;dc2f18c34ae962dff591b66147d220ec06e61d756b93d8a4f5e04fd8e55c251f&quot;,
+          &quot;bytes&quot;: 99868024
+        }
+      ],
+      &quot;installedAt&quot;: &quot;2026-09-06T23:45:21Z&quot;,
+      &quot;license&quot;: &quot;GPL-3.0&quot;,
+      &quot;installation&quot;: &quot;Existing server installation; version checked by the live adapter below.&quot;,
+      &quot;smoke&quot;: {
+        &quot;move&quot;: &quot;b5a4&quot;,
+        &quot;engine&quot;: &quot;Stockfish 19&quot;,
+        &quot;engineId&quot;: &quot;stockfish19&quot;,
+        &quot;baseMove&quot;: &quot;b5a4&quot;,
+        &quot;policy&quot;: {
+          &quot;id&quot;: &quot;stockfish-skill&quot;,
+          &quot;applied&quot;: false,
+          &quot;probability&quot;: 0,
+          &quot;skill&quot;: 20,
+          &quot;style&quot;: &quot;balanced&quot;,
+          &quot;calibrated&quot;: false
+        },
+        &quot;moves&quot;: [
+          &quot;e2e4&quot;,
+          &quot;e7e5&quot;,
+          &quot;g1f3&quot;,
+          &quot;b8c6&quot;,
+          &quot;f1b5&quot;,
+          &quot;a7a6&quot;
+        ],
+        &quot;initialFen&quot;: null,
+        &quot;afterFen&quot;: &quot;r1bqkbnr/1ppp1ppp/p1n5/4p3/B3P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 4&quot;,
+        &quot;elapsedMs&quot;: 577,
+        &quot;verifiedAt&quot;: &quot;2026-09-06T23:45:44.104Z&quot;
+      }
+    },
+    &quot;maia2-blitz&quot;: {
+      &quot;version&quot;: &quot;0.11.0 / blitz&quot;,
+      &quot;sources&quot;: [
+        &quot;https://github.com/CSSLab/maia2/tree/67bee6ce7e2f264344fe6d2026a2e18c76a82efa&quot;,
+        &quot;https://drive.google.com/uc?id=1gbC1-c7c0EQOPPAVpGWubezeEW8grVwc&quot;,
+        &quot;https://drive.google.com/uc?id=1X-Z4J3PX3MQFJoa8gRt3aL8CIH0PWoyt&quot;
+      ],
+      &quot;files&quot;: [
+        {
+          &quot;path&quot;: &quot;data/engines/maia2/blitz_model.pt&quot;,
+          &quot;sha256&quot;: &quot;5090d5d0d49dc29787c08d13febbed5b2da81a18c2ddcd8a90070cd3b43c44b2&quot;,
+          &quot;bytes&quot;: 279704570
+        }
+      ],
+      &quot;installedAt&quot;: &quot;2026-09-06T23:33:08Z&quot;,
+      &quot;license&quot;: &quot;MIT&quot;,
+      &quot;sourceCommit&quot;: &quot;67bee6ce7e2f264344fe6d2026a2e18c76a82efa&quot;,
+      &quot;smoke&quot;: {
+        &quot;move&quot;: &quot;b5c6&quot;,
+        &quot;engine&quot;: &quot;Maia2 0.11.0 blitz&quot;,
+        &quot;engineId&quot;: &quot;maia2-blitz&quot;,
+        &quot;requestedRating&quot;: 1500,
+        &quot;modelRating&quot;: 1500,
+        &quot;policy&quot;: {
+          &quot;id&quot;: &quot;maia-model&quot;,
+          &quot;calibrated&quot;: false
+        },
+        &quot;moves&quot;: [
+          &quot;e2e4&quot;,
+          &quot;e7e5&quot;,
+          &quot;g1f3&quot;,
+          &quot;b8c6&quot;,
+          &quot;f1b5&quot;,
+          &quot;a7a6&quot;
+        ],
+        &quot;initialFen&quot;: null,
+        &quot;afterFen&quot;: &quot;r1bqkbnr/1ppp1ppp/p1B5/4p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 4&quot;,
+        &quot;elapsedMs&quot;: 4502,
+        &quot;verifiedAt&quot;: &quot;2026-09-06T23:46:12.938Z&quot;
+      }
+    },
+    &quot;stockfish18-lite&quot;: {
+      &quot;version&quot;: &quot;18.0.0 / Lite WASM Multithreaded&quot;,
+      &quot;sources&quot;: [
+        &quot;https://github.com/nmrugg/stockfish.js/releases/download/v18.0.0/stockfish-18-lite.js&quot;,
+        &quot;https://github.com/nmrugg/stockfish.js/releases/download/v18.0.0/stockfish-18-lite.wasm&quot;,
+        &quot;https://raw.githubusercontent.com/nmrugg/stockfish.js/31a98753a5d932511693f44775da908377c24513/Copying.txt&quot;
+      ],
+      &quot;files&quot;: [
+        {
+          &quot;path&quot;: &quot;data/engines/stockfish18-lite/stockfish-18-lite.js&quot;,
+          &quot;sha256&quot;: &quot;f79e667c9d56ee768aca35e8343f91548ceef6a732f67cd82f267cf9eab7f665&quot;,
+          &quot;bytes&quot;: 32109
+        },
+        {
+          &quot;path&quot;: &quot;data/engines/stockfish18-lite/stockfish-18-lite.wasm&quot;,
+          &quot;sha256&quot;: &quot;d50136919dcd90e75eb8df78b255d47d618962b670028b38961343f6eb409174&quot;,
+          &quot;bytes&quot;: 7093151
+        },
+        {
+          &quot;path&quot;: &quot;data/engines/stockfish18-lite/Copying.txt&quot;,
+          &quot;sha256&quot;: &quot;0b383d5a63da644f628d99c33976ea6487ed89aaa59f0b3257992deac1171e6b&quot;,
+          &quot;bytes&quot;: 35821
+        }
+      ],
+      &quot;installedAt&quot;: &quot;2026-09-07T22:43:48Z&quot;,
+      &quot;license&quot;: &quot;GPL-3.0&quot;,
+      &quot;sourceCommit&quot;: &quot;31a98753a5d932511693f44775da908377c24513&quot;
+    }
+  }
+}</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

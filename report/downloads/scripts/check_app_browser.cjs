@@ -61,8 +61,8 @@ const { chromium } = require(packageRoot);
     const cookie = (await context.cookies(base)).find(item => item.name === 'chesslab_session');
     assert.ok(cookie?.httpOnly && cookie.sameSite === 'Strict', 'Session must be HttpOnly and SameSite=Strict.');
 
-    await page.getByRole('combobox', { name: 'BOT DIFFICULTY', exact: true }).selectOption('1');
-    const created = await actionResponse('/api/games', () => page.locator('.welcome-panel').getByRole('button', { name: 'Play coach', exact: true }).click(), 201);
+    await page.getByRole('button', { name: 'Play Martin, 250', exact: true }).click();
+    const created = await actionResponse('/api/games', () => page.locator('.welcome-panel').getByRole('button', { name: 'Play Martin', exact: true }).click(), 201);
     const gameRoute = `/api/games/${created.game.id}`;
     const humanResponse = responseFor(`${gameRoute}/move`);
     const replied = await actionResponse(`${gameRoute}/bot`, () => enterMove('e4'));

@@ -28,7 +28,7 @@ The first experiment should cover completed-game import, one confusing move, a v
 | Repository | Git initialized on `main`; no commit or remote at the beginning of this report run | The first commit remains incomplete following the earlier signing failure |
 | Skills | 22 Matt Pocock, two Unslop entries, 12 OpenSpec skills, and 54 Gstack entries per host | 90 entries per primary host tree, not 180 independent skills |
 | Specifications | Four draft OpenSpec artifacts and nine unchecked tasks | Reviewable planning, not implemented behavior |
-| Chess application | No playable application | No users, learning results, revenue or product retention established |
+| Chess application | Local multi-engine bot platform, review and saved studies; see the current application chapter | Full vendor parity, learning results, revenue and retention remain unproven |
 | This dossier | A local HTML reading site generated from the documents | A report about the proposed product, not the product itself |
 
 ## Three ways to read this dossier

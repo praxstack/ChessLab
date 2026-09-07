@@ -8,7 +8,7 @@ import { analyze, closeEngine, engineStatus, replay } from './engine.mjs';
 after(closeEngine);
 
 test('request validation rejects malformed notation, illegal history, FEN command injection and limit abuse', async () => {
-  for (const input of [null, {}, { moves: 'e2e4' }, { moves: ['e4'] }, { moves: ['e2e5'] }, { moves: ['e2e4\nquit'] }, { moves: [], initialFen: 'startpos\nquit' }, { moves: [], initialFen: '8/8/8/8/8/8/4k3/4K3 w - - 0 1' }, { moves: [], movetime: 100000 }, { moves: [], movetime: NaN }, { moves: [], lines: 4 }, { moves: [], skill: -1 }, { moves: [], playedMove: 'e2e5' }]) {
+  for (const input of [null, {}, { moves: 'e2e4' }, { moves: ['e4'] }, { moves: ['e2e5'] }, { moves: ['e2e4\nquit'] }, { moves: [], initialFen: 'startpos\nquit' }, { moves: [], initialFen: '8/8/8/8/8/8/4k3/4K3 w - - 0 1' }, { moves: [], movetime: 100000 }, { moves: [], movetime: NaN }, { moves: [], lines: 4 }, { moves: [], skill: -1 }, { moves: [], threads: 8 }, { moves: [], playedMove: 'e2e5' }]) {
     await assert.rejects(analyze(input), error => error.status === 400);
   }
   assert.throws(() => replay(new Array(1001).fill('e2e4')), /at most 1000/);
@@ -35,6 +35,17 @@ test('real Stockfish gives legal PVs, identity, limits and deterministic facts',
     assert.ok(Number.isInteger(line.score.value));
   }
   assert.match(result.explanation, /Sample line/);
+});
+
+test('advanced analysis uses actual Lite with five legal lines and preserves strict engine selection', async()=>{
+  for(const engineId of ['torch4','/bin/sh', ['stockfish18'], '__proto__']) await assert.rejects(analyze({moves:[],engineId}),{status:400});
+  const result=await analyze({moves:['e2e4'],engineId:'stockfish18-lite',movetime:200,lines:5,threads:2});
+  assert.match(result.engine,/Stockfish 18 Lite/);
+  assert.deepEqual(result.limits,{engineId:'stockfish18-lite',movetime:200,lines:5,threads:2});
+  assert.equal(result.lines.length,5);
+  assert.equal(new Set(result.lines.map(line=>line.move)).size,5);
+  assert.equal(new Set(result.lines.map(line=>line.depth)).size,1);
+  for(const line of result.lines) replay(['e2e4',...line.moves]);
 });
 
 test('full history distinguishes a repeated game from its identical FEN', async () => {
@@ -129,4 +140,16 @@ test('legal castling and history-dependent en passant replay correctly', () => {
   assert.equal(captured.get('d6').color, 'w');
   assert.equal(captured.get('d5'), undefined);
   assert.ok(captured.history({verbose:true}).at(-1).flags.includes('e'));
+});
+
+
+test('canceling active and queued analyses frees slots for the next position', async()=>{
+  const controllers=Array.from({length:3},()=>new AbortController());
+  const results=Promise.allSettled(controllers.map(controller=>analyze({moves:[],engineId:'stockfish19',movetime:90000},{signal:controller.signal})));
+  await new Promise(resolve=>setTimeout(resolve,100));
+  controllers[2].abort();controllers[0].abort();controllers[1].abort();
+  for(const result of await results){assert.equal(result.status,'rejected');assert.equal(result.reason.status,499);}
+  const start=Date.now();
+  const next=await analyze({moves:[],movetime:50,lines:1});
+  assert.ok(next.bestmove);assert.ok(Date.now()-start<1500);
 });

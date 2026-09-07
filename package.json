@@ -10,7 +10,8 @@
     "dev": "node --env-file-if-exists=.env server/index.mjs",
     "start": "NODE_ENV=production node --env-file-if-exists=.env server/index.mjs",
     "build": "vite build",
-    "test": "node --test server/*.test.mjs web/src/*.test.js"
+    "test": "node --test --test-concurrency=1 server/*.test.mjs web/src/*.test.js",
+    "build:sites": "npm run build && node scripts/build_sites.mjs"
   },
   "dependencies": {
     "chess.js": "^1.4.0",

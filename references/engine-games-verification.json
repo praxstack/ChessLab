@@ -1,0 +1,69 @@
+{
+  "verifiedAt": "2026-09-06T23:48:19.324Z",
+  "scope": "Real engine moves through authenticated game API in an isolated temporary database",
+  "results": [
+    {
+      "engineId": "stockfish19",
+      "engine": "Stockfish 19",
+      "move": "e2e4",
+      "elapsedMs": 1587,
+      "saved": true
+    },
+    {
+      "engineId": "stockfish18",
+      "engine": "Stockfish 18",
+      "move": "e2e4",
+      "elapsedMs": 2111,
+      "saved": true
+    },
+    {
+      "engineId": "stockfish16",
+      "engine": "Stockfish 16",
+      "move": "e2e4",
+      "elapsedMs": 1921,
+      "saved": true
+    },
+    {
+      "engineId": "maia3",
+      "engine": "Maia3",
+      "move": "e2e4",
+      "elapsedMs": 29521,
+      "saved": true
+    },
+    {
+      "engineId": "maia3-23m",
+      "engine": "Maia3",
+      "move": "e2e4",
+      "elapsedMs": 3418,
+      "saved": true
+    },
+    {
+      "engineId": "maia3-5m",
+      "engine": "Maia3",
+      "move": "e2e4",
+      "elapsedMs": 29785,
+      "saved": true
+    },
+    {
+      "engineId": "maia2",
+      "engine": "Maia2 0.11.0 rapid",
+      "move": "g1f3",
+      "elapsedMs": 6934,
+      "saved": true
+    },
+    {
+      "engineId": "maia2-blitz",
+      "engine": "Maia2 0.11.0 blitz",
+      "move": "b1c3",
+      "elapsedMs": 17090,
+      "saved": true
+    },
+    {
+      "engineId": "lc0",
+      "engine": "Lc0 v0.32.1+git.dirty",
+      "move": "d2d4",
+      "elapsedMs": 659,
+      "saved": true
+    }
+  ]
+}

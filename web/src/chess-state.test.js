@@ -48,3 +48,24 @@ test('study limits accept their boundaries and reject additions without changing
   assert.equal(full.length, 5);
   assert.equal(full[0].moves.length, 1000);
 });
+
+
+import {mergePolledGame, clockText, rematchOptions} from './chess-state.js';
+test('clock polling cannot replace a newer game or its study, and clocks count only the active side', () => {
+  const current={id:'a',revision:4,study:{draft:true},studyRevision:2};
+  assert.equal(mergePolledGame(current,{id:'a',revision:3}),current);
+  assert.equal(mergePolledGame(current,{id:'b',revision:5}),current);
+  assert.deepEqual(mergePolledGame(current,{id:'a',revision:5,study:{old:true},studyRevision:0}).study,current.study);
+  const game={moves:[],timeControl:{initialSeconds:60},clock:{whiteMs:60000,blackMs:60000,activeSince:1000}};
+  assert.equal(clockText(game,'w',2500),'0:59');
+  assert.equal(clockText(game,'b',2500),'1:00');
+  assert.equal(clockText({...game,result:'1-0'},'w',2500),'1:00');
+});
+
+test('rematch preserves legacy strength semantics and exact modern game options', () => {
+  const fallback={rating:250,timeControl:{initialSeconds:0,incrementSeconds:0},assistance:{chat:true}};
+  assert.deepEqual(rematchOptions({color:'b',level:4},fallback),{color:'b',level:4});
+  assert.deepEqual(rematchOptions({color:'w',level:5,legacyStrength:true,engineId:'stockfish19',rating:2600},fallback),{color:'w',level:5});
+  const modern={botId:null,engineId:'maia3',rating:1500,color:'w',timeControl:{initialSeconds:600,incrementSeconds:5},assistance:{chat:false}};
+  assert.deepEqual(rematchOptions(modern,fallback),modern);
+});

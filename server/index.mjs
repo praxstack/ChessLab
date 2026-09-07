@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { existsSync } from 'node:fs';
 import express from 'express';
 import { closeEngine } from './engine.mjs';
+import { closeOpponentEngines } from './opponent-engines.mjs';
 
 const { app, close } = createApp();
 let vite;
@@ -18,5 +19,5 @@ if (process.env.NODE_ENV === 'production') {
 }
 const host=process.env.HOST||'127.0.0.1'; const port=Number(process.env.PORT||8770);
 const server=app.listen(port,host,()=>console.log(`ChessLab ready at http://${host}:${port}`));
-async function shutdown(){server.close();await vite?.close();closeEngine();close();process.exit(0);}
+async function shutdown(){server.close();await vite?.close();closeEngine();closeOpponentEngines();close();process.exit(0);}
 process.once('SIGTERM',shutdown);process.once('SIGINT',shutdown);

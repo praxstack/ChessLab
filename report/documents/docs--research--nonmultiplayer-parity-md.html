@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Nonmultiplayer Parity · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Nonmultiplayer Parity</h1><p class="lede">docs/research/nonmultiplayer-parity.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Nonmultiplayer Parity"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/docs/research/nonmultiplayer-parity.md" download>Download original file ↗</a></div><p class="source-meta">docs/research/nonmultiplayer-parity.md<br>SHA-256: 08a0a43a798573d3645f9b6ac98ca89a2cd023cf4aa56633904cd0689df1193b</p><h2 id="chesscom-non-multiplayer-mapping--8-september-2026">Chess.com non-multiplayer mapping — 8 September 2026</h2>
+<p>Audience: Prax, building the requested web platform. This is an evidence ledger for implementation, not a change to the user's objective.</p>
+<p>The new ChatGPT conversation describes static atlases and prototypes. Its author explicitly could not navigate the live reference; its 208-row status totals do not prove engine behavior or visual parity. The complete retrieved conversation is archived in sources/chesslab-chatgpt-2026-09-08.json. Its referenced master ZIP was not attached to the retrieved conversation and was not present in the scoped Downloads/Desktop search.</p>
+<p>This run accessed the real public Play Bots screen and observed 166 named bots in twelve expanded groups. Names, ratings, greetings and original portrait URLs were read from the rendered selection state. No locked game was unlocked and no subscription transaction was performed. The user's sign-in handoff is pending for authenticated settings and coach inspection.</p>
+<h3 id="engine-scope-ledger">Engine scope ledger</h3>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>Source evidence</th>
+<th>Implementation and confidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Named personalities</td>
+<td>Official bot guide says Komodo; rendered roster supplies public identities and ratings.</td>
+<td>Local selectable engines and profiles are functional. Per-bot proprietary parameters are not verified.</td>
+</tr>
+<tr>
+<td>Game Review</td>
+<td>Supplied recording, frame 0626: Stockfish / Torch Human.</td>
+<td>Independent Stockfish review runs; Torch Human is unconnected.</td>
+</tr>
+<tr>
+<td>Analysis</td>
+<td>Frame 0633: Stockfish 18, 18 Lite, Torch 4, 4 Lite, Off.</td>
+<td>Full Stockfish 18 and actual Lite run on the server; Off stops new analysis. Torch variants are unconnected.</td>
+</tr>
+<tr>
+<td>Cloud settings</td>
+<td>Frame 0644: Stockfish 16 / Komodo Dragon.</td>
+<td>Native Stockfish 16 is installed. Cloud/event scope has not been independently reproduced.</td>
+</tr>
+</tbody>
+</table></div>
+<p>The <a href="https://support.chess.com/en/articles/8614091-how-can-i-play-against-the-chess-com-bots" rel="noreferrer noopener">official bot guide</a>, accessed 7 September 2026, describes unrated play, adaptive bots, six assistance controls and crowns. Its stated ranges omit newer groups visible in the live roster; the live observation takes precedence for inventory.</p>
+<p>The <a href="https://support.chess.com/en/articles/9462780-how-do-the-chess-engines-on-chess-com-work" rel="noreferrer noopener">engine FAQ</a>, dated 3 August 2026, describes Stockfish 18 server review and calls Lite an HCE engine. The September recording exposes Torch Human, and the actual <a href="https://github.com/nmrugg/stockfish.js/releases/tag/v18.0.0" rel="noreferrer noopener">Stockfish.js v18.0.0 release</a> reports an embedded NNUE during its UCI run. These sources disagree; the report preserves their scope and date rather than merging the claims.</p>
+<p>The Lite JS and WASM match the official release digests. Its UCI identity is Stockfish 18 Lite WASM Multithreaded. Full-history moves, five candidate lines and two threads were exercised locally. This is not Torch, Maia or a renamed full Stockfish binary.</p>
+<h3 id="product-and-delivery-evidence">Product and delivery evidence</h3>
+<p>The build retains the original twelve chess-piece PNGs and adds original navigation icons and all 166 observed portrait files. It replaces the previous blue interface chrome with the observed dark neutral/green controls; Blue remains a board preference. Review and Analysis have separate time settings. Board coordinates, notation, legal moves, highlights, animation, coach avatar and classification controls affect the rendered interface. Search controls invoke the selected installed engine with explicit time, lines and threads.</p>
+<p>The current application retains legal bot games, server clocks, saved games, account ownership, hints, takebacks, crowns, PGN import/export and nested studies. Its introductory lessons and puzzles are original limited content, not the complete Chess.com curriculum. Full-game grading, all authenticated settings and proprietary bot equivalence still require work. This working build is not declared a complete one-to-one clone.</p>
+<p>Hosting uses an owner-private Sites frontend and an HTTPS tunnel to a separately protected native service on this Mac. The hosted database is separate from the existing local account database. Native models are not included in web assets. The app's continued remote availability currently requires this Mac and tunnel to remain running; a persistent engine host can retain the same HTTP contract.</p>
+<h3 id="security-and-verification">Security and verification</h3>
+<p>The final application test run passed 46 tests, zero failures/skips, in 20.35 seconds. It exercised all ten installed configurations, every roster profile’s setup, beginner slider values, advanced analysis and cancellation. The production Sites build passed. Earlier 41-test confirmation and prior failed host-load runs remain dated evidence in docs/application-verification.md.</p>
+<p>Codex Security inspected session, ownership, CSRF, native input, proxy and secret boundaries and reproduced the fixes. Its sealed report indexes zero findings but records partial coverage because the checkout changed during the scan and earlier pending checkpoints remained in its canonical coverage. It is not certification of the deployed site. A committed hosting regression test checks malformed config, bad keys, cross-origin writes and oversized streaming requests. Live origin checks returned 403 without a key and 200 with the correct key.</p>
+<h3 id="research-stopping-rule">Research stopping rule</h3>
+<p>The public inventory, primary engine mapping and native deployment route have sufficient evidence for this build. Repeating generic web searches would not establish hidden per-bot parameters. Follow-up is directed at the user's authenticated UI and the exact missing behavior; it does not replace implementation with further speculative research.</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav><a href="#chesscom-non-multiplayer-mapping--8-september-2026">Chess.com non-multiplayer mapping — 8 September 2026</a></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

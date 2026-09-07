@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Spec · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/match-nonmultiplayer-platform/specs/nonmultiplayer-parity/spec.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/match-nonmultiplayer-platform/specs/nonmultiplayer-parity/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/match-nonmultiplayer-platform/specs/nonmultiplayer-parity/spec.md<br>SHA-256: e285d1f87f517ff0616aef44a2f405687d0f0d96c598c00142f6ac3c4b372903</p><h3 id="added-requirements">ADDED Requirements</h3>
+<h4 id="requirement-evidence-based-non-multiplayer-mapping">Requirement: Evidence-based non-multiplayer mapping</h4>
+<p>The platform SHALL preserve the requested one-to-one non-multiplayer objective and distinguish observed UI, implemented behavior and verified behavior. Human multiplayer is excluded. Missing proprietary behavior, curriculum and unobserved settings SHALL remain explicit gaps, rather than being marked complete from mockups or matching labels.</p>
+<h5 id="scenario-a-copied-screen-lacks-runtime-evidence">Scenario: A copied screen lacks runtime evidence</h5>
+<ul>
+<li><strong>WHEN</strong> an item has only a reference screenshot or research description</li>
+<li><strong>THEN</strong> it remains unverified until its local behavior is exercised</li>
+</ul>
+<h4 id="requirement-original-roster-assets-and-playable-profiles">Requirement: Original roster assets and playable profiles</h4>
+<p>The bot catalog SHALL preserve original observed names, reference ratings, groups, greetings and portraits. A selected profile SHALL persist its selected opponent engine, independent analysis settings, side, timer and assistance. Engine substitutions SHALL not be described as vendor-identical behavior.</p>
+<h5 id="scenario-selecting-a-named-bot">Scenario: Selecting a named bot</h5>
+<ul>
+<li><strong>WHEN</strong> the user selects an observed bot and starts a game</li>
+<li><strong>THEN</strong> the server stores its identity and opponent configuration and returns legal engine moves under that configuration</li>
+</ul>
+<h4 id="requirement-review-and-analysis-configuration">Requirement: Review and analysis configuration</h4>
+<p>The application SHALL separate opponent difficulty from review and analysis engines. Available selected engines, time, lines and threads SHALL affect real server-side UCI invocations. Unconnected engines SHALL not return fabricated moves or silently run another engine.</p>
+<h5 id="scenario-stockfish-lite-analysis">Scenario: Stockfish Lite analysis</h5>
+<ul>
+<li><strong>WHEN</strong> the user selects installed Stockfish 18 Lite, five lines and two threads</li>
+<li><strong>THEN</strong> the server invokes that engine with MultiPV five and Threads two and reports its actual identity</li>
+</ul>
+<h4 id="requirement-private-hosted-native-engine-access">Requirement: Private hosted native engine access</h4>
+<p>The Sites frontend SHALL use a protected HTTPS backend while keeping engine files off the browser. Hosted mode SHALL reject incomplete security configuration and require a backend secret for every origin request. The proxy SHALL forward only the application session cookie and reject cross-origin writes.</p>
+<h5 id="scenario-direct-origin-access">Scenario: Direct origin access</h5>
+<ul>
+<li><strong>WHEN</strong> a caller accesses the engine origin without the configured secret</li>
+<li><strong>THEN</strong> it returns 403 before application routes execute</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

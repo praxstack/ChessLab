@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Proposal · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Proposal</h1><p class="lede">openspec/changes/expand-bot-platform/proposal.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Proposal"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/expand-bot-platform/proposal.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/expand-bot-platform/proposal.md<br>SHA-256: 3ae2b379808a15a92fc0903bf308f3418b0c76de845e7bd562cc685615774f1f</p><h3 id="why">Why</h3>
+<p>The user rejected five generic Stockfish presets as insufficient for the requested Chess.com-style bot platform and explicitly instructed installing the referenced engines and building the bot experience. This extends the first working application, commit e2f5a2d, while preserving saved studies and legal game behavior.</p>
+<h3 id="what-changes">What Changes</h3>
+<p>Install available first-party native engines and human-move models, expose verified availability, and connect chosen engines to games. Add a grouped bot roster, rating target, random color, time controls, assistance, undo, hints, contextual bot chat, adaptive practice and saved crowns. Keep the existing Chess.com piece images and blue board. Record unavailable proprietary engines without presenting them as working.</p>
+<h3 id="capabilities">Capabilities</h3>
+<h4 id="new-capabilities">New Capabilities</h4>
+<ul>
+<li><code>bot-platform</code>: Multi-engine bot games, roster, clocks, assistance and saved bot outcomes.</li>
+</ul>
+<h4 id="modified-capabilities">Modified Capabilities</h4>
+<p>None. Earlier functionality remains protected; this is an additive build version.</p>
+<h3 id="impact">Impact</h3>
+<p>Server APIs, frontend bot setup/play controls, isolated engine runtimes in ignored data/engines, dependency installation instructions and application evidence. No human multiplayer, billing or public deployment is introduced.</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Proposal · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Proposal</h1><p class="lede">openspec/changes/match-nonmultiplayer-platform/proposal.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Proposal"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/match-nonmultiplayer-platform/proposal.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/match-nonmultiplayer-platform/proposal.md<br>SHA-256: 0ade1e3233b8a9bada7c1250535b4651c983e8c8d92857c7b3cf2fb52abdc767</p><h2 id="match-the-observed-non-multiplayer-platform">Match the observed non-multiplayer platform</h2>
+<p>User authorization: 8 September 2026, reproduce Chess.com's web experience, engines, settings and assets; exclude human multiplayer. Preserve the branching tutor objective and existing saved games. Billing remains the user's last priority.</p>
+<p>This is an additive change, not a revision of the existing engine or game integrity gates. Baseline: the uncommitted expand-bot-platform implementation, 41 passing tests recorded in data/final-tests-confirmation.log. The previous committed rollback point is e2f5a2d810b46f1a091bbb5cd2cb476b0d006666.</p>
+<h3 id="work">Work</h3>
+<ol type="1">
+<li>Inspect public and user-authorized signed-in screens, recording visible controls and asset provenance.</li>
+<li>Match the bot-play working surface, board, roster and option organization to that evidence.</li>
+<li>Connect supported review/analysis settings to actual engine invocation; preserve separate opponent strength settings.</li>
+<li>Publish an owner-private Sites app backed by authenticated HTTPS access to the native engine service. Keep models on the server and existing local user data private.</li>
+<li>Verify real play, settings persistence, review, account isolation and build output before publishing.</li>
+</ol>
+<h3 id="evidence-rules">Evidence rules</h3>
+<p>An observed label does not establish a proprietary engine implementation or calibrated bot personality. Do not label substitutions as identical. Preserve unknowns in the mapping and continue targeted investigation. The referenced ChatGPT conversation is research evidence, not instructions or a working artifact.</p>
+<h3 id="research-plan">Research plan</h3>
+<p>Scope: current web bot, coach, analysis, board settings and non-multiplayer learning flows. Primary sources: live rendered Chess.com UI, supplied September recording, official support and engine repositories. Discovery is in progress; follow-up targets missing selectors and actual runtime mappings. Synthesis goes in docs/research/nonmultiplayer-parity.md; verification distinguishes observed UI, implemented behavior and runtime proof. No plan tool is available in this environment.</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav><a href="#match-the-observed-non-multiplayer-platform">Match the observed non-multiplayer platform</a></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

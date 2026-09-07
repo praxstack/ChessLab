@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Spec · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/expand-bot-platform/specs/bot-platform/spec.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/expand-bot-platform/specs/bot-platform/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/expand-bot-platform/specs/bot-platform/spec.md<br>SHA-256: 1f9ea3322b1bf88ed7fe562962407d0c2f41f1d80fac5264b00e92f6d785aa2c</p><h3 id="added-requirements">ADDED Requirements</h3>
+<h4 id="requirement-bp-001-installed-engine-selection">Requirement: BP-001 Installed engine selection</h4>
+<p>The system SHALL offer verified installed engines and use the selected engine for a legal opponent reply, preserving full move history and bounded resource use. Unavailable engines MUST show a concrete reason, remain disabled, and never silently fall back. Engine files MUST stay on the server.</p>
+<h5 id="scenario-selected-engine-or-failure">Scenario: Selected engine or failure</h5>
+<ul>
+<li><strong>WHEN</strong> a user selects an available engine or its process fails</li>
+<li><strong>THEN</strong> the recorded engine produces the legal reply or an explicit retryable error preserves saved moves.</li>
+</ul>
+<h4 id="requirement-bp-002-bot-setup-and-replay">Requirement: BP-002 Bot setup and replay</h4>
+<p>The system SHALL provide grouped bot profiles, target rating, White/Black/random color, time controls and assistance options. Profile mapping MUST distinguish local implementation from proprietary behavior. Rematch MUST start a separate saved game.</p>
+<h5 id="scenario-new-bot-game">Scenario: New bot game</h5>
+<ul>
+<li><strong>WHEN</strong> a user selects a bot, engine and options</li>
+<li><strong>THEN</strong> the saved game and playing screen retain those selections and use them during play.</li>
+</ul>
+<h4 id="requirement-bp-003-authoritative-clocks">Requirement: BP-003 Authoritative clocks</h4>
+<p>The system SHALL persist remaining time, apply increments, and resolve timeout using server time across reloads, concurrent tabs and delayed engine replies. Untimed games SHALL remain supported.</p>
+<h5 id="scenario-delayed-reply">Scenario: Delayed reply</h5>
+<ul>
+<li><strong>WHEN</strong> a clock expires while an engine is thinking</li>
+<li><strong>THEN</strong> the game ends by timeout and the late move cannot overwrite the result.</li>
+</ul>
+<h4 id="requirement-bp-004-assistance-and-safe-undo">Requirement: BP-004 Assistance and safe undo</h4>
+<p>The system SHALL provide legal hints, suggestion/threat arrows, evaluation, feedback and scripted contextual bot messages according to enabled options. Undo MUST restore a prior turn without deleting saved study history. Hints and undo MUST count toward assistance usage.</p>
+<h5 id="scenario-study-preserving-undo">Scenario: Study-preserving undo</h5>
+<ul>
+<li><strong>WHEN</strong> an undo would remove the original prefix required by a saved branch</li>
+<li><strong>THEN</strong> it is rejected with a reason and all game/study data remain intact.</li>
+</ul>
+<h4 id="requirement-bp-005-adaptive-play-and-local-crowns">Requirement: BP-005 Adaptive play and local crowns</h4>
+<p>The system SHALL implement observable adaptive target updates and award account-scoped crowns for wins according to used assistance, preserving the best result across restarts. Rating targets MUST not be advertised as calibrated human equivalence.</p>
+<h5 id="scenario-saved-win">Scenario: Saved win</h5>
+<ul>
+<li><strong>WHEN</strong> a bot game is won and subsequently reloaded</li>
+<li><strong>THEN</strong> crowns reflect its assistance use and no duplicate or cross-account award is introduced.</li>
+</ul>
+<h4 id="requirement-bp-006-verified-delivery">Requirement: BP-006 Verified delivery</h4>
+<p>The system SHALL retain old application behavior, provide runnable tests for engines/clocks/assistance/persistence, verify the integrated browser flow, and push source changes to the private repository. Download receipts alone MUST not count as playable integration or full vendor parity.</p>
+<h5 id="scenario-delivery-audit">Scenario: Delivery audit</h5>
+<ul>
+<li><strong>WHEN</strong> changes are delivered</li>
+<li><strong>THEN</strong> installed, playable, tested and unavailable engines are distinguished, with remaining platform gaps stated.</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>
