@@ -1,0 +1,4015 @@
+{
+  "received": "2026-09-08",
+  "sourcePath": "/Users/prax/Downloads/Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07.zip",
+  "preservedPath": "data/source-archives/Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07.zip",
+  "sha256": "810030078697ecbf8d3af27d1456215e4f40405abbd7f05b3cdbe283d99d5027",
+  "bytes": 184134153,
+  "checksumVerified": true,
+  "crcVerified": true,
+  "files": 575,
+  "entries": [
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/brd.html",
+      "bytes": 16935,
+      "compressedBytes": 5820,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/ceo-review.html",
+      "bytes": 10919,
+      "compressedBytes": 4182,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/data.html",
+      "bytes": 212140,
+      "compressedBytes": 28564,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/engineer-review.html",
+      "bytes": 11619,
+      "compressedBytes": 4408,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/evidence-ledger.html",
+      "bytes": 29947,
+      "compressedBytes": 7938,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/index.html",
+      "bytes": 14937,
+      "compressedBytes": 4691,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/mock-community.html",
+      "bytes": 10026,
+      "compressedBytes": 3546,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/mock-home.html",
+      "bytes": 9485,
+      "compressedBytes": 3416,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/mock-learn.html",
+      "bytes": 9911,
+      "compressedBytes": 3539,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/mock-play.html",
+      "bytes": 15084,
+      "compressedBytes": 4157,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/mock-puzzles.html",
+      "bytes": 14774,
+      "compressedBytes": 4045,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/mock-review.html",
+      "bytes": 14969,
+      "compressedBytes": 4169,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/mockups.html",
+      "bytes": 13548,
+      "compressedBytes": 4253,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/prd.html",
+      "bytes": 53647,
+      "compressedBytes": 13256,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/prfaq.html",
+      "bytes": 11504,
+      "compressedBytes": 4323,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/prototype-qa-report.html",
+      "bytes": 27921,
+      "compressedBytes": 5809,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/qa-review-test-plan.html",
+      "bytes": 12748,
+      "compressedBytes": 4656,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/reference-board.html",
+      "bytes": 14634,
+      "compressedBytes": 4154,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/screenshots/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/screenshots/community-desktop.png",
+      "bytes": 198954,
+      "compressedBytes": 188962,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/screenshots/community-mobile.png",
+      "bytes": 89000,
+      "compressedBytes": 87415,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/screenshots/contact-sheet.jpg",
+      "bytes": 468423,
+      "compressedBytes": 399403,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/screenshots/doc-index-desktop.png",
+      "bytes": 315977,
+      "compressedBytes": 310842,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/screenshots/doc-prototype-qa-report-desktop.png",
+      "bytes": 275189,
+      "compressedBytes": 267551,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/screenshots/doc-traceability-desktop.png",
+      "bytes": 278697,
+      "compressedBytes": 270121,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/screenshots/doc-validation-summary-desktop.png",
+      "bytes": 266354,
+      "compressedBytes": 261185,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/screenshots/home-desktop.png",
+      "bytes": 229585,
+      "compressedBytes": 223560,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/screenshots/home-mobile.png",
+      "bytes": 128564,
+      "compressedBytes": 126566,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/screenshots/learn-desktop.png",
+      "bytes": 198662,
+      "compressedBytes": 188788,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/screenshots/learn-mobile.png",
+      "bytes": 87066,
+      "compressedBytes": 85276,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/screenshots/play-desktop.png",
+      "bytes": 137627,
+      "compressedBytes": 129054,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/screenshots/play-mobile.png",
+      "bytes": 57361,
+      "compressedBytes": 55574,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/screenshots/puzzles-desktop.png",
+      "bytes": 137691,
+      "compressedBytes": 129150,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/screenshots/puzzles-mobile.png",
+      "bytes": 55070,
+      "compressedBytes": 53321,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/screenshots/review-desktop.png",
+      "bytes": 140693,
+      "compressedBytes": 132044,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/screenshots/review-mobile.png",
+      "bytes": 65234,
+      "compressedBytes": 63168,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/spec.html",
+      "bytes": 14832,
+      "compressedBytes": 5489,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/traceability.html",
+      "bytes": 98059,
+      "compressedBytes": 12205,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessCom_Product_Atlas_HTML_2026-09-07/ChessCom_Product_Atlas_HTML_2026-09-07/validation-summary.html",
+      "bytes": 15092,
+      "compressedBytes": 4901,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/ChessLab_Atlas_Screenshot_Book.pdf",
+      "bytes": 3925992,
+      "compressedBytes": 3145814,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshot-book.html",
+      "bytes": 6497,
+      "compressedBytes": 2079,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/01-overview.png",
+      "bytes": 675192,
+      "compressedBytes": 664002,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/02-capability-map.png",
+      "bytes": 2601669,
+      "compressedBytes": 2489319,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/03-play-prototype.png",
+      "bytes": 258276,
+      "compressedBytes": 254596,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/04-branch-tutor.png",
+      "bytes": 278597,
+      "compressedBytes": 273611,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/05-learning.png",
+      "bytes": 381682,
+      "compressedBytes": 375962,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/06-community.png",
+      "bytes": 308783,
+      "compressedBytes": 303728,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/07-brd-matrix.png",
+      "bytes": 366239,
+      "compressedBytes": 355454,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/08-screen-atlas.png",
+      "bytes": 3206356,
+      "compressedBytes": 3119680,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/09-architecture.png",
+      "bytes": 587597,
+      "compressedBytes": 577854,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/10-research.png",
+      "bytes": 805927,
+      "compressedBytes": 777065,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/11-play-interacted.png",
+      "bytes": 258809,
+      "compressedBytes": 254978,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/12-branch-chat.png",
+      "bytes": 279168,
+      "compressedBytes": 274339,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/13-brd-filtered.png",
+      "bytes": 218877,
+      "compressedBytes": 214267,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/14-mobile-overview.png",
+      "bytes": 541339,
+      "compressedBytes": 534582,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/15-mobile-branch-tutor.png",
+      "bytes": 176162,
+      "compressedBytes": 173695,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/README.md",
+      "bytes": 1243,
+      "compressedBytes": 511,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/viewport/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/viewport/01-overview.png",
+      "bytes": 449472,
+      "compressedBytes": 444637,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/viewport/02-capability-map.png",
+      "bytes": 353227,
+      "compressedBytes": 348171,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/viewport/03-play-prototype.png",
+      "bytes": 258276,
+      "compressedBytes": 254596,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/viewport/04-branch-tutor.png",
+      "bytes": 271299,
+      "compressedBytes": 267281,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/viewport/05-learning.png",
+      "bytes": 347347,
+      "compressedBytes": 343174,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/viewport/06-community.png",
+      "bytes": 308783,
+      "compressedBytes": 303728,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/viewport/07-brd-matrix.png",
+      "bytes": 362555,
+      "compressedBytes": 352161,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/viewport/08-screen-atlas.png",
+      "bytes": 335261,
+      "compressedBytes": 331745,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/viewport/09-architecture.png",
+      "bytes": 406917,
+      "compressedBytes": 402657,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/viewport/10-research.png",
+      "bytes": 411666,
+      "compressedBytes": 405770,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/viewport/11-branch-question.png",
+      "bytes": 271548,
+      "compressedBytes": 267533,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/viewport/12-mobile-overview.png",
+      "bytes": 157545,
+      "compressedBytes": 156628,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Screenshots/screenshots/viewport/13-mobile-branch-tutor.png",
+      "bytes": 118749,
+      "compressedBytes": 117955,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/app.js",
+      "bytes": 26247,
+      "compressedBytes": 8800,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/artifact-manifest.json",
+      "bytes": 8927,
+      "compressedBytes": 3101,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/assets/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/brd-print.html",
+      "bytes": 179824,
+      "compressedBytes": 31661,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/BRD.md",
+      "bytes": 162142,
+      "compressedBytes": 29944,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/CHECKSUMS.sha256",
+      "bytes": 5033,
+      "compressedBytes": 2522,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/ChessLab_Atlas_BRD.pdf",
+      "bytes": 1201174,
+      "compressedBytes": 415959,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/ChessLab_Atlas_Screenshot_Book.pdf",
+      "bytes": 3925992,
+      "compressedBytes": 3145814,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/data.js",
+      "bytes": 263711,
+      "compressedBytes": 35414,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/generate.py",
+      "bytes": 121824,
+      "compressedBytes": 38216,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/index.html",
+      "bytes": 794,
+      "compressedBytes": 445,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/NOTICE.md",
+      "bytes": 727,
+      "compressedBytes": 410,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/QA_REPORT.md",
+      "bytes": 2093,
+      "compressedBytes": 1044,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/README.md",
+      "bytes": 2068,
+      "compressedBytes": 1056,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/research/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/research/capability-matrix.csv",
+      "bytes": 45136,
+      "compressedBytes": 9592,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/research/domain-summary.csv",
+      "bytes": 907,
+      "compressedBytes": 539,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/research/methodology.md",
+      "bytes": 2866,
+      "compressedBytes": 1363,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/research/one-to-one-traceability.csv",
+      "bytes": 131476,
+      "compressedBytes": 15504,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/research/requirements.csv",
+      "bytes": 103935,
+      "compressedBytes": 15059,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/research/screen-inventory.csv",
+      "bytes": 30922,
+      "compressedBytes": 3873,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/research/search-lanes.md",
+      "bytes": 1940,
+      "compressedBytes": 1011,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/research/source-coverage.csv",
+      "bytes": 8308,
+      "compressedBytes": 2801,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/research/source-ledger.csv",
+      "bytes": 8095,
+      "compressedBytes": 2694,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshot-book.html",
+      "bytes": 6497,
+      "compressedBytes": 2079,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/01-overview.png",
+      "bytes": 675192,
+      "compressedBytes": 664002,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/02-capability-map.png",
+      "bytes": 2601669,
+      "compressedBytes": 2489319,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/03-play-prototype.png",
+      "bytes": 258276,
+      "compressedBytes": 254596,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/04-branch-tutor.png",
+      "bytes": 278597,
+      "compressedBytes": 273611,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/05-learning.png",
+      "bytes": 381682,
+      "compressedBytes": 375962,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/06-community.png",
+      "bytes": 308783,
+      "compressedBytes": 303728,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/07-brd-matrix.png",
+      "bytes": 366239,
+      "compressedBytes": 355454,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/08-screen-atlas.png",
+      "bytes": 3206356,
+      "compressedBytes": 3119680,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/09-architecture.png",
+      "bytes": 587597,
+      "compressedBytes": 577854,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/10-research.png",
+      "bytes": 805927,
+      "compressedBytes": 777065,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/11-play-interacted.png",
+      "bytes": 258809,
+      "compressedBytes": 254978,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/12-branch-chat.png",
+      "bytes": 279168,
+      "compressedBytes": 274339,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/13-brd-filtered.png",
+      "bytes": 218877,
+      "compressedBytes": 214267,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/14-mobile-overview.png",
+      "bytes": 541339,
+      "compressedBytes": 534582,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/15-mobile-branch-tutor.png",
+      "bytes": 176162,
+      "compressedBytes": 173695,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/README.md",
+      "bytes": 1243,
+      "compressedBytes": 511,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/viewport/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/viewport/01-overview.png",
+      "bytes": 449472,
+      "compressedBytes": 444637,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/viewport/02-capability-map.png",
+      "bytes": 353227,
+      "compressedBytes": 348171,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/viewport/03-play-prototype.png",
+      "bytes": 258276,
+      "compressedBytes": 254596,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/viewport/04-branch-tutor.png",
+      "bytes": 271299,
+      "compressedBytes": 267281,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/viewport/05-learning.png",
+      "bytes": 347347,
+      "compressedBytes": 343174,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/viewport/06-community.png",
+      "bytes": 308783,
+      "compressedBytes": 303728,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/viewport/07-brd-matrix.png",
+      "bytes": 362555,
+      "compressedBytes": 352161,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/viewport/08-screen-atlas.png",
+      "bytes": 335261,
+      "compressedBytes": 331745,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/viewport/09-architecture.png",
+      "bytes": 406917,
+      "compressedBytes": 402657,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/viewport/10-research.png",
+      "bytes": 411666,
+      "compressedBytes": 405770,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/viewport/11-branch-question.png",
+      "bytes": 271548,
+      "compressedBytes": 267533,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/viewport/12-mobile-overview.png",
+      "bytes": 157545,
+      "compressedBytes": 156628,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/screenshots/viewport/13-mobile-branch-tutor.png",
+      "bytes": 118749,
+      "compressedBytes": 117955,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Atlas_Site_and_Research/chesslab-atlas/styles.css",
+      "bytes": 13447,
+      "compressedBytes": 3649,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Working_Site/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Working_Site/ChessLab_Working_Site/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Working_Site/ChessLab_Working_Site/atlas.html",
+      "bytes": 207548,
+      "compressedBytes": 38473,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Working_Site/ChessLab_Working_Site/BRD.md",
+      "bytes": 108793,
+      "compressedBytes": 22847,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Working_Site/ChessLab_Working_Site/design-qa.md",
+      "bytes": 2392,
+      "compressedBytes": 1200,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Working_Site/ChessLab_Working_Site/index.html",
+      "bytes": 71939,
+      "compressedBytes": 21189,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Working_Site/ChessLab_Working_Site/qa-results.json",
+      "bytes": 2396,
+      "compressedBytes": 607,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Working_Site/ChessLab_Working_Site/README.md",
+      "bytes": 1368,
+      "compressedBytes": 756,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Working_Site/ChessLab_Working_Site/screenshots/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Working_Site/ChessLab_Working_Site/screenshots/01-home-desktop.png",
+      "bytes": 503517,
+      "compressedBytes": 498639,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Working_Site/ChessLab_Working_Site/screenshots/02-play-setup-desktop.png",
+      "bytes": 406695,
+      "compressedBytes": 404048,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Working_Site/ChessLab_Working_Site/screenshots/03-play-active-desktop.png",
+      "bytes": 409127,
+      "compressedBytes": 406852,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Working_Site/ChessLab_Working_Site/screenshots/04-review-desktop.png",
+      "bytes": 470536,
+      "compressedBytes": 466124,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Working_Site/ChessLab_Working_Site/screenshots/05-puzzles-desktop.png",
+      "bytes": 350845,
+      "compressedBytes": 347073,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Working_Site/ChessLab_Working_Site/screenshots/06-settings-day-desktop.png",
+      "bytes": 262944,
+      "compressedBytes": 258184,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Working_Site/ChessLab_Working_Site/screenshots/07-mapping-desktop.png",
+      "bytes": 436611,
+      "compressedBytes": 428369,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Working_Site/ChessLab_Working_Site/screenshots/08-home-mobile.png",
+      "bytes": 366483,
+      "compressedBytes": 364699,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Working_Site/ChessLab_Working_Site/screenshots/09-play-mobile.png",
+      "bytes": 235203,
+      "compressedBytes": 234520,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Working_Site/ChessLab_Working_Site/screenshots/contact-sheet.jpg",
+      "bytes": 768753,
+      "compressedBytes": 638986,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/ChessLab_Working_Site/ChessLab_Working_Site/vercel.json",
+      "bytes": 283,
+      "compressedBytes": 185,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/.openai/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/.openai/hosting.json",
+      "bytes": 31,
+      "compressedBytes": 25,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/ChessLab-Working-Prototype.html",
+      "bytes": 109281,
+      "compressedBytes": 24337,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/dist/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/dist/.openai/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/dist/.openai/hosting.json",
+      "bytes": 31,
+      "compressedBytes": 25,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/dist/build-manifest.json",
+      "bytes": 225,
+      "compressedBytes": 147,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/dist/client/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/dist/client/index.html",
+      "bytes": 37176,
+      "compressedBytes": 6870,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/dist/client/src/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/dist/client/src/app.js",
+      "bytes": 29323,
+      "compressedBytes": 8665,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/dist/client/src/styles.css",
+      "bytes": 42829,
+      "compressedBytes": 9505,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/dist/index.html",
+      "bytes": 37176,
+      "compressedBytes": 6870,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/dist/server/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/dist/server/index.js",
+      "bytes": 207,
+      "compressedBytes": 154,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/dist/src/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/dist/src/app.js",
+      "bytes": 29323,
+      "compressedBytes": 8665,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/dist/src/styles.css",
+      "bytes": 42829,
+      "compressedBytes": 9505,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/index.html",
+      "bytes": 37176,
+      "compressedBytes": 6870,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/PACKAGE-MANIFEST.json",
+      "bytes": 6772,
+      "compressedBytes": 2210,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/package.json",
+      "bytes": 545,
+      "compressedBytes": 275,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/qa/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/QA-REPORT.md",
+      "bytes": 3006,
+      "compressedBytes": 1396,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/qa/browser-qa.json",
+      "bytes": 8823,
+      "compressedBytes": 979,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/qa/contact-sheet-desktop.jpg",
+      "bytes": 352069,
+      "compressedBytes": 294732,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/qa/contact-sheet-mobile.jpg",
+      "bytes": 106131,
+      "compressedBytes": 93410,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/qa/screenshots/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/qa/screenshots/01-home-desktop.png",
+      "bytes": 161061,
+      "compressedBytes": 155519,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/qa/screenshots/02-lesson-desktop.png",
+      "bytes": 199847,
+      "compressedBytes": 194369,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/qa/screenshots/03-practice-desktop.png",
+      "bytes": 167796,
+      "compressedBytes": 161902,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/qa/screenshots/04-plan-desktop.png",
+      "bytes": 169947,
+      "compressedBytes": 163791,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/qa/screenshots/05-canvas-desktop.png",
+      "bytes": 182308,
+      "compressedBytes": 176219,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/qa/screenshots/06-media-desktop.png",
+      "bytes": 196901,
+      "compressedBytes": 191131,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/qa/screenshots/07-pricing-desktop.png",
+      "bytes": 177327,
+      "compressedBytes": 171404,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/qa/screenshots/08-settings-desktop.png",
+      "bytes": 165852,
+      "compressedBytes": 160032,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/qa/screenshots/09-integrations-desktop.png",
+      "bytes": 188800,
+      "compressedBytes": 182222,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/qa/screenshots/11-library-desktop.png",
+      "bytes": 178527,
+      "compressedBytes": 173348,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/qa/screenshots/18-profile-desktop.png",
+      "bytes": 151378,
+      "compressedBytes": 145457,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/qa/screenshots/90-home-mobile.png",
+      "bytes": 56210,
+      "compressedBytes": 54745,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/qa/screenshots/91-lesson-mobile.png",
+      "bytes": 70181,
+      "compressedBytes": 67398,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/qa/screenshots/92-canvas-mobile.png",
+      "bytes": 68053,
+      "compressedBytes": 65738,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/README.md",
+      "bytes": 1864,
+      "compressedBytes": 933,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/scripts/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/scripts/browser-qa.py",
+      "bytes": 10731,
+      "compressedBytes": 3163,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/scripts/build.mjs",
+      "bytes": 1587,
+      "compressedBytes": 589,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/scripts/dev.mjs",
+      "bytes": 1628,
+      "compressedBytes": 799,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/scripts/test-sites.mjs",
+      "bytes": 1541,
+      "compressedBytes": 672,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/SITES-DEPLOYMENT.md",
+      "bytes": 1433,
+      "compressedBytes": 771,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/src/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/src/app.js",
+      "bytes": 29323,
+      "compressedBytes": 8665,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/src/styles.css",
+      "bytes": 42829,
+      "compressedBytes": 9505,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-OpenAI-Sites-Project-20260907/ChessLab-Parity-Site/vite.config.js",
+      "bytes": 303,
+      "compressedBytes": 197,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/BRD.md",
+      "bytes": 64567,
+      "compressedBytes": 23613,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/ChessLab-BRD.html",
+      "bytes": 95522,
+      "compressedBytes": 29822,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/ChessLab-Research-Atlas.html",
+      "bytes": 134692,
+      "compressedBytes": 28778,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/MAPPING.json",
+      "bytes": 38785,
+      "compressedBytes": 11186,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/PACKAGE-MANIFEST.json",
+      "bytes": 5716,
+      "compressedBytes": 2218,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/QA-DETAILS.json",
+      "bytes": 2022,
+      "compressedBytes": 419,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/QA-REPORT.md",
+      "bytes": 2735,
+      "compressedBytes": 1345,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/README.md",
+      "bytes": 1148,
+      "compressedBytes": 679,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/SCREENSHOT-INDEX.md",
+      "bytes": 3533,
+      "compressedBytes": 1370,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/screenshots/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/screenshots/00-contact-sheet.jpg",
+      "bytes": 315596,
+      "compressedBytes": 274901,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/screenshots/01-overview-desktop.png",
+      "bytes": 166107,
+      "compressedBytes": 158252,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/screenshots/02-site-full-desktop.png",
+      "bytes": 2042349,
+      "compressedBytes": 1932135,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/screenshots/03-home-desktop.png",
+      "bytes": 85733,
+      "compressedBytes": 80662,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/screenshots/04-create-desktop.png",
+      "bytes": 78457,
+      "compressedBytes": 72597,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/screenshots/05-plan-desktop.png",
+      "bytes": 76379,
+      "compressedBytes": 71155,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/screenshots/06-lesson-desktop.png",
+      "bytes": 82899,
+      "compressedBytes": 76404,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/screenshots/07-practice-desktop.png",
+      "bytes": 75827,
+      "compressedBytes": 70409,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/screenshots/08-canvas-desktop.png",
+      "bytes": 90036,
+      "compressedBytes": 84501,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/screenshots/09-profile-desktop.png",
+      "bytes": 63919,
+      "compressedBytes": 58459,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/screenshots/10-map-desktop.png",
+      "bytes": 736649,
+      "compressedBytes": 705497,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/screenshots/11-home-mobile.png",
+      "bytes": 51933,
+      "compressedBytes": 49845,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/screenshots/12-canvas-mobile.png",
+      "bytes": 42612,
+      "compressedBytes": 40534,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/screenshots/13-lesson-tablet.png",
+      "bytes": 84045,
+      "compressedBytes": 80191,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/screenshots/14-pricing-desktop.png",
+      "bytes": 83466,
+      "compressedBytes": 77428,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/screenshots/15-brd-at-a-glance.png",
+      "bytes": 525484,
+      "compressedBytes": 500211,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/screenshots/16-brd-document-desktop.png",
+      "bytes": 251633,
+      "compressedBytes": 242382,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/screenshots/capture-results.json",
+      "bytes": 4352,
+      "compressedBytes": 537,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/site/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/site/app.js",
+      "bytes": 3298,
+      "compressedBytes": 1236,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/site/check.mjs",
+      "bytes": 990,
+      "compressedBytes": 466,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/site/index.html",
+      "bytes": 101188,
+      "compressedBytes": 20662,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/site/styles.css",
+      "bytes": 30119,
+      "compressedBytes": 6907,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/SITES-HANDOFF.md",
+      "bytes": 1100,
+      "compressedBytes": 629,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/source-captures/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/source-captures/README.md",
+      "bytes": 386,
+      "compressedBytes": 253,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__ChessLab-Wondering-Deep-Map-20260907/ChessLab-Wondering-Deep-Map-20260907/SOURCE-LEDGER.md",
+      "bytes": 3299,
+      "compressedBytes": 1376,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/HTML-AUDIT.json",
+      "bytes": 1768,
+      "compressedBytes": 260,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/PACKAGE-MANIFEST.json",
+      "bytes": 10886,
+      "compressedBytes": 3011,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/QA-DETAILS.json",
+      "bytes": 4645,
+      "compressedBytes": 683,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/QA-REPORT.md",
+      "bytes": 4468,
+      "compressedBytes": 1730,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/README.md",
+      "bytes": 1667,
+      "compressedBytes": 805,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/report.css",
+      "bytes": 2790,
+      "compressedBytes": 1172,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/run_qa.py",
+      "bytes": 8102,
+      "compressedBytes": 2275,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/SCREENSHOT-INDEX.md",
+      "bytes": 3412,
+      "compressedBytes": 1178,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/screenshots/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/screenshots/00-atlas-overview-desktop.png",
+      "bytes": 199795,
+      "compressedBytes": 194683,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/screenshots/00-contact-sheet.jpg",
+      "bytes": 353765,
+      "compressedBytes": 301877,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/screenshots/01-surface-map-desktop.png",
+      "bytes": 139150,
+      "compressedBytes": 131239,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/screenshots/02-prototype-home-desktop.png",
+      "bytes": 102675,
+      "compressedBytes": 97203,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/screenshots/03-prototype-create-desktop.png",
+      "bytes": 79359,
+      "compressedBytes": 72785,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/screenshots/04-prototype-plan-desktop.png",
+      "bytes": 85885,
+      "compressedBytes": 79747,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/screenshots/05-prototype-lesson-desktop.png",
+      "bytes": 90779,
+      "compressedBytes": 84935,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/screenshots/06-prototype-practice-desktop.png",
+      "bytes": 50232,
+      "compressedBytes": 43126,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/screenshots/07-prototype-canvas-desktop.png",
+      "bytes": 90271,
+      "compressedBytes": 83594,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/screenshots/08-prototype-profile-desktop.png",
+      "bytes": 87418,
+      "compressedBytes": 82010,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/screenshots/09-prototype-usage-desktop.png",
+      "bytes": 84430,
+      "compressedBytes": 78436,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/screenshots/10-prototype-home-mobile.png",
+      "bytes": 71738,
+      "compressedBytes": 70282,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/screenshots/11-prototype-canvas-mobile.png",
+      "bytes": 55050,
+      "compressedBytes": 52921,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/screenshots/12-brd-cover-desktop.png",
+      "bytes": 216147,
+      "compressedBytes": 206837,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/screenshots/13-prd-cover-desktop.png",
+      "bytes": 196001,
+      "compressedBytes": 185436,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/screenshots/14-spec-cover-desktop.png",
+      "bytes": 192876,
+      "compressedBytes": 183444,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/site/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/site/index.html",
+      "bytes": 170040,
+      "compressedBytes": 41116,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/site/QA-DETAILS.json",
+      "bytes": 4645,
+      "compressedBytes": 683,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/site/QA-REPORT.md",
+      "bytes": 4468,
+      "compressedBytes": 1730,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/site/robots.txt",
+      "bytes": 26,
+      "compressedBytes": 28,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/site/SCREENSHOT-INDEX.md",
+      "bytes": 3412,
+      "compressedBytes": 1178,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/site/SITES-HANDOFF.md",
+      "bytes": 1532,
+      "compressedBytes": 822,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/site/SOURCE-LEDGER.md",
+      "bytes": 9736,
+      "compressedBytes": 3754,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/site/Wondering-BRD.html",
+      "bytes": 113045,
+      "compressedBytes": 33267,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/site/Wondering-BRD.md",
+      "bytes": 79216,
+      "compressedBytes": 26764,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/site/Wondering-Functional-Spec.html",
+      "bytes": 82970,
+      "compressedBytes": 18533,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/site/Wondering-Functional-Spec.md",
+      "bytes": 28044,
+      "compressedBytes": 10875,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/site/WONDERING-MAPPING.json",
+      "bytes": 33638,
+      "compressedBytes": 9335,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/site/Wondering-PRD.html",
+      "bytes": 59488,
+      "compressedBytes": 16523,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/site/Wondering-PRD.md",
+      "bytes": 41444,
+      "compressedBytes": 12653,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/SITES-HANDOFF.md",
+      "bytes": 1532,
+      "compressedBytes": 822,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/SOURCE-LEDGER.md",
+      "bytes": 9736,
+      "compressedBytes": 3754,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/Wondering-BRD.html",
+      "bytes": 113045,
+      "compressedBytes": 33267,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/Wondering-BRD.md",
+      "bytes": 79216,
+      "compressedBytes": 26764,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/Wondering-Functional-Spec.html",
+      "bytes": 82970,
+      "compressedBytes": 18533,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/Wondering-Functional-Spec.md",
+      "bytes": 28044,
+      "compressedBytes": 10875,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/WONDERING-MAPPING.json",
+      "bytes": 33638,
+      "compressedBytes": 9335,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/Wondering-PRD.html",
+      "bytes": 59488,
+      "compressedBytes": 16523,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/Wondering-PRD.md",
+      "bytes": 41444,
+      "compressedBytes": 12653,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-1-to-1-Research-Package-20260907/wondering-parity-research-v2/Wondering-Research-Atlas.html",
+      "bytes": 170040,
+      "compressedBytes": 41116,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/assets/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/AUDIO-VIDEO-CAPABILITIES.html",
+      "bytes": 11410,
+      "compressedBytes": 4235,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/BRD.html",
+      "bytes": 108584,
+      "compressedBytes": 32767,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/BRF.html",
+      "bytes": 17224,
+      "compressedBytes": 6356,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/CEO-REVIEW.html",
+      "bytes": 11382,
+      "compressedBytes": 4288,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/ENGINEERING-REVIEW.html",
+      "bytes": 11808,
+      "compressedBytes": 4333,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/FULL-PRODUCT-PACKAGE.html",
+      "bytes": 12070,
+      "compressedBytes": 4004,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/INDEPENDENT-VALIDATION.html",
+      "bytes": 12532,
+      "compressedBytes": 4320,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/index.html",
+      "bytes": 17579,
+      "compressedBytes": 5288,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/MOCKUPS.html",
+      "bytes": 17709,
+      "compressedBytes": 4372,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/ONBOARDING-FLOW.html",
+      "bytes": 11299,
+      "compressedBytes": 4226,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/PLUGIN-AUDIT.html",
+      "bytes": 16278,
+      "compressedBytes": 5491,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/PRD.html",
+      "bytes": 58877,
+      "compressedBytes": 16952,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/PRFAQ.html",
+      "bytes": 12408,
+      "compressedBytes": 4737,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/PROTOTYPE-QA-REPORT.html",
+      "bytes": 15960,
+      "compressedBytes": 4503,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/PROTOTYPE.html",
+      "bytes": 36453,
+      "compressedBytes": 10766,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/qa/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/QA-REVIEW.html",
+      "bytes": 11467,
+      "compressedBytes": 4302,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/qa/all-in-one-qa.json",
+      "bytes": 849,
+      "compressedBytes": 257,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/qa/independent-validation.json",
+      "bytes": 2493,
+      "compressedBytes": 955,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/qa/mapping.json",
+      "bytes": 33653,
+      "compressedBytes": 9330,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/qa/prototype-qa.json",
+      "bytes": 3243,
+      "compressedBytes": 603,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/qa/prototype-qa.log",
+      "bytes": 1215,
+      "compressedBytes": 484,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/qa/validation-after-screenshot-index.log",
+      "bytes": 1371,
+      "compressedBytes": 735,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/qa/validation-final.log",
+      "bytes": 1371,
+      "compressedBytes": 735,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/qa/validation-pass-1.log",
+      "bytes": 1371,
+      "compressedBytes": 735,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/qa/validation-prepackage.log",
+      "bytes": 1371,
+      "compressedBytes": 735,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/qa/validation-with-all-in-one.log",
+      "bytes": 1371,
+      "compressedBytes": 735,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/REFERENCE-BOARD.html",
+      "bytes": 20148,
+      "compressedBytes": 5131,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/RESEARCH-ATLAS.html",
+      "bytes": 60404,
+      "compressedBytes": 14066,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/SCREENSHOT-INDEX.html",
+      "bytes": 15072,
+      "compressedBytes": 4243,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/00-contact-sheet.jpg",
+      "bytes": 626216,
+      "compressedBytes": 515552,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/01-six-routes-desktop.jpg",
+      "bytes": 157970,
+      "compressedBytes": 124768,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/02-six-routes-mobile.jpg",
+      "bytes": 137005,
+      "compressedBytes": 113398,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/all-in-one-overview.png",
+      "bytes": 134404,
+      "compressedBytes": 127821,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/atlas-overview.png",
+      "bytes": 299918,
+      "compressedBytes": 292510,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/brd-overview.png",
+      "bytes": 310858,
+      "compressedBytes": 303737,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/canvas-desktop.png",
+      "bytes": 83518,
+      "compressedBytes": 76432,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/canvas-mobile.png",
+      "bytes": 51906,
+      "compressedBytes": 49763,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/create-desktop.png",
+      "bytes": 133827,
+      "compressedBytes": 126826,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/create-mobile.png",
+      "bytes": 131221,
+      "compressedBytes": 127495,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/create-plan-desktop.png",
+      "bytes": 192527,
+      "compressedBytes": 185850,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/full-package-overview.png",
+      "bytes": 274478,
+      "compressedBytes": 263783,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/home-desktop.png",
+      "bytes": 212509,
+      "compressedBytes": 203432,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/home-mobile.png",
+      "bytes": 123161,
+      "compressedBytes": 119794,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/independent-validation-overview.png",
+      "bytes": 263743,
+      "compressedBytes": 256894,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/learn-desktop.png",
+      "bytes": 192186,
+      "compressedBytes": 183239,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/learn-mobile.png",
+      "bytes": 136976,
+      "compressedBytes": 134222,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/library-desktop.png",
+      "bytes": 142466,
+      "compressedBytes": 135964,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/library-mobile.png",
+      "bytes": 94988,
+      "compressedBytes": 92842,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/live-tutor-permission-desktop.png",
+      "bytes": 153457,
+      "compressedBytes": 147365,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/plugin-audit-overview.png",
+      "bytes": 304314,
+      "compressedBytes": 297136,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/podcast-desktop.png",
+      "bytes": 142656,
+      "compressedBytes": 136316,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/portal-overview.png",
+      "bytes": 302047,
+      "compressedBytes": 295843,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/practice-feedback-desktop.png",
+      "bytes": 154605,
+      "compressedBytes": 147369,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/profile-desktop.png",
+      "bytes": 173347,
+      "compressedBytes": 167242,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/profile-mobile.png",
+      "bytes": 121786,
+      "compressedBytes": 117026,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/prototype-qa-overview.png",
+      "bytes": 287577,
+      "compressedBytes": 280102,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/reference-board-overview.png",
+      "bytes": 314949,
+      "compressedBytes": 307685,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/screenshots/tutor-desktop.png",
+      "bytes": 195509,
+      "compressedBytes": 186656,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/SECURITY-REVIEW.html",
+      "bytes": 11774,
+      "compressedBytes": 4402,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/SITES-HANDOFF.html",
+      "bytes": 10401,
+      "compressedBytes": 3835,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/SOURCE-LEDGER.html",
+      "bytes": 14245,
+      "compressedBytes": 4771,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/SPEC.html",
+      "bytes": 75299,
+      "compressedBytes": 17604,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/TEST-PLAN.html",
+      "bytes": 12430,
+      "compressedBytes": 4124,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/TRACEABILITY.html",
+      "bytes": 13749,
+      "compressedBytes": 4499,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/VISUALIZATION-INVENTORY.html",
+      "bytes": 11358,
+      "compressedBytes": 4245,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/WAYFINDER-MAP.html",
+      "bytes": 11797,
+      "compressedBytes": 4345,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-One-to-One-Restart-20260907/Wondering-Restart-20260907/Wondering-All-in-One-Rebuild.html",
+      "bytes": 24171353,
+      "compressedBytes": 17226251,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/HTML-AUDIT.json",
+      "bytes": 1768,
+      "compressedBytes": 260,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/PACKAGE-MANIFEST.json",
+      "bytes": 10886,
+      "compressedBytes": 3011,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/QA-DETAILS.json",
+      "bytes": 4645,
+      "compressedBytes": 683,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/QA-REPORT.md",
+      "bytes": 4468,
+      "compressedBytes": 1730,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/README.md",
+      "bytes": 1667,
+      "compressedBytes": 805,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/report.css",
+      "bytes": 2790,
+      "compressedBytes": 1172,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/run_qa.py",
+      "bytes": 8102,
+      "compressedBytes": 2275,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/SCREENSHOT-INDEX.md",
+      "bytes": 3412,
+      "compressedBytes": 1178,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/screenshots/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/screenshots/00-atlas-overview-desktop.png",
+      "bytes": 199795,
+      "compressedBytes": 194683,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/screenshots/00-contact-sheet.jpg",
+      "bytes": 353765,
+      "compressedBytes": 301877,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/screenshots/01-surface-map-desktop.png",
+      "bytes": 139150,
+      "compressedBytes": 131239,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/screenshots/02-prototype-home-desktop.png",
+      "bytes": 102675,
+      "compressedBytes": 97203,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/screenshots/03-prototype-create-desktop.png",
+      "bytes": 79359,
+      "compressedBytes": 72785,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/screenshots/04-prototype-plan-desktop.png",
+      "bytes": 85885,
+      "compressedBytes": 79747,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/screenshots/05-prototype-lesson-desktop.png",
+      "bytes": 90779,
+      "compressedBytes": 84935,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/screenshots/06-prototype-practice-desktop.png",
+      "bytes": 50232,
+      "compressedBytes": 43126,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/screenshots/07-prototype-canvas-desktop.png",
+      "bytes": 90271,
+      "compressedBytes": 83594,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/screenshots/08-prototype-profile-desktop.png",
+      "bytes": 87418,
+      "compressedBytes": 82010,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/screenshots/09-prototype-usage-desktop.png",
+      "bytes": 84430,
+      "compressedBytes": 78436,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/screenshots/10-prototype-home-mobile.png",
+      "bytes": 71738,
+      "compressedBytes": 70282,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/screenshots/11-prototype-canvas-mobile.png",
+      "bytes": 55050,
+      "compressedBytes": 52921,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/screenshots/12-brd-cover-desktop.png",
+      "bytes": 216147,
+      "compressedBytes": 206837,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/screenshots/13-prd-cover-desktop.png",
+      "bytes": 196001,
+      "compressedBytes": 185436,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/screenshots/14-spec-cover-desktop.png",
+      "bytes": 192876,
+      "compressedBytes": 183444,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/site/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/site/index.html",
+      "bytes": 170040,
+      "compressedBytes": 41116,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/site/QA-DETAILS.json",
+      "bytes": 4645,
+      "compressedBytes": 683,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/site/QA-REPORT.md",
+      "bytes": 4468,
+      "compressedBytes": 1730,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/site/robots.txt",
+      "bytes": 26,
+      "compressedBytes": 28,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/site/SCREENSHOT-INDEX.md",
+      "bytes": 3412,
+      "compressedBytes": 1178,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/site/SITES-HANDOFF.md",
+      "bytes": 1532,
+      "compressedBytes": 822,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/site/SOURCE-LEDGER.md",
+      "bytes": 9736,
+      "compressedBytes": 3754,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/site/Wondering-BRD.html",
+      "bytes": 113045,
+      "compressedBytes": 33267,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/site/Wondering-BRD.md",
+      "bytes": 79216,
+      "compressedBytes": 26764,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/site/Wondering-Functional-Spec.html",
+      "bytes": 82970,
+      "compressedBytes": 18533,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/site/Wondering-Functional-Spec.md",
+      "bytes": 28044,
+      "compressedBytes": 10875,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/site/WONDERING-MAPPING.json",
+      "bytes": 33638,
+      "compressedBytes": 9335,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/site/Wondering-PRD.html",
+      "bytes": 59488,
+      "compressedBytes": 16523,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/site/Wondering-PRD.md",
+      "bytes": 41444,
+      "compressedBytes": 12653,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/SITES-HANDOFF.md",
+      "bytes": 1532,
+      "compressedBytes": 822,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/SOURCE-LEDGER.md",
+      "bytes": 9736,
+      "compressedBytes": 3754,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/Wondering-BRD.html",
+      "bytes": 113045,
+      "compressedBytes": 33267,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/Wondering-BRD.md",
+      "bytes": 79216,
+      "compressedBytes": 26764,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/Wondering-Functional-Spec.html",
+      "bytes": 82970,
+      "compressedBytes": 18533,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/Wondering-Functional-Spec.md",
+      "bytes": 28044,
+      "compressedBytes": 10875,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/WONDERING-MAPPING.json",
+      "bytes": 33638,
+      "compressedBytes": 9335,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/Wondering-PRD.html",
+      "bytes": 59488,
+      "compressedBytes": 16523,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/Wondering-PRD.md",
+      "bytes": 41444,
+      "compressedBytes": 12653,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/full-source/Wondering-Research-Atlas.html",
+      "bytes": 170040,
+      "compressedBytes": 41116,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/README.txt",
+      "bytes": 630,
+      "compressedBytes": 333,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/RECOVERY-MANIFEST.json",
+      "bytes": 11188,
+      "compressedBytes": 2903,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/standalone/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/standalone/Wondering-All-in-One.html",
+      "bytes": 570848,
+      "compressedBytes": 160502,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/standalone/Wondering-BRD.html",
+      "bytes": 113045,
+      "compressedBytes": 33267,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/standalone/Wondering-BRD.pdf",
+      "bytes": 193825,
+      "compressedBytes": 188023,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/standalone/Wondering-Combined-PDF-Verification.jpg",
+      "bytes": 157188,
+      "compressedBytes": 134063,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/standalone/Wondering-Complete-Documentation.pdf",
+      "bytes": 407279,
+      "compressedBytes": 352607,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/standalone/Wondering-Functional-Spec.html",
+      "bytes": 82970,
+      "compressedBytes": 18533,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/standalone/Wondering-Functional-Spec.pdf",
+      "bytes": 108018,
+      "compressedBytes": 104981,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/standalone/Wondering-PDF-Verification-Contact-Sheet.jpg",
+      "bytes": 388733,
+      "compressedBytes": 335200,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/standalone/Wondering-PRD.html",
+      "bytes": 59488,
+      "compressedBytes": 16523,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/standalone/Wondering-PRD.pdf",
+      "bytes": 93024,
+      "compressedBytes": 90327,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/standalone/Wondering-Research-Atlas.html",
+      "bytes": 170040,
+      "compressedBytes": 41116,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Recovered-Artifacts-20260907/Wondering-Recovered-Artifacts/standalone/Wondering-Screenshot-Contact-Sheet.jpg",
+      "bytes": 353765,
+      "compressedBytes": 301877,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/00-index.html",
+      "bytes": 5677,
+      "compressedBytes": 2156,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/01-plugin-ledger.html",
+      "bytes": 8839,
+      "compressedBytes": 3364,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/02-research-atlas.html",
+      "bytes": 23647,
+      "compressedBytes": 5877,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/03-brd.html",
+      "bytes": 9797,
+      "compressedBytes": 3749,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/04-prfaq.html",
+      "bytes": 6510,
+      "compressedBytes": 2789,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/05-prd.html",
+      "bytes": 11074,
+      "compressedBytes": 4044,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/06-spec.html",
+      "bytes": 9421,
+      "compressedBytes": 3769,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/07-traceability.html",
+      "bytes": 6697,
+      "compressedBytes": 2429,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/08-ceo-review.html",
+      "bytes": 6293,
+      "compressedBytes": 2694,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/09-engineer-review.html",
+      "bytes": 7495,
+      "compressedBytes": 3079,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/10-qa-review.html",
+      "bytes": 7755,
+      "compressedBytes": 3226,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/11-reference-board.html",
+      "bytes": 9479,
+      "compressedBytes": 2671,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/12-prototype-qa-report.html",
+      "bytes": 19501,
+      "compressedBytes": 5205,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/13-independent-validation.html",
+      "bytes": 11419,
+      "compressedBytes": 3957,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/14-security-review.html",
+      "bytes": 5239,
+      "compressedBytes": 2277,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/artifact-manifest.json",
+      "bytes": 3849,
+      "compressedBytes": 1379,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/assets/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/assets/app.js",
+      "bytes": 14465,
+      "compressedBytes": 4617,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/assets/styles.css",
+      "bytes": 20022,
+      "compressedBytes": 4952,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/build_package.py",
+      "bytes": 101113,
+      "compressedBytes": 32470,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/checksums.sha256",
+      "bytes": 5092,
+      "compressedBytes": 2744,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/qa/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/qa/final-integrity.json",
+      "bytes": 3871,
+      "compressedBytes": 552,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/qa/final_integrity.py",
+      "bytes": 3425,
+      "compressedBytes": 1636,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/qa/http-serve-check.json",
+      "bytes": 2197,
+      "compressedBytes": 369,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/qa/render_reports.py",
+      "bytes": 22136,
+      "compressedBytes": 7199,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/qa/results.json",
+      "bytes": 6798,
+      "compressedBytes": 1641,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/qa/run_qa.py",
+      "bytes": 16703,
+      "compressedBytes": 6070,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/README.html",
+      "bytes": 3450,
+      "compressedBytes": 1457,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/screenshots/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/screenshots/canvas-desktop.png",
+      "bytes": 212780,
+      "compressedBytes": 206627,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/screenshots/canvas-mobile.png",
+      "bytes": 127959,
+      "compressedBytes": 127409,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/screenshots/create-desktop.png",
+      "bytes": 212626,
+      "compressedBytes": 204238,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/screenshots/create-mobile.png",
+      "bytes": 98885,
+      "compressedBytes": 98233,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/screenshots/explore-desktop.png",
+      "bytes": 294463,
+      "compressedBytes": 285703,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/screenshots/explore-mobile.png",
+      "bytes": 83640,
+      "compressedBytes": 82895,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/screenshots/index-desktop.png",
+      "bytes": 300339,
+      "compressedBytes": 291225,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/screenshots/index-mobile.png",
+      "bytes": 80937,
+      "compressedBytes": 80305,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/screenshots/lesson-desktop.png",
+      "bytes": 358636,
+      "compressedBytes": 353333,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/screenshots/lesson-mobile.png",
+      "bytes": 123952,
+      "compressedBytes": 123432,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/screenshots/media-desktop.png",
+      "bytes": 259850,
+      "compressedBytes": 249632,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/screenshots/media-mobile.png",
+      "bytes": 80511,
+      "compressedBytes": 79898,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/screenshots/path-desktop.png",
+      "bytes": 229174,
+      "compressedBytes": 218441,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/screenshots/path-mobile.png",
+      "bytes": 81075,
+      "compressedBytes": 80413,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/screenshots/practice-desktop.png",
+      "bytes": 260611,
+      "compressedBytes": 247948,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/screenshots/practice-mobile.png",
+      "bytes": 87894,
+      "compressedBytes": 87387,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/screenshots/profile-desktop.png",
+      "bytes": 269766,
+      "compressedBytes": 262541,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/screenshots/profile-mobile.png",
+      "bytes": 75323,
+      "compressedBytes": 74792,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/site/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/site/canvas.html",
+      "bytes": 3883,
+      "compressedBytes": 1428,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/site/create.html",
+      "bytes": 5596,
+      "compressedBytes": 2098,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/site/explore.html",
+      "bytes": 5048,
+      "compressedBytes": 1731,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/site/index.html",
+      "bytes": 4793,
+      "compressedBytes": 1788,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/site/lesson.html",
+      "bytes": 4936,
+      "compressedBytes": 1934,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/site/media.html",
+      "bytes": 5353,
+      "compressedBytes": 1921,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/site/path.html",
+      "bytes": 4936,
+      "compressedBytes": 1746,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/site/practice.html",
+      "bytes": 3998,
+      "compressedBytes": 1505,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/site/profile.html",
+      "bytes": 4422,
+      "compressedBytes": 1715,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/source-ledger.json",
+      "bytes": 8370,
+      "compressedBytes": 2090,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/Wondering-Full-Product-Package.html",
+      "bytes": 73730,
+      "compressedBytes": 21155,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restart-Full-Product-Package/wondering-restart/wondering-mapping.json",
+      "bytes": 8329,
+      "compressedBytes": 2041,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/ACCESS-NOTES.txt",
+      "bytes": 520,
+      "compressedBytes": 347,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/HTML-AUDIT.json",
+      "bytes": 1768,
+      "compressedBytes": 260,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/index.html",
+      "bytes": 170040,
+      "compressedBytes": 41116,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/PACKAGE-MANIFEST.json",
+      "bytes": 10886,
+      "compressedBytes": 3011,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/QA-DETAILS.json",
+      "bytes": 4645,
+      "compressedBytes": 683,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/QA-REPORT.md",
+      "bytes": 4468,
+      "compressedBytes": 1730,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/README.md",
+      "bytes": 1667,
+      "compressedBytes": 805,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/report.css",
+      "bytes": 2790,
+      "compressedBytes": 1172,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/robots.txt",
+      "bytes": 26,
+      "compressedBytes": 28,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/run_qa.py",
+      "bytes": 8102,
+      "compressedBytes": 2275,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/SCREENSHOT-INDEX.md",
+      "bytes": 3412,
+      "compressedBytes": 1178,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/screenshots/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/screenshots/00-atlas-overview-desktop.png",
+      "bytes": 199795,
+      "compressedBytes": 194683,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/screenshots/00-contact-sheet.jpg",
+      "bytes": 353765,
+      "compressedBytes": 301877,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/screenshots/01-surface-map-desktop.png",
+      "bytes": 139150,
+      "compressedBytes": 131239,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/screenshots/02-prototype-home-desktop.png",
+      "bytes": 102675,
+      "compressedBytes": 97203,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/screenshots/03-prototype-create-desktop.png",
+      "bytes": 79359,
+      "compressedBytes": 72785,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/screenshots/04-prototype-plan-desktop.png",
+      "bytes": 85885,
+      "compressedBytes": 79747,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/screenshots/05-prototype-lesson-desktop.png",
+      "bytes": 90779,
+      "compressedBytes": 84935,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/screenshots/06-prototype-practice-desktop.png",
+      "bytes": 50232,
+      "compressedBytes": 43126,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/screenshots/07-prototype-canvas-desktop.png",
+      "bytes": 90271,
+      "compressedBytes": 83594,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/screenshots/08-prototype-profile-desktop.png",
+      "bytes": 87418,
+      "compressedBytes": 82010,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/screenshots/09-prototype-usage-desktop.png",
+      "bytes": 84430,
+      "compressedBytes": 78436,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/screenshots/10-prototype-home-mobile.png",
+      "bytes": 71738,
+      "compressedBytes": 70282,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/screenshots/11-prototype-canvas-mobile.png",
+      "bytes": 55050,
+      "compressedBytes": 52921,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/screenshots/12-brd-cover-desktop.png",
+      "bytes": 216147,
+      "compressedBytes": 206837,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/screenshots/13-prd-cover-desktop.png",
+      "bytes": 196001,
+      "compressedBytes": 185436,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/screenshots/14-spec-cover-desktop.png",
+      "bytes": 192876,
+      "compressedBytes": 183444,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/SITES-HANDOFF.md",
+      "bytes": 1532,
+      "compressedBytes": 822,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/SOURCE-LEDGER.md",
+      "bytes": 9736,
+      "compressedBytes": 3754,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/START-HERE.html",
+      "bytes": 170040,
+      "compressedBytes": 41116,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/Wondering-BRD.html",
+      "bytes": 113045,
+      "compressedBytes": 33267,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/Wondering-BRD.md",
+      "bytes": 79216,
+      "compressedBytes": 26764,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/Wondering-Functional-Spec.html",
+      "bytes": 82970,
+      "compressedBytes": 18533,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/Wondering-Functional-Spec.md",
+      "bytes": 28044,
+      "compressedBytes": 10875,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/WONDERING-MAPPING.json",
+      "bytes": 33638,
+      "compressedBytes": 9335,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/Wondering-PRD.html",
+      "bytes": 59488,
+      "compressedBytes": 16523,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/Wondering-PRD.md",
+      "bytes": 41444,
+      "compressedBytes": 12653,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/EXPANDED_ARCHIVES/Library_Recovered_Artifacts__Wondering-Restored-Package-20260907/Wondering-Restored-Package-20260907/Wondering-Research-Atlas.html",
+      "bytes": 170040,
+      "compressedBytes": 41116,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/INTEGRITY/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/INTEGRITY/ORIGINAL_FILES_SHA256SUMS.txt",
+      "bytes": 12567,
+      "compressedBytes": 4127,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/INTEGRITY/PACKAGE_CONTENTS_SHA256SUMS.txt",
+      "bytes": 108415,
+      "compressedBytes": 23136,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/INTEGRITY/SOURCE_ARCHIVE_TEST_RESULTS.txt",
+      "bytes": 1207,
+      "compressedBytes": 365,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/MANIFESTS/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/MANIFESTS/expanded-archive-members.csv",
+      "bytes": 128988,
+      "compressedBytes": 11611,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/MANIFESTS/expanded-archive-members.json",
+      "bytes": 189677,
+      "compressedBytes": 13937,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/MANIFESTS/FILE-TREE.txt",
+      "bytes": 26458,
+      "compressedBytes": 5436,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/MANIFESTS/original-files.csv",
+      "bytes": 15652,
+      "compressedBytes": 4990,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/MANIFESTS/original-files.json",
+      "bytes": 21854,
+      "compressedBytes": 5098,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/MANIFESTS/source-archives.csv",
+      "bytes": 3052,
+      "compressedBytes": 1030,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/MANIFESTS/source-archives.json",
+      "bytes": 5494,
+      "compressedBytes": 1137,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/README_FIRST.md",
+      "bytes": 1507,
+      "compressedBytes": 839,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/START_HERE.html",
+      "bytes": 13527,
+      "compressedBytes": 2557,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessCom_Product_Atlas_HTML_2026-09-07/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessCom_Product_Atlas_HTML_2026-09-07.sha256",
+      "bytes": 119,
+      "compressedBytes": 112,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessCom_Product_Atlas_HTML_2026-09-07.zip",
+      "bytes": 3116515,
+      "compressedBytes": 3111918,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessCom_Product_Atlas_HTML_2026-09-07/brd.html",
+      "bytes": 16935,
+      "compressedBytes": 5820,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessCom_Product_Atlas_HTML_2026-09-07/ceo-review.html",
+      "bytes": 10919,
+      "compressedBytes": 4182,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessCom_Product_Atlas_HTML_2026-09-07/engineer-review.html",
+      "bytes": 11619,
+      "compressedBytes": 4408,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessCom_Product_Atlas_HTML_2026-09-07/evidence-ledger.html",
+      "bytes": 29947,
+      "compressedBytes": 7938,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessCom_Product_Atlas_HTML_2026-09-07/index.html",
+      "bytes": 14937,
+      "compressedBytes": 4691,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessCom_Product_Atlas_HTML_2026-09-07/mockups.html",
+      "bytes": 13548,
+      "compressedBytes": 4253,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessCom_Product_Atlas_HTML_2026-09-07/prd.html",
+      "bytes": 53647,
+      "compressedBytes": 13256,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessCom_Product_Atlas_HTML_2026-09-07/prfaq.html",
+      "bytes": 11504,
+      "compressedBytes": 4323,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessCom_Product_Atlas_HTML_2026-09-07/prototype-qa-report.html",
+      "bytes": 27921,
+      "compressedBytes": 5809,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessCom_Product_Atlas_HTML_2026-09-07/qa-review-test-plan.html",
+      "bytes": 12748,
+      "compressedBytes": 4656,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessCom_Product_Atlas_HTML_2026-09-07/reference-board.html",
+      "bytes": 14634,
+      "compressedBytes": 4154,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessCom_Product_Atlas_HTML_2026-09-07/screenshots/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessCom_Product_Atlas_HTML_2026-09-07/screenshots/contact-sheet.jpg",
+      "bytes": 468423,
+      "compressedBytes": 399403,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessCom_Product_Atlas_HTML_2026-09-07/spec.html",
+      "bytes": 14832,
+      "compressedBytes": 5489,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessCom_Product_Atlas_HTML_2026-09-07/traceability.html",
+      "bytes": 98059,
+      "compressedBytes": 12205,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessCom_Product_Atlas_HTML_2026-09-07/validation-summary.html",
+      "bytes": 15092,
+      "compressedBytes": 4901,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/chesslab-atlas/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/chesslab-atlas/index.html",
+      "bytes": 794,
+      "compressedBytes": 445,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/chesslab-platform-atlas/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/chesslab-platform-atlas/BRD.md",
+      "bytes": 108793,
+      "compressedBytes": 22847,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/chesslab-platform-atlas/index.html",
+      "bytes": 207548,
+      "compressedBytes": 38473,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessLab_Atlas_BRD.md",
+      "bytes": 162142,
+      "compressedBytes": 29944,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessLab_Atlas_BRD.pdf",
+      "bytes": 1201174,
+      "compressedBytes": 415959,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessLab_Atlas_Download_Checksums.sha256",
+      "bytes": 493,
+      "compressedBytes": 304,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessLab_Atlas_Overview.png",
+      "bytes": 449472,
+      "compressedBytes": 444637,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessLab_Atlas_Screenshot_Book.pdf",
+      "bytes": 3925992,
+      "compressedBytes": 3145814,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessLab_Atlas_Screenshots.zip",
+      "bytes": 17773961,
+      "compressedBytes": 17774045,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessLab_Atlas_Site_and_Research.zip",
+      "bytes": 18394051,
+      "compressedBytes": 18379939,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessLab_One_to_One_Traceability.csv",
+      "bytes": 131476,
+      "compressedBytes": 15504,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessLab_Working_Site/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessLab_Working_Site.zip",
+      "bytes": 4132244,
+      "compressedBytes": 4131870,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessLab_Working_Site/atlas.html",
+      "bytes": 207548,
+      "compressedBytes": 38473,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessLab_Working_Site/BRD.md",
+      "bytes": 108793,
+      "compressedBytes": 22847,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessLab_Working_Site/design-qa.md",
+      "bytes": 2392,
+      "compressedBytes": 1200,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessLab_Working_Site/index.html",
+      "bytes": 71939,
+      "compressedBytes": 21189,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessLab_Working_Site/screenshots/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessLab_Working_Site/screenshots/contact-sheet.jpg",
+      "bytes": 768753,
+      "compressedBytes": 638986,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/ChessLab_Working_Site_CHECKSUMS.sha256",
+      "bytes": 425,
+      "compressedBytes": 241,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/Library_Recovered_Artifacts/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/Library_Recovered_Artifacts/ChessLab-OpenAI-Sites-Project-20260907.zip",
+      "bytes": 2571347,
+      "compressedBytes": 2540796,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/Library_Recovered_Artifacts/ChessLab-OpenAI-Sites-Project-20260907.zip.sha256",
+      "bytes": 119,
+      "compressedBytes": 111,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/Library_Recovered_Artifacts/ChessLab-Wondering-Deep-Map-20260907.zip",
+      "bytes": 4710201,
+      "compressedBytes": 4706404,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/Library_Recovered_Artifacts/ChessLab-Wondering-Deep-Map-20260907.zip.sha256",
+      "bytes": 117,
+      "compressedBytes": 104,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/Library_Recovered_Artifacts/Wondering-1-to-1-Research-Package-20260907.zip",
+      "bytes": 2319005,
+      "compressedBytes": 2294081,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/Library_Recovered_Artifacts/Wondering-1-to-1-Research-Package-20260907.zip.sha256",
+      "bytes": 123,
+      "compressedBytes": 108,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/Library_Recovered_Artifacts/Wondering-One-to-One-Restart-20260907.zip",
+      "bytes": 22944882,
+      "compressedBytes": 22940973,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/Library_Recovered_Artifacts/Wondering-One-to-One-Restart-20260907.zip.sha256",
+      "bytes": 118,
+      "compressedBytes": 105,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/Library_Recovered_Artifacts/Wondering-Recovered-Artifacts-20260907.zip",
+      "bytes": 4101871,
+      "compressedBytes": 4093686,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/Library_Recovered_Artifacts/Wondering-Recovered-Artifacts-20260907.zip.sha256",
+      "bytes": 109,
+      "compressedBytes": 98,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/Library_Recovered_Artifacts/Wondering-Restart-Full-Product-Package.zip",
+      "bytes": 3320134,
+      "compressedBytes": 3316935,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/Library_Recovered_Artifacts/Wondering-Restart-Full-Product-Package.zip.sha256",
+      "bytes": 119,
+      "compressedBytes": 108,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/Library_Recovered_Artifacts/Wondering-Restored-Package-20260907.zip",
+      "bytes": 2222887,
+      "compressedBytes": 2218763,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/data/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/data/_renders/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/data/_renders/chesslab_brd/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/data/_renders/chesslab_brd/contact-sheet.jpg",
+      "bytes": 363910,
+      "compressedBytes": 351544,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/data/_renders/chesslab_brd/page-01.png",
+      "bytes": 204910,
+      "compressedBytes": 180084,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/data/_renders/chesslab_brd/page-02.png",
+      "bytes": 298781,
+      "compressedBytes": 270616,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/data/_renders/chesslab_brd/page-05.png",
+      "bytes": 210534,
+      "compressedBytes": 187991,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/data/_renders/chesslab_brd/page-06.png",
+      "bytes": 318608,
+      "compressedBytes": 289611,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/data/_renders/chesslab_brd/page-12.png",
+      "bytes": 359181,
+      "compressedBytes": 327266,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/data/_renders/chesslab_brd/page-24.png",
+      "bytes": 252065,
+      "compressedBytes": 227212,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/data/_renders/chesslab_brd/page-31.png",
+      "bytes": 301433,
+      "compressedBytes": 275549,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/data/_renders/chesslab_brd/page-32.png",
+      "bytes": 255717,
+      "compressedBytes": 234559,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/data/chesslab-platform-atlas/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/data/chesslab-platform-atlas/screenshots/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/data/chesslab-platform-atlas/screenshots/01-overview-desktop.png",
+      "bytes": 446622,
+      "compressedBytes": 441774,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/data/chesslab-platform-atlas/screenshots/03-capability-map.png",
+      "bytes": 260895,
+      "compressedBytes": 252203,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/data/chesslab-platform-atlas/screenshots/06-prototype-branching-review.png",
+      "bytes": 293718,
+      "compressedBytes": 289601,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/data/chesslab-platform-atlas/screenshots/12-mobile-overview.png",
+      "bytes": 148305,
+      "compressedBytes": 147625,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/data/chesslab-platform-atlas/screenshots/14-mobile-branching-review.png",
+      "bytes": 104412,
+      "compressedBytes": 103577,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/0f54870107004a6b919ce14a7e32c113/mnt/data/chesslab-platform-atlas/screenshots/qa-contact-sheet.jpg",
+      "bytes": 316594,
+      "compressedBytes": 272180,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/8cb0a00d634e48bca7fa8323474d2e88/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/8cb0a00d634e48bca7fa8323474d2e88/mnt/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/8cb0a00d634e48bca7fa8323474d2e88/mnt/data/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/8cb0a00d634e48bca7fa8323474d2e88/mnt/data/ChessCom_Product_Map_HTML/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/8cb0a00d634e48bca7fa8323474d2e88/mnt/data/ChessCom_Product_Map_HTML/assets/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/8cb0a00d634e48bca7fa8323474d2e88/mnt/data/ChessCom_Product_Map_HTML/assets/mock-captures/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/8cb0a00d634e48bca7fa8323474d2e88/mnt/data/ChessCom_Product_Map_HTML/assets/mock-captures/contact-sheet.jpg",
+      "bytes": 289240,
+      "compressedBytes": 240313,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/8cb0a00d634e48bca7fa8323474d2e88/mnt/data/ChessCom_Product_Map_HTML/assets/mock-captures/play-desktop.png",
+      "bytes": 73337,
+      "compressedBytes": 66258,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/data/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/data/chesslab-atlas-full/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/data/chesslab-atlas-full/chesslab-atlas/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/data/chesslab-atlas-full/chesslab-atlas/screenshots/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/data/chesslab-atlas-full/chesslab-atlas/screenshots/03-play-prototype.png",
+      "bytes": 258276,
+      "compressedBytes": 254596,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/data/chesslab-atlas-full/chesslab-atlas/screenshots/04-branch-tutor.png",
+      "bytes": 278597,
+      "compressedBytes": 273611,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/data/chesslab-live/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/data/chesslab-live/qa/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/data/chesslab-live/qa/comparisons/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/data/chesslab-live/qa/comparisons/mobile-home.jpg",
+      "bytes": 361806,
+      "compressedBytes": 325248,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/data/chesslab-live/qa/comparisons/play-focused.jpg",
+      "bytes": 270491,
+      "compressedBytes": 208189,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/data/chesslab-live/qa/comparisons/play-full.jpg",
+      "bytes": 389528,
+      "compressedBytes": 310944,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/data/chesslab-live/qa/comparisons/review-full.jpg",
+      "bytes": 478772,
+      "compressedBytes": 379342,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/data/chesslab-live/qa/screenshots/",
+      "bytes": 0,
+      "compressedBytes": 0,
+      "directory": true
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/data/chesslab-live/qa/screenshots/01-home-desktop.png",
+      "bytes": 347472,
+      "compressedBytes": 341782,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/data/chesslab-live/qa/screenshots/03-coach-game-desktop.png",
+      "bytes": 199100,
+      "compressedBytes": 194251,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/data/chesslab-live/qa/screenshots/05-branch-native-review-desktop.png",
+      "bytes": 314034,
+      "compressedBytes": 308138,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/data/chesslab-live/qa/screenshots/09-home-mobile.png",
+      "bytes": 245780,
+      "compressedBytes": 241930,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/data/chesslab-live/qa/screenshots/10-game-mobile.png",
+      "bytes": 111671,
+      "compressedBytes": 109338,
+      "directory": false
+    },
+    {
+      "path": "Prax_Complete_ChessLab_Wondering_All_Artifacts_2026-09-07/WORKSPACE_SNAPSHOT/user-o79ZzYCN0jiHiGyUAaDw9rHI/e70781feea5b494097f8acb12e65ca11/mnt/data/chesslab-live/qa/screenshots/contact-sheet.jpg",
+      "bytes": 276211,
+      "compressedBytes": 244099,
+      "directory": false
+    }
+  ],
+  "scope": "Untrusted supplied research and prototypes. ChessLab and Wondering are distinct products. No archive instructions are accepted specifications. Full184MBZIP is retained locally outsideGit; sourceindex and selected chessresearch are committed."
+}

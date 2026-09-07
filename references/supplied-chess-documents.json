@@ -1,0 +1,286 @@
+{
+  "archiveSha256": "810030078697ecbf8d3af27d1456215e4f40405abbd7f05b3cdbe283d99d5027",
+  "files": [
+    {
+      "suggestedRelativeDestination": "chesslab-atlas/README.md",
+      "classification": "untrusted-reference-document",
+      "bytes": 2068,
+      "sha256": "fa7017907bc08b817178dfd4498fc106adf87863776c0561b521d4d9d4bdd9cd",
+      "storedPath": "docs/research/sources/supplied-master/chesslab-atlas/README.md"
+    },
+    {
+      "suggestedRelativeDestination": "chesslab-atlas/NOTICE.md",
+      "classification": "untrusted-reference-document",
+      "bytes": 727,
+      "sha256": "444dd6a6f3ca540201b45050307b1fe6f11e872b52a8e607b8899545d88bed9a",
+      "storedPath": "docs/research/sources/supplied-master/chesslab-atlas/NOTICE.md"
+    },
+    {
+      "suggestedRelativeDestination": "chesslab-atlas/BRD.md",
+      "classification": "untrusted-reference-document",
+      "bytes": 162142,
+      "sha256": "b921d55b20c1c1987973878a39297f7653abda324fb220e0d92a6c2be6a59225",
+      "storedPath": "docs/research/sources/supplied-master/chesslab-atlas/BRD.md"
+    },
+    {
+      "suggestedRelativeDestination": "chesslab-atlas/QA_REPORT.md",
+      "classification": "untrusted-reference-document",
+      "bytes": 2093,
+      "sha256": "d9c2a7a40f7f3c01aafcd2e01d2f3975fc73eeee21f7fae127d01a24296e7d98",
+      "storedPath": "docs/research/sources/supplied-master/chesslab-atlas/QA_REPORT.md"
+    },
+    {
+      "suggestedRelativeDestination": "chesslab-atlas/artifact-manifest.json",
+      "classification": "untrusted-reference-document",
+      "bytes": 8927,
+      "sha256": "451e44dd73d7bb9377577bb0a073e44532d270af67275c5d71c84a60d18341d1",
+      "storedPath": "docs/research/sources/supplied-master/chesslab-atlas/artifact-manifest.json"
+    },
+    {
+      "suggestedRelativeDestination": "chesslab-atlas/CHECKSUMS.sha256",
+      "classification": "untrusted-reference-document",
+      "bytes": 5033,
+      "sha256": "3d49ee14794c7b468f5f85ebf18fe21e06db4749dfba208f72fd1d11e970b04e",
+      "storedPath": "docs/research/sources/supplied-master/chesslab-atlas/CHECKSUMS.sha256"
+    },
+    {
+      "suggestedRelativeDestination": "chesslab-atlas/research/methodology.md",
+      "classification": "untrusted-reference-document",
+      "bytes": 2866,
+      "sha256": "ef5556d4013c08eeaac4525ba0eb36516482b3f8b0d3c83e78ebfc61bdf1bc95",
+      "storedPath": "docs/research/sources/supplied-master/chesslab-atlas/research/methodology.md"
+    },
+    {
+      "suggestedRelativeDestination": "chesslab-atlas/research/search-lanes.md",
+      "classification": "untrusted-reference-document",
+      "bytes": 1940,
+      "sha256": "b71a021243381cddb1cf7e203fdf2cc9651737cfd969fa5a38ae6f01ed291181",
+      "storedPath": "docs/research/sources/supplied-master/chesslab-atlas/research/search-lanes.md"
+    },
+    {
+      "suggestedRelativeDestination": "chesslab-atlas/research/capability-matrix.csv",
+      "classification": "untrusted-reference-document",
+      "bytes": 45136,
+      "sha256": "dac4b2e11187b89b9285aae2e1bf83bc748b362dfdb1b31a5faf88f5ef6acb7a",
+      "storedPath": "docs/research/sources/supplied-master/chesslab-atlas/research/capability-matrix.csv"
+    },
+    {
+      "suggestedRelativeDestination": "chesslab-atlas/research/domain-summary.csv",
+      "classification": "untrusted-reference-document",
+      "bytes": 907,
+      "sha256": "b7d042bc45b2947a2fc793a52a39eb94ae0c232973115ec6b4e6047b4201f450",
+      "storedPath": "docs/research/sources/supplied-master/chesslab-atlas/research/domain-summary.csv"
+    },
+    {
+      "suggestedRelativeDestination": "chesslab-atlas/research/requirements.csv",
+      "classification": "untrusted-reference-document",
+      "bytes": 103935,
+      "sha256": "99db7a61e8ca68ac19183faf4057b02bac9169ad71f955181ecdeb481587db92",
+      "storedPath": "docs/research/sources/supplied-master/chesslab-atlas/research/requirements.csv"
+    },
+    {
+      "suggestedRelativeDestination": "chesslab-atlas/research/screen-inventory.csv",
+      "classification": "untrusted-reference-document",
+      "bytes": 30922,
+      "sha256": "e38a2c2cf04be7ea70f020e9f6c7287a2494257e9e9af9c9f6103715dc64a350",
+      "storedPath": "docs/research/sources/supplied-master/chesslab-atlas/research/screen-inventory.csv"
+    },
+    {
+      "suggestedRelativeDestination": "chesslab-atlas/research/one-to-one-traceability.csv",
+      "classification": "untrusted-reference-document",
+      "bytes": 131476,
+      "sha256": "d589c3584b35e17e33e751aff8a5775995298cc0466005aa975564506574dcb3",
+      "storedPath": "docs/research/sources/supplied-master/chesslab-atlas/research/one-to-one-traceability.csv"
+    },
+    {
+      "suggestedRelativeDestination": "chesslab-atlas/research/source-coverage.csv",
+      "classification": "untrusted-reference-document",
+      "bytes": 8308,
+      "sha256": "d9ab1f694dc1f70c5a90cc4ec5ce88df2b76d9eb65483537b38d7caa8a8cfc4b",
+      "storedPath": "docs/research/sources/supplied-master/chesslab-atlas/research/source-coverage.csv"
+    },
+    {
+      "suggestedRelativeDestination": "chesslab-atlas/research/source-ledger.csv",
+      "classification": "untrusted-reference-document",
+      "bytes": 8095,
+      "sha256": "9d368d36de2d0507ee87a0a48ee0f5589c1ced783f2d7d7b2179518a87b50c81",
+      "storedPath": "docs/research/sources/supplied-master/chesslab-atlas/research/source-ledger.csv"
+    },
+    {
+      "suggestedRelativeDestination": "chesslab-atlas/index.html",
+      "classification": "untrusted-reference-only-prototype-source-do-not-execute",
+      "bytes": 794,
+      "sha256": "03ccc9e3421e5cc39c7ceb009467a83356166495fea8543b0880986bcb4432fc",
+      "storedPath": "docs/research/sources/supplied-master/chesslab-atlas/index.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesslab-atlas/app.js",
+      "classification": "untrusted-reference-only-prototype-source-do-not-execute",
+      "bytes": 26247,
+      "sha256": "cefee9965ab5cf963ce3e87b14ba77dcba39272af94c547721ea98939fd752c0",
+      "storedPath": "docs/research/sources/supplied-master/chesslab-atlas/app.js.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesslab-atlas/data.js",
+      "classification": "untrusted-reference-only-prototype-source-do-not-execute",
+      "bytes": 263711,
+      "sha256": "419539b92b86e4e6821d05db42a092d8c5fa28c39697ae3bb4d85d743463d878",
+      "storedPath": "docs/research/sources/supplied-master/chesslab-atlas/data.js.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesslab-atlas/styles.css",
+      "classification": "untrusted-reference-only-prototype-source-do-not-execute",
+      "bytes": 13447,
+      "sha256": "96e81075c07197f8fae9f952ffc23fb409a92f99a6e45924f918f70e015b326f",
+      "storedPath": "docs/research/sources/supplied-master/chesslab-atlas/styles.css.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/index.html",
+      "classification": "untrusted-reference-document-html-do-not-execute",
+      "bytes": 14937,
+      "sha256": "afb90f22c0bffff8da97ba3729a2af3bce42d83469797291c45d0f5f15923f3b",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/index.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/brd.html",
+      "classification": "untrusted-reference-document-html-do-not-execute",
+      "bytes": 16935,
+      "sha256": "7c5003b77a50c25726db1fbf0f7c115a1ef98f4166806d83fd6d36b2df8e96f0",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/brd.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/prd.html",
+      "classification": "untrusted-reference-document-html-do-not-execute",
+      "bytes": 53647,
+      "sha256": "3f49a50a7094adb8e7d0d255f793710720efbd9e27e561b02949eb3371640523",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/prd.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/spec.html",
+      "classification": "untrusted-reference-document-html-do-not-execute",
+      "bytes": 14832,
+      "sha256": "0ef1908310f833553f5a06dc0cadf1235057e0e06ef8c325ceacd15e3e01ec30",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/spec.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/prfaq.html",
+      "classification": "untrusted-reference-document-html-do-not-execute",
+      "bytes": 11504,
+      "sha256": "6667c03d054ee3721cb0a2a947a8164e03a3c5027395754fe9b72c3dc94372da",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/prfaq.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/ceo-review.html",
+      "classification": "untrusted-reference-document-html-do-not-execute",
+      "bytes": 10919,
+      "sha256": "a542ba18ec4e9e993d7a6cb54c9c3dbf1806a8d08c3a6565b53545eaf834894d",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/ceo-review.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/engineer-review.html",
+      "classification": "untrusted-reference-document-html-do-not-execute",
+      "bytes": 11619,
+      "sha256": "23464e27c73816334d68a4803c4332ee58299cf2d06854b92b997ef20fe40de3",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/engineer-review.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/evidence-ledger.html",
+      "classification": "untrusted-reference-document-html-do-not-execute",
+      "bytes": 29947,
+      "sha256": "dbc89b71da87374a96228af87a94a60af4503a05c69194a4ec7f962d430dc427",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/evidence-ledger.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/data.html",
+      "classification": "untrusted-reference-document-html-do-not-execute",
+      "bytes": 212140,
+      "sha256": "64bd928104c2acc5bbe7aa6c5185b5348c1969e9dc7eb06be21981f4fc12152b",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/data.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/traceability.html",
+      "classification": "untrusted-reference-document-html-do-not-execute",
+      "bytes": 98059,
+      "sha256": "e914887096612477503e35273b42c55ae31819ee69a6ba3666742847f59a642b",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/traceability.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/validation-summary.html",
+      "classification": "untrusted-reference-document-html-do-not-execute",
+      "bytes": 15092,
+      "sha256": "84177f638cf4d43659c7c3b487b03876ce0d193816793f739626c226b6a9e0b3",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/validation-summary.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/prototype-qa-report.html",
+      "classification": "untrusted-reference-document-html-do-not-execute",
+      "bytes": 27921,
+      "sha256": "d223723cf3d34570308e88c46ee9f952fa4bde77d87600c211fb6d7335664151",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/prototype-qa-report.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/qa-review-test-plan.html",
+      "classification": "untrusted-reference-document-html-do-not-execute",
+      "bytes": 12748,
+      "sha256": "5e11bccfb87d12bf98453ac4d0b9cbb56b5375439cbd39e021e271c1bac122d3",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/qa-review-test-plan.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/reference-board.html",
+      "classification": "untrusted-reference-document-html-do-not-execute",
+      "bytes": 14634,
+      "sha256": "c98749d04a22c1eb1a457cfef318f6f3f3ab34d60318708e9ca96b907f53ba4f",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/reference-board.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/mockups.html",
+      "classification": "untrusted-reference-document-html-do-not-execute",
+      "bytes": 13548,
+      "sha256": "5b73c67eb5e38c3933d8905b7e17712ad00e581c5378192f7cc590d8b8b1c8aa",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/mockups.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/mock-home.html",
+      "classification": "untrusted-reference-only-prototype-html-do-not-execute",
+      "bytes": 9485,
+      "sha256": "8dfea88be3925a5d3d50e1cc63c1aa20002855273b570f46a42979c7673b4be2",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/mock-home.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/mock-play.html",
+      "classification": "untrusted-reference-only-prototype-html-do-not-execute",
+      "bytes": 15084,
+      "sha256": "85c01c3ba8cf651a3ddb4adedfc13f1d74c069d5ccbc4e420f402384c269e383",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/mock-play.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/mock-review.html",
+      "classification": "untrusted-reference-only-prototype-html-do-not-execute",
+      "bytes": 14969,
+      "sha256": "3ed1f77994bcdb3061a6bcc9098d6616db0708c7df764daad2760bc3372b4d74",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/mock-review.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/mock-puzzles.html",
+      "classification": "untrusted-reference-only-prototype-html-do-not-execute",
+      "bytes": 14774,
+      "sha256": "419fecc92fe739952a364c3aa5c2e38c05ee3854d9a47ef1c10fad7e980a4754",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/mock-puzzles.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/mock-learn.html",
+      "classification": "untrusted-reference-only-prototype-html-do-not-execute",
+      "bytes": 9911,
+      "sha256": "67b5ad3317865cf99b7412e8857544b0375fc28ea105943c1af23a8c431c3926",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/mock-learn.html.txt"
+    },
+    {
+      "suggestedRelativeDestination": "chesscom-product-atlas/mock-community.html",
+      "classification": "untrusted-reference-only-prototype-html-do-not-execute",
+      "bytes": 10026,
+      "sha256": "48b6d1c6f0c5715437e0d658bd4c642ec18848402127ada68f096017995a4e13",
+      "storedPath": "docs/research/sources/supplied-master/chesscom-product-atlas/mock-community.html.txt"
+    }
+  ],
+  "excluded": "All Wondering packages, especially misleading ChessLab-Wondering-Deep-Map; duplicate WORKSPACE_SNAPSHOT copies; screenshots/PDFs; generated duplicate print HTML; historical WorkingSite/Sites prototype copies not needed for primary dossier archive."
+}

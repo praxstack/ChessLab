@@ -1,0 +1,210 @@
+id,domain,screen,platform,auth,status,purpose
+SCR-001,Acquisition & Onboarding,Marketing landing,Web + responsive,Mixed,Mapped,Marketing landing state for the acquisition & onboarding workflow.
+SCR-002,Acquisition & Onboarding,Sign up,Web + responsive,Mixed,Mapped,Sign up state for the acquisition & onboarding workflow.
+SCR-003,Acquisition & Onboarding,Sign in,Web + responsive,Mixed,Mapped,Sign in state for the acquisition & onboarding workflow.
+SCR-004,Acquisition & Onboarding,Account recovery,Web + responsive,Mixed,Mapped,Account recovery state for the acquisition & onboarding workflow.
+SCR-005,Acquisition & Onboarding,Age and consent,Web + responsive,Mixed,Mapped,Age and consent state for the acquisition & onboarding workflow.
+SCR-006,Acquisition & Onboarding,Skill calibration,Web + responsive,Mixed,Mapped,Skill calibration state for the acquisition & onboarding workflow.
+SCR-007,Acquisition & Onboarding,Goal selection,Web + responsive,Mixed,Mapped,Goal selection state for the acquisition & onboarding workflow.
+SCR-008,Acquisition & Onboarding,Coach selection,Web + responsive,Mixed,Mapped,Coach selection state for the acquisition & onboarding workflow.
+SCR-009,Acquisition & Onboarding,Plan education,Web + responsive,Mixed,Mapped,Plan education state for the acquisition & onboarding workflow.
+SCR-010,Acquisition & Onboarding,First move tutorial,Web + responsive,Mixed,Mapped,First move tutorial state for the acquisition & onboarding workflow.
+SCR-011,Home & Personalization,Personal home,Web + responsive,Mixed,Prototype,Personal home state for the home & personalization workflow.
+SCR-012,Home & Personalization,Edit home modules,Web + responsive,Mixed,Mapped,Edit home modules state for the home & personalization workflow.
+SCR-013,Home & Personalization,Continue activity drawer,Web + responsive,Mixed,Mapped,Continue activity drawer state for the home & personalization workflow.
+SCR-014,Home & Personalization,Quick play card,Web + responsive,Mixed,Mapped,Quick play card state for the home & personalization workflow.
+SCR-015,Home & Personalization,Daily learning card,Web + responsive,Mixed,Mapped,Daily learning card state for the home & personalization workflow.
+SCR-016,Home & Personalization,Progress pulse,Web + responsive,Mixed,Mapped,Progress pulse state for the home & personalization workflow.
+SCR-017,Home & Personalization,Event carousel,Web + responsive,Mixed,Mapped,Event carousel state for the home & personalization workflow.
+SCR-018,Home & Personalization,Social inbox,Web + responsive,Mixed,Mapped,Social inbox state for the home & personalization workflow.
+SCR-019,Home & Personalization,Streak detail,Web + responsive,Mixed,Mapped,Streak detail state for the home & personalization workflow.
+SCR-020,Live Play,New game,Web + responsive,Mixed,Prototype,New game state for the live play workflow.
+SCR-021,Live Play,Time control picker,Web + responsive,Mixed,Mapped,Time control picker state for the live play workflow.
+SCR-022,Live Play,Custom challenge,Web + responsive,Mixed,Mapped,Custom challenge state for the live play workflow.
+SCR-023,Live Play,Open challenges list,Web + responsive,Mixed,Mapped,Open challenges list state for the live play workflow.
+SCR-024,Live Play,Open challenges chart,Web + responsive,Mixed,Mapped,Open challenges chart state for the live play workflow.
+SCR-025,Live Play,Matchmaking queue,Web + responsive,Mixed,Mapped,Matchmaking queue state for the live play workflow.
+SCR-026,Live Play,Live board desktop,Web + responsive,Mixed,Prototype,Live board desktop state for the live play workflow.
+SCR-027,Live Play,Live board mobile,Web + responsive,Mixed,Mapped,Live board mobile state for the live play workflow.
+SCR-028,Live Play,Focus mode,Web + responsive,Mixed,Mapped,Focus mode state for the live play workflow.
+SCR-029,Live Play,Promotion chooser,Web + responsive,Mixed,Mapped,Promotion chooser state for the live play workflow.
+SCR-030,Live Play,Reconnect state,Web + responsive,Mixed,Mapped,Reconnect state state for the live play workflow.
+SCR-031,Live Play,Game result modal,Web + responsive,Mixed,Mapped,Game result modal state for the live play workflow.
+SCR-032,Live Play,Post-game hub,Web + responsive,Mixed,Mapped,Post-game hub state for the live play workflow.
+SCR-033,Live Play,Challenge inbox,Web + responsive,Mixed,Mapped,Challenge inbox state for the live play workflow.
+SCR-034,Daily & Correspondence,Daily game,Web + responsive,Mixed,Mapped,Daily game state for the daily & correspondence workflow.
+SCR-035,Daily & Correspondence,Daily challenge setup,Web + responsive,Mixed,Mapped,Daily challenge setup state for the daily & correspondence workflow.
+SCR-036,Daily & Correspondence,Conditional move editor,Web + responsive,Mixed,Mapped,Conditional move editor state for the daily & correspondence workflow.
+SCR-037,Daily & Correspondence,Allowed analysis workspace,Web + responsive,Mixed,Mapped,Allowed analysis workspace state for the daily & correspondence workflow.
+SCR-038,Daily & Correspondence,Vacation settings,Web + responsive,Mixed,Mapped,Vacation settings state for the daily & correspondence workflow.
+SCR-039,Daily & Correspondence,Concurrent games list,Web + responsive,Mixed,Mapped,Concurrent games list state for the daily & correspondence workflow.
+SCR-040,Daily & Correspondence,Low-time notification,Web + responsive,Mixed,Mapped,Low-time notification state for the daily & correspondence workflow.
+SCR-041,Bots & Guided Coach,Bot catalog,Web + responsive,Mixed,Mapped,Bot catalog state for the bots & guided coach workflow.
+SCR-042,Bots & Guided Coach,Bot profile,Web + responsive,Mixed,Mapped,Bot profile state for the bots & guided coach workflow.
+SCR-043,Bots & Guided Coach,Bot game,Web + responsive,Mixed,Mapped,Bot game state for the bots & guided coach workflow.
+SCR-044,Bots & Guided Coach,Coach setup,Web + responsive,Mixed,Mapped,Coach setup state for the bots & guided coach workflow.
+SCR-045,Bots & Guided Coach,Coach game,Web + responsive,Mixed,Mapped,Coach game state for the bots & guided coach workflow.
+SCR-046,Bots & Guided Coach,Hint progression,Web + responsive,Mixed,Mapped,Hint progression state for the bots & guided coach workflow.
+SCR-047,Bots & Guided Coach,Guided settings,Web + responsive,Mixed,Mapped,Guided settings state for the bots & guided coach workflow.
+SCR-048,Bots & Guided Coach,Resume guided game,Web + responsive,Mixed,Mapped,Resume guided game state for the bots & guided coach workflow.
+SCR-049,Bots & Guided Coach,Custom position setup,Web + responsive,Mixed,Mapped,Custom position setup state for the bots & guided coach workflow.
+SCR-050,Game Review & Analysis,Review loading,Web + responsive,Mixed,Mapped,Review loading state for the game review & analysis workflow.
+SCR-051,Game Review & Analysis,Review highlights,Web + responsive,Mixed,Prototype,Review highlights state for the game review & analysis workflow.
+SCR-052,Game Review & Analysis,Accuracy summary,Web + responsive,Mixed,Mapped,Accuracy summary state for the game review & analysis workflow.
+SCR-053,Game Review & Analysis,Key-moment review,Web + responsive,Mixed,Mapped,Key-moment review state for the game review & analysis workflow.
+SCR-054,Game Review & Analysis,Retry a move,Web + responsive,Mixed,Mapped,Retry a move state for the game review & analysis workflow.
+SCR-055,Game Review & Analysis,Coach audio controls,Web + responsive,Mixed,Mapped,Coach audio controls state for the game review & analysis workflow.
+SCR-056,Game Review & Analysis,Self-analysis,Web + responsive,Mixed,Mapped,Self-analysis state for the game review & analysis workflow.
+SCR-057,Game Review & Analysis,Engine settings,Web + responsive,Mixed,Mapped,Engine settings state for the game review & analysis workflow.
+SCR-058,Game Review & Analysis,Cloud analysis job,Web + responsive,Mixed,Mapped,Cloud analysis job state for the game review & analysis workflow.
+SCR-059,Game Review & Analysis,Charts panel,Web + responsive,Mixed,Mapped,Charts panel state for the game review & analysis workflow.
+SCR-060,Game Review & Analysis,Annotation tools,Web + responsive,Mixed,Mapped,Annotation tools state for the game review & analysis workflow.
+SCR-061,Game Review & Analysis,PGN import,Web + responsive,Mixed,Mapped,PGN import state for the game review & analysis workflow.
+SCR-062,Game Review & Analysis,FEN setup,Web + responsive,Mixed,Mapped,FEN setup state for the game review & analysis workflow.
+SCR-063,Game Review & Analysis,Export and share,Web + responsive,Mixed,Mapped,Export and share state for the game review & analysis workflow.
+SCR-064,Game Review & Analysis,Continue vs bot,Web + responsive,Mixed,Mapped,Continue vs bot state for the game review & analysis workflow.
+SCR-065,Branch-Native Conversational Tutor,Study workspace,Web + responsive,Mixed,Prototype,Study workspace state for the branch-native conversational tutor workflow.
+SCR-066,Branch-Native Conversational Tutor,Branch tree,Web + responsive,Mixed,Mapped,Branch tree state for the branch-native conversational tutor workflow.
+SCR-067,Branch-Native Conversational Tutor,Create branch,Web + responsive,Mixed,Mapped,Create branch state for the branch-native conversational tutor workflow.
+SCR-068,Branch-Native Conversational Tutor,Nested branch,Web + responsive,Mixed,Mapped,Nested branch state for the branch-native conversational tutor workflow.
+SCR-069,Branch-Native Conversational Tutor,Return anchor,Web + responsive,Mixed,Mapped,Return anchor state for the branch-native conversational tutor workflow.
+SCR-070,Branch-Native Conversational Tutor,Ask coach,Web + responsive,Mixed,Mapped,Ask coach state for the branch-native conversational tutor workflow.
+SCR-071,Branch-Native Conversational Tutor,Evidence drawer,Web + responsive,Mixed,Mapped,Evidence drawer state for the branch-native conversational tutor workflow.
+SCR-072,Branch-Native Conversational Tutor,Compare branches,Web + responsive,Mixed,Mapped,Compare branches state for the branch-native conversational tutor workflow.
+SCR-073,Branch-Native Conversational Tutor,Misunderstanding card,Web + responsive,Mixed,Mapped,Misunderstanding card state for the branch-native conversational tutor workflow.
+SCR-074,Branch-Native Conversational Tutor,Teach-back prompt,Web + responsive,Mixed,Mapped,Teach-back prompt state for the branch-native conversational tutor workflow.
+SCR-075,Branch-Native Conversational Tutor,Spaced retry,Web + responsive,Mixed,Mapped,Spaced retry state for the branch-native conversational tutor workflow.
+SCR-076,Branch-Native Conversational Tutor,Share study,Web + responsive,Mixed,Mapped,Share study state for the branch-native conversational tutor workflow.
+SCR-077,Branch-Native Conversational Tutor,Fork study,Web + responsive,Mixed,Mapped,Fork study state for the branch-native conversational tutor workflow.
+SCR-078,Branch-Native Conversational Tutor,Creator studio,Web + responsive,Mixed,Mapped,Creator studio state for the branch-native conversational tutor workflow.
+SCR-079,Opening Explorer & Collections,Master explorer,Web + responsive,Mixed,Mapped,Master explorer state for the opening explorer & collections workflow.
+SCR-080,Opening Explorer & Collections,My games explorer,Web + responsive,Mixed,Mapped,My games explorer state for the opening explorer & collections workflow.
+SCR-081,Opening Explorer & Collections,Opponent public games explorer,Web + responsive,Mixed,Mapped,Opponent public games explorer state for the opening explorer & collections workflow.
+SCR-082,Opening Explorer & Collections,Collections home,Web + responsive,Mixed,Mapped,Collections home state for the opening explorer & collections workflow.
+SCR-083,Opening Explorer & Collections,Collection detail,Web + responsive,Mixed,Mapped,Collection detail state for the opening explorer & collections workflow.
+SCR-084,Opening Explorer & Collections,New collection,Web + responsive,Mixed,Mapped,New collection state for the opening explorer & collections workflow.
+SCR-085,Opening Explorer & Collections,Share permissions,Web + responsive,Mixed,Mapped,Share permissions state for the opening explorer & collections workflow.
+SCR-086,Opening Explorer & Collections,Community collections,Web + responsive,Mixed,Mapped,Community collections state for the opening explorer & collections workflow.
+SCR-087,Opening Explorer & Collections,Bookmarks,Web + responsive,Mixed,Mapped,Bookmarks state for the opening explorer & collections workflow.
+SCR-088,Opening Explorer & Collections,Bulk game actions,Web + responsive,Mixed,Mapped,Bulk game actions state for the opening explorer & collections workflow.
+SCR-089,Puzzles & Tactics,Rated puzzle,Web + responsive,Mixed,Mapped,Rated puzzle state for the puzzles & tactics workflow.
+SCR-090,Puzzles & Tactics,Puzzle result,Web + responsive,Mixed,Mapped,Puzzle result state for the puzzles & tactics workflow.
+SCR-091,Puzzles & Tactics,Puzzle Rush lobby,Web + responsive,Mixed,Mapped,Puzzle Rush lobby state for the puzzles & tactics workflow.
+SCR-092,Puzzles & Tactics,Puzzle Rush session,Web + responsive,Mixed,Mapped,Puzzle Rush session state for the puzzles & tactics workflow.
+SCR-093,Puzzles & Tactics,Puzzle Rush summary,Web + responsive,Mixed,Mapped,Puzzle Rush summary state for the puzzles & tactics workflow.
+SCR-094,Puzzles & Tactics,Puzzle Battle matchmaking,Web + responsive,Mixed,Mapped,Puzzle Battle matchmaking state for the puzzles & tactics workflow.
+SCR-095,Puzzles & Tactics,Puzzle Battle session,Web + responsive,Mixed,Mapped,Puzzle Battle session state for the puzzles & tactics workflow.
+SCR-096,Puzzles & Tactics,Daily puzzle,Web + responsive,Mixed,Mapped,Daily puzzle state for the puzzles & tactics workflow.
+SCR-097,Puzzles & Tactics,Custom puzzle setup,Web + responsive,Mixed,Mapped,Custom puzzle setup state for the puzzles & tactics workflow.
+SCR-098,Puzzles & Tactics,Puzzle history,Web + responsive,Mixed,Mapped,Puzzle history state for the puzzles & tactics workflow.
+SCR-099,Puzzles & Tactics,Puzzle settings,Web + responsive,Mixed,Mapped,Puzzle settings state for the puzzles & tactics workflow.
+SCR-100,"Lessons, Practice & Curriculum",Learning path,Web + responsive,Mixed,Prototype,"Learning path state for the lessons, practice & curriculum workflow."
+SCR-101,"Lessons, Practice & Curriculum",Lesson library,Web + responsive,Mixed,Mapped,"Lesson library state for the lessons, practice & curriculum workflow."
+SCR-102,"Lessons, Practice & Curriculum",Course detail,Web + responsive,Mixed,Mapped,"Course detail state for the lessons, practice & curriculum workflow."
+SCR-103,"Lessons, Practice & Curriculum",Lesson player,Web + responsive,Mixed,Mapped,"Lesson player state for the lessons, practice & curriculum workflow."
+SCR-104,"Lessons, Practice & Curriculum",Lesson challenge,Web + responsive,Mixed,Mapped,"Lesson challenge state for the lessons, practice & curriculum workflow."
+SCR-105,"Lessons, Practice & Curriculum",Practice home,Web + responsive,Mixed,Mapped,"Practice home state for the lessons, practice & curriculum workflow."
+SCR-106,"Lessons, Practice & Curriculum",Opening practice,Web + responsive,Mixed,Mapped,"Opening practice state for the lessons, practice & curriculum workflow."
+SCR-107,"Lessons, Practice & Curriculum",Master-game practice,Web + responsive,Mixed,Mapped,"Master-game practice state for the lessons, practice & curriculum workflow."
+SCR-108,"Lessons, Practice & Curriculum",Thematic drill,Web + responsive,Mixed,Mapped,"Thematic drill state for the lessons, practice & curriculum workflow."
+SCR-109,"Lessons, Practice & Curriculum",Custom position training,Web + responsive,Mixed,Mapped,"Custom position training state for the lessons, practice & curriculum workflow."
+SCR-110,"Lessons, Practice & Curriculum",Endgames home,Web + responsive,Mixed,Mapped,"Endgames home state for the lessons, practice & curriculum workflow."
+SCR-111,"Lessons, Practice & Curriculum",Endgame challenge,Web + responsive,Mixed,Mapped,"Endgame challenge state for the lessons, practice & curriculum workflow."
+SCR-112,"Lessons, Practice & Curriculum",Board vision,Web + responsive,Mixed,Mapped,"Board vision state for the lessons, practice & curriculum workflow."
+SCR-113,"Lessons, Practice & Curriculum",Recommendation detail,Web + responsive,Mixed,Mapped,"Recommendation detail state for the lessons, practice & curriculum workflow."
+SCR-114,"Profile, Stats & Progress",Public profile,Web + responsive,Mixed,Mapped,"Public profile state for the profile, stats & progress workflow."
+SCR-115,"Profile, Stats & Progress",Edit profile,Web + responsive,Mixed,Mapped,"Edit profile state for the profile, stats & progress workflow."
+SCR-116,"Profile, Stats & Progress",Ratings overview,Web + responsive,Mixed,Mapped,"Ratings overview state for the profile, stats & progress workflow."
+SCR-117,"Profile, Stats & Progress",Rating detail,Web + responsive,Mixed,Mapped,"Rating detail state for the profile, stats & progress workflow."
+SCR-118,"Profile, Stats & Progress",Opening stats,Web + responsive,Mixed,Mapped,"Opening stats state for the profile, stats & progress workflow."
+SCR-119,"Profile, Stats & Progress",Advanced stats,Web + responsive,Mixed,Mapped,"Advanced stats state for the profile, stats & progress workflow."
+SCR-120,"Profile, Stats & Progress",Insights setup,Web + responsive,Mixed,Mapped,"Insights setup state for the profile, stats & progress workflow."
+SCR-121,"Profile, Stats & Progress",Insights report,Web + responsive,Mixed,Mapped,"Insights report state for the profile, stats & progress workflow."
+SCR-122,"Profile, Stats & Progress",Achievements,Web + responsive,Mixed,Mapped,"Achievements state for the profile, stats & progress workflow."
+SCR-123,"Profile, Stats & Progress",Game archive,Web + responsive,Mixed,Prototype,"Game archive state for the profile, stats & progress workflow."
+SCR-124,"Profile, Stats & Progress",Archive filters,Web + responsive,Mixed,Mapped,"Archive filters state for the profile, stats & progress workflow."
+SCR-125,"Profile, Stats & Progress",Private guided games,Web + responsive,Mixed,Mapped,"Private guided games state for the profile, stats & progress workflow."
+SCR-126,"Watch, Events & Content",Live channel,Web + responsive,Mixed,Mapped,"Live channel state for the watch, events & content workflow."
+SCR-127,"Watch, Events & Content",Broadcast schedule,Web + responsive,Mixed,Mapped,"Broadcast schedule state for the watch, events & content workflow."
+SCR-128,"Watch, Events & Content",Events directory,Web + responsive,Mixed,Mapped,"Events directory state for the watch, events & content workflow."
+SCR-129,"Watch, Events & Content",Event page,Web + responsive,Mixed,Mapped,"Event page state for the watch, events & content workflow."
+SCR-130,"Watch, Events & Content",Game broadcast,Web + responsive,Mixed,Mapped,"Game broadcast state for the watch, events & content workflow."
+SCR-131,"Watch, Events & Content",Streamer directory,Web + responsive,Mixed,Mapped,"Streamer directory state for the watch, events & content workflow."
+SCR-132,"Watch, Events & Content",Playing now,Web + responsive,Mixed,Mapped,"Playing now state for the watch, events & content workflow."
+SCR-133,"Watch, Events & Content",News home,Web + responsive,Mixed,Mapped,"News home state for the watch, events & content workflow."
+SCR-134,"Watch, Events & Content",Article page,Web + responsive,Mixed,Mapped,"Article page state for the watch, events & content workflow."
+SCR-135,"Watch, Events & Content",Embed preview,Web + responsive,Mixed,Mapped,"Embed preview state for the watch, events & content workflow."
+SCR-136,Community & Social,Friends list,Web + responsive,Mixed,Mapped,Friends list state for the community & social workflow.
+SCR-137,Community & Social,Friend requests,Web + responsive,Mixed,Mapped,Friend requests state for the community & social workflow.
+SCR-138,Community & Social,Member search,Web + responsive,Mixed,Mapped,Member search state for the community & social workflow.
+SCR-139,Community & Social,Member preview,Web + responsive,Mixed,Mapped,Member preview state for the community & social workflow.
+SCR-140,Community & Social,Direct chat,Web + responsive,Mixed,Mapped,Direct chat state for the community & social workflow.
+SCR-141,Community & Social,Group chat,Web + responsive,Mixed,Mapped,Group chat state for the community & social workflow.
+SCR-142,Community & Social,Clubs directory,Web + responsive,Mixed,Mapped,Clubs directory state for the community & social workflow.
+SCR-143,Community & Social,Club page,Web + responsive,Mixed,Mapped,Club page state for the community & social workflow.
+SCR-144,Community & Social,Club join request,Web + responsive,Mixed,Mapped,Club join request state for the community & social workflow.
+SCR-145,Community & Social,Club admin,Web + responsive,Mixed,Mapped,Club admin state for the community & social workflow.
+SCR-146,Community & Social,Club forum,Web + responsive,Mixed,Mapped,Club forum state for the community & social workflow.
+SCR-147,Community & Social,Forum topic,Web + responsive,Mixed,Mapped,Forum topic state for the community & social workflow.
+SCR-148,Community & Social,User blog,Web + responsive,Mixed,Mapped,User blog state for the community & social workflow.
+SCR-149,Community & Social,Notifications center,Web + responsive,Mixed,Mapped,Notifications center state for the community & social workflow.
+SCR-150,Tournaments & Variants,Tournament directory,Web + responsive,Mixed,Mapped,Tournament directory state for the tournaments & variants workflow.
+SCR-151,Tournaments & Variants,Arena lobby,Web + responsive,Mixed,Mapped,Arena lobby state for the tournaments & variants workflow.
+SCR-152,Tournaments & Variants,Arena standings,Web + responsive,Mixed,Mapped,Arena standings state for the tournaments & variants workflow.
+SCR-153,Tournaments & Variants,Swiss lobby,Web + responsive,Mixed,Mapped,Swiss lobby state for the tournaments & variants workflow.
+SCR-154,Tournaments & Variants,Swiss pairings,Web + responsive,Mixed,Mapped,Swiss pairings state for the tournaments & variants workflow.
+SCR-155,Tournaments & Variants,Daily tournament,Web + responsive,Mixed,Mapped,Daily tournament state for the tournaments & variants workflow.
+SCR-156,Tournaments & Variants,Create tournament,Web + responsive,Mixed,Mapped,Create tournament state for the tournaments & variants workflow.
+SCR-157,Tournaments & Variants,Tournament moderation,Web + responsive,Mixed,Mapped,Tournament moderation state for the tournaments & variants workflow.
+SCR-158,Tournaments & Variants,Variants home,Web + responsive,Mixed,Mapped,Variants home state for the tournaments & variants workflow.
+SCR-159,Tournaments & Variants,Variant lobby,Web + responsive,Mixed,Mapped,Variant lobby state for the tournaments & variants workflow.
+SCR-160,Tournaments & Variants,Variant analysis,Web + responsive,Mixed,Mapped,Variant analysis state for the tournaments & variants workflow.
+SCR-161,Tournaments & Variants,Variant archive,Web + responsive,Mixed,Mapped,Variant archive state for the tournaments & variants workflow.
+SCR-162,Tournaments & Variants,Custom variant editor,Web + responsive,Mixed,Mapped,Custom variant editor state for the tournaments & variants workflow.
+SCR-163,"Settings, Accessibility & Devices",Settings home,Web + responsive,Mixed,Mapped,"Settings home state for the settings, accessibility & devices workflow."
+SCR-164,"Settings, Accessibility & Devices",Board and pieces,Web + responsive,Mixed,Mapped,"Board and pieces state for the settings, accessibility & devices workflow."
+SCR-165,"Settings, Accessibility & Devices",Move and sound,Web + responsive,Mixed,Mapped,"Move and sound state for the settings, accessibility & devices workflow."
+SCR-166,"Settings, Accessibility & Devices",Gameplay,Web + responsive,Mixed,Mapped,"Gameplay state for the settings, accessibility & devices workflow."
+SCR-167,"Settings, Accessibility & Devices",Coach preferences,Web + responsive,Mixed,Mapped,"Coach preferences state for the settings, accessibility & devices workflow."
+SCR-168,"Settings, Accessibility & Devices",Notifications,Web + responsive,Mixed,Mapped,"Notifications state for the settings, accessibility & devices workflow."
+SCR-169,"Settings, Accessibility & Devices",Privacy and social,Web + responsive,Mixed,Mapped,"Privacy and social state for the settings, accessibility & devices workflow."
+SCR-170,"Settings, Accessibility & Devices",Profile settings,Web + responsive,Mixed,Mapped,"Profile settings state for the settings, accessibility & devices workflow."
+SCR-171,"Settings, Accessibility & Devices",Language and timezone,Web + responsive,Mixed,Mapped,"Language and timezone state for the settings, accessibility & devices workflow."
+SCR-172,"Settings, Accessibility & Devices",Accessibility,Web + responsive,Mixed,Mapped,"Accessibility state for the settings, accessibility & devices workflow."
+SCR-173,"Settings, Accessibility & Devices",Device sessions,Web + responsive,Mixed,Mapped,"Device sessions state for the settings, accessibility & devices workflow."
+SCR-174,"Settings, Accessibility & Devices",Offline drafts,Web + responsive,Mixed,Mapped,"Offline drafts state for the settings, accessibility & devices workflow."
+SCR-175,"Settings, Accessibility & Devices",Web-mobile parity,Web + responsive,Mixed,Mapped,"Web-mobile parity state for the settings, accessibility & devices workflow."
+SCR-176,"Trust, Safety & Fair Play",Fair Play Lock notice,Web + responsive,Mixed,Mapped,"Fair Play Lock notice state for the trust, safety & fair play workflow."
+SCR-177,"Trust, Safety & Fair Play",Restricted analysis state,Web + responsive,Mixed,Mapped,"Restricted analysis state state for the trust, safety & fair play workflow."
+SCR-178,"Trust, Safety & Fair Play",Report modal,Web + responsive,Mixed,Mapped,"Report modal state for the trust, safety & fair play workflow."
+SCR-179,"Trust, Safety & Fair Play",Block confirmation,Web + responsive,Mixed,Mapped,"Block confirmation state for the trust, safety & fair play workflow."
+SCR-180,"Trust, Safety & Fair Play",Safe mode,Web + responsive,Mixed,Mapped,"Safe mode state for the trust, safety & fair play workflow."
+SCR-181,"Trust, Safety & Fair Play",Child safety consent,Web + responsive,Mixed,Mapped,"Child safety consent state for the trust, safety & fair play workflow."
+SCR-182,"Trust, Safety & Fair Play",Moderation queue,Web + responsive,Mixed,Mapped,"Moderation queue state for the trust, safety & fair play workflow."
+SCR-183,"Trust, Safety & Fair Play",Report detail,Web + responsive,Mixed,Mapped,"Report detail state for the trust, safety & fair play workflow."
+SCR-184,"Trust, Safety & Fair Play",Fair-play case,Web + responsive,Mixed,Mapped,"Fair-play case state for the trust, safety & fair play workflow."
+SCR-185,"Trust, Safety & Fair Play",Appeal status,Web + responsive,Mixed,Mapped,"Appeal status state for the trust, safety & fair play workflow."
+SCR-186,"Trust, Safety & Fair Play",Audit log,Web + responsive,Mixed,Mapped,"Audit log state for the trust, safety & fair play workflow."
+SCR-187,"Membership, Commerce & Entitlements",Plan comparison,Web + responsive,Mixed,Prototype,"Plan comparison state for the membership, commerce & entitlements workflow."
+SCR-188,"Membership, Commerce & Entitlements",Plan detail,Web + responsive,Mixed,Mapped,"Plan detail state for the membership, commerce & entitlements workflow."
+SCR-189,"Membership, Commerce & Entitlements",Checkout,Web + responsive,Mixed,Mapped,"Checkout state for the membership, commerce & entitlements workflow."
+SCR-190,"Membership, Commerce & Entitlements",Trial confirmation,Web + responsive,Mixed,Mapped,"Trial confirmation state for the membership, commerce & entitlements workflow."
+SCR-191,"Membership, Commerce & Entitlements",Usage meter,Web + responsive,Mixed,Mapped,"Usage meter state for the membership, commerce & entitlements workflow."
+SCR-192,"Membership, Commerce & Entitlements",Upgrade and proration,Web + responsive,Mixed,Mapped,"Upgrade and proration state for the membership, commerce & entitlements workflow."
+SCR-193,"Membership, Commerce & Entitlements",Family plan,Web + responsive,Mixed,Mapped,"Family plan state for the membership, commerce & entitlements workflow."
+SCR-194,"Membership, Commerce & Entitlements",Family invitations,Web + responsive,Mixed,Mapped,"Family invitations state for the membership, commerce & entitlements workflow."
+SCR-195,"Membership, Commerce & Entitlements",Student verification,Web + responsive,Mixed,Mapped,"Student verification state for the membership, commerce & entitlements workflow."
+SCR-196,"Membership, Commerce & Entitlements",Gift membership,Web + responsive,Mixed,Mapped,"Gift membership state for the membership, commerce & entitlements workflow."
+SCR-197,"Membership, Commerce & Entitlements",Billing history,Web + responsive,Mixed,Mapped,"Billing history state for the membership, commerce & entitlements workflow."
+SCR-198,"Membership, Commerce & Entitlements",Cancel membership,Web + responsive,Mixed,Mapped,"Cancel membership state for the membership, commerce & entitlements workflow."
+SCR-199,"Platform, Data & Operations",API documentation,Web + responsive,Mixed,Mapped,"API documentation state for the platform, data & operations workflow."
+SCR-200,"Platform, Data & Operations",Developer registration,Web + responsive,Mixed,Mapped,"Developer registration state for the platform, data & operations workflow."
+SCR-201,"Platform, Data & Operations",Integration settings,Web + responsive,Mixed,Mapped,"Integration settings state for the platform, data & operations workflow."
+SCR-202,"Platform, Data & Operations",Data export,Web + responsive,Mixed,Mapped,"Data export state for the platform, data & operations workflow."
+SCR-203,"Platform, Data & Operations",Delete account,Web + responsive,Mixed,Mapped,"Delete account state for the platform, data & operations workflow."
+SCR-204,"Platform, Data & Operations",Service status,Web + responsive,Mixed,Mapped,"Service status state for the platform, data & operations workflow."
+SCR-205,"Platform, Data & Operations",Admin dashboard,Web + responsive,Mixed,Mapped,"Admin dashboard state for the platform, data & operations workflow."
+SCR-206,"Platform, Data & Operations",Content CMS,Web + responsive,Mixed,Mapped,"Content CMS state for the platform, data & operations workflow."
+SCR-207,"Platform, Data & Operations",Experiment console,Web + responsive,Mixed,Mapped,"Experiment console state for the platform, data & operations workflow."
+SCR-208,"Platform, Data & Operations",Observability dashboard,Web + responsive,Mixed,Mapped,"Observability dashboard state for the platform, data & operations workflow."
+SCR-209,"Platform, Data & Operations",Backup restore runbook,Web + responsive,Mixed,Mapped,"Backup restore runbook state for the platform, data & operations workflow."

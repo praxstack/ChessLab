@@ -1,0 +1,11 @@
+{
+  "captured": "2026-09-07T23:21:17.471Z",
+  "scope": "Worker module running in Node, real HTTPS tunnel and protected production native service. Does not prove Sites owner sign-in or deployed asset binding.",
+  "roster": 166,
+  "availableConfigurations": 10,
+  "engine": "Stockfish 18 Lite WASM Multithreaded",
+  "move": "e2e4",
+  "savedHistory": true,
+  "distinctAnalysisLines": 5,
+  "secureCookie": true
+}

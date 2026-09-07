@@ -1,0 +1,20 @@
+[
+  {
+    "check": "unauthenticated",
+    "status": 403,
+    "body": {
+      "error": "Private backend."
+    }
+  },
+  {
+    "check": "authenticated",
+    "status": 200,
+    "body": {
+      "user": null,
+      "progress": {
+        "lessons": [],
+        "puzzles": []
+      }
+    }
+  }
+]

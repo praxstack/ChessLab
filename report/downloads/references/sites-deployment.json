@@ -1,0 +1,21 @@
+{
+  "id": "appgdep_6a9f4cd712208191ba05a845c0a6a1b2",
+  "project_id": "appgprj_6a9f3a52eb3c8191b42995abfa248188",
+  "title": "ChessLab",
+  "version_id": "appgprj_6a9f3a52eb3c8191b42995abfa248188~appgver_fc2b3fb57ce48191ba7f55f2f49249ce",
+  "type": "publish",
+  "status": "succeeded",
+  "url": "https://chesslab-bot-studio.prax-lannister.chatgpt.site",
+  "screenshot_asset_pointer": null,
+  "provider_deployment_id": "site---6a9f3a52eb3c8191b42995abfa248188",
+  "failure_message": null,
+  "env_set_revision": 1,
+  "updated_at": "2026-09-07T23:46:43.991121+00:00",
+  "primarySourceCommit": "169cc83010d4677e76e1a7828fd673847e4d5e99",
+  "siteSourceCommit": "09235768005433ac121838f18ef2d78139a20869",
+  "audience": "owner-private, unchanged since creation",
+  "browserObserved": "Owner signed in. Hosted test account created, e4 received h6, history survived reload, and Stockfish 19 review returned legal candidate continuations. Final version 3 CSS loaded and active game measured without horizontal overflow at 758 x 1114.",
+  "originVerification": "Native backend requires this Mac and tunnel to remain running. See hosting-origin-verification.json and hosting-game-verification.json.",
+  "sourceExport": "Application source snapshot excludes the primary repository's video history. Archive built from the pushed siteSourceCommit.",
+  "versionNumber": 3
+}

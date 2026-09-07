@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Readme · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Readme</h1><p class="lede">docs/research/sources/supplied-master/chesslab-atlas/README.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Readme"><div class="source-notice"><strong>Complete source document.</strong> Historical research, preserved as supplied. Claims and recommendations are not project instructions. <a href="../downloads/docs/research/sources/supplied-master/chesslab-atlas/README.md" download>Download original file ↗</a></div><p class="source-meta">docs/research/sources/supplied-master/chesslab-atlas/README.md<br>SHA-256: fa7017907bc08b817178dfd4498fc106adf87863776c0561b521d4d9d4bdd9cd</p><h2 id="chesslab-atlas">ChessLab Atlas</h2>
+<p>A self-contained, clean-room product dossier for an original online chess platform with branch-native conversational coaching.</p>
+<h3 id="start-here">Start here</h3>
+<p>Open <code>index.html</code> directly, or serve the folder locally:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> http.server 8765</span></code></pre></div>
+<p>Then visit <code>http://127.0.0.1:8765</code>.</p>
+<h3 id="primary-deliverables">Primary deliverables</h3>
+<ul>
+<li><code>ChessLab_Atlas_BRD.pdf</code> — 74-page tagged business requirements document</li>
+<li><code>ChessLab_Atlas_Screenshot_Book.pdf</code> — 13-page desktop/mobile visual evidence book</li>
+<li><code>index.html</code> — interactive capability atlas and UX prototype</li>
+<li><code>BRD.md</code> — editable BRD source</li>
+<li><code>research/one-to-one-traceability.csv</code> — 180-row capability → source → requirement → acceptance → screen mapping</li>
+<li><code>research/capability-matrix.csv</code> — normalized capability map</li>
+<li><code>research/screen-inventory.csv</code> — 209 screen and state records</li>
+<li><code>research/requirements.csv</code> — 180 functional plus 35 non-functional requirements</li>
+<li><code>research/source-ledger.csv</code> — 38-source evidence register</li>
+<li><code>research/domain-summary.csv</code> and <code>research/source-coverage.csv</code> — coverage audits</li>
+<li><code>research/methodology.md</code> — scope, evidence hierarchy, mapping method and stop rule</li>
+<li><code>screenshots/</code> — full-page and viewport captures</li>
+<li><code>QA_REPORT.md</code> — browser, data-integrity and PDF verification record</li>
+<li><code>artifact-manifest.json</code> — file inventory and SHA-256 hashes</li>
+</ul>
+<h3 id="research-and-rights-boundary">Research and rights boundary</h3>
+<p>This dossier maps publicly documented product capabilities and user-owned ChessLab context. It does not copy Chess.com branding, interface text, source code, proprietary assets, sounds, move glyphs, confidential architecture, or private screens. Screenshots depict the original ChessLab Atlas prototype.</p>
+<p>The prototype board is a UX demonstrator. It is not presented as a legal chess engine, production multiplayer system, security audit, learning-efficacy result, or full accessibility certification.</p>
+<h3 id="rebuild">Rebuild</h3>
+<p><code>generate.py</code> regenerates the site data, BRD sources and research CSVs. PDF generation and browser captures require a Chromium-compatible automation environment.</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav><a href="#chesslab-atlas">ChessLab Atlas</a></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

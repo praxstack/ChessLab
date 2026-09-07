@@ -1,0 +1,279 @@
+{
+  "title": "ChessLab Atlas clean-room product dossier",
+  "generated_at": "2026-09-07T00:00:00+05:30",
+  "counts": {
+    "capabilities": 180,
+    "traceability_rows": 180,
+    "screens_states": 209,
+    "requirements": 215,
+    "sources": 38,
+    "domains": 18,
+    "brd_pdf_pages": 74,
+    "screenshot_book_pages": 13
+  },
+  "qa": {
+    "browser_routes": 10,
+    "desktop_viewport": "1440x1000",
+    "mobile_viewport": "390x844",
+    "console_errors": 0,
+    "page_errors": 0,
+    "mobile_horizontal_overflow": false
+  },
+  "files": [
+    {
+      "path": "BRD.md",
+      "bytes": 162142,
+      "sha256": "b921d55b20c1c1987973878a39297f7653abda324fb220e0d92a6c2be6a59225"
+    },
+    {
+      "path": "ChessLab_Atlas_BRD.pdf",
+      "bytes": 1201174,
+      "sha256": "1e72e9565a4ba815b75b751508095e36c07fe31facaf7e39d7b0d7492335e673"
+    },
+    {
+      "path": "ChessLab_Atlas_Screenshot_Book.pdf",
+      "bytes": 3925992,
+      "sha256": "178c875f45ce5522829f75361168752672ae7c42d471add501c8d0b917ca14bb"
+    },
+    {
+      "path": "NOTICE.md",
+      "bytes": 727,
+      "sha256": "444dd6a6f3ca540201b45050307b1fe6f11e872b52a8e607b8899545d88bed9a"
+    },
+    {
+      "path": "QA_REPORT.md",
+      "bytes": 2093,
+      "sha256": "d9c2a7a40f7f3c01aafcd2e01d2f3975fc73eeee21f7fae127d01a24296e7d98"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2068,
+      "sha256": "fa7017907bc08b817178dfd4498fc106adf87863776c0561b521d4d9d4bdd9cd"
+    },
+    {
+      "path": "app.js",
+      "bytes": 26247,
+      "sha256": "cefee9965ab5cf963ce3e87b14ba77dcba39272af94c547721ea98939fd752c0"
+    },
+    {
+      "path": "brd-print.html",
+      "bytes": 179824,
+      "sha256": "13ce3acc95ebf022b5e7df12a72a5252dc375c84a1f78f56812e8c77fcb04e41"
+    },
+    {
+      "path": "data.js",
+      "bytes": 263711,
+      "sha256": "419539b92b86e4e6821d05db42a092d8c5fa28c39697ae3bb4d85d743463d878"
+    },
+    {
+      "path": "generate.py",
+      "bytes": 121824,
+      "sha256": "0d346ba2d3c539721c2fa027887464c0dc1cb9536399b031800d4bc0e52d4a47"
+    },
+    {
+      "path": "index.html",
+      "bytes": 794,
+      "sha256": "03ccc9e3421e5cc39c7ceb009467a83356166495fea8543b0880986bcb4432fc"
+    },
+    {
+      "path": "research/capability-matrix.csv",
+      "bytes": 45136,
+      "sha256": "dac4b2e11187b89b9285aae2e1bf83bc748b362dfdb1b31a5faf88f5ef6acb7a"
+    },
+    {
+      "path": "research/domain-summary.csv",
+      "bytes": 907,
+      "sha256": "b7d042bc45b2947a2fc793a52a39eb94ae0c232973115ec6b4e6047b4201f450"
+    },
+    {
+      "path": "research/methodology.md",
+      "bytes": 2866,
+      "sha256": "ef5556d4013c08eeaac4525ba0eb36516482b3f8b0d3c83e78ebfc61bdf1bc95"
+    },
+    {
+      "path": "research/one-to-one-traceability.csv",
+      "bytes": 131476,
+      "sha256": "d589c3584b35e17e33e751aff8a5775995298cc0466005aa975564506574dcb3"
+    },
+    {
+      "path": "research/requirements.csv",
+      "bytes": 103935,
+      "sha256": "99db7a61e8ca68ac19183faf4057b02bac9169ad71f955181ecdeb481587db92"
+    },
+    {
+      "path": "research/screen-inventory.csv",
+      "bytes": 30922,
+      "sha256": "e38a2c2cf04be7ea70f020e9f6c7287a2494257e9e9af9c9f6103715dc64a350"
+    },
+    {
+      "path": "research/search-lanes.md",
+      "bytes": 1940,
+      "sha256": "b71a021243381cddb1cf7e203fdf2cc9651737cfd969fa5a38ae6f01ed291181"
+    },
+    {
+      "path": "research/source-coverage.csv",
+      "bytes": 8308,
+      "sha256": "d9ab1f694dc1f70c5a90cc4ec5ce88df2b76d9eb65483537b38d7caa8a8cfc4b"
+    },
+    {
+      "path": "research/source-ledger.csv",
+      "bytes": 8095,
+      "sha256": "9d368d36de2d0507ee87a0a48ee0f5589c1ced783f2d7d7b2179518a87b50c81"
+    },
+    {
+      "path": "screenshot-book.html",
+      "bytes": 6497,
+      "sha256": "fc78ad314de1e63bf369c66fb7d7f0c188828b51e5e5c793bde9630bb7f25731"
+    },
+    {
+      "path": "screenshots/01-overview.png",
+      "bytes": 675192,
+      "sha256": "9abd36ff4544718c46c61d6c7159a32482a370c8c05cf2159c8b9d574cb7ca91"
+    },
+    {
+      "path": "screenshots/02-capability-map.png",
+      "bytes": 2601669,
+      "sha256": "42e8f86ac6e7646d2dd716c4c182896110e272dac83da70217849b7db42d26b5"
+    },
+    {
+      "path": "screenshots/03-play-prototype.png",
+      "bytes": 258276,
+      "sha256": "2283e92b990784ee92d63c54a5e7c72acd1b62cb5c6902f86d957dfb68d15a25"
+    },
+    {
+      "path": "screenshots/04-branch-tutor.png",
+      "bytes": 278597,
+      "sha256": "d63881569d9e23ca0d7de7993339e49b16ec4554f426fdab54d24f56875b3445"
+    },
+    {
+      "path": "screenshots/05-learning.png",
+      "bytes": 381682,
+      "sha256": "d4489914dc217d0c665403e5bf998772c26128d4ce78eaf1f2e024228d72a9d5"
+    },
+    {
+      "path": "screenshots/06-community.png",
+      "bytes": 308783,
+      "sha256": "790e4c8eb8a5ce00ed2c6a91704eecb93541acf4eebcf74b4f87516608a3652a"
+    },
+    {
+      "path": "screenshots/07-brd-matrix.png",
+      "bytes": 366239,
+      "sha256": "e9dd84c5f380bb033bee9e6206491343ebfb5a04631cc15d978c3a167acf6f8c"
+    },
+    {
+      "path": "screenshots/08-screen-atlas.png",
+      "bytes": 3206356,
+      "sha256": "085d065e4082dc75619f4a3cd0733c978e913d6a53750d7d110db93c21c3be85"
+    },
+    {
+      "path": "screenshots/09-architecture.png",
+      "bytes": 587597,
+      "sha256": "6c877eb3e625648ca117b880186bcd6696de11379564ae4b64113f5b14e3c855"
+    },
+    {
+      "path": "screenshots/10-research.png",
+      "bytes": 805927,
+      "sha256": "eb6393c535dc0828e48fb6487d2f43ad235cbb16507e354d15390b7d839ecf09"
+    },
+    {
+      "path": "screenshots/11-play-interacted.png",
+      "bytes": 258809,
+      "sha256": "d490da71b8f27c81d8fe816b2d0b500990e04eaf1802e90a3d595719e456e906"
+    },
+    {
+      "path": "screenshots/12-branch-chat.png",
+      "bytes": 279168,
+      "sha256": "5a636cf7e74b90e96d5f3738731adefc17421f847959da8ff6da29aa8c2ea27e"
+    },
+    {
+      "path": "screenshots/13-brd-filtered.png",
+      "bytes": 218877,
+      "sha256": "4594a2a104ae8ea2c80e7c48eb75aaa1d2576e9bf2a12c17b3a25f5437d78148"
+    },
+    {
+      "path": "screenshots/14-mobile-overview.png",
+      "bytes": 541339,
+      "sha256": "bdb52a3c43e35fdad23d06df10e84332735315f236791e8f0f4126923581ed10"
+    },
+    {
+      "path": "screenshots/15-mobile-branch-tutor.png",
+      "bytes": 176162,
+      "sha256": "1eb36de493d14076c2f55a5292498923375b8831849a5fa2e5600fc7d3eb764a"
+    },
+    {
+      "path": "screenshots/README.md",
+      "bytes": 1243,
+      "sha256": "b7f7c0b152e4cf009816be02c3c2cc3e58c21517d053fabf4079326149e68492"
+    },
+    {
+      "path": "screenshots/viewport/01-overview.png",
+      "bytes": 449472,
+      "sha256": "fe7172564a5018b05a35426d427852a8a31603d04fc2663f04796369b7d81ec8"
+    },
+    {
+      "path": "screenshots/viewport/02-capability-map.png",
+      "bytes": 353227,
+      "sha256": "d1072d9929c0bd4190869222f9cd3a24ad4e3b8667390e9699c4900e38dd1168"
+    },
+    {
+      "path": "screenshots/viewport/03-play-prototype.png",
+      "bytes": 258276,
+      "sha256": "2283e92b990784ee92d63c54a5e7c72acd1b62cb5c6902f86d957dfb68d15a25"
+    },
+    {
+      "path": "screenshots/viewport/04-branch-tutor.png",
+      "bytes": 271299,
+      "sha256": "948be962b8238238eb914272ec40e73da6f592dbb5f01aefd2a3255e9155504c"
+    },
+    {
+      "path": "screenshots/viewport/05-learning.png",
+      "bytes": 347347,
+      "sha256": "8547352c511280c0ea44a9f816e7edf852ce3f7ee712a22bf0241f25de2f28bf"
+    },
+    {
+      "path": "screenshots/viewport/06-community.png",
+      "bytes": 308783,
+      "sha256": "790e4c8eb8a5ce00ed2c6a91704eecb93541acf4eebcf74b4f87516608a3652a"
+    },
+    {
+      "path": "screenshots/viewport/07-brd-matrix.png",
+      "bytes": 362555,
+      "sha256": "2d3ce728548284bf831ec7613b20922d213b15fc9a4c79fd777a44d8159c5a58"
+    },
+    {
+      "path": "screenshots/viewport/08-screen-atlas.png",
+      "bytes": 335261,
+      "sha256": "4acce04a21b404fc4175c6663043742fd6d6ecccff501545ff36bda68850e510"
+    },
+    {
+      "path": "screenshots/viewport/09-architecture.png",
+      "bytes": 406917,
+      "sha256": "180da4eb06bcefea81ae333e252c67335239707679921a946ce82bc7ed2f7282"
+    },
+    {
+      "path": "screenshots/viewport/10-research.png",
+      "bytes": 411666,
+      "sha256": "140723a1fbe1d8f3072674583f68e2d1c67c5103db37e0fcda6ee904f6925293"
+    },
+    {
+      "path": "screenshots/viewport/11-branch-question.png",
+      "bytes": 271548,
+      "sha256": "e751a634832a8244097d30a52f003a3c3080b9b1272090d7357dd8fbe641268a"
+    },
+    {
+      "path": "screenshots/viewport/12-mobile-overview.png",
+      "bytes": 157545,
+      "sha256": "45a0104f3c629aa88379aa4193347abf63c7a632a41e96484bdd7d2bda9a9342"
+    },
+    {
+      "path": "screenshots/viewport/13-mobile-branch-tutor.png",
+      "bytes": 118749,
+      "sha256": "b6a1516453aeef5cc89a0fc21d78618bdcf59e720aeb39af8d62afcf1cfcca81"
+    },
+    {
+      "path": "styles.css",
+      "bytes": 13447,
+      "sha256": "96e81075c07197f8fae9f952ffc23fb409a92f99a6e45924f918f70e015b326f"
+    }
+  ]
+}

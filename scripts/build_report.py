@@ -62,6 +62,7 @@ def category(path):
 
 def source_files():
     files = {ROOT/p for p in ['README.md','CONTEXT.md','AGENTS.md','CLAUDE.md','skills.local.json','justfile','.gitignore','.gitattributes','references/engine-installation.json','references/engine-games-verification.json','references/engine-availability.md','references/chesscom-piece-assets.json','web/public/bots/provenance.json']}
+    files.update(p for p in (ROOT/'references').iterdir() if p.is_file() and p.suffix in ['.json','.md'])
     for folder in ['docs','openspec','scripts']:
         files.update(p for p in (ROOT/folder).rglob('*') if p.is_file() and not p.is_symlink() and '__pycache__' not in p.parts and p.name != '.gitkeep')
     return sorted(files)
@@ -159,7 +160,7 @@ def components(files):
 def render_page(title, section, body, toc, slug, base='.', lede='', home=False, doc=False):
     nav=''.join(f'<a class="nav-link" href="{base}/{s}.html"'+(' aria-current="page"' if slug==s or doc and s=='library' else '')+f'><span class="nav-symbol" aria-hidden="true">{icon}</span>{name}</a>' for s,name,icon,*rest in CHAPTERS)
     if home:
-        hero='<section class="hero"><div class="hero-copy"><div class="eyebrow">ChessLab / Founder research edition</div><h1>Every move.<br><em>Every why.</em></h1><p>A chess tutor you can question, explore and rewind. The research, the work, and an honest look at what it would take to build it.</p><div class="hero-actions"><a class="button" href="investor.html">Read the investor memo <span aria-hidden="true">↗</span></a><a class="text-link" href="library.html">Explore the documents →</a></div></div><div class="hero-art">'+board()+'<div class="floating-note"><strong>The recapture changes everything.</strong>5 − 3 loses less than 3.</div></div></section><div class="hero-badges"><span class="chip good">Research preserved</span><span class="chip good">Local bot platform</span><span class="chip proposed">Tutor vision in progress</span><span class="chip">No public deployment</span></div>'
+        hero='<section class="hero"><div class="hero-copy"><div class="eyebrow">ChessLab / Founder research edition</div><h1>Every move.<br><em>Every why.</em></h1><p>A chess tutor you can question, explore and rewind. The research, the work, and an honest look at what it would take to build it.</p><div class="hero-actions"><a class="button" href="investor.html">Read the investor memo <span aria-hidden="true">↗</span></a><a class="text-link" href="library.html">Explore the documents →</a></div></div><div class="hero-art">'+board()+'<div class="floating-note"><strong>The recapture changes everything.</strong>5 − 3 loses less than 3.</div></div></section><div class="hero-badges"><span class="chip good">Research preserved</span><span class="chip good">Local bot platform</span><span class="chip proposed">Tutor vision in progress</span><span class="chip">Private Sites published</span></div>'
     else:
         hero=f'<header class="page-heading"><div class="eyebrow">{html.escape(section)} / Research dossier</div><h1>{html.escape(title)}</h1><p class="lede">{html.escape(lede)}</p></header>'
     anchors=''.join(f'<a href="#{html.escape(id,quote=True)}">{html.escape(text)}</a>' for id,text in toc)
@@ -206,7 +207,7 @@ def build():
         output=OUT/'documents'/doc_name(path); output.write_text(render_page(title,'Document library',notice+content,toc,'library','..',str(rel),doc=True)); outputs.append(output)
     outputs += [p for p in (OUT/'assets').iterdir() if p.is_file()]
     inputs={p.relative_to(ROOT).as_posix():digest(p.read_bytes()) for p in files}
-    manifest={'edition':'2026-09-07','generator':'scripts/build_report.py','document_count':len(files),'chapter_count':len(CHAPTERS),'source_hashes':inputs,'output_hashes':{p.relative_to(OUT).as_posix():digest(p.read_bytes()) for p in sorted(outputs)}}
+    manifest={'edition':'2026-09-08','generator':'scripts/build_report.py','document_count':len(files),'chapter_count':len(CHAPTERS),'source_hashes':inputs,'output_hashes':{p.relative_to(OUT).as_posix():digest(p.read_bytes()) for p in sorted(outputs)}}
     (OUT/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     print(f'Built {len(CHAPTERS)} chapters and {len(files)} full document pages in {OUT}')
 

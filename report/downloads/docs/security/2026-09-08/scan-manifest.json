@@ -1,0 +1,104 @@
+{
+  "documentType": "codex-security.scan-manifest",
+  "scan": {
+    "artifacts": [
+      {
+        "mediaType": "application/json",
+        "path": "findings.json",
+        "sha256": "5c19108347fc0db2d8b488e45f57fea7dfc681278b7db8f0ed79d06c69e4af0d"
+      },
+      {
+        "mediaType": "application/json",
+        "path": "coverage.json",
+        "sha256": "bf2edc69472c5f6f8769e024832b839ea8db7d07562040ef5a944ffb128bb6ca"
+      }
+    ],
+    "completedAt": "2026-09-07T22:39:02.146492Z",
+    "coverageRef": "coverage.json",
+    "findingsRef": "findings.json",
+    "id": "4cb056bb-afec-4125-8fc3-96458c6e27e7",
+    "preservedSources": {
+      "checkpoints/27bc7a8c4ad034889a7cf181047df95408331f9023adc24a64de158c5a6170a9.json": "4362cd6f74994a131375ce13faddb0152ba12279e25451be147d28004457a355",
+      "checkpoints/420dd618b2f718c6487492c193fcb3dfc4a8a007b6c53ec21f3a03a65886734d.json": "b7b56669b89229d86547d2295a3eb1141488fd94258dd3ed4bb4bfe848c29f91",
+      "checkpoints/8e85568328b9d84b8d07c9c83b6d7317d13124822d29859ac9216e8a85571d1d.json": "8e85568328b9d84b8d07c9c83b6d7317d13124822d29859ac9216e8a85571d1d",
+      "checkpoints/a88d364c9c5be846e0d894088ed8b73905c9677b779d0dbcf5a70dd088707f8f.json": "4a2343bf357a634d1395db091a1d74b502d9e09615243a4caac44b42c145e895"
+    },
+    "producer": {
+      "name": "codex-security-plugin",
+      "version": "0.1.23"
+    },
+    "scope": {
+      "artifactsReviewed": [
+        "server/app.mjs",
+        "server/engine.mjs",
+        "server/opponent-engines.mjs",
+        "server/bot-game.mjs",
+        "server/hosting.mjs",
+        "server/sites-worker.mjs",
+        "server/index.mjs",
+        "server/content.mjs",
+        "server/bot-profiles.json",
+        "server/app.test.mjs",
+        "server/engine.test.mjs",
+        "server/opponent-engines.test.mjs",
+        "server/bot-game.test.mjs"
+      ],
+      "excludePaths": [],
+      "includePaths": [
+        "server"
+      ],
+      "limitations": [
+        "No independent baseline or architecture worker per explicit task allowance; sequential fallback used.",
+        "TAC connector returned USER_NOT_LOGGED_IN; access grant status unavailable.",
+        "Live platform private-access enforcement, actual deployment configuration and third-party native engine binary internals are outside this review."
+      ],
+      "runtimeStatus": "Three isolated proof groups passed: temporary loopback in-memory native app; offline Worker fetch mocks; final hosted configuration/key/stream regressions. No live Sites deployment tested.",
+      "summary": "Bounded read-only security review of all 13 current server files: authentication, session, API ownership, engine command boundary and new native hosting guard/Worker proxy.",
+      "validationMode": "Source-backed audit with bounded isolated executable proof."
+    },
+    "sealedAt": "2026-09-07T22:39:02.146492Z",
+    "startedAt": "2026-09-07T22:29:14.988926Z",
+    "status": "completed",
+    "target": {
+      "displayName": "ChessLab",
+      "kind": "git_worktree",
+      "revision": "e2f5a2d810b46f1a091bbb5cd2cb476b0d006666",
+      "snapshotDigest": "codex-security-snapshot/v1:sha256:9e3fd4e5fc1d8d70969b3338be78294191f70077cf07c6bae7288048447c89e5",
+      "targetId": "target_sha256_2c443e999abc4a890dac890ae0d5c80d87d847a8e4cc1957a832c08a00c53e47"
+    },
+    "threatModel": {
+      "assets": [
+        "Account credentials and session tokens (server/app.mjs:60-61,106-110).",
+        "Account-owned games, studies, PGN exports and progress (server/app.mjs:142-155,267-282).",
+        "Native host process authority and bounded engine capacity (server/engine.mjs:48-80; server/opponent-engines.mjs:39-70,90-97)."
+      ],
+      "assumptions": [
+        "No external URLs are visited and no publishing or persistent checkout mutation occurs during review.",
+        "No independent baseline/architecture worker per explicit task allowance; the documented sequential fallback is used.",
+        "PUBLIC_ORIGIN and COOKIE_SECURE=1 are operator-supplied hosted configuration; live deployment and Sites owner access enforcement are outside this source scan.",
+        "Hosting guard and Worker modules were implemented by the task owner during the review. Final source and their corrected boundary behavior were re-read and tested; the scanner did not edit checkout files."
+      ],
+      "attackerCapabilities": [
+        "Unauthenticated HTTP caller can reach local native listener only with local network reachability; proposed tunnel requires backend secret.",
+        "Authenticated ChessLab account can submit legal game/analysis/study inputs and guess other game IDs; it has no filesystem or environment configuration control.",
+        "Cross-origin browser page may attempt authenticated mutations but does not control browser Origin/Sec-Fetch-Site headers or SameSite session policy.",
+        "Proposed Sites owner-private boundary is supplied context; platform access enforcement is not proven by this source review."
+      ],
+      "securityObjectives": [
+        "Preserve account isolation and session confidentiality.",
+        "Reject untrusted cross-origin state changes and direct tunnel requests without the shared secret.",
+        "Keep arbitrary input out of executable paths, shell execution and line-oriented native commands.",
+        "Bound request bodies, native concurrency, queues and search durations."
+      ],
+      "summary": "ChessLab is a React client and Express API backed by local SQLite accounts, sessions, games and progress, with native Stockfish/Maia/Lc0 engines. Native startup binds 127.0.0.1 by default (server/index.mjs:20); the user-requested proposed hosted path is Sites Worker -> HTTPS tunnel -> separate loopback native process and database.",
+      "trustBoundaries": [
+        "Browser -> API: JSON-only mutations, exact Origin and Sec-Fetch-Site rejection, bounded 256 KiB JSON parser (server/app.mjs:77-91).",
+        "Anonymous -> account: scrypt password verification, random 32-byte hashed sessions, HttpOnly/SameSite=Strict and configurable Secure cookies (server/app.mjs:95-110,115-138).",
+        "Account -> stored object: prepared user-scoped reads/writes and revision checks (server/app.mjs:142-155,267-284).",
+        "API input -> native command: engine enum, bounded integer controls, validated legal UCI history and canonical FEN before shell:false spawn (server/engine.mjs:17-39,73-80,114-116,224-238; server/opponent-engines.mjs:63-70,94,180-201).",
+        "Hosted Worker -> native: configured shared-secret gate before all native handlers; incomplete/noncanonical hosted config fails startup, wrong/malformed keys reject with 403. Worker forwards only application session cookie, rejects cross-origin POSTs, bounds streamed bodies at 256 KiB and refuses redirects (server/hosting.mjs:3-11; server/app.mjs:67; server/sites-worker.mjs:6-39)."
+      ]
+    }
+  },
+  "schemaVersion": "1.0"
+}

@@ -2,9 +2,11 @@
 
 Play a bot, review a decision, try a different line, and return to the actual game.
 
-ChessLab now has a local web application with a large blue board, 17 bot profiles, multiple installed engine choices, clocks and assistance, server analysis, saved variations, PGN import/export and accounts on the same server. Six original introductory lessons and six puzzles provide a small practice collection. The coach explains engine evidence. Learner questions are saved notes, not a free-form conversational AI.
+ChessLab now has a web application with the observed board layout,166 bot profiles and original portraits, ten installed engine configurations, clocks and assistance, server analysis, saved variations, PGN import/export and accounts on the same server. Six original introductory lessons and six puzzles provide a small practice collection. The coach explains engine evidence. Learner questions are saved notes, not a free-form conversational AI.
 
 The current build follows the user's platform-first direction: bot and coach play first. Human multiplayer and billing are deferred. It does not reproduce Chess.com's full platform, content library or scoring system. The full branching conversational tutor remains the longer-term objective.
+
+The [private hosted build](https://chesslab-bot-studio.prax-lannister.chatgpt.site) uses ChatGPT owner access and a protected native backend on this Mac. Its continued availability requires the Mac and tunnel to remain running. See the [delivery receipt](references/sites-deployment.json).
 
 ## Run the application
 
@@ -39,7 +41,7 @@ just check      # Local skill links/hashes, OpenSpec and whitespace
 
 Browser checks use an existing Playwright installation. Set `CHESSLAB_PLAYWRIGHT_ROOT` if it is not at the installed Codex path. Agent setup requires Python 3.10+, `just`, OpenSpec and the existing skill sources in `skills.local.json`. These tools are separate from the runtime dependencies. See [the setup guide](docs/agents/setup.md).
 
-The recorded `gstack-cso` entrypoint hash has drifted from its installed source. The setup check reports that failure until the changed source is reviewed and the manifest is deliberately updated. Application checks do not waive the setup check. Passing local tests does not establish public deployment, scalable hosting or learning outcomes.
+The latest setup check stops at a missing installed Pstack `unslop` source. An earlier check also recorded `gstack-cso` entrypoint hash drift. The setup check reports that failure until the changed source is reviewed and the manifest is deliberately updated. Application checks do not waive the setup check. Passing local tests does not establish public deployment, scalable hosting or learning outcomes.
 
 ## Research and design archive
 

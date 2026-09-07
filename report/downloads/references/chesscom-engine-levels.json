@@ -1,0 +1,127 @@
+[
+  {
+    "level": 1,
+    "name": "Beginner",
+    "rating": "250"
+  },
+  {
+    "level": 2,
+    "name": "Beginner",
+    "rating": "400"
+  },
+  {
+    "level": 3,
+    "name": "Beginner",
+    "rating": "550"
+  },
+  {
+    "level": 4,
+    "name": "Beginner",
+    "rating": "700"
+  },
+  {
+    "level": 5,
+    "name": "Beginner",
+    "rating": "850"
+  },
+  {
+    "level": 6,
+    "name": "Intermediate",
+    "rating": "1000"
+  },
+  {
+    "level": 7,
+    "name": "Intermediate",
+    "rating": "1100"
+  },
+  {
+    "level": 8,
+    "name": "Intermediate",
+    "rating": "1200"
+  },
+  {
+    "level": 9,
+    "name": "Intermediate",
+    "rating": "1300"
+  },
+  {
+    "level": 10,
+    "name": "Intermediate",
+    "rating": "1400"
+  },
+  {
+    "level": 11,
+    "name": "Intermediate",
+    "rating": "1500"
+  },
+  {
+    "level": 12,
+    "name": "Advanced",
+    "rating": "1600"
+  },
+  {
+    "level": 13,
+    "name": "Advanced",
+    "rating": "1700"
+  },
+  {
+    "level": 14,
+    "name": "Advanced",
+    "rating": "1800"
+  },
+  {
+    "level": 15,
+    "name": "Advanced",
+    "rating": "1900"
+  },
+  {
+    "level": 16,
+    "name": "Expert",
+    "rating": "2000"
+  },
+  {
+    "level": 17,
+    "name": "Expert",
+    "rating": "2100"
+  },
+  {
+    "level": 18,
+    "name": "Expert",
+    "rating": "2200"
+  },
+  {
+    "level": 19,
+    "name": "Expert",
+    "rating": "2300"
+  },
+  {
+    "level": 20,
+    "name": "Master",
+    "rating": "2400"
+  },
+  {
+    "level": 21,
+    "name": "Master",
+    "rating": "2500"
+  },
+  {
+    "level": 22,
+    "name": "Grandmaster",
+    "rating": "2600"
+  },
+  {
+    "level": 23,
+    "name": "Grandmaster",
+    "rating": "2700"
+  },
+  {
+    "level": 24,
+    "name": "Super Grandmaster",
+    "rating": "2900"
+  },
+  {
+    "level": 25,
+    "name": "Maximum",
+    "rating": "3200"
+  }
+]

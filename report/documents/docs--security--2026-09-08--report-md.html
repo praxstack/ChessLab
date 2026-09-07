@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Report · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Report</h1><p class="lede">docs/security/2026-09-08/report.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Report"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/docs/security/2026-09-08/report.md" download>Download original file ↗</a></div><p class="source-meta">docs/security/2026-09-08/report.md<br>SHA-256: b1ef434d1b0c085145dc8619df0118318e1d60b5201a79458459670a43e5f609</p><h2 id="security-review-chesslab">Security Review: ChessLab</h2>
+<h3 id="scope">Scope</h3>
+<p>Bounded read-only security review of all 13 current server files: authentication, session, API ownership, engine command boundary and new native hosting guard/Worker proxy.</p>
+<ul>
+<li>Scan mode: scoped_path</li>
+<li>Target kind: git_worktree</li>
+<li>Target ID: target_sha256_2c443e999abc4a890dac890ae0d5c80d87d847a8e4cc1957a832c08a00c53e47</li>
+<li>Revision: e2f5a2d810b46f1a091bbb5cd2cb476b0d006666</li>
+<li>Snapshot digest: codex-security-snapshot/v1:sha256:9e3fd4e5fc1d8d70969b3338be78294191f70077cf07c6bae7288048447c89e5</li>
+<li>Inventory strategy: scoped_path</li>
+<li>Included paths: server</li>
+<li>Excluded paths: none</li>
+<li>Runtime or test status: Three isolated proof groups passed: temporary loopback in-memory native app; offline Worker fetch mocks; final hosted configuration/key/stream regressions. No live Sites deployment tested.</li>
+<li>Artifacts reviewed: server/app.mjs, server/engine.mjs, server/opponent-engines.mjs, server/bot-game.mjs, server/hosting.mjs, server/sites-worker.mjs, server/index.mjs, server/content.mjs, server/bot-profiles.json, server/app.test.mjs, server/engine.test.mjs, server/opponent-engines.test.mjs, server/bot-game.test.mjs</li>
+</ul>
+<p>Limitations and exclusions:</p>
+<ul>
+<li>No independent baseline or architecture worker per explicit task allowance; sequential fallback used.</li>
+<li>TAC connector returned USER_NOT_LOGGED_IN; access grant status unavailable.</li>
+<li>Live platform private-access enforcement, actual deployment configuration and third-party native engine binary internals are outside this review.</li>
+<li>Excluded Sites platform and live deployment: No Sites calls or publishing authorized for this subtask; owner-private access enforcement is supplied deployment context, not proven by source review.</li>
+<li>Excluded Third-party native engine binary internals and model weights: Bounded review covers application inputs and process boundary, not engine binaries or model supply chain.</li>
+<li>Excluded Sites platform and live deployment: No Sites calls or publishing authorized for this subtask; owner-private access control is supplied deployment context.</li>
+</ul>
+<h4 id="scan-summary">Scan Summary</h4>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scan outcome</td>
+<td>completed</td>
+</tr>
+<tr>
+<td>Reportable findings</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Severity mix</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Confidence mix</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Coverage</td>
+<td>partial</td>
+</tr>
+<tr>
+<td>Validation mode</td>
+<td>Source-backed audit with bounded isolated executable proof.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Canonical artifacts: <code>scan-manifest.json</code>, <code>findings.json</code>, and <code>coverage.json</code>. This report is a deterministic projection of those files.</p>
+<h3 id="threat-model">Threat Model</h3>
+<p>ChessLab is a React client and Express API backed by local SQLite accounts, sessions, games and progress, with native Stockfish/Maia/Lc0 engines. Native startup binds 127.0.0.1 by default (server/index.mjs:20); the user-requested proposed hosted path is Sites Worker -&gt; HTTPS tunnel -&gt; separate loopback native process and database.</p>
+<h4 id="assets">Assets</h4>
+<ul>
+<li>Account credentials and session tokens (server/app.mjs:60-61,106-110).</li>
+<li>Account-owned games, studies, PGN exports and progress (server/app.mjs:142-155,267-282).</li>
+<li>Native host process authority and bounded engine capacity (server/engine.mjs:48-80; server/opponent-engines.mjs:39-70,90-97).</li>
+</ul>
+<h4 id="trust-boundaries">Trust Boundaries</h4>
+<ul>
+<li>Browser -&gt; API: JSON-only mutations, exact Origin and Sec-Fetch-Site rejection, bounded 256 KiB JSON parser (server/app.mjs:77-91).</li>
+<li>Anonymous -&gt; account: scrypt password verification, random 32-byte hashed sessions, HttpOnly/SameSite=Strict and configurable Secure cookies (server/app.mjs:95-110,115-138).</li>
+<li>Account -&gt; stored object: prepared user-scoped reads/writes and revision checks (server/app.mjs:142-155,267-284).</li>
+<li>API input -&gt; native command: engine enum, bounded integer controls, validated legal UCI history and canonical FEN before shell:false spawn (server/engine.mjs:17-39,73-80,114-116,224-238; server/opponent-engines.mjs:63-70,94,180-201).</li>
+<li>Hosted Worker -&gt; native: configured shared-secret gate before all native handlers; incomplete/noncanonical hosted config fails startup, wrong/malformed keys reject with 403. Worker forwards only application session cookie, rejects cross-origin POSTs, bounds streamed bodies at 256 KiB and refuses redirects (server/hosting.mjs:3-11; server/app.mjs:67; server/sites-worker.mjs:6-39).</li>
+</ul>
+<h4 id="attacker-capabilities">Attacker Capabilities</h4>
+<ul>
+<li>Unauthenticated HTTP caller can reach local native listener only with local network reachability; proposed tunnel requires backend secret.</li>
+<li>Authenticated ChessLab account can submit legal game/analysis/study inputs and guess other game IDs; it has no filesystem or environment configuration control.</li>
+<li>Cross-origin browser page may attempt authenticated mutations but does not control browser Origin/Sec-Fetch-Site headers or SameSite session policy.</li>
+<li>Proposed Sites owner-private boundary is supplied context; platform access enforcement is not proven by this source review.</li>
+</ul>
+<h4 id="security-objectives">Security Objectives</h4>
+<ul>
+<li>Preserve account isolation and session confidentiality.</li>
+<li>Reject untrusted cross-origin state changes and direct tunnel requests without the shared secret.</li>
+<li>Keep arbitrary input out of executable paths, shell execution and line-oriented native commands.</li>
+<li>Bound request bodies, native concurrency, queues and search durations.</li>
+</ul>
+<h4 id="assumptions">Assumptions</h4>
+<ul>
+<li>No external URLs are visited and no publishing or persistent checkout mutation occurs during review.</li>
+<li>No independent baseline/architecture worker per explicit task allowance; the documented sequential fallback is used.</li>
+<li>PUBLIC_ORIGIN and COOKIE_SECURE=1 are operator-supplied hosted configuration; live deployment and Sites owner access enforcement are outside this source scan.</li>
+<li>Hosting guard and Worker modules were implemented by the task owner during the review. Final source and their corrected boundary behavior were re-read and tested; the scanner did not edit checkout files.</li>
+</ul>
+<h3 id="findings">Findings</h3>
+<h4 id="no-findings">No findings</h4>
+<p>No reportable findings survived the canonical discovery, validation, and reportability gates.</p>
+<h3 id="reviewed-surfaces">Reviewed Surfaces</h3>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr>
+<th>Surface</th>
+<th>Risk Area</th>
+<th>Outcome</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authentication and session lifecycle</td>
+<td>not recorded</td>
+<td>No issue found</td>
+<td>In-memory fixture verified configured HTTPS Origin over loopback HTTP registers successfully, emits Secure/HttpOnly/SameSite=Strict cookies, and stores only token hashes. Logged-out and expired sessions return 401. Source: server/app.mjs:95-110,115-138.</td>
+</tr>
+<tr>
+<td>Account-owned games, studies, exports and progress</td>
+<td>not recorded</td>
+<td>No issue found</td>
+<td>Prepared user-scoped reads/writes and revision guards protect game/study/progress state. Ten executed cross-account read/export/move/bot/resign/undo/hint/assist/study/analyze requests returned 404 before engine work. Source: server/app.mjs:99-102,142-155,261-284.</td>
+</tr>
+<tr>
+<td>Origin, CSRF and native-host exposure</td>
+<td>not recorded</td>
+<td>No issue found</td>
+<td>Foreign Origin, spoofed X-Forwarded-Proto/Host and Sec-Fetch-Site cross-site requests were rejected. Native hosting guard precedes all API/static handlers. Missing/wrong backend keys reject API and non-API paths with403. Final five incomplete/noncanonical/non-HTTPS hosting config fixtures throw at startup; missing/wrong/multibyte keys return403 without throwing, valid key passes. Earlier HTTPS termination and partial-config guard issues were fixed by task owner during scan and independently revalidated. Source: server/app.mjs:67,77-91; server/hosting.mjs:3-11; server/index.mjs:20.</td>
+</tr>
+<tr>
+<td>Native engine command and resource bounds</td>
+<td>not recorded</td>
+<td>No issue found</td>
+<td>Six executed UCI/FEN/engine-ID/rating/style/search-limit abuse inputs return400 before spawn. Source uses catalog enum, bounded integers, validated legal UCI and canonical FEN, shell:false spawn, bounded active/queued processes and hard deadlines. Inspected supporting Maia2 UCI consumer uses enum-selected checkpoint plus python-chess move parsing. Source: server/engine.mjs:17-39,48-80,114-116,224-238; server/opponent-engines.mjs:39-70,94,180-201.</td>
+</tr>
+<tr>
+<td>Worker credential forwarding and streamed body bounds</td>
+<td>not recorded</td>
+<td>No issue found</td>
+<td>Offline fetch mock proves missing/foreign/cross-site Origin rejected before fetch, only chesslab_session forwarded, Sites cookie/client Authorization/forwarded-host omitted, secret and Origin derived from trusted server context, redirects refused with502, missing backend config503. Final endless16KiB stream fixture canceled on read17 after crossing256KiB, returned413, zero backend fetches. Source: server/sites-worker.mjs:6-39.</td>
+</tr>
+<tr>
+<td>Authentication, sessions and account ownership</td>
+<td>not recorded</td>
+<td>No issue found</td>
+<td>In-memory fixture: missing/wrong backend key rejected API and non-API paths with 403; fixed HTTPS origin over loopback HTTP registered successfully and emitted Secure/HttpOnly/SameSite=Strict cookie; database stores hash rather than token; 10 cross-account game/export/mutation/analyze requests returned 404 before engine work; logout and expiry returned 401. Controls: server/app.mjs:67,77-110,142-155,267-284.</td>
+</tr>
+<tr>
+<td>Native engine command boundary</td>
+<td>not recorded</td>
+<td>No issue found</td>
+<td>Six executed engine/FEN/UCI/control injection or bound-abuse inputs rejected with status 400 before process spawning. Source enum and integer validation, canonical legal FEN/history, shell:false spawn, bounded active/queued processes and deadlines hold the boundary: server/engine.mjs:17-39,48-80,114-116,224-238; server/opponent-engines.mjs:39-70,94,180-201. Maia2 supporting script consumes only enum-selected checkpoint and parsed UCI.</td>
+</tr>
+<tr>
+<td>Worker request and credential forwarding</td>
+<td>not recorded</td>
+<td>No issue found</td>
+<td>Offline fetch mock: missing/foreign/cross-site Origin rejected before fetch; only chesslab_session forwarded, never Sites cookie or client Authorization/forwarded-host; configured secret and derived fixed origin replace client values; oversized request returned 413 before forwarding; redirects returned 502 without following; missing backend config returned 503. Source: server/sites-worker.mjs:6-30.</td>
+</tr>
+<tr>
+<td>Hosting configuration and early bounds</td>
+<td>not recorded</td>
+<td>Needs follow-up</td>
+<td>Task owner is correcting malformed multibyte secret header handling and streaming request size enforcement. Reported PUBLIC_ORIGIN-only configuration currently disables shared-secret guard because secret is absent (server/hosting.mjs:4-6); owner has been asked to enforce both configuration fields together.</td>
+</tr>
+<tr>
+<td>Authentication, account isolation and native command boundaries</td>
+<td>not recorded</td>
+<td>No issue found</td>
+<td>Inspected the existing 11 server source/test/catalog files. Prepared user ownership, cryptographically random hashed sessions, legal history/FEN canonicalization, engine catalog allowlisting, bounded queues/timeouts and shell:false process spawning are present. PUBLIC_ORIGIN was added during review to resolve the initial HTTPS termination integration issue. Actual Sites enforcement and third-party native engine internals are outside this bounded source review.</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="open-questions-and-follow-up">Open Questions And Follow Up</h3>
+<ul>
+<li>Does the final deployed Sites owner-private access policy cover the Worker API routes, with the native process launched using the configured secret, PUBLIC_ORIGIN, COOKIE_SECURE=1 and isolated hosted database?
+<ul>
+<li>Follow-up prompt: Deployment owner should verify the live access policy and native runtime configuration; no deployed-service testing was performed by this scan.</li>
+</ul></li>
+<li>Final hosting fixes pending from task owner; isolated boundary recheck required.
+<ul>
+<li>Follow-up prompt: Review deferred unit hosting-final-source-validation and close its stated proof gap. Paths: server/hosting.mjs, server/sites-worker.mjs.</li>
+</ul></li>
+<li>Hosting guard and Worker proxy are being completed by task owner; isolated proof pending.
+<ul>
+<li>Follow-up prompt: Review deferred unit hosting-new-modules and close its stated proof gap.</li>
+</ul></li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav><a href="#security-review-chesslab">Security Review: ChessLab</a></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

@@ -1,0 +1,19 @@
+domain,capabilities,p0,p1,p2,p3,prototype_capabilities,screens_states,functional_requirements
+Acquisition & Onboarding,8,4,4,0,0,4,10,8
+Home & Personalization,8,2,3,3,0,2,9,8
+Live Play,13,8,4,1,0,0,14,13
+Daily & Correspondence,6,1,2,3,0,0,7,6
+Bots & Guided Coach,11,5,5,1,0,5,9,11
+Game Review & Analysis,14,10,4,0,0,10,15,14
+Branch-Native Conversational Tutor,12,7,3,2,0,7,14,12
+Opening Explorer & Collections,7,1,5,1,0,0,10,7
+Puzzles & Tactics,9,2,5,2,0,0,11,9
+"Lessons, Practice & Curriculum",11,1,8,2,0,0,14,11
+"Profile, Stats & Progress",8,3,2,3,0,0,12,8
+"Watch, Events & Content",7,0,0,7,0,0,10,7
+Community & Social,11,1,3,7,0,0,14,11
+Tournaments & Variants,8,0,0,5,3,0,13,8
+"Settings, Accessibility & Devices",13,5,7,1,0,0,13,13
+"Trust, Safety & Fair Play",11,7,4,0,0,0,11,11
+"Membership, Commerce & Entitlements",10,1,4,3,2,0,12,10
+"Platform, Data & Operations",13,7,3,2,1,3,11,13

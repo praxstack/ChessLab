@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Coverage · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Coverage</h1><p class="lede">docs/security/2026-09-08/coverage.json</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Coverage"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/docs/security/2026-09-08/coverage.json" download>Download original file ↗</a></div><p class="source-meta">docs/security/2026-09-08/coverage.json<br>SHA-256: bf2edc69472c5f6f8769e024832b839ea8db7d07562040ef5a944ffb128bb6ca</p><pre><code>{
+  &quot;completeness&quot;: &quot;partial&quot;,
+  &quot;deferred&quot;: [
+    {
+      &quot;id&quot;: &quot;hosting-final-source-validation&quot;,
+      &quot;paths&quot;: [
+        &quot;server/hosting.mjs&quot;,
+        &quot;server/sites-worker.mjs&quot;
+      ],
+      &quot;reason&quot;: &quot;Final hosting fixes pending from task owner; isolated boundary recheck required.&quot;
+    },
+    {
+      &quot;candidateId&quot;: &quot;hosting-new-modules&quot;,
+      &quot;id&quot;: &quot;hosting-new-modules&quot;,
+      &quot;reason&quot;: &quot;Hosting guard and Worker proxy are being completed by task owner; isolated proof pending.&quot;
+    }
+  ],
+  &quot;documentType&quot;: &quot;codex-security.coverage&quot;,
+  &quot;excludePaths&quot;: [],
+  &quot;explicitExclusions&quot;: [
+    {
+      &quot;pattern&quot;: &quot;Sites platform and live deployment&quot;,
+      &quot;reason&quot;: &quot;No Sites calls or publishing authorized for this subtask; owner-private access enforcement is supplied deployment context, not proven by source review.&quot;
+    },
+    {
+      &quot;pattern&quot;: &quot;Third-party native engine binary internals and model weights&quot;,
+      &quot;reason&quot;: &quot;Bounded review covers application inputs and process boundary, not engine binaries or model supply chain.&quot;
+    },
+    {
+      &quot;pattern&quot;: &quot;Sites platform and live deployment&quot;,
+      &quot;reason&quot;: &quot;No Sites calls or publishing authorized for this subtask; owner-private access control is supplied deployment context.&quot;
+    }
+  ],
+  &quot;includePaths&quot;: [
+    &quot;server&quot;
+  ],
+  &quot;inventoryStrategy&quot;: &quot;scoped_path&quot;,
+  &quot;mode&quot;: &quot;scoped_path&quot;,
+  &quot;openQuestions&quot;: [
+    {
+      &quot;followUpPrompt&quot;: &quot;Deployment owner should verify the live access policy and native runtime configuration; no deployed-service testing was performed by this scan.&quot;,
+      &quot;question&quot;: &quot;Does the final deployed Sites owner-private access policy cover the Worker API routes, with the native process launched using the configured secret, PUBLIC_ORIGIN, COOKIE_SECURE=1 and isolated hosted database?&quot;
+    }
+  ],
+  &quot;scanId&quot;: &quot;4cb056bb-afec-4125-8fc3-96458c6e27e7&quot;,
+  &quot;schemaVersion&quot;: &quot;1.0&quot;,
+  &quot;surfaces&quot;: [
+    {
+      &quot;disposition&quot;: &quot;no_issue_found&quot;,
+      &quot;id&quot;: &quot;surface_authentication-and-session-lifecycle&quot;,
+      &quot;label&quot;: &quot;Authentication and session lifecycle&quot;,
+      &quot;notes&quot;: &quot;In-memory fixture verified configured HTTPS Origin over loopback HTTP registers successfully, emits Secure/HttpOnly/SameSite=Strict cookies, and stores only token hashes. Logged-out and expired sessions return 401. Source: server/app.mjs:95-110,115-138.&quot;,
+      &quot;receiptRefs&quot;: []
+    },
+    {
+      &quot;disposition&quot;: &quot;no_issue_found&quot;,
+      &quot;id&quot;: &quot;surface_account-owned-games-studies-exports-and-progress&quot;,
+      &quot;label&quot;: &quot;Account-owned games, studies, exports and progress&quot;,
+      &quot;notes&quot;: &quot;Prepared user-scoped reads/writes and revision guards protect game/study/progress state. Ten executed cross-account read/export/move/bot/resign/undo/hint/assist/study/analyze requests returned 404 before engine work. Source: server/app.mjs:99-102,142-155,261-284.&quot;,
+      &quot;receiptRefs&quot;: []
+    },
+    {
+      &quot;disposition&quot;: &quot;no_issue_found&quot;,
+      &quot;id&quot;: &quot;surface_origin-csrf-and-native-host-exposure&quot;,
+      &quot;label&quot;: &quot;Origin, CSRF and native-host exposure&quot;,
+      &quot;notes&quot;: &quot;Foreign Origin, spoofed X-Forwarded-Proto/Host and Sec-Fetch-Site cross-site requests were rejected. Native hosting guard precedes all API/static handlers. Missing/wrong backend keys reject API and non-API paths with403. Final five incomplete/noncanonical/non-HTTPS hosting config fixtures throw at startup; missing/wrong/multibyte keys return403 without throwing, valid key passes. Earlier HTTPS termination and partial-config guard issues were fixed by task owner during scan and independently revalidated. Source: server/app.mjs:67,77-91; server/hosting.mjs:3-11; server/index.mjs:20.&quot;,
+      &quot;receiptRefs&quot;: []
+    },
+    {
+      &quot;disposition&quot;: &quot;no_issue_found&quot;,
+      &quot;id&quot;: &quot;surface_native-engine-command-and-resource-bounds&quot;,
+      &quot;label&quot;: &quot;Native engine command and resource bounds&quot;,
+      &quot;notes&quot;: &quot;Six executed UCI/FEN/engine-ID/rating/style/search-limit abuse inputs return400 before spawn. Source uses catalog enum, bounded integers, validated legal UCI and canonical FEN, shell:false spawn, bounded active/queued processes and hard deadlines. Inspected supporting Maia2 UCI consumer uses enum-selected checkpoint plus python-chess move parsing. Source: server/engine.mjs:17-39,48-80,114-116,224-238; server/opponent-engines.mjs:39-70,94,180-201.&quot;,
+      &quot;receiptRefs&quot;: []
+    },
+    {
+      &quot;disposition&quot;: &quot;no_issue_found&quot;,
+      &quot;id&quot;: &quot;surface_worker-credential-forwarding-and-streamed-body-bounds&quot;,
+      &quot;label&quot;: &quot;Worker credential forwarding and streamed body bounds&quot;,
+      &quot;notes&quot;: &quot;Offline fetch mock proves missing/foreign/cross-site Origin rejected before fetch, only chesslab_session forwarded, Sites cookie/client Authorization/forwarded-host omitted, secret and Origin derived from trusted server context, redirects refused with502, missing backend config503. Final endless16KiB stream fixture canceled on read17 after crossing256KiB, returned413, zero backend fetches. Source: server/sites-worker.mjs:6-39.&quot;,
+      &quot;receiptRefs&quot;: []
+    },
+    {
+      &quot;disposition&quot;: &quot;no_issue_found&quot;,
+      &quot;id&quot;: &quot;surface_authentication-sessions-and-account-ownership&quot;,
+      &quot;label&quot;: &quot;Authentication, sessions and account ownership&quot;,
+      &quot;notes&quot;: &quot;In-memory fixture: missing/wrong backend key rejected API and non-API paths with 403; fixed HTTPS origin over loopback HTTP registered successfully and emitted Secure/HttpOnly/SameSite=Strict cookie; database stores hash rather than token; 10 cross-account game/export/mutation/analyze requests returned 404 before engine work; logout and expiry returned 401. Controls: server/app.mjs:67,77-110,142-155,267-284.&quot;,
+      &quot;receiptRefs&quot;: []
+    },
+    {
+      &quot;disposition&quot;: &quot;no_issue_found&quot;,
+      &quot;id&quot;: &quot;surface_native-engine-command-boundary&quot;,
+      &quot;label&quot;: &quot;Native engine command boundary&quot;,
+      &quot;notes&quot;: &quot;Six executed engine/FEN/UCI/control injection or bound-abuse inputs rejected with status 400 before process spawning. Source enum and integer validation, canonical legal FEN/history, shell:false spawn, bounded active/queued processes and deadlines hold the boundary: server/engine.mjs:17-39,48-80,114-116,224-238; server/opponent-engines.mjs:39-70,94,180-201. Maia2 supporting script consumes only enum-selected checkpoint and parsed UCI.&quot;,
+      &quot;receiptRefs&quot;: []
+    },
+    {
+      &quot;disposition&quot;: &quot;no_issue_found&quot;,
+      &quot;id&quot;: &quot;surface_worker-request-and-credential-forwarding&quot;,
+      &quot;label&quot;: &quot;Worker request and credential forwarding&quot;,
+      &quot;notes&quot;: &quot;Offline fetch mock: missing/foreign/cross-site Origin rejected before fetch; only chesslab_session forwarded, never Sites cookie or client Authorization/forwarded-host; configured secret and derived fixed origin replace client values; oversized request returned 413 before forwarding; redirects returned 502 without following; missing backend config returned 503. Source: server/sites-worker.mjs:6-30.&quot;,
+      &quot;receiptRefs&quot;: []
+    },
+    {
+      &quot;disposition&quot;: &quot;needs_follow_up&quot;,
+      &quot;id&quot;: &quot;surface_hosting-configuration-and-early-bounds&quot;,
+      &quot;label&quot;: &quot;Hosting configuration and early bounds&quot;,
+      &quot;notes&quot;: &quot;Task owner is correcting malformed multibyte secret header handling and streaming request size enforcement. Reported PUBLIC_ORIGIN-only configuration currently disables shared-secret guard because secret is absent (server/hosting.mjs:4-6); owner has been asked to enforce both configuration fields together.&quot;,
+      &quot;receiptRefs&quot;: []
+    },
+    {
+      &quot;disposition&quot;: &quot;no_issue_found&quot;,
+      &quot;id&quot;: &quot;surface_authentication-account-isolation-and-native-command-boundaries&quot;,
+      &quot;label&quot;: &quot;Authentication, account isolation and native command boundaries&quot;,
+      &quot;notes&quot;: &quot;Inspected the existing 11 server source/test/catalog files. Prepared user ownership, cryptographically random hashed sessions, legal history/FEN canonicalization, engine catalog allowlisting, bounded queues/timeouts and shell:false process spawning are present. PUBLIC_ORIGIN was added during review to resolve the initial HTTPS termination integration issue. Actual Sites enforcement and third-party native engine internals are outside this bounded source review.&quot;,
+      &quot;receiptRefs&quot;: []
+    }
+  ]
+}</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

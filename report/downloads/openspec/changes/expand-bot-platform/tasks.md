@@ -9,7 +9,7 @@
 
 ## 3. Delivery
 - [x] 3.1 Build and inspect integrated browser flows using real installed engines.
-- [ ] 3.2 Update installation/status documents and HTML, commit and verify private push.
+- [x] 3.2 Update installation/status documents and HTML, commit and verify private push.
 
 ## Verification limit
 An earlier combined suite reported seven native Stockfish deadline failures under host load. A later complete41/41 confirmation passed, and the September8 integration passed46/46 with ten actual engine configurations. The earlier load sensitivity remains recorded. Do not describe this as a green full-platform release. Browser observation covers the Maia play/hint/undo/rematch path; all nine configurations have authenticated API move/save checks.

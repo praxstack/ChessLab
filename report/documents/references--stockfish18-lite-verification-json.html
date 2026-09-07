@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Stockfish18 Lite Verification · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Stockfish18 Lite Verification</h1><p class="lede">references/stockfish18-lite-verification.json</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Stockfish18 Lite Verification"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/references/stockfish18-lite-verification.json" download>Download original file ↗</a></div><p class="source-meta">references/stockfish18-lite-verification.json<br>SHA-256: 0158f3cdb4120ffe6526e9867d7ded28cdacadfa28ccbd536317b7c6dd18d593</p><pre><code>{
+  &quot;release&quot;: &quot;https://github.com/nmrugg/stockfish.js/releases/tag/v18.0.0&quot;,
+  &quot;tag&quot;: &quot;v18.0.0&quot;,
+  &quot;published_at&quot;: &quot;2026-02-11T16:00:43Z&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;/tmp/chesslab-stockfish-lite/stockfish-18-lite.js&quot;,
+      &quot;source&quot;: &quot;https://github.com/nmrugg/stockfish.js/releases/download/v18.0.0/stockfish-18-lite.js&quot;,
+      &quot;sha256&quot;: &quot;f79e667c9d56ee768aca35e8343f91548ceef6a732f67cd82f267cf9eab7f665&quot;,
+      &quot;bytes&quot;: 32109
+    },
+    {
+      &quot;path&quot;: &quot;/tmp/chesslab-stockfish-lite/stockfish-18-lite.wasm&quot;,
+      &quot;source&quot;: &quot;https://github.com/nmrugg/stockfish.js/releases/download/v18.0.0/stockfish-18-lite.wasm&quot;,
+      &quot;sha256&quot;: &quot;d50136919dcd90e75eb8df78b255d47d618962b670028b38961343f6eb409174&quot;,
+      &quot;bytes&quot;: 7093151
+    }
+  ],
+  &quot;smoke&quot;: {
+    &quot;date&quot;: &quot;2026-09-07T22:29:53.081Z&quot;,
+    &quot;node&quot;: &quot;v26.8.1&quot;,
+    &quot;platform&quot;: &quot;darwin&quot;,
+    &quot;arch&quot;: &quot;arm64&quot;,
+    &quot;engineName&quot;: &quot;Stockfish 18 Lite WASM Multithreaded&quot;,
+    &quot;uciok&quot;: true,
+    &quot;readyok&quot;: true,
+    &quot;history&quot;: [
+      &quot;e2e4&quot;,
+      &quot;e7e5&quot;,
+      &quot;g1f3&quot;,
+      &quot;b8c6&quot;,
+      &quot;f1b5&quot;,
+      &quot;a7a6&quot;,
+      &quot;b5a4&quot;,
+      &quot;g8f6&quot;,
+      &quot;e1g1&quot;,
+      &quot;f8e7&quot;,
+      &quot;f1e1&quot;,
+      &quot;b7b5&quot;,
+      &quot;a4b3&quot;,
+      &quot;d7d6&quot;,
+      &quot;c2c3&quot;,
+      &quot;e8g8&quot;
+    ],
+    &quot;fen&quot;: &quot;r1bq1rk1/2p1bppp/p1np1n2/1p2p3/4P3/1BP2N2/PP1P1PPP/RNBQR1K1 w - - 1 9&quot;,
+    &quot;threads&quot;: 2,
+    &quot;multiPV&quot;: 2,
+    &quot;movetime&quot;: 200,
+    &quot;bestmove&quot;: &quot;h2h3&quot;,
+    &quot;legal&quot;: true,
+    &quot;elapsedMs&quot;: 441,
+    &quot;options&quot;: [
+      &quot;option name Threads type spin default 1 min 1 max 32&quot;,
+      &quot;option name Hash type spin default 16 min 1 max 33554432&quot;,
+      &quot;option name Clear Hash type button&quot;,
+      &quot;option name Ponder type check default false&quot;,
+      &quot;option name MultiPV type spin default 1 min 1 max 256&quot;,
+      &quot;option name Skill Level type spin default 20 min 0 max 20&quot;,
+      &quot;option name Move Overhead type spin default 10 min 0 max 5000&quot;,
+      &quot;option name nodestime type spin default 0 min 0 max 10000&quot;,
+      &quot;option name UCI_Chess960 type check default false&quot;,
+      &quot;option name UCI_LimitStrength type check default false&quot;,
+      &quot;option name UCI_Elo type spin default 1320 min 1320 max 3190&quot;,
+      &quot;option name UCI_ShowWDL type check default false&quot;,
+      &quot;option name EvalFile type string default nn-9067e33176e8.nnue&quot;,
+      &quot;option name EvalFileSmall type string default &lt;empty&gt;&quot;
+    ],
+    &quot;evaluation&quot;: [
+      &quot;info string NNUE evaluation using nn-9067e33176e8.nnue (11MiB, (22528, 256, 15, 32, 1))&quot;
+    ]
+  },
+  &quot;sourceCommit&quot;: &quot;31a98753a5d932511693f44775da908377c24513&quot;,
+  &quot;sourceArchive&quot;: &quot;https://github.com/nmrugg/stockfish.js/archive/refs/tags/v18.0.0.tar.gz&quot;,
+  &quot;license&quot;: {
+    &quot;path&quot;: &quot;/tmp/chesslab-stockfish-lite/Copying.txt&quot;,
+    &quot;source&quot;: &quot;https://raw.githubusercontent.com/nmrugg/stockfish.js/31a98753a5d932511693f44775da908377c24513/Copying.txt&quot;,
+    &quot;sha256&quot;: &quot;0b383d5a63da644f628d99c33976ea6487ed89aaa59f0b3257992deac1171e6b&quot;
+  }
+}</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>
