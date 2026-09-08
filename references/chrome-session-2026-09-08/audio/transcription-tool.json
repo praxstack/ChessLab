@@ -1,0 +1,7 @@
+{
+  "tag": "b4938",
+  "release": "https://github.com/ggml-org/whisper.cpp/releases/tag/b4938",
+  "source": "https://api.github.com/repos/ggml-org/whisper.cpp/tarball/b4938",
+  "archiveSha256": "59f16e008b0fe4f283b5bede96952aed5a8f2e16c2f2f721f263218982a153e7",
+  "sourceDirectory": "/tmp/chesslab-coach-audio/whisper-source"
+}

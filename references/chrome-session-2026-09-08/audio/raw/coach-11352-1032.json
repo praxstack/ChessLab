@@ -1,0 +1,338 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | SME2 = 1 | ACCELERATE = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "large",
+		"multilingual": true,
+		"vocab": 51866,
+		"audio": {
+			"ctx": 1500,
+			"state": 1280,
+			"head": 20,
+			"layer": 32
+		},
+		"text": {
+			"ctx": 448,
+			"state": 1280,
+			"head": 20,
+			"layer": 4
+		},
+		"mels": 128,
+		"ftype": 7
+	},
+	"params": {
+		"model": "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:02,300"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 2300
+			},
+			"text": " If I can grab space in the center, I usually do.",
+			"tokens": [
+				{
+					"text": "[_BEG_]",
+					"timestamps": {
+						"from": "00:00:00,000",
+						"to": "00:00:00,000"
+					},
+					"offsets": {
+						"from": 0,
+						"to": 0
+					},
+					"id": 50365,
+					"p": 0.995202,
+					"t_dtw": -1
+				},
+				{
+					"text": " If",
+					"timestamps": {
+						"from": "00:00:00,040",
+						"to": "00:00:00,080"
+					},
+					"offsets": {
+						"from": 40,
+						"to": 80
+					},
+					"id": 759,
+					"p": 0.872523,
+					"t_dtw": -1
+				},
+				{
+					"text": " I",
+					"timestamps": {
+						"from": "00:00:00,140",
+						"to": "00:00:00,150"
+					},
+					"offsets": {
+						"from": 140,
+						"to": 150
+					},
+					"id": 286,
+					"p": 0.998195,
+					"t_dtw": -1
+				},
+				{
+					"text": " can",
+					"timestamps": {
+						"from": "00:00:00,150",
+						"to": "00:00:00,260"
+					},
+					"offsets": {
+						"from": 150,
+						"to": 260
+					},
+					"id": 393,
+					"p": 0.997038,
+					"t_dtw": -1
+				},
+				{
+					"text": " grab",
+					"timestamps": {
+						"from": "00:00:00,320",
+						"to": "00:00:00,500"
+					},
+					"offsets": {
+						"from": 320,
+						"to": 500
+					},
+					"id": 4444,
+					"p": 0.998249,
+					"t_dtw": -1
+				},
+				{
+					"text": " space",
+					"timestamps": {
+						"from": "00:00:00,500",
+						"to": "00:00:00,660"
+					},
+					"offsets": {
+						"from": 500,
+						"to": 660
+					},
+					"id": 1901,
+					"p": 0.998321,
+					"t_dtw": -1
+				},
+				{
+					"text": " in",
+					"timestamps": {
+						"from": "00:00:00,800",
+						"to": "00:00:00,860"
+					},
+					"offsets": {
+						"from": 800,
+						"to": 860
+					},
+					"id": 294,
+					"p": 0.989568,
+					"t_dtw": -1
+				},
+				{
+					"text": " the",
+					"timestamps": {
+						"from": "00:00:00,860",
+						"to": "00:00:01,000"
+					},
+					"offsets": {
+						"from": 860,
+						"to": 1000
+					},
+					"id": 264,
+					"p": 0.99891,
+					"t_dtw": -1
+				},
+				{
+					"text": " center",
+					"timestamps": {
+						"from": "00:00:01,020",
+						"to": "00:00:01,320"
+					},
+					"offsets": {
+						"from": 1020,
+						"to": 1320
+					},
+					"id": 3056,
+					"p": 0.988584,
+					"t_dtw": -1
+				},
+				{
+					"text": ",",
+					"timestamps": {
+						"from": "00:00:01,320",
+						"to": "00:00:01,460"
+					},
+					"offsets": {
+						"from": 1320,
+						"to": 1460
+					},
+					"id": 11,
+					"p": 0.963948,
+					"t_dtw": -1
+				},
+				{
+					"text": " I",
+					"timestamps": {
+						"from": "00:00:01,460",
+						"to": "00:00:01,520"
+					},
+					"offsets": {
+						"from": 1460,
+						"to": 1520
+					},
+					"id": 286,
+					"p": 0.959364,
+					"t_dtw": -1
+				},
+				{
+					"text": " usually",
+					"timestamps": {
+						"from": "00:00:01,520",
+						"to": "00:00:01,970"
+					},
+					"offsets": {
+						"from": 1520,
+						"to": 1970
+					},
+					"id": 2673,
+					"p": 0.998809,
+					"t_dtw": -1
+				},
+				{
+					"text": " do",
+					"timestamps": {
+						"from": "00:00:01,970",
+						"to": "00:00:02,020"
+					},
+					"offsets": {
+						"from": 1970,
+						"to": 2020
+					},
+					"id": 360,
+					"p": 0.998877,
+					"t_dtw": -1
+				},
+				{
+					"text": ".",
+					"timestamps": {
+						"from": "00:00:02,090",
+						"to": "00:00:02,300"
+					},
+					"offsets": {
+						"from": 2090,
+						"to": 2300
+					},
+					"id": 13,
+					"p": 0.991456,
+					"t_dtw": -1
+				},
+				{
+					"text": "[_TT_115]",
+					"timestamps": {
+						"from": "00:00:02,300",
+						"to": "00:00:02,300"
+					},
+					"offsets": {
+						"from": 2300,
+						"to": 2300
+					},
+					"id": 50480,
+					"p": 0.165899,
+					"t_dtw": -1
+				}
+			]
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,300",
+				"to": "00:00:04,320"
+			},
+			"offsets": {
+				"from": 3300,
+				"to": 4320
+			},
+			"text": " Logic is happening.",
+			"tokens": [
+				{
+					"text": " Logic",
+					"timestamps": {
+						"from": "00:00:03,300",
+						"to": "00:00:03,300"
+					},
+					"offsets": {
+						"from": 3300,
+						"to": 3300
+					},
+					"id": 49898,
+					"p": 0.996913,
+					"t_dtw": -1
+				},
+				{
+					"text": " is",
+					"timestamps": {
+						"from": "00:00:03,300",
+						"to": "00:00:03,300"
+					},
+					"offsets": {
+						"from": 3300,
+						"to": 3300
+					},
+					"id": 307,
+					"p": 0.999857,
+					"t_dtw": -1
+				},
+				{
+					"text": " happening",
+					"timestamps": {
+						"from": "00:00:03,340",
+						"to": "00:00:03,960"
+					},
+					"offsets": {
+						"from": 3340,
+						"to": 3960
+					},
+					"id": 2737,
+					"p": 0.999685,
+					"t_dtw": -1
+				},
+				{
+					"text": ".",
+					"timestamps": {
+						"from": "00:00:04,100",
+						"to": "00:00:04,300"
+					},
+					"offsets": {
+						"from": 4100,
+						"to": 4300
+					},
+					"id": 13,
+					"p": 0.972019,
+					"t_dtw": -1
+				},
+				{
+					"text": "[_TT_216]",
+					"timestamps": {
+						"from": "00:00:04,320",
+						"to": "00:00:04,320"
+					},
+					"offsets": {
+						"from": 4320,
+						"to": 4320
+					},
+					"id": 50581,
+					"p": 0.496244,
+					"t_dtw": -1
+				}
+			]
+		}
+	]
+}

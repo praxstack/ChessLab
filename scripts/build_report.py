@@ -63,9 +63,14 @@ def category(path):
 def source_files():
     files = {ROOT/p for p in ['README.md','CONTEXT.md','AGENTS.md','CLAUDE.md','skills.local.json','justfile','.gitignore','.gitattributes','references/engine-installation.json','references/engine-games-verification.json','references/engine-availability.md','references/chesscom-piece-assets.json','web/public/bots/provenance.json']}
     files.update(p for p in (ROOT/'references').iterdir() if p.is_file() and p.suffix in ['.json','.md'])
+    files.update((ROOT/'references').glob('chrome-session-*/session-report.md'))
     for folder in ['docs','openspec','scripts']:
         files.update(p for p in (ROOT/folder).rglob('*') if p.is_file() and not p.is_symlink() and '__pycache__' not in p.parts and p.name != '.gitkeep')
     return sorted(files)
+
+
+def capture_files():
+    return sorted(p for folder in (ROOT/'references').glob('chrome-session-*') for p in folder.rglob('*') if p.is_file())
 
 
 def doc_name(path):
@@ -94,6 +99,9 @@ class Fragment(HTMLParser):
                         data[key] = self.base+'/downloads/'+target.relative_to(ROOT).as_posix()
                     else:
                         data[key] = self.base+'/documents/'+doc_name(target)
+                    if parsed.fragment: data[key] += '#'+parsed.fragment
+                elif target.is_relative_to(ROOT/'references') and any(part.startswith('chrome-session-') for part in target.parts):
+                    data[key] = self.base+'/'+target.relative_to(ROOT).as_posix()
                     if parsed.fragment: data[key] += '#'+parsed.fragment
                 elif target.is_relative_to(OUT):
                     data[key] = self.base+'/'+target.relative_to(OUT).as_posix()
@@ -206,8 +214,11 @@ def build():
             content='<pre><code>'+html.escape(text)+'</code></pre>'
         output=OUT/'documents'/doc_name(path); output.write_text(render_page(title,'Document library',notice+content,toc,'library','..',str(rel),doc=True)); outputs.append(output)
     outputs += [p for p in (OUT/'assets').iterdir() if p.is_file()]
+    for path in capture_files():
+        output=OUT/path.relative_to(ROOT); output.parent.mkdir(parents=True,exist_ok=True); shutil.copyfile(path,output); outputs.append(output)
     inputs={p.relative_to(ROOT).as_posix():digest(p.read_bytes()) for p in files}
     manifest={'edition':'2026-09-08','generator':'scripts/build_report.py','document_count':len(files),'chapter_count':len(CHAPTERS),'source_hashes':inputs,'output_hashes':{p.relative_to(OUT).as_posix():digest(p.read_bytes()) for p in sorted(outputs)}}
+    manifest['capture_source_hashes']={p.relative_to(ROOT).as_posix():digest(p.read_bytes()) for p in capture_files()}
     (OUT/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     print(f'Built {len(CHAPTERS)} chapters and {len(files)} full document pages in {OUT}')
 
@@ -228,6 +239,8 @@ def check():
         if not (ROOT/name).is_file() or digest((ROOT/name).read_bytes())!=expected: raise RuntimeError('Changed source; rebuild: '+name)
     current={p.relative_to(ROOT).as_posix() for p in source_files()}
     if current != set(manifest['source_hashes']): raise RuntimeError('Source inventory changed; rebuild')
+    captures={p.relative_to(ROOT).as_posix():digest(p.read_bytes()) for p in capture_files()}
+    if captures != manifest.get('capture_source_hashes',{}): raise RuntimeError('Capture evidence changed; rebuild')
     for name,expected in manifest['output_hashes'].items():
         if not (OUT/name).is_file() or digest((OUT/name).read_bytes())!=expected: raise RuntimeError('Stale or edited output: '+name)
     pages={p:Links() for p in OUT.rglob('*.html') if 'downloads' not in p.parts}

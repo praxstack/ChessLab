@@ -20,7 +20,7 @@
 <header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
 <main id="main" tabindex="-1">
 <header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>HTML dossier generator</h1><p class="lede">scripts/build_report.py</p></header>
-<div class="reading-layout"><article class="prose" aria-label="HTML dossier generator"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/build_report.py" download>Download original file ↗</a></div><p class="source-meta">scripts/build_report.py<br>SHA-256: fd1cc7d6895568825712ba807726a9d811721af71a0292d4fedc333aefa31a5f</p><pre><code>&quot;&quot;&quot;Generate the portable ChessLab dossier from project sources; requires Pandoc.&quot;&quot;&quot;
+<div class="reading-layout"><article class="prose" aria-label="HTML dossier generator"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/build_report.py" download>Download original file ↗</a></div><p class="source-meta">scripts/build_report.py<br>SHA-256: 112ffee979aa98b337ab3566f8776b38343eb2919bf63b07d7092d2447b032fc</p><pre><code>&quot;&quot;&quot;Generate the portable ChessLab dossier from project sources; requires Pandoc.&quot;&quot;&quot;
 import argparse
 import hashlib
 import html
@@ -85,9 +85,14 @@ def category(path):
 def source_files():
     files = {ROOT/p for p in [&#x27;README.md&#x27;,&#x27;CONTEXT.md&#x27;,&#x27;AGENTS.md&#x27;,&#x27;CLAUDE.md&#x27;,&#x27;skills.local.json&#x27;,&#x27;justfile&#x27;,&#x27;.gitignore&#x27;,&#x27;.gitattributes&#x27;,&#x27;references/engine-installation.json&#x27;,&#x27;references/engine-games-verification.json&#x27;,&#x27;references/engine-availability.md&#x27;,&#x27;references/chesscom-piece-assets.json&#x27;,&#x27;web/public/bots/provenance.json&#x27;]}
     files.update(p for p in (ROOT/&#x27;references&#x27;).iterdir() if p.is_file() and p.suffix in [&#x27;.json&#x27;,&#x27;.md&#x27;])
+    files.update((ROOT/&#x27;references&#x27;).glob(&#x27;chrome-session-*/session-report.md&#x27;))
     for folder in [&#x27;docs&#x27;,&#x27;openspec&#x27;,&#x27;scripts&#x27;]:
         files.update(p for p in (ROOT/folder).rglob(&#x27;*&#x27;) if p.is_file() and not p.is_symlink() and &#x27;__pycache__&#x27; not in p.parts and p.name != &#x27;.gitkeep&#x27;)
     return sorted(files)
+
+
+def capture_files():
+    return sorted(p for folder in (ROOT/&#x27;references&#x27;).glob(&#x27;chrome-session-*&#x27;) for p in folder.rglob(&#x27;*&#x27;) if p.is_file())
 
 
 def doc_name(path):
@@ -116,6 +121,9 @@ class Fragment(HTMLParser):
                         data[key] = self.base+&#x27;/downloads/&#x27;+target.relative_to(ROOT).as_posix()
                     else:
                         data[key] = self.base+&#x27;/documents/&#x27;+doc_name(target)
+                    if parsed.fragment: data[key] += &#x27;#&#x27;+parsed.fragment
+                elif target.is_relative_to(ROOT/&#x27;references&#x27;) and any(part.startswith(&#x27;chrome-session-&#x27;) for part in target.parts):
+                    data[key] = self.base+&#x27;/&#x27;+target.relative_to(ROOT).as_posix()
                     if parsed.fragment: data[key] += &#x27;#&#x27;+parsed.fragment
                 elif target.is_relative_to(OUT):
                     data[key] = self.base+&#x27;/&#x27;+target.relative_to(OUT).as_posix()
@@ -228,8 +236,11 @@ def build():
             content=&#x27;&lt;pre&gt;&lt;code&gt;&#x27;+html.escape(text)+&#x27;&lt;/code&gt;&lt;/pre&gt;&#x27;
         output=OUT/&#x27;documents&#x27;/doc_name(path); output.write_text(render_page(title,&#x27;Document library&#x27;,notice+content,toc,&#x27;library&#x27;,&#x27;..&#x27;,str(rel),doc=True)); outputs.append(output)
     outputs += [p for p in (OUT/&#x27;assets&#x27;).iterdir() if p.is_file()]
+    for path in capture_files():
+        output=OUT/path.relative_to(ROOT); output.parent.mkdir(parents=True,exist_ok=True); shutil.copyfile(path,output); outputs.append(output)
     inputs={p.relative_to(ROOT).as_posix():digest(p.read_bytes()) for p in files}
     manifest={&#x27;edition&#x27;:&#x27;2026-09-08&#x27;,&#x27;generator&#x27;:&#x27;scripts/build_report.py&#x27;,&#x27;document_count&#x27;:len(files),&#x27;chapter_count&#x27;:len(CHAPTERS),&#x27;source_hashes&#x27;:inputs,&#x27;output_hashes&#x27;:{p.relative_to(OUT).as_posix():digest(p.read_bytes()) for p in sorted(outputs)}}
+    manifest[&#x27;capture_source_hashes&#x27;]={p.relative_to(ROOT).as_posix():digest(p.read_bytes()) for p in capture_files()}
     (OUT/&#x27;manifest.json&#x27;).write_text(json.dumps(manifest,indent=2)+&#x27;\n&#x27;)
     print(f&#x27;Built {len(CHAPTERS)} chapters and {len(files)} full document pages in {OUT}&#x27;)
 
@@ -250,6 +261,8 @@ def check():
         if not (ROOT/name).is_file() or digest((ROOT/name).read_bytes())!=expected: raise RuntimeError(&#x27;Changed source; rebuild: &#x27;+name)
     current={p.relative_to(ROOT).as_posix() for p in source_files()}
     if current != set(manifest[&#x27;source_hashes&#x27;]): raise RuntimeError(&#x27;Source inventory changed; rebuild&#x27;)
+    captures={p.relative_to(ROOT).as_posix():digest(p.read_bytes()) for p in capture_files()}
+    if captures != manifest.get(&#x27;capture_source_hashes&#x27;,{}): raise RuntimeError(&#x27;Capture evidence changed; rebuild&#x27;)
     for name,expected in manifest[&#x27;output_hashes&#x27;].items():
         if not (OUT/name).is_file() or digest((OUT/name).read_bytes())!=expected: raise RuntimeError(&#x27;Stale or edited output: &#x27;+name)
     pages={p:Links() for p in OUT.rglob(&#x27;*.html&#x27;) if &#x27;downloads&#x27; not in p.parts}

@@ -1,0 +1,62 @@
+{
+  "inputs": [
+    {
+      "source": "/Users/prax/Developer/ChessLab/references/chrome-session-2026-09-08/audio/coach-11352-1021.mp3",
+      "sourceSha256": "d6ae0a9f295b3f8f56dc382c9e4d73c75c0382403b793a23e4f84e7d45f67439",
+      "wav": "/tmp/chesslab-coach-audio/coach-11352-1021.wav",
+      "wavBytes": 197726
+    },
+    {
+      "source": "/Users/prax/Developer/ChessLab/references/chrome-session-2026-09-08/audio/coach-11352-1028.mp3",
+      "sourceSha256": "7ded999c68494d6a4f1a3017bb734b37fb04f5c23768d220c097f527c04282a9",
+      "wav": "/tmp/chesslab-coach-audio/coach-11352-1028.wav",
+      "wavBytes": 148686
+    },
+    {
+      "source": "/Users/prax/Developer/ChessLab/references/chrome-session-2026-09-08/audio/coach-11352-1029.mp3",
+      "sourceSha256": "e466db7af87d592ee56b495a0a4310c21c246e3837d03f0d34752f413ae72e3c",
+      "wav": "/tmp/chesslab-coach-audio/coach-11352-1029.wav",
+      "wavBytes": 68438
+    },
+    {
+      "source": "/Users/prax/Developer/ChessLab/references/chrome-session-2026-09-08/audio/coach-11352-1032.mp3",
+      "sourceSha256": "e02b42134d4da809c0c93b74d268b931869540c1a14662485cff6d0d98be854d",
+      "wav": "/tmp/chesslab-coach-audio/coach-11352-1032.wav",
+      "wavBytes": 153144
+    },
+    {
+      "source": "/Users/prax/Developer/ChessLab/references/chrome-session-2026-09-08/audio/coach-11352-1034.mp3",
+      "sourceSha256": "e30fabd6cfaf8ef1ccd26bc9aa1fe7b402cdc978bda6ac6ebc7ab29eb5357716",
+      "wav": "/tmp/chesslab-coach-audio/coach-11352-1034.wav",
+      "wavBytes": 32772
+    },
+    {
+      "source": "/Users/prax/Developer/ChessLab/references/chrome-session-2026-09-08/audio/coach-11352-1036.mp3",
+      "sourceSha256": "39adddab7f32e5ad5e06bfe6aa0d3290fb05149322220297461893bb1aaeee0e",
+      "wav": "/tmp/chesslab-coach-audio/coach-11352-1036.wav",
+      "wavBytes": 34258
+    },
+    {
+      "source": "/Users/prax/Developer/ChessLab/references/chrome-session-2026-09-08/audio/coach-11352-1039.mp3",
+      "sourceSha256": "37d7a320895082c954fdb55aa81fae33946c6fc97159ebb231b4a5535593bc36",
+      "wav": "/tmp/chesslab-coach-audio/coach-11352-1039.wav",
+      "wavBytes": 169492
+    },
+    {
+      "source": "/Users/prax/Developer/ChessLab/references/chrome-session-2026-09-08/audio/coach-d4-0.mp3",
+      "sourceSha256": "48085eff3e2c030b81105a2500a04a83a79af256e29d3c321dceace28cb9eefb",
+      "wav": "/tmp/chesslab-coach-audio/coach-d4-0.wav",
+      "wavBytes": 190296
+    },
+    {
+      "source": "/Users/prax/Developer/ChessLab/references/chrome-session-2026-09-08/audio/coach-d4-1.mp3",
+      "sourceSha256": "863a92e3ef25578a0e935dc07847d52d51024147dad24ff863fa37cd4d91a9ec",
+      "wav": "/tmp/chesslab-coach-audio/coach-d4-1.wav",
+      "wavBytes": 92216
+    }
+  ],
+  "model": "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+  "modelBytes": 874188075,
+  "modelSha256": "317eb69c11673c9de1e1f0d459b253999804ec71ac4c23c17ecf5fbe24e259a1",
+  "expectedTextPrompt": null
+}

@@ -1,0 +1,133 @@
+2026-09-08T00:18:16.068Z
+- navigation "Main":
+  - link "Skip to content":
+    - /url: "#scroll-top-anchor"
+    - generic: Skip to content
+  - link "Chess.com - Play Chess Online":
+    - /url: https://www.chess.com/home
+  - link "Play":
+    - /url: https://www.chess.com/play
+    - generic: Play
+  - link "Puzzles":
+    - /url: https://www.chess.com/puzzles
+    - generic: Puzzles
+  - link "Learn":
+    - /url: https://www.chess.com/learn
+    - generic: Learn
+  - heading "More" [level=3]
+  - heading "Search" [level=2]
+  - link "Avatar of PraxStack PraxStack":
+    - /url: https://www.chess.com/member/praxstack
+    - img "Avatar of PraxStack"
+    - heading "PraxStack" [level=2]
+  - button:
+  - button:
+  - button "2":
+    - generic: "2"
+  - button:
+- img "Avatar"
+- generic: Cliff - Triangle
+- generic: (300)
+- button "Settings":
+- img "Avatar"
+- generic: PraxStack
+- img "Show your flair!"
+- heading "Play Bots" [level=1]
+- button:
+- generic: Ding! Ding! Ding! Time for a game!
+- generic: Cliff - Triangle
+- generic: "300"
+- heading "Band Class" [level=3]: Band Class
+- generic: 23D
+- img "Cliff-BOT"
+- generic: "5"
+- img "Duke-BOT"
+- generic: "8"
+- img "Ella-BOT"
+- generic: "12"
+- img "Nina-BOT"
+- generic: "20"
+- img "Mr-Blakey-BOT"
+- generic: "30"
+- img "Snare Drum"
+- img "Band Class"
+- img "Band Class"
+- img "Pawn Horn"
+- text: Unlock Rewards by Collecting
+- generic: 0/180
+- heading "All Bots" [level=3]
+- generic: New to Chess
+- generic: 5 bots
+- img "Default"
+- generic: Beginner
+- generic: 15 bots
+- img "Default"
+- generic: Intermediate
+- generic: 15 bots
+- img "Default"
+- generic: Advanced
+- generic: 20 bots
+- img "Default"
+- generic: Master
+- generic: 10 bots
+- img "Default"
+- generic: Adaptive
+- generic: 5 bots
+- img "Default"
+- generic: Athletes
+- generic: 13 bots
+- img "Default"
+- generic: Musicians
+- generic: 6 bots
+- img "Default"
+- generic: Creators
+- generic: 36 bots
+- img "Default"
+- generic: Top Players
+- generic: 22 bots
+- img "Default"
+- generic: Personalities
+- generic: 14 bots
+- img "Default"
+- generic: Engine
+- generic: 25 bots
+- img "Default"
+- button "Options" [active]:
+  - generic: Options
+- button
+- button
+- button
+- button "No Timer"
+- generic: Bullet
+- button "1 min":
+  - generic: 1 min
+- button "1 + 1":
+  - generic: 1 + 1
+- button "2 + 1":
+  - generic: 2 + 1
+- generic: Blitz
+- button "3 + 2":
+  - generic: 3 + 2
+- button "5 min":
+  - generic: 5 min
+- button "5 + 5":
+  - generic: 5 + 5
+- generic: Rapid
+- button "10 min":
+  - generic: 10 min
+- button "15 + 10":
+  - generic: 15 + 10
+- button "30 min":
+  - generic: 30 min
+- button "10 + 5":
+  - generic: 10 + 5
+- button "20 min":
+  - generic: 20 min
+- button "60 min":
+  - generic: 60 min
+- button "Standard":
+  - generic: Standard
+- generic: Bot Chat
+- checkbox [checked]
+- button "Play":
+  - generic: Play

@@ -102,3 +102,12 @@ The user subsequently supplied the missing184MB master ZIP. Its matchingSHA-256 
 ### Responsive correction
 
 The old 800px breakpoint stacked a 620px board above the bot roster in the user’s 758px-wide pane, pushing Play below the initial viewport. The stack breakpoint is now 720px; the side panel uses 300px and the board takes the remaining width. At 390 × 844, Play is fixed above navigation and the welcome panel retains 88px bottom clearance. Browser geometry confirmed no horizontal overflow and 38px clearance between the final content and Play at maximum scroll. The production build passed. These CSS changes did not alter engine or account logic; the preceding 46-test result applies to that unchanged logic.
+
+
+## 8 September 2026 — reference recording and authentication continuation
+
+The actual Chrome reference session covered Coach, bot play, two solved puzzles and Game Review. Original screenshots, eleven accepted speech transcripts, sound-effect rejections and the exact gaps are indexed in [the capture atlas](../references/chrome-session-2026-09-08/index.html) and [session report](../references/chrome-session-2026-09-08/session-report.md). An unrated online match auto-aborted after automatic approval review blocked the first coordinate move.
+
+A reproduced guest puzzle move was discarded by sign-in. Commit cde3d74 preserves explicit pending bot/puzzle/lesson/import actions, cancels them when dismissed, and guards late account/exercise/game-list responses. Puzzles now have Solve puzzles and Next puzzle controls. Actual Chrome checks passed for all four sign-in continuations, a legal Martin bot reply, hint, undo, resignation and engine review. `just app-check` passed all 55 tests and built the app; all four OpenSpec changes validated. `just check` still reports external drift of the globally installed unslop skill hash; its baseline was preserved.
+
+Sites version 4 published with owner-only access. The deployed app and new puzzle entry load in Chrome. Fresh hosted gameplay remains unverified: automatic approval review blocked creating a new hosted QA account, and the existing app session was signed out. No account was created. This is distinct from the successful local gameplay check and the earlier hosted verification. Full Chess.com parity remains unfinished.

@@ -1,0 +1,408 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | SME2 = 1 | ACCELERATE = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "large",
+		"multilingual": true,
+		"vocab": 51866,
+		"audio": {
+			"ctx": 1500,
+			"state": 1280,
+			"head": 20,
+			"layer": 32
+		},
+		"text": {
+			"ctx": 448,
+			"state": 1280,
+			"head": 20,
+			"layer": 4
+		},
+		"mels": 128,
+		"ftype": 7
+	},
+	"params": {
+		"model": "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:03,100"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 3100
+			},
+			"text": " When black plays the perk, you should grab space.",
+			"tokens": [
+				{
+					"text": "[_BEG_]",
+					"timestamps": {
+						"from": "00:00:00,000",
+						"to": "00:00:00,000"
+					},
+					"offsets": {
+						"from": 0,
+						"to": 0
+					},
+					"id": 50365,
+					"p": 0.982518,
+					"t_dtw": -1
+				},
+				{
+					"text": " When",
+					"timestamps": {
+						"from": "00:00:00,100",
+						"to": "00:00:00,230"
+					},
+					"offsets": {
+						"from": 100,
+						"to": 230
+					},
+					"id": 1133,
+					"p": 0.758864,
+					"t_dtw": -1
+				},
+				{
+					"text": " black",
+					"timestamps": {
+						"from": "00:00:00,260",
+						"to": "00:00:00,590"
+					},
+					"offsets": {
+						"from": 260,
+						"to": 590
+					},
+					"id": 2211,
+					"p": 0.650473,
+					"t_dtw": -1
+				},
+				{
+					"text": " plays",
+					"timestamps": {
+						"from": "00:00:00,590",
+						"to": "00:00:00,820"
+					},
+					"offsets": {
+						"from": 590,
+						"to": 820
+					},
+					"id": 5749,
+					"p": 0.995625,
+					"t_dtw": -1
+				},
+				{
+					"text": " the",
+					"timestamps": {
+						"from": "00:00:00,930",
+						"to": "00:00:01,120"
+					},
+					"offsets": {
+						"from": 930,
+						"to": 1120
+					},
+					"id": 264,
+					"p": 0.984575,
+					"t_dtw": -1
+				},
+				{
+					"text": " perk",
+					"timestamps": {
+						"from": "00:00:01,120",
+						"to": "00:00:01,160"
+					},
+					"offsets": {
+						"from": 1120,
+						"to": 1160
+					},
+					"id": 38839,
+					"p": 0.930855,
+					"t_dtw": -1
+				},
+				{
+					"text": ",",
+					"timestamps": {
+						"from": "00:00:01,390",
+						"to": "00:00:01,490"
+					},
+					"offsets": {
+						"from": 1390,
+						"to": 1490
+					},
+					"id": 11,
+					"p": 0.92866,
+					"t_dtw": -1
+				},
+				{
+					"text": " you",
+					"timestamps": {
+						"from": "00:00:01,620",
+						"to": "00:00:01,760"
+					},
+					"offsets": {
+						"from": 1620,
+						"to": 1760
+					},
+					"id": 291,
+					"p": 0.940048,
+					"t_dtw": -1
+				},
+				{
+					"text": " should",
+					"timestamps": {
+						"from": "00:00:01,760",
+						"to": "00:00:02,140"
+					},
+					"offsets": {
+						"from": 1760,
+						"to": 2140
+					},
+					"id": 820,
+					"p": 0.998494,
+					"t_dtw": -1
+				},
+				{
+					"text": " grab",
+					"timestamps": {
+						"from": "00:00:02,220",
+						"to": "00:00:02,490"
+					},
+					"offsets": {
+						"from": 2220,
+						"to": 2490
+					},
+					"id": 4444,
+					"p": 0.99574,
+					"t_dtw": -1
+				},
+				{
+					"text": " space",
+					"timestamps": {
+						"from": "00:00:02,490",
+						"to": "00:00:02,620"
+					},
+					"offsets": {
+						"from": 2490,
+						"to": 2620
+					},
+					"id": 1901,
+					"p": 0.997647,
+					"t_dtw": -1
+				},
+				{
+					"text": ".",
+					"timestamps": {
+						"from": "00:00:03,100",
+						"to": "00:00:03,100"
+					},
+					"offsets": {
+						"from": 3100,
+						"to": 3100
+					},
+					"id": 13,
+					"p": 0.983879,
+					"t_dtw": -1
+				},
+				{
+					"text": "[_TT_155]",
+					"timestamps": {
+						"from": "00:00:03,100",
+						"to": "00:00:03,100"
+					},
+					"offsets": {
+						"from": 3100,
+						"to": 3100
+					},
+					"id": 50520,
+					"p": 0.164564,
+					"t_dtw": -1
+				}
+			]
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,100",
+				"to": "00:00:06,240"
+			},
+			"offsets": {
+				"from": 3100,
+				"to": 6240
+			},
+			"text": " Did you grab space or were you just born yesterday?",
+			"tokens": [
+				{
+					"text": " Did",
+					"timestamps": {
+						"from": "00:00:03,200",
+						"to": "00:00:03,320"
+					},
+					"offsets": {
+						"from": 3200,
+						"to": 3320
+					},
+					"id": 2589,
+					"p": 0.997952,
+					"t_dtw": -1
+				},
+				{
+					"text": " you",
+					"timestamps": {
+						"from": "00:00:03,320",
+						"to": "00:00:03,520"
+					},
+					"offsets": {
+						"from": 3320,
+						"to": 3520
+					},
+					"id": 291,
+					"p": 0.999836,
+					"t_dtw": -1
+				},
+				{
+					"text": " grab",
+					"timestamps": {
+						"from": "00:00:03,650",
+						"to": "00:00:03,790"
+					},
+					"offsets": {
+						"from": 3650,
+						"to": 3790
+					},
+					"id": 4444,
+					"p": 0.998982,
+					"t_dtw": -1
+				},
+				{
+					"text": " space",
+					"timestamps": {
+						"from": "00:00:03,870",
+						"to": "00:00:04,240"
+					},
+					"offsets": {
+						"from": 3870,
+						"to": 4240
+					},
+					"id": 1901,
+					"p": 0.999371,
+					"t_dtw": -1
+				},
+				{
+					"text": " or",
+					"timestamps": {
+						"from": "00:00:04,240",
+						"to": "00:00:04,260"
+					},
+					"offsets": {
+						"from": 4240,
+						"to": 4260
+					},
+					"id": 420,
+					"p": 0.582328,
+					"t_dtw": -1
+				},
+				{
+					"text": " were",
+					"timestamps": {
+						"from": "00:00:04,500",
+						"to": "00:00:04,590"
+					},
+					"offsets": {
+						"from": 4500,
+						"to": 4590
+					},
+					"id": 645,
+					"p": 0.994473,
+					"t_dtw": -1
+				},
+				{
+					"text": " you",
+					"timestamps": {
+						"from": "00:00:04,710",
+						"to": "00:00:04,840"
+					},
+					"offsets": {
+						"from": 4710,
+						"to": 4840
+					},
+					"id": 291,
+					"p": 0.995429,
+					"t_dtw": -1
+				},
+				{
+					"text": " just",
+					"timestamps": {
+						"from": "00:00:04,840",
+						"to": "00:00:05,110"
+					},
+					"offsets": {
+						"from": 4840,
+						"to": 5110
+					},
+					"id": 445,
+					"p": 0.997822,
+					"t_dtw": -1
+				},
+				{
+					"text": " born",
+					"timestamps": {
+						"from": "00:00:05,110",
+						"to": "00:00:05,240"
+					},
+					"offsets": {
+						"from": 5110,
+						"to": 5240
+					},
+					"id": 4232,
+					"p": 0.998759,
+					"t_dtw": -1
+				},
+				{
+					"text": " yesterday",
+					"timestamps": {
+						"from": "00:00:05,420",
+						"to": "00:00:05,670"
+					},
+					"offsets": {
+						"from": 5420,
+						"to": 5670
+					},
+					"id": 5186,
+					"p": 0.99879,
+					"t_dtw": -1
+				},
+				{
+					"text": "?",
+					"timestamps": {
+						"from": "00:00:06,240",
+						"to": "00:00:06,240"
+					},
+					"offsets": {
+						"from": 6240,
+						"to": 6240
+					},
+					"id": 30,
+					"p": 0.97394,
+					"t_dtw": -1
+				},
+				{
+					"text": "[_TT_312]",
+					"timestamps": {
+						"from": "00:00:06,240",
+						"to": "00:00:06,240"
+					},
+					"offsets": {
+						"from": 6240,
+						"to": 6240
+					},
+					"id": 50677,
+					"p": 0.0948508,
+					"t_dtw": -1
+				}
+			]
+		}
+	]
+}

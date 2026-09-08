@@ -1,0 +1,2 @@
+2026-09-08T00:22:09.860Z
+PASS: exact guest puzzle move resumed after sign-in.

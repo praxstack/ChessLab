@@ -1,0 +1,4 @@
+2026-09-07T23:56:50.670Z
+Browser tab: 325035087, Title: "Play Chess with a Virtual Coach - Chess.com", URL: "https://www.chess.com/play/coach?source=play_root".
+There has been no change in the accessibility tree.
+The focused UI element is 47 button (expanded) Hide Levels, Secondary Actions: Collapse

@@ -1,0 +1,77 @@
+2026-09-08T00:28:08.512Z
+- navigation "Main":
+  - link "Skip to content":
+    - /url: "#scroll-top-anchor"
+    - generic: Skip to content
+  - link "Chess.com - Play Chess Online":
+    - /url: https://www.chess.com/home
+  - link "Play":
+    - /url: https://www.chess.com/play
+    - generic: Play
+  - link "Puzzles":
+    - /url: https://www.chess.com/puzzles
+    - generic: Puzzles
+  - link "Learn":
+    - /url: https://www.chess.com/learn
+    - generic: Learn
+  - heading "More" [level=3]
+  - heading "Search" [level=2]
+  - link "Avatar of PraxStack PraxStack":
+    - /url: https://www.chess.com/member/praxstack
+    - img "Avatar of PraxStack"
+    - heading "PraxStack" [level=2]
+  - button:
+  - button:
+  - button "2":
+    - generic: "2"
+  - button:
+- img "Avatar"
+- generic: Cliff - Triangle
+- img "Show your flair!"
+- generic: "2.3"
+- generic: Winner
+- generic: Resign
+- button "Settings":
+- img "Avatar"
+- generic: PraxStack
+- img "Show your flair!"
+- button "Back":
+- button "Add to Favorites":
+- heading "Game Review" [level=1]
+- button "Toggle Coach Audio":
+- button "Go to Analysis":
+- img "Ben"
+- generic: Ç
+- text: h6
+- generic: is a blunder
+- link "+2.35":
+  - /url: //support.chess.com/article/656-what-do-the-computer-evaluation-numbers-mean-like-225
+- generic: Their pawn is hanging. You getting it?
+- button "Explain":
+  - generic: Explain
+- button "Best":
+  - generic: Best
+- button "New Game":
+  - generic: New Game
+- text: "1."
+- generic: e4
+- generic: e5
+- text: "2."
+- generic: Į
+- text: h5
+- generic: Ė
+- text: h6
+- generic: 0-1
+- button "Highlights":
+  - generic: Highlights
+- button "New Game":
+  - generic: New Game
+- button "First Move":
+- button "Previous Move":
+- button "Play / Pause":
+- button "Next Move" [disabled]:
+- button "Last Move" [disabled]:
+- button "Skills":
+  - generic: Skills
+- button "Share":
+  - generic: Share

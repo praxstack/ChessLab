@@ -1,0 +1,21 @@
+{
+  "recordAndReplay": {
+    "endReason": "tool_stopped",
+    "endedAt": "2026-09-08T03:25:29Z",
+    "eventsPath": "/Users/prax/Library/Group Containers/2DC432GLL2.com.openai.sky.CUAService/Library/Caches/ComputerUse/RecordAndReplay/8C655EED-2F1D-416A-AF7A-FC0C01C09949/events.jsonl",
+    "isRecording": false,
+    "maxDurationSeconds": 1800,
+    "metadataPath": "/Users/prax/Library/Group Containers/2DC432GLL2.com.openai.sky.CUAService/Library/Caches/ComputerUse/RecordAndReplay/8C655EED-2F1D-416A-AF7A-FC0C01C09949/session.json",
+    "sessionDirectoryPath": "/Users/prax/Library/Group Containers/2DC432GLL2.com.openai.sky.CUAService/Library/Caches/ComputerUse/RecordAndReplay/8C655EED-2F1D-416A-AF7A-FC0C01C09949",
+    "sessionID": "8C655EED-2F1D-416A-AF7A-FC0C01C09949",
+    "startedAt": "2026-09-08T03:06:13Z"
+  },
+  "computerHistory": {
+    "currentSegmentEventsPath": "/Users/prax/Library/Group Containers/2DC432GLL2.com.openai.sky.CUAService/Library/Caches/ComputerUse/Skysight/segments/2026-09-08T03-20-00Z/events.jsonl",
+    "currentSegmentMetadataPath": "/Users/prax/Library/Group Containers/2DC432GLL2.com.openai.sky.CUAService/Library/Caches/ComputerUse/Skysight/segments/2026-09-08T03-20-00Z/metadata.json",
+    "eventStreamRootPath": "/Users/prax/Library/Group Containers/2DC432GLL2.com.openai.sky.CUAService/Library/Caches/ComputerUse/Skysight",
+    "startedAt": "2026-09-07T18:18:29Z",
+    "state": "running"
+  },
+  "note": "Recorder receipts only. General desktop event contents are retained in their original local stores and excluded from Git."
+}

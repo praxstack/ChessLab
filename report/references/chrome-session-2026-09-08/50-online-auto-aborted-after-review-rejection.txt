@@ -1,0 +1,99 @@
+2026-09-08T03:09:13.966Z
+- navigation "Main":
+  - link "Skip to content":
+    - /url: "#scroll-top-anchor"
+    - generic: Skip to content
+  - link "Chess.com - Play Chess Online":
+    - /url: https://www.chess.com/home
+  - link "Play":
+    - /url: https://www.chess.com/play
+    - generic: Play
+  - link "Puzzles":
+    - /url: https://www.chess.com/puzzles
+    - generic: Puzzles
+  - link "Learn":
+    - /url: https://www.chess.com/learn
+    - generic: Learn
+  - heading "More" [level=3]
+  - heading "Search" [level=2]
+  - link "Avatar of PraxStack PraxStack":
+    - /url: https://www.chess.com/member/praxstack
+    - img "Avatar of PraxStack"
+    - heading "PraxStack" [level=2]
+  - button:
+  - button:
+  - button "2":
+    - generic: "2"
+  - button:
+- img "Avatar of qwoei"
+- button "qwoei"
+- generic: (1027)
+- timer: 4:57
+- button "Settings":
+- img "Aborted Icon"
+- generic: Game Aborted
+- button "Close":
+- paragraph:
+  - text: Aborting games is frustrating for your opponent. Doing this on purpose may result in your account being restricted or closed. Please follow our
+  - link "Fair Play policy":
+    - /url: https://www.chess.com/legal/fair-play
+  - text: .
+- button "New 5 min":
+  - generic: New 5 min
+- img "Avatar of PraxStack"
+- link:
+  - /url: /membership?b=badge-diamond&c=web_play
+- button "PraxStack"
+- generic: (594)
+- img "Show your flair!"
+- timer: 4:39
+- tablist:
+  - tab "Analysis Close":
+    - generic: Analysis
+    - button "Close":
+  - tab "New Game":
+    - generic: New Game
+  - tab "Games":
+    - generic: Games
+  - tab "Players":
+    - generic: Players
+- tablist:
+  - tab "Moves":
+    - generic: Moves
+  - tab "Chat":
+    - generic: Chat
+  - tab "Info":
+    - generic: Info
+  - tab "Openings":
+    - generic: Openings
+- checkbox "Analysis"
+- generic: Analysis
+- generic: "| Stockfish 18 Lite"
+- button "Settings":
+- generic: King's Pawn Opening
+- link "Openings":
+  - /url: /openings/Kings-Pawn-Opening
+- link "Explorer":
+  - /url: /analysis/explorer?color=black&gameSource=master&moveList=e4&ne=1&ply=1
+- text: "1."
+- generic: e4
+- generic: 2.7s
+- generic: 1/2-1/2
+- button "New 5 min":
+  - generic: New 5 min
+- button "Rematch":
+  - generic: Rematch
+- button "First Move":
+- button "Previous Move":
+- button "Play / Pause":
+- button "Next Move" [disabled]:
+- button "Last Move" [disabled]:
+- button "Share":
+- button "Add to Collection":
+- link "Classroom":
+  - /url: /classroom?loadLiveGame=174156078372
+- link "Self Analysis":
+  - /url: /analysis/game/live/174156078372?tab=analysis
+- button "Add to Favorites":
+- button "Reload":
+- button "Flip Board":

@@ -1,0 +1,90 @@
+2026-09-08T00:23:14.119Z
+- navigation "Main":
+  - link "Skip to content":
+    - /url: "#scroll-top-anchor"
+    - generic: Skip to content
+  - link "Chess.com - Play Chess Online":
+    - /url: https://www.chess.com/home
+  - link "Play":
+    - /url: https://www.chess.com/play
+    - generic: Play
+  - link "Puzzles":
+    - /url: https://www.chess.com/puzzles
+    - generic: Puzzles
+  - link "Learn":
+    - /url: https://www.chess.com/learn
+    - generic: Learn
+  - heading "More" [level=3]
+  - heading "Search" [level=2]
+  - link "Avatar of PraxStack PraxStack":
+    - /url: https://www.chess.com/member/praxstack
+    - img "Avatar of PraxStack"
+    - heading "PraxStack" [level=2]
+  - button:
+  - button:
+  - button "2":
+    - generic: "2"
+  - button:
+- img "Avatar"
+- generic: Cliff - Triangle
+- generic: (300)
+- generic: Winner
+- generic: Resign
+- button "Settings":
+- button "Share":
+- generic: Cliff - Triangle Won
+- generic: by resignation
+- button "Close":
+- paragraph: Play more moves to earn
+- img "Snare Drum"
+- img "Band Class"
+- img "Band Class"
+- img "Pawn Horn"
+- generic: "0"
+- text: /180
+- button "Game Review"
+- button "New Bot":
+  - generic: New Bot
+- button "Rematch":
+  - generic: Rematch
+- img "Avatar"
+- generic: PraxStack
+- img "Show your flair!"
+- heading "Play Bots" [level=1]
+- generic: "5"
+- generic: I put the “try” in “triangle.”
+- generic: "King's Pawn Opening: Wayward Queen Attack"
+- link "o":
+  - /url: /openings/Kings-Pawn-Opening-Wayward-Queen-Attack
+  - generic: o
+- link "ġ":
+  - /url: /analysis/explorer?color=white&gameSource=master&moveList=e4+e5+Qh5+Nh6&ne=1&ply=4
+  - generic: ġ
+- text: "1."
+- generic: e4
+- generic: e5
+- text: "2."
+- generic: Į
+- text: h5
+- generic: Ė
+- text: h6
+- generic: 0-1
+- button "1 Good 1 Book 0 Great":
+  - generic: "1"
+  - generic: Good
+  - generic: "1"
+  - generic: Book
+  - generic: "0"
+  - generic: Great
+- button "Game Review":
+  - generic: Game Review
+- button "New Bot":
+  - generic: New Bot
+- button "Rematch":
+  - generic: Rematch
+- button "Share":
+- button "Download":
+- button "Settings":
+- button "Add to Collection":
+- button "Previous Move":
+- button "Next Move":

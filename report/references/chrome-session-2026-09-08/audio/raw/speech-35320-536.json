@@ -1,0 +1,213 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | SME2 = 1 | ACCELERATE = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "large",
+		"multilingual": true,
+		"vocab": 51866,
+		"audio": {
+			"ctx": 1500,
+			"state": 1280,
+			"head": 20,
+			"layer": 32
+		},
+		"text": {
+			"ctx": 448,
+			"state": 1280,
+			"head": 20,
+			"layer": 4
+		},
+		"mels": 128,
+		"ftype": 7
+	},
+	"params": {
+		"model": "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:02,140"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 2140
+			},
+			"text": " Let's get this over with, shall we?",
+			"tokens": [
+				{
+					"text": "[_BEG_]",
+					"timestamps": {
+						"from": "00:00:00,000",
+						"to": "00:00:00,000"
+					},
+					"offsets": {
+						"from": 0,
+						"to": 0
+					},
+					"id": 50365,
+					"p": 0.98215,
+					"t_dtw": -1
+				},
+				{
+					"text": " Let",
+					"timestamps": {
+						"from": "00:00:00,100",
+						"to": "00:00:00,150"
+					},
+					"offsets": {
+						"from": 100,
+						"to": 150
+					},
+					"id": 961,
+					"p": 0.943444,
+					"t_dtw": -1
+				},
+				{
+					"text": "'s",
+					"timestamps": {
+						"from": "00:00:00,150",
+						"to": "00:00:00,230"
+					},
+					"offsets": {
+						"from": 150,
+						"to": 230
+					},
+					"id": 311,
+					"p": 0.999779,
+					"t_dtw": -1
+				},
+				{
+					"text": " get",
+					"timestamps": {
+						"from": "00:00:00,290",
+						"to": "00:00:00,360"
+					},
+					"offsets": {
+						"from": 290,
+						"to": 360
+					},
+					"id": 483,
+					"p": 0.999859,
+					"t_dtw": -1
+				},
+				{
+					"text": " this",
+					"timestamps": {
+						"from": "00:00:00,440",
+						"to": "00:00:00,520"
+					},
+					"offsets": {
+						"from": 440,
+						"to": 520
+					},
+					"id": 341,
+					"p": 0.999397,
+					"t_dtw": -1
+				},
+				{
+					"text": " over",
+					"timestamps": {
+						"from": "00:00:00,600",
+						"to": "00:00:00,800"
+					},
+					"offsets": {
+						"from": 600,
+						"to": 800
+					},
+					"id": 670,
+					"p": 0.997563,
+					"t_dtw": -1
+				},
+				{
+					"text": " with",
+					"timestamps": {
+						"from": "00:00:00,800",
+						"to": "00:00:01,000"
+					},
+					"offsets": {
+						"from": 800,
+						"to": 1000
+					},
+					"id": 365,
+					"p": 0.994167,
+					"t_dtw": -1
+				},
+				{
+					"text": ",",
+					"timestamps": {
+						"from": "00:00:01,000",
+						"to": "00:00:01,050"
+					},
+					"offsets": {
+						"from": 1000,
+						"to": 1050
+					},
+					"id": 11,
+					"p": 0.932903,
+					"t_dtw": -1
+				},
+				{
+					"text": " shall",
+					"timestamps": {
+						"from": "00:00:01,140",
+						"to": "00:00:01,590"
+					},
+					"offsets": {
+						"from": 1140,
+						"to": 1590
+					},
+					"id": 4393,
+					"p": 0.965902,
+					"t_dtw": -1
+				},
+				{
+					"text": " we",
+					"timestamps": {
+						"from": "00:00:01,840",
+						"to": "00:00:01,840"
+					},
+					"offsets": {
+						"from": 1840,
+						"to": 1840
+					},
+					"id": 321,
+					"p": 0.996386,
+					"t_dtw": -1
+				},
+				{
+					"text": "?",
+					"timestamps": {
+						"from": "00:00:01,840",
+						"to": "00:00:01,900"
+					},
+					"offsets": {
+						"from": 1840,
+						"to": 1900
+					},
+					"id": 30,
+					"p": 0.998275,
+					"t_dtw": -1
+				},
+				{
+					"text": "[_TT_107]",
+					"timestamps": {
+						"from": "00:00:02,140",
+						"to": "00:00:02,140"
+					},
+					"offsets": {
+						"from": 2140,
+						"to": 2140
+					},
+					"id": 50472,
+					"p": 0.132079,
+					"t_dtw": -1
+				}
+			]
+		}
+	]
+}

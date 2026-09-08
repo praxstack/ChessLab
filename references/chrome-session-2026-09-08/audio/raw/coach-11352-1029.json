@@ -1,0 +1,199 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | SME2 = 1 | ACCELERATE = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "large",
+		"multilingual": true,
+		"vocab": 51866,
+		"audio": {
+			"ctx": 1500,
+			"state": 1280,
+			"head": 20,
+			"layer": 32
+		},
+		"text": {
+			"ctx": 448,
+			"state": 1280,
+			"head": 20,
+			"layer": 4
+		},
+		"mels": 128,
+		"ftype": 7
+	},
+	"params": {
+		"model": "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:02,320"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 2320
+			},
+			"text": " kicking my night. You're so rude.",
+			"tokens": [
+				{
+					"text": "[_BEG_]",
+					"timestamps": {
+						"from": "00:00:00,000",
+						"to": "00:00:00,000"
+					},
+					"offsets": {
+						"from": 0,
+						"to": 0
+					},
+					"id": 50365,
+					"p": 0.955714,
+					"t_dtw": -1
+				},
+				{
+					"text": " kicking",
+					"timestamps": {
+						"from": "00:00:00,120",
+						"to": "00:00:00,370"
+					},
+					"offsets": {
+						"from": 120,
+						"to": 370
+					},
+					"id": 19137,
+					"p": 0.578682,
+					"t_dtw": -1
+				},
+				{
+					"text": " my",
+					"timestamps": {
+						"from": "00:00:00,370",
+						"to": "00:00:00,470"
+					},
+					"offsets": {
+						"from": 370,
+						"to": 470
+					},
+					"id": 452,
+					"p": 0.997815,
+					"t_dtw": -1
+				},
+				{
+					"text": " night",
+					"timestamps": {
+						"from": "00:00:00,470",
+						"to": "00:00:00,750"
+					},
+					"offsets": {
+						"from": 470,
+						"to": 750
+					},
+					"id": 1818,
+					"p": 0.931593,
+					"t_dtw": -1
+				},
+				{
+					"text": ".",
+					"timestamps": {
+						"from": "00:00:00,750",
+						"to": "00:00:00,760"
+					},
+					"offsets": {
+						"from": 750,
+						"to": 760
+					},
+					"id": 13,
+					"p": 0.46921,
+					"t_dtw": -1
+				},
+				{
+					"text": " You",
+					"timestamps": {
+						"from": "00:00:01,210",
+						"to": "00:00:01,380"
+					},
+					"offsets": {
+						"from": 1210,
+						"to": 1380
+					},
+					"id": 509,
+					"p": 0.506365,
+					"t_dtw": -1
+				},
+				{
+					"text": "'re",
+					"timestamps": {
+						"from": "00:00:01,390",
+						"to": "00:00:01,690"
+					},
+					"offsets": {
+						"from": 1390,
+						"to": 1690
+					},
+					"id": 434,
+					"p": 0.998287,
+					"t_dtw": -1
+				},
+				{
+					"text": " so",
+					"timestamps": {
+						"from": "00:00:01,690",
+						"to": "00:00:01,740"
+					},
+					"offsets": {
+						"from": 1690,
+						"to": 1740
+					},
+					"id": 370,
+					"p": 0.996274,
+					"t_dtw": -1
+				},
+				{
+					"text": " rude",
+					"timestamps": {
+						"from": "00:00:02,130",
+						"to": "00:00:02,130"
+					},
+					"offsets": {
+						"from": 2130,
+						"to": 2130
+					},
+					"id": 18895,
+					"p": 0.995106,
+					"t_dtw": -1
+				},
+				{
+					"text": ".",
+					"timestamps": {
+						"from": "00:00:02,130",
+						"to": "00:00:02,130"
+					},
+					"offsets": {
+						"from": 2130,
+						"to": 2130
+					},
+					"id": 13,
+					"p": 0.859318,
+					"t_dtw": -1
+				},
+				{
+					"text": "[_TT_116]",
+					"timestamps": {
+						"from": "00:00:02,320",
+						"to": "00:00:02,320"
+					},
+					"offsets": {
+						"from": 2320,
+						"to": 2320
+					},
+					"id": 50481,
+					"p": 0.102832,
+					"t_dtw": -1
+				}
+			]
+		}
+	]
+}

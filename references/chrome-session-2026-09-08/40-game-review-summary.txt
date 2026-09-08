@@ -1,0 +1,99 @@
+2026-09-08T00:25:08.753Z
+- navigation "Main":
+  - link "Skip to content":
+    - /url: "#scroll-top-anchor"
+    - generic: Skip to content
+  - link "Chess.com - Play Chess Online":
+    - /url: https://www.chess.com/home
+  - link "Play":
+    - /url: https://www.chess.com/play
+    - generic: Play
+  - link "Puzzles":
+    - /url: https://www.chess.com/puzzles
+    - generic: Puzzles
+  - link "Learn":
+    - /url: https://www.chess.com/learn
+    - generic: Learn
+  - heading "More" [level=3]
+  - heading "Search" [level=2]
+  - link "Avatar of PraxStack PraxStack":
+    - /url: https://www.chess.com/member/praxstack
+    - img "Avatar of PraxStack"
+    - heading "PraxStack" [level=2]
+  - button:
+  - button:
+  - button "2":
+    - generic: "2"
+  - button:
+- img "Avatar"
+- generic: Cliff - Triangle
+- img "Show your flair!"
+- generic: "0.0"
+- button "Settings":
+- img "Avatar"
+- generic: PraxStack
+- img "Show your flair!"
+- button "Add to Favorites":
+- heading "Game Review" [level=1]
+- button "Toggle Coach Audio":
+- button "Go to Analysis":
+- img "Ben"
+- generic: Let’s get this over with, shall we?
+- generic: PraxStack
+- generic: Cliff - Triangle
+- generic: Players
+- img "avatar"
+- img "avatar"
+- generic: Accuracy
+- generic: "85.9"
+- generic: "29.2"
+- separator
+- generic: Skills
+- generic: "+1"
+- separator
+- generic: Brilliant
+- generic: "0"
+- generic: "0"
+- generic: Great
+- generic: "0"
+- generic: "0"
+- generic: Book
+- generic: "1"
+- generic: "1"
+- generic: Best
+- generic: "0"
+- generic: "0"
+- generic: Excellent
+- generic: "0"
+- generic: "0"
+- generic: Good
+- generic: "1"
+- generic: "0"
+- generic: Inaccuracy
+- generic: "0"
+- generic: "0"
+- generic: Mistake
+- generic: "0"
+- generic: "0"
+- generic: Miss
+- generic: "0"
+- generic: "0"
+- generic: Blunder
+- generic: "0"
+- generic: "1"
+- button "Expand":
+- separator
+- generic: Game Rating
+- generic: "1200"
+- generic: "100"
+- separator
+- generic: Opening
+- generic: Tactics
+- generic: Strategy
+- generic: Endgame
+- generic: –
+- generic: –
+- button "New Game":
+  - generic: New Game
+- button "Start Review":
+  - generic: Start Review

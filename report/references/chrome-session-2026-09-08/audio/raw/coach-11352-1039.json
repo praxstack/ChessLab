@@ -1,0 +1,338 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | SME2 = 1 | ACCELERATE = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "large",
+		"multilingual": true,
+		"vocab": 51866,
+		"audio": {
+			"ctx": 1500,
+			"state": 1280,
+			"head": 20,
+			"layer": 32
+		},
+		"text": {
+			"ctx": 448,
+			"state": 1280,
+			"head": 20,
+			"layer": 4
+		},
+		"mels": 128,
+		"ftype": 7
+	},
+	"params": {
+		"model": "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:01,740"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 1740
+			},
+			"text": " \"Can I show you something?\"",
+			"tokens": [
+				{
+					"text": "[_BEG_]",
+					"timestamps": {
+						"from": "00:00:00,000",
+						"to": "00:00:00,000"
+					},
+					"offsets": {
+						"from": 0,
+						"to": 0
+					},
+					"id": 50365,
+					"p": 0.977162,
+					"t_dtw": -1
+				},
+				{
+					"text": " \"",
+					"timestamps": {
+						"from": "00:00:00,070",
+						"to": "00:00:00,070"
+					},
+					"offsets": {
+						"from": 70,
+						"to": 70
+					},
+					"id": 503,
+					"p": 0.186657,
+					"t_dtw": -1
+				},
+				{
+					"text": "Can",
+					"timestamps": {
+						"from": "00:00:00,130",
+						"to": "00:00:00,270"
+					},
+					"offsets": {
+						"from": 130,
+						"to": 270
+					},
+					"id": 11531,
+					"p": 0.929949,
+					"t_dtw": -1
+				},
+				{
+					"text": " I",
+					"timestamps": {
+						"from": "00:00:00,270",
+						"to": "00:00:00,340"
+					},
+					"offsets": {
+						"from": 270,
+						"to": 340
+					},
+					"id": 286,
+					"p": 0.992835,
+					"t_dtw": -1
+				},
+				{
+					"text": " show",
+					"timestamps": {
+						"from": "00:00:00,340",
+						"to": "00:00:00,610"
+					},
+					"offsets": {
+						"from": 340,
+						"to": 610
+					},
+					"id": 855,
+					"p": 0.998327,
+					"t_dtw": -1
+				},
+				{
+					"text": " you",
+					"timestamps": {
+						"from": "00:00:00,610",
+						"to": "00:00:00,810"
+					},
+					"offsets": {
+						"from": 610,
+						"to": 810
+					},
+					"id": 291,
+					"p": 0.999024,
+					"t_dtw": -1
+				},
+				{
+					"text": " something",
+					"timestamps": {
+						"from": "00:00:00,810",
+						"to": "00:00:01,160"
+					},
+					"offsets": {
+						"from": 810,
+						"to": 1160
+					},
+					"id": 746,
+					"p": 0.99935,
+					"t_dtw": -1
+				},
+				{
+					"text": "?\"",
+					"timestamps": {
+						"from": "00:00:01,740",
+						"to": "00:00:01,740"
+					},
+					"offsets": {
+						"from": 1740,
+						"to": 1740
+					},
+					"id": 1811,
+					"p": 0.831442,
+					"t_dtw": -1
+				},
+				{
+					"text": "[_TT_87]",
+					"timestamps": {
+						"from": "00:00:01,740",
+						"to": "00:00:01,740"
+					},
+					"offsets": {
+						"from": 1740,
+						"to": 1740
+					},
+					"id": 50452,
+					"p": 0.107395,
+					"t_dtw": -1
+				}
+			]
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,740",
+				"to": "00:00:05,300"
+			},
+			"offsets": {
+				"from": 1740,
+				"to": 5300
+			},
+			"text": " This leaves your pawn hanging and vulnerable to capture.",
+			"tokens": [
+				{
+					"text": " This",
+					"timestamps": {
+						"from": "00:00:01,870",
+						"to": "00:00:02,050"
+					},
+					"offsets": {
+						"from": 1870,
+						"to": 2050
+					},
+					"id": 639,
+					"p": 0.858587,
+					"t_dtw": -1
+				},
+				{
+					"text": " leaves",
+					"timestamps": {
+						"from": "00:00:02,050",
+						"to": "00:00:02,520"
+					},
+					"offsets": {
+						"from": 2050,
+						"to": 2520
+					},
+					"id": 5510,
+					"p": 0.997126,
+					"t_dtw": -1
+				},
+				{
+					"text": " your",
+					"timestamps": {
+						"from": "00:00:02,520",
+						"to": "00:00:02,820"
+					},
+					"offsets": {
+						"from": 2520,
+						"to": 2820
+					},
+					"id": 428,
+					"p": 0.998723,
+					"t_dtw": -1
+				},
+				{
+					"text": " pawn",
+					"timestamps": {
+						"from": "00:00:02,820",
+						"to": "00:00:02,910"
+					},
+					"offsets": {
+						"from": 2820,
+						"to": 2910
+					},
+					"id": 30905,
+					"p": 0.940707,
+					"t_dtw": -1
+				},
+				{
+					"text": " hanging",
+					"timestamps": {
+						"from": "00:00:03,540",
+						"to": "00:00:03,600"
+					},
+					"offsets": {
+						"from": 3540,
+						"to": 3600
+					},
+					"id": 8345,
+					"p": 0.908614,
+					"t_dtw": -1
+				},
+				{
+					"text": " and",
+					"timestamps": {
+						"from": "00:00:03,600",
+						"to": "00:00:03,740"
+					},
+					"offsets": {
+						"from": 3600,
+						"to": 3740
+					},
+					"id": 293,
+					"p": 0.743816,
+					"t_dtw": -1
+				},
+				{
+					"text": " vulnerable",
+					"timestamps": {
+						"from": "00:00:03,800",
+						"to": "00:00:04,180"
+					},
+					"offsets": {
+						"from": 3800,
+						"to": 4180
+					},
+					"id": 10955,
+					"p": 0.992591,
+					"t_dtw": -1
+				},
+				{
+					"text": " to",
+					"timestamps": {
+						"from": "00:00:04,330",
+						"to": "00:00:04,490"
+					},
+					"offsets": {
+						"from": 4330,
+						"to": 4490
+					},
+					"id": 281,
+					"p": 0.983642,
+					"t_dtw": -1
+				},
+				{
+					"text": " capture",
+					"timestamps": {
+						"from": "00:00:04,490",
+						"to": "00:00:05,300"
+					},
+					"offsets": {
+						"from": 4490,
+						"to": 5300
+					},
+					"id": 7983,
+					"p": 0.993476,
+					"t_dtw": -1
+				},
+				{
+					"text": ".",
+					"timestamps": {
+						"from": "00:00:05,300",
+						"to": "00:00:05,300"
+					},
+					"offsets": {
+						"from": 5300,
+						"to": 5300
+					},
+					"id": 13,
+					"p": 0.762321,
+					"t_dtw": -1
+				},
+				{
+					"text": "[_TT_265]",
+					"timestamps": {
+						"from": "00:00:05,300",
+						"to": "00:00:05,300"
+					},
+					"offsets": {
+						"from": 5300,
+						"to": 5300
+					},
+					"id": 50630,
+					"p": 0.488247,
+					"t_dtw": -1
+				}
+			]
+		}
+	]
+}

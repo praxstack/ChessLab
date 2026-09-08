@@ -1,0 +1,48 @@
+2026-09-08T00:19:54.332Z
+- navigation "Main":
+  - link "Skip to content":
+    - /url: "#scroll-top-anchor"
+    - generic: Skip to content
+  - link "Chess.com - Play Chess Online":
+    - /url: https://www.chess.com/home
+  - link "Play":
+    - /url: https://www.chess.com/play
+    - generic: Play
+  - link "Puzzles":
+    - /url: https://www.chess.com/puzzles
+    - generic: Puzzles
+  - link "Learn":
+    - /url: https://www.chess.com/learn
+    - generic: Learn
+  - heading "More" [level=3]
+  - heading "Search" [level=2]
+  - link "Avatar of PraxStack PraxStack":
+    - /url: https://www.chess.com/member/praxstack
+    - img "Avatar of PraxStack"
+    - heading "PraxStack" [level=2]
+  - button:
+  - button:
+  - button "2":
+    - generic: "2"
+  - button:
+- img "Avatar"
+- generic: Cliff - Triangle
+- generic: (300)
+- button "Settings":
+- img "Avatar"
+- generic: PraxStack
+- img "Show your flair!"
+- heading "Play Bots" [level=1]
+- generic: "5"
+- generic: Ding! Ding! Ding! Time for a game!
+- generic: Starting Position
+- generic "Openings":
+  - generic: o
+- link "ġ":
+  - /url: /analysis/explorer
+  - generic: ġ
+- button "Resign":
+- button "Undo":
+- button "Show Hint":
+- button "Download":
+- button "Settings":

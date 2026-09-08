@@ -1,0 +1,64 @@
+2026-09-08T00:16:58.121Z
+- navigation "Main":
+  - link "Skip to content":
+    - /url: "#scroll-top-anchor"
+    - generic: Skip to content
+  - link "Chess.com - Play Chess Online":
+    - /url: https://www.chess.com/home
+  - link "Play":
+    - /url: https://www.chess.com/play
+    - generic: Play
+  - link "Puzzles":
+    - /url: https://www.chess.com/puzzles
+    - generic: Puzzles
+  - link "Learn":
+    - /url: https://www.chess.com/learn
+    - generic: Learn
+  - heading "More" [level=3]
+  - heading "Search" [level=2]
+  - link "Avatar of PraxStack PraxStack":
+    - /url: https://www.chess.com/member/praxstack
+    - img "Avatar of PraxStack"
+    - heading "PraxStack" [level=2]
+  - button:
+  - button:
+  - button "2":
+    - generic: "2"
+  - button:
+- img "Avatar of Opponent"
+- generic: Opponent
+- img "Avatar of PraxStack"
+- generic: PraxStack
+- img "Show your flair!"
+- heading "Play Chess" [level=1]
+- link "Play Online Play vs a person of similar skill":
+  - /url: /play/online
+  - generic: Play Online
+  - generic: Play vs a person of similar skill
+- link "Play Bots Challenge a bot from Easy to Master":
+  - /url: /play/computer
+  - generic: Play Bots
+  - generic: Challenge a bot from Easy to Master
+- link "icon Play Coach Learn as you play a game with Coach":
+  - /url: /play/coach?source=play_root
+  - img "icon"
+  - generic: Play Coach
+  - generic: Learn as you play a game with Coach
+- link "Play a Friend Invite a friend to a game of chess":
+  - /url: /play/online/friend
+  - generic: Play a Friend
+  - generic: Invite a friend to a game of chess
+- link "Tournaments Join an Arena where anyone can win":
+  - /url: /play/online/tournaments
+  - generic: Tournaments
+  - generic: Join an Arena where anyone can win
+- link "Chess Variants Find fun new ways to play chess":
+  - /url: /variants
+  - generic: Chess Variants
+  - generic: Find fun new ways to play chess
+- link "Game History":
+  - /url: /games/archive
+  - generic: Game History
+- link "Leaderboard":
+  - /url: /leaderboard
+  - generic: Leaderboard

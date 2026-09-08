@@ -1,0 +1,296 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | SME2 = 1 | ACCELERATE = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "large",
+		"multilingual": true,
+		"vocab": 51866,
+		"audio": {
+			"ctx": 1500,
+			"state": 1280,
+			"head": 20,
+			"layer": 32
+		},
+		"text": {
+			"ctx": 448,
+			"state": 1280,
+			"head": 20,
+			"layer": 4
+		},
+		"mels": 128,
+		"ftype": 7
+	},
+	"params": {
+		"model": "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:01,220"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 1220
+			},
+			"text": " I'll develop my night now.",
+			"tokens": [
+				{
+					"text": "[_BEG_]",
+					"timestamps": {
+						"from": "00:00:00,000",
+						"to": "00:00:00,000"
+					},
+					"offsets": {
+						"from": 0,
+						"to": 0
+					},
+					"id": 50365,
+					"p": 0.980593,
+					"t_dtw": -1
+				},
+				{
+					"text": " I",
+					"timestamps": {
+						"from": "00:00:00,050",
+						"to": "00:00:00,050"
+					},
+					"offsets": {
+						"from": 50,
+						"to": 50
+					},
+					"id": 286,
+					"p": 0.950091,
+					"t_dtw": -1
+				},
+				{
+					"text": "'ll",
+					"timestamps": {
+						"from": "00:00:00,080",
+						"to": "00:00:00,200"
+					},
+					"offsets": {
+						"from": 80,
+						"to": 200
+					},
+					"id": 603,
+					"p": 0.99297,
+					"t_dtw": -1
+				},
+				{
+					"text": " develop",
+					"timestamps": {
+						"from": "00:00:00,200",
+						"to": "00:00:00,550"
+					},
+					"offsets": {
+						"from": 200,
+						"to": 550
+					},
+					"id": 1499,
+					"p": 0.997687,
+					"t_dtw": -1
+				},
+				{
+					"text": " my",
+					"timestamps": {
+						"from": "00:00:00,550",
+						"to": "00:00:00,650"
+					},
+					"offsets": {
+						"from": 550,
+						"to": 650
+					},
+					"id": 452,
+					"p": 0.998692,
+					"t_dtw": -1
+				},
+				{
+					"text": " night",
+					"timestamps": {
+						"from": "00:00:00,650",
+						"to": "00:00:00,840"
+					},
+					"offsets": {
+						"from": 650,
+						"to": 840
+					},
+					"id": 1818,
+					"p": 0.541265,
+					"t_dtw": -1
+				},
+				{
+					"text": " now",
+					"timestamps": {
+						"from": "00:00:00,930",
+						"to": "00:00:01,050"
+					},
+					"offsets": {
+						"from": 930,
+						"to": 1050
+					},
+					"id": 586,
+					"p": 0.983342,
+					"t_dtw": -1
+				},
+				{
+					"text": ".",
+					"timestamps": {
+						"from": "00:00:01,050",
+						"to": "00:00:01,220"
+					},
+					"offsets": {
+						"from": 1050,
+						"to": 1220
+					},
+					"id": 13,
+					"p": 0.824099,
+					"t_dtw": -1
+				},
+				{
+					"text": "[_TT_61]",
+					"timestamps": {
+						"from": "00:00:01,220",
+						"to": "00:00:01,220"
+					},
+					"offsets": {
+						"from": 1220,
+						"to": 1220
+					},
+					"id": 50426,
+					"p": 0.0658634,
+					"t_dtw": -1
+				}
+			]
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,520",
+				"to": "00:00:02,500"
+			},
+			"offsets": {
+				"from": 1520,
+				"to": 2500
+			},
+			"text": " That's how the game works.",
+			"tokens": [
+				{
+					"text": " That",
+					"timestamps": {
+						"from": "00:00:01,520",
+						"to": "00:00:01,520"
+					},
+					"offsets": {
+						"from": 1520,
+						"to": 1520
+					},
+					"id": 663,
+					"p": 0.99992,
+					"t_dtw": -1
+				},
+				{
+					"text": "'s",
+					"timestamps": {
+						"from": "00:00:01,530",
+						"to": "00:00:01,530"
+					},
+					"offsets": {
+						"from": 1530,
+						"to": 1530
+					},
+					"id": 311,
+					"p": 0.999918,
+					"t_dtw": -1
+				},
+				{
+					"text": " how",
+					"timestamps": {
+						"from": "00:00:01,600",
+						"to": "00:00:01,690"
+					},
+					"offsets": {
+						"from": 1600,
+						"to": 1690
+					},
+					"id": 577,
+					"p": 0.999964,
+					"t_dtw": -1
+				},
+				{
+					"text": " the",
+					"timestamps": {
+						"from": "00:00:01,730",
+						"to": "00:00:01,850"
+					},
+					"offsets": {
+						"from": 1730,
+						"to": 1850
+					},
+					"id": 264,
+					"p": 0.999828,
+					"t_dtw": -1
+				},
+				{
+					"text": " game",
+					"timestamps": {
+						"from": "00:00:01,850",
+						"to": "00:00:02,000"
+					},
+					"offsets": {
+						"from": 1850,
+						"to": 2000
+					},
+					"id": 1216,
+					"p": 0.999874,
+					"t_dtw": -1
+				},
+				{
+					"text": " works",
+					"timestamps": {
+						"from": "00:00:02,060",
+						"to": "00:00:02,320"
+					},
+					"offsets": {
+						"from": 2060,
+						"to": 2320
+					},
+					"id": 1985,
+					"p": 0.998986,
+					"t_dtw": -1
+				},
+				{
+					"text": ".",
+					"timestamps": {
+						"from": "00:00:02,320",
+						"to": "00:00:02,500"
+					},
+					"offsets": {
+						"from": 2320,
+						"to": 2500
+					},
+					"id": 13,
+					"p": 0.993218,
+					"t_dtw": -1
+				},
+				{
+					"text": "[_TT_125]",
+					"timestamps": {
+						"from": "00:00:02,500",
+						"to": "00:00:02,500"
+					},
+					"offsets": {
+						"from": 2500,
+						"to": 2500
+					},
+					"id": 50490,
+					"p": 0.608626,
+					"t_dtw": -1
+				}
+			]
+		}
+	]
+}

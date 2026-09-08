@@ -1,0 +1,57 @@
+2026-09-08T00:08:20.150Z
+- navigation "Main":
+  - link "Skip to content":
+    - /url: "#scroll-top-anchor"
+    - generic: Skip to content
+  - link "Chess.com - Play Chess Online":
+    - /url: https://www.chess.com/home
+  - link "Play":
+    - /url: https://www.chess.com/play
+    - generic: Play
+  - link "Puzzles":
+    - /url: https://www.chess.com/puzzles
+    - generic: Puzzles
+  - link "Learn":
+    - /url: https://www.chess.com/learn
+    - generic: Learn
+  - heading "More" [level=3]
+  - heading "Search" [level=2]
+  - link "Avatar of PraxStack PraxStack":
+    - /url: https://www.chess.com/member/praxstack
+    - img "Avatar of PraxStack"
+    - heading "PraxStack" [level=2]
+  - button:
+  - button:
+  - button "2":
+    - generic: "2"
+  - button:
+- button "Settings":
+- button "Back":
+- generic: "9"
+- generic: "9"
+- heading "Puzzles" [level=1]
+- button "Toggle Coach Audio":
+- button "View Path":
+- img "Ben"
+- generic: Solved
+- generic: Fantastic!
+- generic: 1,020
+- generic: "+48"
+- generic: "18"
+- generic: "10"
+- generic: "10"
+- generic: 0:33
+- button "Retry":
+- button "Analysis":
+- button "Next Puzzle" [disabled]:
+  - generic: Next Puzzle
+- button "Settings":
+- button "Comments":
+- button "Download":
+- button "Share":
+- link "Practice vs Computer":
+  - /url: /practice/custom?fen=5k2/5p2/8/1B6/8/4R3/4K3/8%20b%20-%20-%200%203&color=white
+- button "Previous Move":
+- button "Next Move" [disabled]:
+- button "PraxStack":
+  - img "PraxStack"

@@ -1,0 +1,57 @@
+2026-09-07T23:58:59.756Z
+- navigation "Main":
+  - link "Skip to content":
+    - /url: "#scroll-top-anchor"
+    - generic: Skip to content
+  - link "Chess.com - Play Chess Online":
+    - /url: https://www.chess.com/home
+  - link "Play":
+    - /url: https://www.chess.com/play
+    - generic: Play
+  - link "Puzzles":
+    - /url: https://www.chess.com/puzzles
+    - generic: Puzzles
+  - link "Learn":
+    - /url: https://www.chess.com/learn
+    - generic: Learn
+  - heading "More" [level=3]
+  - heading "Search" [level=2]
+  - link "Avatar of PraxStack PraxStack":
+    - /url: https://www.chess.com/member/praxstack
+    - img "Avatar of PraxStack"
+    - heading "PraxStack" [level=2]
+  - button:
+  - button:
+  - button "2":
+    - generic: "2"
+  - button:
+- img "Avatar"
+- generic: Coach Ben
+- generic: (100)
+- generic: "0.3"
+- button "Settings":
+- img "Avatar"
+- generic: PraxStack
+- img "Show your flair!"
+- heading "Play Coach" [level=1]
+- button:
+- generic: I’ll take Black. I hope you enjoy losing.
+- generic: King's Pawn Opening
+- link "o":
+  - /url: /openings/Kings-Pawn-Opening
+  - generic: o
+- link "ġ":
+  - /url: /analysis/explorer?color=white&gameSource=master&moveList=e4&ne=1&ply=1
+  - generic: ġ
+- text: "1."
+- generic: e4
+- generic: Suggestion Arrows
+- checkbox [checked]
+- generic: Threat Arrows
+- checkbox [checked]
+- generic: Evaluation Bar
+- checkbox [checked]
+- generic: Move Feedback
+- checkbox [checked]
+- button "Save":
+  - generic: Save

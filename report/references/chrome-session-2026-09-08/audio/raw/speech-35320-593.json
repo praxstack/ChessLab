@@ -1,0 +1,352 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | SME2 = 1 | ACCELERATE = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "large",
+		"multilingual": true,
+		"vocab": 51866,
+		"audio": {
+			"ctx": 1500,
+			"state": 1280,
+			"head": 20,
+			"layer": 32
+		},
+		"text": {
+			"ctx": 448,
+			"state": 1280,
+			"head": 20,
+			"layer": 4
+		},
+		"mels": 128,
+		"ftype": 7
+	},
+	"params": {
+		"model": "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:02,280"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 2280
+			},
+			"text": " E4, solid way to start the game.",
+			"tokens": [
+				{
+					"text": "[_BEG_]",
+					"timestamps": {
+						"from": "00:00:00,000",
+						"to": "00:00:00,000"
+					},
+					"offsets": {
+						"from": 0,
+						"to": 0
+					},
+					"id": 50365,
+					"p": 0.95964,
+					"t_dtw": -1
+				},
+				{
+					"text": " E",
+					"timestamps": {
+						"from": "00:00:00,020",
+						"to": "00:00:00,080"
+					},
+					"offsets": {
+						"from": 20,
+						"to": 80
+					},
+					"id": 462,
+					"p": 0.888316,
+					"t_dtw": -1
+				},
+				{
+					"text": "4",
+					"timestamps": {
+						"from": "00:00:00,080",
+						"to": "00:00:00,320"
+					},
+					"offsets": {
+						"from": 80,
+						"to": 320
+					},
+					"id": 19,
+					"p": 0.905124,
+					"t_dtw": -1
+				},
+				{
+					"text": ",",
+					"timestamps": {
+						"from": "00:00:00,320",
+						"to": "00:00:00,500"
+					},
+					"offsets": {
+						"from": 320,
+						"to": 500
+					},
+					"id": 11,
+					"p": 0.727434,
+					"t_dtw": -1
+				},
+				{
+					"text": " solid",
+					"timestamps": {
+						"from": "00:00:00,500",
+						"to": "00:00:00,590"
+					},
+					"offsets": {
+						"from": 500,
+						"to": 590
+					},
+					"id": 5100,
+					"p": 0.981623,
+					"t_dtw": -1
+				},
+				{
+					"text": " way",
+					"timestamps": {
+						"from": "00:00:00,980",
+						"to": "00:00:01,220"
+					},
+					"offsets": {
+						"from": 980,
+						"to": 1220
+					},
+					"id": 636,
+					"p": 0.993767,
+					"t_dtw": -1
+				},
+				{
+					"text": " to",
+					"timestamps": {
+						"from": "00:00:01,220",
+						"to": "00:00:01,400"
+					},
+					"offsets": {
+						"from": 1220,
+						"to": 1400
+					},
+					"id": 281,
+					"p": 0.991172,
+					"t_dtw": -1
+				},
+				{
+					"text": " start",
+					"timestamps": {
+						"from": "00:00:01,400",
+						"to": "00:00:01,830"
+					},
+					"offsets": {
+						"from": 1400,
+						"to": 1830
+					},
+					"id": 722,
+					"p": 0.9925,
+					"t_dtw": -1
+				},
+				{
+					"text": " the",
+					"timestamps": {
+						"from": "00:00:01,940",
+						"to": "00:00:01,980"
+					},
+					"offsets": {
+						"from": 1940,
+						"to": 1980
+					},
+					"id": 264,
+					"p": 0.989685,
+					"t_dtw": -1
+				},
+				{
+					"text": " game",
+					"timestamps": {
+						"from": "00:00:01,980",
+						"to": "00:00:02,140"
+					},
+					"offsets": {
+						"from": 1980,
+						"to": 2140
+					},
+					"id": 1216,
+					"p": 0.996896,
+					"t_dtw": -1
+				},
+				{
+					"text": ".",
+					"timestamps": {
+						"from": "00:00:02,140",
+						"to": "00:00:02,280"
+					},
+					"offsets": {
+						"from": 2140,
+						"to": 2280
+					},
+					"id": 13,
+					"p": 0.98209,
+					"t_dtw": -1
+				},
+				{
+					"text": "[_TT_114]",
+					"timestamps": {
+						"from": "00:00:02,280",
+						"to": "00:00:02,280"
+					},
+					"offsets": {
+						"from": 2280,
+						"to": 2280
+					},
+					"id": 50479,
+					"p": 0.617723,
+					"t_dtw": -1
+				}
+			]
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,740",
+				"to": "00:00:04,840"
+			},
+			"offsets": {
+				"from": 2740,
+				"to": 4840
+			},
+			"text": " Gary Kasparov and I approve.",
+			"tokens": [
+				{
+					"text": " Gary",
+					"timestamps": {
+						"from": "00:00:02,740",
+						"to": "00:00:02,740"
+					},
+					"offsets": {
+						"from": 2740,
+						"to": 2740
+					},
+					"id": 13788,
+					"p": 0.899405,
+					"t_dtw": -1
+				},
+				{
+					"text": " Kas",
+					"timestamps": {
+						"from": "00:00:02,760",
+						"to": "00:00:02,900"
+					},
+					"offsets": {
+						"from": 2760,
+						"to": 2900
+					},
+					"id": 28059,
+					"p": 0.991221,
+					"t_dtw": -1
+				},
+				{
+					"text": "par",
+					"timestamps": {
+						"from": "00:00:03,030",
+						"to": "00:00:03,330"
+					},
+					"offsets": {
+						"from": 3030,
+						"to": 3330
+					},
+					"id": 2181,
+					"p": 0.992053,
+					"t_dtw": -1
+				},
+				{
+					"text": "ov",
+					"timestamps": {
+						"from": "00:00:03,330",
+						"to": "00:00:03,340"
+					},
+					"offsets": {
+						"from": 3330,
+						"to": 3340
+					},
+					"id": 5179,
+					"p": 0.999003,
+					"t_dtw": -1
+				},
+				{
+					"text": " and",
+					"timestamps": {
+						"from": "00:00:03,720",
+						"to": "00:00:03,870"
+					},
+					"offsets": {
+						"from": 3720,
+						"to": 3870
+					},
+					"id": 293,
+					"p": 0.998163,
+					"t_dtw": -1
+				},
+				{
+					"text": " I",
+					"timestamps": {
+						"from": "00:00:03,870",
+						"to": "00:00:03,970"
+					},
+					"offsets": {
+						"from": 3870,
+						"to": 3970
+					},
+					"id": 286,
+					"p": 0.999968,
+					"t_dtw": -1
+				},
+				{
+					"text": " approve",
+					"timestamps": {
+						"from": "00:00:03,970",
+						"to": "00:00:04,730"
+					},
+					"offsets": {
+						"from": 3970,
+						"to": 4730
+					},
+					"id": 18827,
+					"p": 0.988838,
+					"t_dtw": -1
+				},
+				{
+					"text": ".",
+					"timestamps": {
+						"from": "00:00:04,730",
+						"to": "00:00:04,840"
+					},
+					"offsets": {
+						"from": 4730,
+						"to": 4840
+					},
+					"id": 13,
+					"p": 0.842108,
+					"t_dtw": -1
+				},
+				{
+					"text": "[_TT_242]",
+					"timestamps": {
+						"from": "00:00:04,840",
+						"to": "00:00:04,840"
+					},
+					"offsets": {
+						"from": 4840,
+						"to": 4840
+					},
+					"id": 50607,
+					"p": 0.074641,
+					"t_dtw": -1
+				}
+			]
+		}
+	]
+}

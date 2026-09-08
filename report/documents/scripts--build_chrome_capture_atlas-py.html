@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Build Chrome Capture Atlas · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Build Chrome Capture Atlas</h1><p class="lede">scripts/build_chrome_capture_atlas.py</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Build Chrome Capture Atlas"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/build_chrome_capture_atlas.py" download>Download original file ↗</a></div><p class="source-meta">scripts/build_chrome_capture_atlas.py<br>SHA-256: fe5f2638cb628880f9dabe14c77b0acbb53314eb4e1a079ec2a26bb0f4c58534</p><pre><code>#!/usr/bin/env python3
+&quot;&quot;&quot;Build a static HTML index for the captured ChessLab evidence set.&quot;&quot;&quot;
+
+from __future__ import annotations
+
+import argparse
+import html
+import json
+import os
+import re
+import sys
+from pathlib import Path
+from urllib.parse import urlparse
+
+
+ISO_RE = re.compile(r&quot;^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})$&quot;)
+NUMBERED_RE = re.compile(r&quot;^(\d+)-(.+)\.png$&quot;, re.IGNORECASE)
+CHESSLAB_RE = re.compile(r&quot;^chesslab-.+\.png$&quot;, re.IGNORECASE)
+
+GROUPS = (
+    (&quot;coach&quot;, &quot;Coach&quot;, 1, 17, &quot;https://www.chess.com/play/coach?source=play_root&quot;),
+    (&quot;puzzles&quot;, &quot;Puzzles&quot;, 18, 30, &quot;https://www.chess.com/puzzles&quot;),
+    (&quot;bots&quot;, &quot;Bots&quot;, 31, 39, &quot;https://www.chess.com/play/computer&quot;),
+    (&quot;review&quot;, &quot;Review&quot;, 40, 46, &quot;https://www.chess.com/analysis&quot;),
+)
+
+STYLE = r&quot;&quot;&quot;
+:root {
+  color-scheme: dark;
+  --ink: #e8f1ff;
+  --muted: #92a7c6;
+  --faint: #617796;
+  --bg: #07111f;
+  --panel: #0d1a2d;
+  --panel-2: #11233b;
+  --line: rgba(155, 190, 235, .17);
+  --blue: #54a9ff;
+  --cyan: #6be4f2;
+  --green: #73e0b1;
+  --amber: #ffca75;
+  --red: #ff8e99;
+  --shadow: 0 22px 70px rgba(0, 0, 0, .25);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  min-width: 320px;
+  background:
+    radial-gradient(circle at 78% -10%, rgba(45, 128, 212, .25), transparent 34rem),
+    radial-gradient(circle at 5% 40%, rgba(15, 71, 135, .18), transparent 28rem),
+    var(--bg);
+  color: var(--ink);
+  font-family: &quot;Avenir Next&quot;, &quot;Segoe UI&quot;, system-ui, sans-serif;
+  line-height: 1.5;
+}
+a { color: var(--cyan); text-decoration: none; }
+a:hover { color: white; }
+a:focus-visible, button:focus-visible, audio:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; }
+.shell { display: grid; grid-template-columns: 250px minmax(0, 1fr); min-height: 100vh; }
+.rail {
+  position: sticky; top: 0; height: 100vh; padding: 28px 20px;
+  border-right: 1px solid var(--line); background: rgba(5, 13, 25, .76); backdrop-filter: blur(18px);
+}
+.mark { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); font-weight: 800; letter-spacing: .08em; font-size: .74rem; }
+.mark-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 22px var(--cyan); }
+.rail p { margin: 24px 0 14px; color: var(--faint); font-size: .73rem; text-transform: uppercase; letter-spacing: .16em; }
+.nav { display: grid; gap: 5px; }
+.nav a { display: flex; justify-content: space-between; gap: 12px; padding: 9px 10px; border-radius: 8px; color: var(--muted); font-size: .9rem; }
+.nav a:hover { background: rgba(84, 169, 255, .1); color: var(--ink); }
+.nav small { color: var(--faint); font-variant-numeric: tabular-nums; }
+.rail-foot { position: absolute; bottom: 28px; left: 20px; right: 20px; color: var(--faint); font-size: .75rem; }
+.main { width: min(1500px, 100%); padding: 32px clamp(20px, 4vw, 64px) 80px; }
+.hero { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(260px, .6fr); gap: 30px; align-items: end; padding: 38px 0 34px; }
+.eyebrow { margin: 0 0 14px; color: var(--cyan); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; }
+h1 { max-width: 800px; margin: 0; font-size: clamp(2.5rem, 6vw, 5.8rem); line-height: .98; letter-spacing: -.065em; }
+.dek { max-width: 700px; margin: 22px 0 0; color: var(--muted); font-size: 1.03rem; }
+.hero-note { border-left: 2px solid var(--blue); padding: 3px 0 3px 18px; color: var(--muted); font-size: .9rem; }
+.hero-note strong { display: block; color: var(--ink); font-size: 1.05rem; }
+.status-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 8px 0 60px; }
+.status { min-height: 98px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(145deg, rgba(21, 48, 80, .7), rgba(11, 24, 42, .8)); box-shadow: var(--shadow); }
+.status .value { display: block; margin-bottom: 8px; color: var(--cyan); font-size: 1.65rem; font-weight: 800; line-height: 1; }
+.status .label { color: var(--muted); font-size: .78rem; }
+.status.warn { border-color: rgba(255, 202, 117, .45); }
+.status.warn .value { color: var(--amber); font-size: 1rem; line-height: 1.25; }
+.status.open .value { color: var(--red); font-size: 1rem; line-height: 1.25; }
+.section { scroll-margin-top: 24px; margin-top: 58px; }
+.section-head { display: flex; justify-content: space-between; gap: 18px; align-items: end; margin-bottom: 17px; border-bottom: 1px solid var(--line); padding-bottom: 14px; }
+.section-kicker { color: var(--blue); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; }
+h2 { margin: 3px 0 0; font-size: clamp(1.55rem, 3vw, 2.35rem); letter-spacing: -.04em; }
+.section-head p { max-width: 520px; margin: 0; color: var(--muted); font-size: .84rem; text-align: right; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 15px; }
+.card { overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: rgba(13, 26, 45, .88); box-shadow: 0 12px 40px rgba(0, 0, 0, .13); }
+.card:hover { border-color: rgba(107, 228, 242, .55); transform: translateY(-2px); transition: transform .18s ease, border-color .18s ease; }
+.shot { display: block; position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: #07101d; border-bottom: 1px solid var(--line); }
+.shot img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; }
+.shot-label { position: absolute; left: 10px; top: 10px; padding: 4px 7px; border: 1px solid rgba(255,255,255,.16); border-radius: 5px; background: rgba(3, 12, 24, .82); color: var(--cyan); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .68rem; }
+.card-body { padding: 14px 15px 15px; }
+.card-title { margin: 0; font-size: .98rem; line-height: 1.25; }
+.meta { display: flex; flex-wrap: wrap; gap: 7px 12px; margin-top: 11px; color: var(--faint); font-size: .72rem; }
+.meta a { color: var(--muted); }
+.meta a:hover { color: var(--cyan); }
+.chip { display: inline-block; padding: 3px 6px; border-radius: 4px; background: rgba(84, 169, 255, .1); color: var(--blue); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .66rem; letter-spacing: .03em; }
+.chip.green { background: rgba(115, 224, 177, .1); color: var(--green); }
+.chip.red { background: rgba(255, 142, 153, .1); color: var(--red); }
+.chip.amber { background: rgba(255, 202, 117, .1); color: var(--amber); }
+.audio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+.audio-card { min-width: 0; padding: 16px; border: 1px solid var(--line); border-radius: 10px; background: rgba(13, 26, 45, .86); }
+.audio-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.audio-title { overflow-wrap: anywhere; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .78rem; }
+.audio-card audio { width: 100%; height: 34px; margin: 14px 0 7px; }
+.transcript { margin: 8px 0 0; color: var(--ink); font-size: .9rem; }
+.transcript-note { margin: 8px 0 0; color: var(--muted); font-size: .74rem; }
+.audio-intro, .separation { margin: 0 0 17px; color: var(--muted); font-size: .9rem; }
+.separation { padding: 13px 15px; border-left: 2px solid var(--amber); background: rgba(255, 202, 117, .06); }
+.empty { padding: 24px; border: 1px dashed var(--line); border-radius: 10px; color: var(--muted); }
+@media (max-width: 900px) {
+  .shell { display: block; }
+  .rail { position: relative; height: auto; padding: 18px 20px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .rail p { margin: 18px 0 8px; }
+  .nav { display: flex; flex-wrap: wrap; }
+  .nav a { padding: 6px 8px; }
+  .rail-foot { display: none; }
+  .hero { grid-template-columns: 1fr; padding-top: 24px; }
+  .hero-note { max-width: 600px; }
+}
+@media (max-width: 620px) {
+  .main { padding-inline: 15px; }
+  .status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .status { min-height: 84px; padding: 12px; }
+  .status .value { font-size: 1.3rem; }
+  .section-head { display: block; }
+  .section-head p { margin-top: 8px; text-align: left; }
+  .grid, .audio-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .card:hover { transform: none; transition: none; }
+}
+&quot;&quot;&quot;
+
+
+def esc(value: object) -&gt; str:
+    return html.escape(str(value), quote=True)
+
+
+def rel_url(path: Path, output: Path) -&gt; str:
+    relative = Path(os.path.relpath(path, output.parent)).as_posix()
+    # /tmp is a symlink on macOS; fall back to a direct file URL when a relative
+    # link would traverse a different physical root than the source file.
+    if output.parent.exists() and Path(output.parent, relative).exists():
+        return relative
+    return path.resolve().as_uri()
+
+
+def safe_external_url(value: object) -&gt; str | None:
+    if not isinstance(value, str):
+        return None
+    parsed = urlparse(value)
+    if parsed.scheme not in {&quot;http&quot;, &quot;https&quot;} or not parsed.netloc:
+        return None
+    return value
+
+
+def timestamp_from_text(text: str) -&gt; str | None:
+    first = text.splitlines()[0].strip() if text.splitlines() else &quot;&quot;
+    return first if ISO_RE.match(first) else None
+
+
+def explicit_browser_url(text: str) -&gt; str | None:
+    match = re.search(r&quot;Browser tab:.*?URL:\s*[\&quot;&#x27;]([^\&quot;&#x27;]+)&quot;, text, re.IGNORECASE)
+    return safe_external_url(match.group(1)) if match else None
+
+
+def human_title(stem: str) -&gt; str:
+    stem = re.sub(r&quot;^\d+-&quot;, &quot;&quot;, stem)
+    return re.sub(r&quot;\s+&quot;, &quot; &quot;, stem.replace(&quot;-&quot;, &quot; &quot;).replace(&quot;_&quot;, &quot; &quot;)).strip().title()
+
+
+def group_for(number: int) -&gt; tuple[str, str, str] | None:
+    for slug, label, start, end, url in GROUPS:
+        if start &lt;= number &lt;= end:
+            return slug, label, url
+    if number &gt;= 47:
+        return &quot;online&quot;, &quot;Online&quot;, &quot;https://www.chess.com/play/online&quot;
+    return None
+
+
+def load_json(path: Path, fallback: object) -&gt; object:
+    try:
+        return json.loads(path.read_text(encoding=&quot;utf-8&quot;))
+    except (OSError, json.JSONDecodeError):
+        return fallback
+
+
+def load_audio(source: Path) -&gt; tuple[list[dict], dict[str, dict]]:
+    audio_dir = source / &quot;audio&quot;
+    primary = load_json(audio_dir / &quot;transcripts.json&quot;, {})
+    additional = load_json(audio_dir / &quot;additional.json&quot;, {})
+    provenance = load_json(audio_dir / &quot;provenance.json&quot;, [])
+    by_name: dict[str, dict] = {}
+    for item in primary.get(&quot;files&quot;, []) if isinstance(primary, dict) else []:
+        if isinstance(item, dict) and item.get(&quot;filename&quot;):
+            by_name[str(item[&quot;filename&quot;])] = {**item, &quot;accepted&quot;: bool(item.get(&quot;transcript&quot;))}
+    for item in additional.get(&quot;files&quot;, []) if isinstance(additional, dict) else []:
+        if isinstance(item, dict) and item.get(&quot;filename&quot;):
+            accepted = bool(item.get(&quot;transcript&quot;)) and item.get(&quot;kind&quot;) != &quot;sound_effect&quot;
+            by_name[str(item[&quot;filename&quot;])] = {**by_name.get(str(item[&quot;filename&quot;]), {}), **item, &quot;accepted&quot;: accepted}
+    for item in provenance if isinstance(provenance, list) else []:
+        if isinstance(item, dict) and item.get(&quot;file&quot;):
+            name = str(item[&quot;file&quot;])
+            by_name[name] = {**by_name.get(name, {}), &quot;source&quot;: item.get(&quot;source&quot;), &quot;observedAt&quot;: item.get(&quot;observedAt&quot;)}
+    sources_path = audio_dir / &quot;sources.jsonl&quot;
+    try:
+        for line in sources_path.read_text(encoding=&quot;utf-8&quot;).splitlines():
+            item = json.loads(line)
+            if isinstance(item, dict) and item.get(&quot;file&quot;):
+                name = str(item[&quot;file&quot;])
+                by_name[name] = {**by_name.get(name, {}), &quot;source&quot;: item.get(&quot;url&quot;, by_name.get(name, {}).get(&quot;source&quot;)), &quot;capturedAt&quot;: item.get(&quot;capturedAt&quot;, by_name.get(name, {}).get(&quot;capturedAt&quot;))}
+    except (OSError, json.JSONDecodeError):
+        pass
+    files = []
+    for path in sorted(audio_dir.glob(&quot;*.mp3&quot;), key=lambda p: p.name.lower()):
+        files.append({&quot;path&quot;: path, **by_name.get(path.name, {})})
+    return files, by_name
+
+
+def card_html(item: dict, source: Path, output: Path) -&gt; str:
+    path: Path = item[&quot;path&quot;]
+    number = item.get(&quot;number&quot;)
+    stamp = item.get(&quot;timestamp&quot;)
+    title = item.get(&quot;title&quot;, human_title(path.stem))
+    txt = item.get(&quot;txt&quot;)
+    url = item.get(&quot;url&quot;)
+    link_label = item.get(&quot;url_label&quot;, &quot;Reference entry point&quot;)
+    chips = item.get(&quot;chips&quot;, [])
+    chip_html = &quot;&quot;.join(f&#x27;&lt;span class=&quot;chip {esc(c.get(&quot;tone&quot;, &quot;&quot;))}&quot;&gt;{esc(c[&quot;label&quot;])}&lt;/span&gt;&#x27; if isinstance(c, dict) else f&#x27;&lt;span class=&quot;chip&quot;&gt;{esc(c)}&lt;/span&gt;&#x27; for c in chips)
+    source_link = f&#x27;&lt;a href=&quot;{esc(rel_url(txt, output))}&quot;&gt;Source TXT&lt;/a&gt;&#x27; if txt else &quot;&quot;
+    url_link = f&#x27;&lt;a href=&quot;{esc(url)}&quot; target=&quot;_blank&quot; rel=&quot;noreferrer&quot;&gt;{esc(link_label)}&lt;/a&gt;&#x27; if url else &quot;&quot;
+    stamp_html = f&#x27;&lt;time datetime=&quot;{esc(stamp)}&quot;&gt;{esc(stamp)}&lt;/time&gt;&#x27; if stamp else &#x27;&lt;span&gt;Capture time unavailable&lt;/span&gt;&#x27;
+    number_label = f&quot;{int(number):02d}&quot; if number is not None else &quot;FIX&quot;
+    return f&#x27;&#x27;&#x27;&lt;article class=&quot;card&quot;&gt;
+  &lt;a class=&quot;shot&quot; href=&quot;{esc(rel_url(path, output))}&quot; target=&quot;_blank&quot; rel=&quot;noreferrer&quot;&gt;
+    &lt;img loading=&quot;lazy&quot; src=&quot;{esc(rel_url(path, output))}&quot; alt=&quot;{esc(title)} screenshot&quot;&gt;
+    &lt;span class=&quot;shot-label&quot;&gt;{esc(number_label)}&lt;/span&gt;
+  &lt;/a&gt;
+  &lt;div class=&quot;card-body&quot;&gt;
+    &lt;h3 class=&quot;card-title&quot;&gt;{esc(title)}&lt;/h3&gt;
+    &lt;div class=&quot;meta&quot;&gt;{chip_html}&lt;span&gt;{stamp_html}&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;meta&quot;&gt;{source_link}{url_link}&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/article&gt;&#x27;&#x27;&#x27;
+
+
+def audio_html(item: dict, source: Path, output: Path) -&gt; str:
+    path: Path = item[&quot;path&quot;]
+    accepted = bool(item.get(&quot;accepted&quot;))
+    transcript = item.get(&quot;transcript&quot;)
+    kind = item.get(&quot;kind&quot;)
+    confidence = item.get(&quot;confidence&quot;)
+    duration = item.get(&quot;durationSeconds&quot;)
+    observed = item.get(&quot;capturedAt&quot;) or item.get(&quot;observedAt&quot;)
+    source_url = safe_external_url(item.get(&quot;source&quot;))
+    source_link = f&#x27;&lt;a href=&quot;{esc(source_url)}&quot; target=&quot;_blank&quot; rel=&quot;noreferrer&quot;&gt;Public source&lt;/a&gt;&#x27; if source_url else &quot;&quot;
+    if accepted:
+        transcript_html = f&#x27;&lt;p class=&quot;transcript&quot;&gt;“{esc(transcript)}”&lt;/p&gt;&#x27;
+        note = f&#x27;Accepted speech transcript · {esc(confidence or &quot;confidence not recorded&quot;)}&#x27;
+        if item.get(&quot;orthographyCorrections&quot;):
+            note += &quot; · chess spelling editorialized&quot;
+    elif kind == &quot;sound_effect&quot;:
+        transcript_html = &#x27;&lt;p class=&quot;transcript-note&quot;&gt;Sound effect · no accepted speech transcript&lt;/p&gt;&#x27;
+        note = &quot;Raw ASR withheld; source metadata identifies a sound effect.&quot;
+    else:
+        transcript_html = &#x27;&lt;p class=&quot;transcript-note&quot;&gt;No accepted transcript recorded.&lt;/p&gt;&#x27;
+        note = &quot;Transcript metadata unavailable.&quot;
+    duration_text = f&quot;{float(duration):.1f}s&quot; if isinstance(duration, (int, float)) else &quot;duration unknown&quot;
+    observed_text = f&quot; · observed {esc(observed)}&quot; if observed else &quot;&quot;
+    return f&#x27;&#x27;&#x27;&lt;article class=&quot;audio-card&quot;&gt;
+  &lt;div class=&quot;audio-top&quot;&gt;&lt;span class=&quot;audio-title&quot;&gt;{esc(path.name)}&lt;/span&gt;&lt;span class=&quot;chip {&#x27;green&#x27; if accepted else &#x27;amber&#x27;}&quot;&gt;{(&#x27;speech&#x27; if accepted else &#x27;audio&#x27;)}&lt;/span&gt;&lt;/div&gt;
+  &lt;audio controls preload=&quot;none&quot; src=&quot;{esc(rel_url(path, output))}&quot;&gt;&lt;/audio&gt;
+  &lt;div class=&quot;meta&quot;&gt;&lt;span&gt;{esc(duration_text)}&lt;/span&gt;&lt;span&gt;{esc(note)}{observed_text}&lt;/span&gt;&lt;/div&gt;
+  {transcript_html}
+  &lt;div class=&quot;meta&quot;&gt;{source_link}&lt;/div&gt;
+&lt;/article&gt;&#x27;&#x27;&#x27;
+
+
+def build(source: Path, output: Path) -&gt; tuple[str, dict[str, int]]:
+    numbered: list[dict] = []
+    for path in sorted(source.glob(&quot;*.png&quot;), key=lambda p: (int(NUMBERED_RE.match(p.name).group(1)) if NUMBERED_RE.match(p.name) else 10_000, p.name.lower())):
+        match = NUMBERED_RE.match(path.name)
+        if not match:
+            continue
+        number = int(match.group(1))
+        group = group_for(number)
+        if not group:
+            continue
+        txt = path.with_suffix(&quot;.txt&quot;)
+        text = txt.read_text(encoding=&quot;utf-8&quot;, errors=&quot;replace&quot;) if txt.exists() else &quot;&quot;
+        numbered.append({
+            &quot;path&quot;: path,
+            &quot;number&quot;: number,
+            &quot;txt&quot;: txt if txt.exists() else None,
+            &quot;timestamp&quot;: timestamp_from_text(text),
+            &quot;title&quot;: human_title(path.stem),
+            &quot;url&quot;: explicit_browser_url(text) or group[2],
+            &quot;url_label&quot;: &quot;Captured page URL&quot; if explicit_browser_url(text) else &quot;Reference entry point&quot;,
+            &quot;group&quot;: group[0],
+            &quot;chips&quot;: ([{&quot;label&quot;: &quot;capture&quot;, &quot;tone&quot;: &quot;&quot;}] if txt.exists() else [{&quot;label&quot;: &quot;image only&quot;, &quot;tone&quot;: &quot;amber&quot;}]),
+        })
+
+    fixes: list[dict] = []
+    proof = {
+        &quot;chesslab-puzzle-auth-fixed.png&quot;: [(&quot;puzzle-auth-green.txt&quot;, &quot;green proof&quot;, &quot;green&quot;)],
+        &quot;chesslab-puzzle-login-interruption.png&quot;: [(&quot;puzzle-auth-red.txt&quot;, &quot;red proof&quot;, &quot;red&quot;)],
+        &quot;chesslab-next-puzzle.png&quot;: [(&quot;puzzle-next-red.txt&quot;, &quot;follow-up note&quot;, &quot;amber&quot;)],
+    }
+    for path in sorted(source.glob(&quot;chesslab-*.png&quot;), key=lambda p: p.name.lower()):
+        chips = []
+        chips.append({&quot;label&quot;: &quot;ChessLab capture&quot;, &quot;tone&quot;: &quot;&quot;})
+        links = []
+        for filename, label, tone in proof.get(path.name, []):
+            note = source / filename
+            if note.exists():
+                links.append((note, label, tone))
+                chips.append({&quot;label&quot;: label, &quot;tone&quot;: tone})
+        fixes.append({&quot;path&quot;: path, &quot;title&quot;: human_title(path.stem), &quot;timestamp&quot;: None, &quot;txt&quot;: None, &quot;url&quot;: None, &quot;chips&quot;: chips, &quot;proof&quot;: links})
+
+    audio, _ = load_audio(source)
+    by_group = {slug: [item for item in numbered if item[&quot;group&quot;] == slug] for slug, *_ in GROUPS}
+    if any(item[&quot;group&quot;] == &quot;online&quot; for item in numbered):
+        by_group[&quot;online&quot;] = [item for item in numbered if item[&quot;group&quot;] == &quot;online&quot;]
+    nav = []
+    for slug, label, *_ in GROUPS:
+        if by_group.get(slug):
+            nav.append((slug, label, len(by_group[slug])))
+    if by_group.get(&quot;online&quot;):
+        nav.append((&quot;online&quot;, &quot;Online&quot;, len(by_group[&quot;online&quot;])))
+    nav.extend([(&quot;fixes&quot;, &quot;ChessLab fixes&quot;, len(fixes)), (&quot;audio&quot;, &quot;Audio&quot;, len(audio))])
+
+    stats = {
+        &quot;numbered&quot;: len(numbered),
+        &quot;txt&quot;: sum(1 for item in numbered if item[&quot;txt&quot;]),
+        &quot;fixes&quot;: len(fixes),
+        &quot;audio&quot;: len(audio),
+        &quot;accepted&quot;: sum(1 for item in audio if item.get(&quot;accepted&quot;)),
+    }
+
+    nav_html = &quot;&quot;.join(f&#x27;&lt;a href=&quot;#{esc(slug)}&quot;&gt;{esc(label)} &lt;small&gt;{count:02d}&lt;/small&gt;&lt;/a&gt;&#x27; for slug, label, count in nav)
+    sections = []
+    section_copy = {
+        &quot;coach&quot;: (&quot;01—17&quot;, &quot;Coach behavior, hints, takebacks and the review handoff.&quot;),
+        &quot;puzzles&quot;: (&quot;18—30&quot;, &quot;Puzzle entry, completion, next-puzzle action and retry.&quot;),
+        &quot;bots&quot;: (&quot;31—39&quot;, &quot;Play-mode choice, bot roster, clocks, assistance and resignation.&quot;),
+        &quot;review&quot;: (&quot;40—46&quot;, &quot;Review controls and the observed blunder explanation flow.&quot;),
+        &quot;online&quot;: (&quot;47+&quot;, &quot;Unrated online setup and an auto-aborted match; no agent move was submitted.&quot;),
+    }
+    for slug, label, count in nav:
+        if slug in {&quot;fixes&quot;, &quot;audio&quot;}:
+            continue
+        kicker, copy = section_copy[slug]
+        cards = &quot;&quot;.join(card_html(item, source, output) for item in by_group[slug])
+        sections.append(f&#x27;&#x27;&#x27;&lt;section class=&quot;section&quot; id=&quot;{esc(slug)}&quot;&gt;
+  &lt;div class=&quot;section-head&quot;&gt;&lt;div&gt;&lt;div class=&quot;section-kicker&quot;&gt;{esc(kicker)} · {count:02d} captures&lt;/div&gt;&lt;h2&gt;{esc(label)}&lt;/h2&gt;&lt;/div&gt;&lt;p&gt;{esc(copy)}&lt;/p&gt;&lt;/div&gt;
+  &lt;div class=&quot;grid&quot;&gt;{cards}&lt;/div&gt;
+&lt;/section&gt;&#x27;&#x27;&#x27;)
+
+    fix_cards = []
+    for item in fixes:
+        card = card_html(item, source, output)
+        if item.get(&quot;proof&quot;):
+            links = &quot; · &quot;.join(f&#x27;&lt;a href=&quot;{esc(rel_url(note, output))}&quot;&gt;{esc(label)}&lt;/a&gt;&#x27; for note, label, _ in item[&quot;proof&quot;])
+            card = card.replace(&#x27;&lt;/div&gt;\n&lt;/article&gt;&#x27;, f&#x27;&lt;div class=&quot;meta&quot;&gt;Proof note: {links}&lt;/div&gt;\n  &lt;/div&gt;\n&lt;/article&gt;&#x27;)
+        fix_cards.append(card)
+    sections.append(f&#x27;&#x27;&#x27;&lt;section class=&quot;section&quot; id=&quot;fixes&quot;&gt;
+  &lt;div class=&quot;section-head&quot;&gt;&lt;div&gt;&lt;div class=&quot;section-kicker&quot;&gt;Local evidence · {len(fixes):02d} screenshots&lt;/div&gt;&lt;h2&gt;ChessLab fixes&lt;/h2&gt;&lt;/div&gt;&lt;p&gt;Separate local-app evidence. These screenshots do not establish reference-product behavior or parity.&lt;/p&gt;&lt;/div&gt;
+  &lt;p class=&quot;separation&quot;&gt;Authentication and puzzle continuation checks are linked as red/green proof notes where the source directory contains them.&lt;/p&gt;
+  &lt;div class=&quot;grid&quot;&gt;{&quot;&quot;.join(fix_cards) if fix_cards else &#x27;&lt;div class=&quot;empty&quot;&gt;No ChessLab fix screenshots found.&lt;/div&gt;&#x27;}&lt;/div&gt;
+&lt;/section&gt;&#x27;&#x27;&#x27;)
+
+    audio_cards = &quot;&quot;.join(audio_html(item, source, output) for item in audio)
+    audio_links = []
+    for filename, label in ((&quot;transcripts.md&quot;, &quot;transcripts.md&quot;), (&quot;transcripts.json&quot;, &quot;transcripts.json&quot;), (&quot;provenance.json&quot;, &quot;provenance.json&quot;)):
+        metadata_path = source / &quot;audio&quot; / filename
+        if metadata_path.exists():
+            audio_links.append(f&#x27;&lt;a href=&quot;{esc(rel_url(metadata_path, output))}&quot;&gt;{esc(label)}&lt;/a&gt;&#x27;)
+    audio_link_text = &quot; · &quot;.join(audio_links)
+    sections.append(f&#x27;&#x27;&#x27;&lt;section class=&quot;section&quot; id=&quot;audio&quot;&gt;
+  &lt;div class=&quot;section-head&quot;&gt;&lt;div&gt;&lt;div class=&quot;section-kicker&quot;&gt;Audio evidence · {stats[&quot;accepted&quot;]:02d} accepted transcripts&lt;/div&gt;&lt;h2&gt;Audio&lt;/h2&gt;&lt;/div&gt;&lt;p&gt;Local playback controls for captured MP3s. Accepted speech transcripts are shown; sound-effect ASR is intentionally withheld.&lt;/p&gt;&lt;/div&gt;
+  &lt;p class=&quot;audio-intro&quot;&gt;Metadata: {audio_link_text}. Confidence is qualitative; token scores are not calibrated probabilities. Captured network files may be prefetched, so clip playback is not asserted unless separately verified.&lt;/p&gt;
+  &lt;div class=&quot;audio-grid&quot;&gt;{audio_cards if audio_cards else &#x27;&lt;div class=&quot;empty&quot;&gt;No MP3 files found.&lt;/div&gt;&#x27;}&lt;/div&gt;
+&lt;/section&gt;&#x27;&#x27;&#x27;)
+
+    html_doc = f&#x27;&#x27;&#x27;&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;utf-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;meta name=&quot;description&quot; content=&quot;Navigable evidence atlas for the ChessLab Chrome capture session.&quot;&gt;
+  &lt;title&gt;ChessLab · Capture Atlas&lt;/title&gt;
+  &lt;style&gt;{STYLE}&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;shell&quot;&gt;
+    &lt;aside class=&quot;rail&quot;&gt;
+      &lt;a class=&quot;mark&quot; href=&quot;#top&quot;&gt;&lt;span class=&quot;mark-dot&quot;&gt;&lt;/span&gt;CAPTURE ATLAS&lt;/a&gt;
+      &lt;p&gt;Evidence index&lt;/p&gt;
+      &lt;nav class=&quot;nav&quot; aria-label=&quot;Atlas sections&quot;&gt;{nav_html}&lt;/nav&gt;
+      &lt;div class=&quot;rail-foot&quot;&gt;08 SEP 2026&lt;br&gt;Originals stay linked.&lt;/div&gt;
+    &lt;/aside&gt;
+    &lt;main class=&quot;main&quot; id=&quot;top&quot;&gt;
+      &lt;header class=&quot;hero&quot;&gt;
+        &lt;div&gt;
+          &lt;p class=&quot;eyebrow&quot;&gt;ChessLab / Chrome session / evidence surface&lt;/p&gt;
+          &lt;h1&gt;What the reference session actually shows.&lt;/h1&gt;
+          &lt;p class=&quot;dek&quot;&gt;A compact, navigable index of captured screens and audio. Open any original at full size, then follow its source TXT or provenance link.&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;hero-note&quot;&gt;&lt;strong&gt;Evidence, not a parity claim.&lt;/strong&gt; Screens document observed reference behavior. The complete product mapping remains unfinished.&lt;/div&gt;
+      &lt;/header&gt;
+      &lt;p class=&quot;separation&quot;&gt;Recording gap: the first action recording ended at 00:29:36 UTC; the next recorder call returned at 03:06:13 UTC. This is a screenshot sequence with separate audio clips, not a continuous synchronized video. Online play: automatic approval review blocked the first coordinate move and Chess.com auto-aborted the match. No completed human game is claimed. &lt;a href=&quot;{esc(rel_url(source / &#x27;session-report.md&#x27;, output))}&quot;&gt;Read the complete session report&lt;/a&gt;.&lt;/p&gt;
+      &lt;div class=&quot;status-grid&quot; aria-label=&quot;Session status&quot;&gt;
+        &lt;div class=&quot;status&quot;&gt;&lt;span class=&quot;value&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;label&quot;&gt;reference games resigned&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;status&quot;&gt;&lt;span class=&quot;value&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;label&quot;&gt;puzzles solved&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;status warn&quot;&gt;&lt;span class=&quot;value&quot;&gt;Coach warning&lt;/span&gt;&lt;span class=&quot;label&quot;&gt;Retry is unverified&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;status open&quot;&gt;&lt;span class=&quot;value&quot;&gt;Unfinished&lt;/span&gt;&lt;span class=&quot;label&quot;&gt;full product parity&lt;/span&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      {&#x27;&#x27;.join(sections)}
+    &lt;/main&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+&#x27;&#x27;&#x27;
+    return html_doc, stats
+
+
+def parse_args(argv: list[str]) -&gt; argparse.Namespace:
+    parser = argparse.ArgumentParser(description=&quot;Build a ChessLab Chrome capture atlas.&quot;)
+    parser.add_argument(&quot;--source&quot;, type=Path, default=None, help=&quot;Capture directory (default: cwd/references/chrome-session-2026-09-08)&quot;)
+    parser.add_argument(&quot;--output&quot;, type=Path, default=None, help=&quot;HTML output path (default: source/index.html)&quot;)
+    parser.add_argument(&quot;--dry-run&quot;, action=&quot;store_true&quot;, help=&quot;Discover inputs and print counts without writing HTML&quot;)
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -&gt; int:
+    args = parse_args(argv or sys.argv[1:])
+    source = (args.source or (Path.cwd() / &quot;references&quot; / &quot;chrome-session-2026-09-08&quot;)).expanduser()
+    output = (args.output or (source / &quot;index.html&quot;)).expanduser()
+    if not source.is_dir():
+        print(f&quot;error: source directory not found: {source}&quot;, file=sys.stderr)
+        return 2
+    document, stats = build(source, output)
+    print(f&quot;source={source}&quot;)
+    print(f&quot;output={output}&quot;)
+    print(&quot;discovered=&quot; + &quot;, &quot;.join(f&quot;{key}:{value}&quot; for key, value in stats.items()))
+    if args.dry_run:
+        print(&quot;dry-run: no files written&quot;)
+        return 0
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(document, encoding=&quot;utf-8&quot;)
+    print(f&quot;wrote={output} bytes={output.stat().st_size}&quot;)
+    return 0
+
+
+if __name__ == &quot;__main__&quot;:
+    raise SystemExit(main())
+</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

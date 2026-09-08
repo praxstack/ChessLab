@@ -1,0 +1,143 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | SME2 = 1 | ACCELERATE = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "large",
+		"multilingual": true,
+		"vocab": 51866,
+		"audio": {
+			"ctx": 1500,
+			"state": 1280,
+			"head": 20,
+			"layer": 32
+		},
+		"text": {
+			"ctx": 448,
+			"state": 1280,
+			"head": 20,
+			"layer": 4
+		},
+		"mels": 128,
+		"ftype": 7
+	},
+	"params": {
+		"model": "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,720"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 720
+			},
+			"text": " Let's go back.",
+			"tokens": [
+				{
+					"text": "[_BEG_]",
+					"timestamps": {
+						"from": "00:00:00,000",
+						"to": "00:00:00,000"
+					},
+					"offsets": {
+						"from": 0,
+						"to": 0
+					},
+					"id": 50365,
+					"p": 0.965248,
+					"t_dtw": -1
+				},
+				{
+					"text": " Let",
+					"timestamps": {
+						"from": "00:00:00,080",
+						"to": "00:00:00,150"
+					},
+					"offsets": {
+						"from": 80,
+						"to": 150
+					},
+					"id": 961,
+					"p": 0.96452,
+					"t_dtw": -1
+				},
+				{
+					"text": "'s",
+					"timestamps": {
+						"from": "00:00:00,150",
+						"to": "00:00:00,210"
+					},
+					"offsets": {
+						"from": 150,
+						"to": 210
+					},
+					"id": 311,
+					"p": 0.999846,
+					"t_dtw": -1
+				},
+				{
+					"text": " go",
+					"timestamps": {
+						"from": "00:00:00,270",
+						"to": "00:00:00,350"
+					},
+					"offsets": {
+						"from": 270,
+						"to": 350
+					},
+					"id": 352,
+					"p": 0.999178,
+					"t_dtw": -1
+				},
+				{
+					"text": " back",
+					"timestamps": {
+						"from": "00:00:00,360",
+						"to": "00:00:00,550"
+					},
+					"offsets": {
+						"from": 360,
+						"to": 550
+					},
+					"id": 646,
+					"p": 0.998502,
+					"t_dtw": -1
+				},
+				{
+					"text": ".",
+					"timestamps": {
+						"from": "00:00:00,550",
+						"to": "00:00:00,650"
+					},
+					"offsets": {
+						"from": 550,
+						"to": 650
+					},
+					"id": 13,
+					"p": 0.954426,
+					"t_dtw": -1
+				},
+				{
+					"text": "[_TT_36]",
+					"timestamps": {
+						"from": "00:00:00,720",
+						"to": "00:00:00,720"
+					},
+					"offsets": {
+						"from": 720,
+						"to": 720
+					},
+					"id": 50401,
+					"p": 0.281001,
+					"t_dtw": -1
+				}
+			]
+		}
+	]
+}

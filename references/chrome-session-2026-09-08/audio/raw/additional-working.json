@@ -1,0 +1,1113 @@
+{
+  "createdAt": "2026-09-08T00:25:13.908657+00:00",
+  "tool": {
+    "tag": "b4938",
+    "release": "https://github.com/ggml-org/whisper.cpp/releases/tag/b4938",
+    "source": "https://api.github.com/repos/ggml-org/whisper.cpp/tarball/b4938",
+    "archiveSha256": "59f16e008b0fe4f283b5bede96952aed5a8f2e16c2f2f721f263218982a153e7",
+    "sourceDirectory": "/tmp/chesslab-coach-audio/whisper-source"
+  },
+  "model": {
+    "model": "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+    "modelBytes": 874188075,
+    "modelSha256": "317eb69c11673c9de1e1f0d459b253999804ec71ac4c23c17ecf5fbe24e259a1"
+  },
+  "files": [
+    {
+      "filename": "observed-35320-457.mp3",
+      "source": "/Users/prax/Developer/ChessLab/references/chrome-session-2026-09-08/audio/observed-35320-457.mp3",
+      "sourceSha256": "cf38b9edeceb10c1c041cf67df85ab208252fba413ccec60f85352cbd62ed88c",
+      "sourceBytes": 6524,
+      "durationSeconds": 0.541655,
+      "rawAsr": "I'll see you next time.",
+      "rawJson": "/tmp/chesslab-coach-audio/observed-35320-457.json",
+      "rawLog": "/tmp/chesslab-coach-audio/observed-35320-457.run.log",
+      "command": [
+        "/tmp/chesslab-coach-audio/build/bin/whisper-cli",
+        "-m",
+        "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+        "-f",
+        "/tmp/chesslab-coach-audio/observed-35320-457.wav",
+        "-l",
+        "en",
+        "-t",
+        "4",
+        "-ng",
+        "-ojf",
+        "-otxt",
+        "-of",
+        "/tmp/chesslab-coach-audio/observed-35320-457",
+        "-nf"
+      ],
+      "meanLexicalTokenProbability": 0.5863044166666667,
+      "minimumLexicalTokenProbability": 0.0193635,
+      "lexicalTokens": [
+        {
+          "text": " I",
+          "timestamps": {
+            "from": "00:00:00,010",
+            "to": "00:00:00,080"
+          },
+          "offsets": {
+            "from": 10,
+            "to": 80
+          },
+          "id": 286,
+          "p": 0.0193635,
+          "t_dtw": -1
+        },
+        {
+          "text": "'ll",
+          "timestamps": {
+            "from": "00:00:00,540",
+            "to": "00:00:00,540"
+          },
+          "offsets": {
+            "from": 540,
+            "to": 540
+          },
+          "id": 603,
+          "p": 0.256698,
+          "t_dtw": -1
+        },
+        {
+          "text": " see",
+          "timestamps": {
+            "from": "00:00:00,540",
+            "to": "00:00:00,540"
+          },
+          "offsets": {
+            "from": 540,
+            "to": 540
+          },
+          "id": 536,
+          "p": 0.816182,
+          "t_dtw": -1
+        },
+        {
+          "text": " you",
+          "timestamps": {
+            "from": "00:00:00,540",
+            "to": "00:00:00,540"
+          },
+          "offsets": {
+            "from": 540,
+            "to": 540
+          },
+          "id": 291,
+          "p": 0.990625,
+          "t_dtw": -1
+        },
+        {
+          "text": " next",
+          "timestamps": {
+            "from": "00:00:00,540",
+            "to": "00:00:00,540"
+          },
+          "offsets": {
+            "from": 540,
+            "to": 540
+          },
+          "id": 958,
+          "p": 0.61427,
+          "t_dtw": -1
+        },
+        {
+          "text": " time",
+          "timestamps": {
+            "from": "00:00:00,540",
+            "to": "00:00:00,540"
+          },
+          "offsets": {
+            "from": 540,
+            "to": 540
+          },
+          "id": 565,
+          "p": 0.820688,
+          "t_dtw": -1
+        }
+      ],
+      "secondDecode": {
+        "method": "Greedy decoding, same model and audio, no expected-text prompt",
+        "rawAsr": "Thank you.",
+        "rawJson": "/tmp/chesslab-coach-audio/observed-35320-457-greedy.json",
+        "command": [
+          "/tmp/chesslab-coach-audio/build/bin/whisper-cli",
+          "-m",
+          "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+          "-f",
+          "/tmp/chesslab-coach-audio/observed-35320-457.wav",
+          "-l",
+          "en",
+          "-t",
+          "4",
+          "-ng",
+          "-ojf",
+          "-otxt",
+          "-of",
+          "/tmp/chesslab-coach-audio/observed-35320-457-greedy",
+          "-nf",
+          "-bs",
+          "1",
+          "-bo",
+          "1"
+        ],
+        "agreesWithPrimary": false
+      }
+    },
+    {
+      "filename": "observed-35320-458.mp3",
+      "source": "/Users/prax/Developer/ChessLab/references/chrome-session-2026-09-08/audio/observed-35320-458.mp3",
+      "sourceSha256": "ceea8a129e1c12842c5ccfadb63b91476d19de256cf37606b28b09a17d39b20c",
+      "sourceBytes": 3687,
+      "durationSeconds": 0.164059,
+      "rawAsr": "Bye.",
+      "rawJson": "/tmp/chesslab-coach-audio/observed-35320-458.json",
+      "rawLog": "/tmp/chesslab-coach-audio/observed-35320-458.run.log",
+      "command": [
+        "/tmp/chesslab-coach-audio/build/bin/whisper-cli",
+        "-m",
+        "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+        "-f",
+        "/tmp/chesslab-coach-audio/observed-35320-458.wav",
+        "-l",
+        "en",
+        "-t",
+        "4",
+        "-ng",
+        "-ojf",
+        "-otxt",
+        "-of",
+        "/tmp/chesslab-coach-audio/observed-35320-458",
+        "-nf"
+      ],
+      "meanLexicalTokenProbability": 0.300235,
+      "minimumLexicalTokenProbability": 0.300235,
+      "lexicalTokens": [
+        {
+          "text": " Bye",
+          "timestamps": {
+            "from": "00:00:00,000",
+            "to": "00:00:00,020"
+          },
+          "offsets": {
+            "from": 0,
+            "to": 20
+          },
+          "id": 4621,
+          "p": 0.300235,
+          "t_dtw": -1
+        }
+      ],
+      "secondDecode": {
+        "method": "Greedy decoding, same model and audio, no expected-text prompt",
+        "rawAsr": "Bye.",
+        "rawJson": "/tmp/chesslab-coach-audio/observed-35320-458-greedy.json",
+        "command": [
+          "/tmp/chesslab-coach-audio/build/bin/whisper-cli",
+          "-m",
+          "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+          "-f",
+          "/tmp/chesslab-coach-audio/observed-35320-458.wav",
+          "-l",
+          "en",
+          "-t",
+          "4",
+          "-ng",
+          "-ojf",
+          "-otxt",
+          "-of",
+          "/tmp/chesslab-coach-audio/observed-35320-458-greedy",
+          "-nf",
+          "-bs",
+          "1",
+          "-bo",
+          "1"
+        ],
+        "agreesWithPrimary": true
+      }
+    },
+    {
+      "filename": "observed-35320-459.mp3",
+      "source": "/Users/prax/Developer/ChessLab/references/chrome-session-2026-09-08/audio/observed-35320-459.mp3",
+      "sourceSha256": "54315d00e48e3e55a5b4df4c5c2a4b3e93c1e20cbc90e032eb67aedb3b203ae4",
+      "sourceBytes": 3441,
+      "durationSeconds": 0.317708,
+      "rawAsr": "Thank you.",
+      "rawJson": "/tmp/chesslab-coach-audio/observed-35320-459.json",
+      "rawLog": "/tmp/chesslab-coach-audio/observed-35320-459.run.log",
+      "command": [
+        "/tmp/chesslab-coach-audio/build/bin/whisper-cli",
+        "-m",
+        "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+        "-f",
+        "/tmp/chesslab-coach-audio/observed-35320-459.wav",
+        "-l",
+        "en",
+        "-t",
+        "4",
+        "-ng",
+        "-ojf",
+        "-otxt",
+        "-of",
+        "/tmp/chesslab-coach-audio/observed-35320-459",
+        "-nf"
+      ],
+      "meanLexicalTokenProbability": 0.6711115,
+      "minimumLexicalTokenProbability": 0.344684,
+      "lexicalTokens": [
+        {
+          "text": " Thank",
+          "timestamps": {
+            "from": "00:00:00,010",
+            "to": "00:00:00,020"
+          },
+          "offsets": {
+            "from": 10,
+            "to": 20
+          },
+          "id": 1044,
+          "p": 0.344684,
+          "t_dtw": -1
+        },
+        {
+          "text": " you",
+          "timestamps": {
+            "from": "00:00:00,060",
+            "to": "00:00:00,260"
+          },
+          "offsets": {
+            "from": 60,
+            "to": 260
+          },
+          "id": 291,
+          "p": 0.997539,
+          "t_dtw": -1
+        }
+      ],
+      "secondDecode": {
+        "method": "Greedy decoding, same model and audio, no expected-text prompt",
+        "rawAsr": "Thank you.",
+        "rawJson": "/tmp/chesslab-coach-audio/observed-35320-459-greedy.json",
+        "command": [
+          "/tmp/chesslab-coach-audio/build/bin/whisper-cli",
+          "-m",
+          "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+          "-f",
+          "/tmp/chesslab-coach-audio/observed-35320-459.wav",
+          "-l",
+          "en",
+          "-t",
+          "4",
+          "-ng",
+          "-ojf",
+          "-otxt",
+          "-of",
+          "/tmp/chesslab-coach-audio/observed-35320-459-greedy",
+          "-nf",
+          "-bs",
+          "1",
+          "-bo",
+          "1"
+        ],
+        "agreesWithPrimary": true
+      }
+    },
+    {
+      "filename": "observed-35320-460.mp3",
+      "source": "/Users/prax/Developer/ChessLab/references/chrome-session-2026-09-08/audio/observed-35320-460.mp3",
+      "sourceSha256": "f2c982f5f0cf9cc54fe77572290022debc6be92666248eb952c6b5e6a484935b",
+      "sourceBytes": 15391,
+      "durationSeconds": 1.595828,
+      "rawAsr": "I'll see you next time.",
+      "rawJson": "/tmp/chesslab-coach-audio/observed-35320-460.json",
+      "rawLog": "/tmp/chesslab-coach-audio/observed-35320-460.run.log",
+      "command": [
+        "/tmp/chesslab-coach-audio/build/bin/whisper-cli",
+        "-m",
+        "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+        "-f",
+        "/tmp/chesslab-coach-audio/observed-35320-460.wav",
+        "-l",
+        "en",
+        "-t",
+        "4",
+        "-ng",
+        "-ojf",
+        "-otxt",
+        "-of",
+        "/tmp/chesslab-coach-audio/observed-35320-460",
+        "-nf"
+      ],
+      "meanLexicalTokenProbability": 0.6058268833333333,
+      "minimumLexicalTokenProbability": 0.0293683,
+      "lexicalTokens": [
+        {
+          "text": " I",
+          "timestamps": {
+            "from": "00:00:00,050",
+            "to": "00:00:00,280"
+          },
+          "offsets": {
+            "from": 50,
+            "to": 280
+          },
+          "id": 286,
+          "p": 0.0293683,
+          "t_dtw": -1
+        },
+        {
+          "text": "'ll",
+          "timestamps": {
+            "from": "00:00:01,590",
+            "to": "00:00:01,590"
+          },
+          "offsets": {
+            "from": 1590,
+            "to": 1590
+          },
+          "id": 603,
+          "p": 0.244092,
+          "t_dtw": -1
+        },
+        {
+          "text": " see",
+          "timestamps": {
+            "from": "00:00:01,590",
+            "to": "00:00:01,590"
+          },
+          "offsets": {
+            "from": 1590,
+            "to": 1590
+          },
+          "id": 536,
+          "p": 0.878285,
+          "t_dtw": -1
+        },
+        {
+          "text": " you",
+          "timestamps": {
+            "from": "00:00:01,590",
+            "to": "00:00:01,590"
+          },
+          "offsets": {
+            "from": 1590,
+            "to": 1590
+          },
+          "id": 291,
+          "p": 0.992719,
+          "t_dtw": -1
+        },
+        {
+          "text": " next",
+          "timestamps": {
+            "from": "00:00:01,590",
+            "to": "00:00:01,590"
+          },
+          "offsets": {
+            "from": 1590,
+            "to": 1590
+          },
+          "id": 958,
+          "p": 0.668695,
+          "t_dtw": -1
+        },
+        {
+          "text": " time",
+          "timestamps": {
+            "from": "00:00:01,590",
+            "to": "00:00:01,590"
+          },
+          "offsets": {
+            "from": 1590,
+            "to": 1590
+          },
+          "id": 565,
+          "p": 0.821802,
+          "t_dtw": -1
+        }
+      ],
+      "secondDecode": {
+        "method": "Greedy decoding, same model and audio, no expected-text prompt",
+        "rawAsr": "Thank you.",
+        "rawJson": "/tmp/chesslab-coach-audio/observed-35320-460-greedy.json",
+        "command": [
+          "/tmp/chesslab-coach-audio/build/bin/whisper-cli",
+          "-m",
+          "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+          "-f",
+          "/tmp/chesslab-coach-audio/observed-35320-460.wav",
+          "-l",
+          "en",
+          "-t",
+          "4",
+          "-ng",
+          "-ojf",
+          "-otxt",
+          "-of",
+          "/tmp/chesslab-coach-audio/observed-35320-460-greedy",
+          "-nf",
+          "-bs",
+          "1",
+          "-bo",
+          "1"
+        ],
+        "agreesWithPrimary": false
+      }
+    },
+    {
+      "filename": "observed-35320-461.mp3",
+      "source": "/Users/prax/Developer/ChessLab/references/chrome-session-2026-09-08/audio/observed-35320-461.mp3",
+      "sourceSha256": "cbfb20966f7d27efc3f22e86574338e55466a08ef865148f816850aa0e370267",
+      "sourceBytes": 15629,
+      "durationSeconds": 1.595828,
+      "rawAsr": "I'll see you next time.",
+      "rawJson": "/tmp/chesslab-coach-audio/observed-35320-461.json",
+      "rawLog": "/tmp/chesslab-coach-audio/observed-35320-461.run.log",
+      "command": [
+        "/tmp/chesslab-coach-audio/build/bin/whisper-cli",
+        "-m",
+        "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+        "-f",
+        "/tmp/chesslab-coach-audio/observed-35320-461.wav",
+        "-l",
+        "en",
+        "-t",
+        "4",
+        "-ng",
+        "-ojf",
+        "-otxt",
+        "-of",
+        "/tmp/chesslab-coach-audio/observed-35320-461",
+        "-nf"
+      ],
+      "meanLexicalTokenProbability": 0.5811382833333333,
+      "minimumLexicalTokenProbability": 0.0270397,
+      "lexicalTokens": [
+        {
+          "text": " I",
+          "timestamps": {
+            "from": "00:00:00,060",
+            "to": "00:00:00,260"
+          },
+          "offsets": {
+            "from": 60,
+            "to": 260
+          },
+          "id": 286,
+          "p": 0.0270397,
+          "t_dtw": -1
+        },
+        {
+          "text": "'ll",
+          "timestamps": {
+            "from": "00:00:01,590",
+            "to": "00:00:01,590"
+          },
+          "offsets": {
+            "from": 1590,
+            "to": 1590
+          },
+          "id": 603,
+          "p": 0.207775,
+          "t_dtw": -1
+        },
+        {
+          "text": " see",
+          "timestamps": {
+            "from": "00:00:01,590",
+            "to": "00:00:01,590"
+          },
+          "offsets": {
+            "from": 1590,
+            "to": 1590
+          },
+          "id": 536,
+          "p": 0.806118,
+          "t_dtw": -1
+        },
+        {
+          "text": " you",
+          "timestamps": {
+            "from": "00:00:01,590",
+            "to": "00:00:01,590"
+          },
+          "offsets": {
+            "from": 1590,
+            "to": 1590
+          },
+          "id": 291,
+          "p": 0.991336,
+          "t_dtw": -1
+        },
+        {
+          "text": " next",
+          "timestamps": {
+            "from": "00:00:01,590",
+            "to": "00:00:01,590"
+          },
+          "offsets": {
+            "from": 1590,
+            "to": 1590
+          },
+          "id": 958,
+          "p": 0.646036,
+          "t_dtw": -1
+        },
+        {
+          "text": " time",
+          "timestamps": {
+            "from": "00:00:01,590",
+            "to": "00:00:01,590"
+          },
+          "offsets": {
+            "from": 1590,
+            "to": 1590
+          },
+          "id": 565,
+          "p": 0.808525,
+          "t_dtw": -1
+        }
+      ],
+      "secondDecode": {
+        "method": "Greedy decoding, same model and audio, no expected-text prompt",
+        "rawAsr": "Thank you.",
+        "rawJson": "/tmp/chesslab-coach-audio/observed-35320-461-greedy.json",
+        "command": [
+          "/tmp/chesslab-coach-audio/build/bin/whisper-cli",
+          "-m",
+          "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+          "-f",
+          "/tmp/chesslab-coach-audio/observed-35320-461.wav",
+          "-l",
+          "en",
+          "-t",
+          "4",
+          "-ng",
+          "-ojf",
+          "-otxt",
+          "-of",
+          "/tmp/chesslab-coach-audio/observed-35320-461-greedy",
+          "-nf",
+          "-bs",
+          "1",
+          "-bo",
+          "1"
+        ],
+        "agreesWithPrimary": false
+      }
+    },
+    {
+      "filename": "observed-35320-462.mp3",
+      "source": "/Users/prax/Developer/ChessLab/references/chrome-session-2026-09-08/audio/observed-35320-462.mp3",
+      "sourceSha256": "82e35d4f691ccb9be6adb3741243b83f916b3bed4a5b94ef28811f8512ddbbbb",
+      "sourceBytes": 15730,
+      "durationSeconds": 1.595828,
+      "rawAsr": "I'll see you next time.",
+      "rawJson": "/tmp/chesslab-coach-audio/observed-35320-462.json",
+      "rawLog": "/tmp/chesslab-coach-audio/observed-35320-462.run.log",
+      "command": [
+        "/tmp/chesslab-coach-audio/build/bin/whisper-cli",
+        "-m",
+        "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+        "-f",
+        "/tmp/chesslab-coach-audio/observed-35320-462.wav",
+        "-l",
+        "en",
+        "-t",
+        "4",
+        "-ng",
+        "-ojf",
+        "-otxt",
+        "-of",
+        "/tmp/chesslab-coach-audio/observed-35320-462",
+        "-nf"
+      ],
+      "meanLexicalTokenProbability": 0.5931794499999999,
+      "minimumLexicalTokenProbability": 0.0309607,
+      "lexicalTokens": [
+        {
+          "text": " I",
+          "timestamps": {
+            "from": "00:00:00,080",
+            "to": "00:00:00,280"
+          },
+          "offsets": {
+            "from": 80,
+            "to": 280
+          },
+          "id": 286,
+          "p": 0.0309607,
+          "t_dtw": -1
+        },
+        {
+          "text": "'ll",
+          "timestamps": {
+            "from": "00:00:01,590",
+            "to": "00:00:01,590"
+          },
+          "offsets": {
+            "from": 1590,
+            "to": 1590
+          },
+          "id": 603,
+          "p": 0.231161,
+          "t_dtw": -1
+        },
+        {
+          "text": " see",
+          "timestamps": {
+            "from": "00:00:01,590",
+            "to": "00:00:01,590"
+          },
+          "offsets": {
+            "from": 1590,
+            "to": 1590
+          },
+          "id": 536,
+          "p": 0.847096,
+          "t_dtw": -1
+        },
+        {
+          "text": " you",
+          "timestamps": {
+            "from": "00:00:01,590",
+            "to": "00:00:01,590"
+          },
+          "offsets": {
+            "from": 1590,
+            "to": 1590
+          },
+          "id": 291,
+          "p": 0.991181,
+          "t_dtw": -1
+        },
+        {
+          "text": " next",
+          "timestamps": {
+            "from": "00:00:01,590",
+            "to": "00:00:01,590"
+          },
+          "offsets": {
+            "from": 1590,
+            "to": 1590
+          },
+          "id": 958,
+          "p": 0.659322,
+          "t_dtw": -1
+        },
+        {
+          "text": " time",
+          "timestamps": {
+            "from": "00:00:01,590",
+            "to": "00:00:01,590"
+          },
+          "offsets": {
+            "from": 1590,
+            "to": 1590
+          },
+          "id": 565,
+          "p": 0.799356,
+          "t_dtw": -1
+        }
+      ],
+      "secondDecode": {
+        "method": "Greedy decoding, same model and audio, no expected-text prompt",
+        "rawAsr": "Thank you.",
+        "rawJson": "/tmp/chesslab-coach-audio/observed-35320-462-greedy.json",
+        "command": [
+          "/tmp/chesslab-coach-audio/build/bin/whisper-cli",
+          "-m",
+          "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+          "-f",
+          "/tmp/chesslab-coach-audio/observed-35320-462.wav",
+          "-l",
+          "en",
+          "-t",
+          "4",
+          "-ng",
+          "-ojf",
+          "-otxt",
+          "-of",
+          "/tmp/chesslab-coach-audio/observed-35320-462-greedy",
+          "-nf",
+          "-bs",
+          "1",
+          "-bo",
+          "1"
+        ],
+        "agreesWithPrimary": false
+      }
+    },
+    {
+      "filename": "speech-35320-536.mp3",
+      "source": "/Users/prax/Developer/ChessLab/references/chrome-session-2026-09-08/audio/speech-35320-536.mp3",
+      "sourceSha256": "127c71636c40d3d9aea8b471a063f678e224e1c5841dd49f1cceec1e1ffca599",
+      "sourceBytes": 31391,
+      "durationSeconds": 1.904036,
+      "rawAsr": "Let's get this over with, shall we?",
+      "rawJson": "/tmp/chesslab-coach-audio/speech-35320-536.json",
+      "rawLog": "/tmp/chesslab-coach-audio/speech-35320-536.run.log",
+      "command": [
+        "/tmp/chesslab-coach-audio/build/bin/whisper-cli",
+        "-m",
+        "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+        "-f",
+        "/tmp/chesslab-coach-audio/speech-35320-536.wav",
+        "-l",
+        "en",
+        "-t",
+        "4",
+        "-ng",
+        "-ojf",
+        "-otxt",
+        "-of",
+        "/tmp/chesslab-coach-audio/speech-35320-536",
+        "-nf"
+      ],
+      "meanLexicalTokenProbability": 0.987062125,
+      "minimumLexicalTokenProbability": 0.943444,
+      "lexicalTokens": [
+        {
+          "text": " Let",
+          "timestamps": {
+            "from": "00:00:00,100",
+            "to": "00:00:00,150"
+          },
+          "offsets": {
+            "from": 100,
+            "to": 150
+          },
+          "id": 961,
+          "p": 0.943444,
+          "t_dtw": -1
+        },
+        {
+          "text": "'s",
+          "timestamps": {
+            "from": "00:00:00,150",
+            "to": "00:00:00,230"
+          },
+          "offsets": {
+            "from": 150,
+            "to": 230
+          },
+          "id": 311,
+          "p": 0.999779,
+          "t_dtw": -1
+        },
+        {
+          "text": " get",
+          "timestamps": {
+            "from": "00:00:00,290",
+            "to": "00:00:00,360"
+          },
+          "offsets": {
+            "from": 290,
+            "to": 360
+          },
+          "id": 483,
+          "p": 0.999859,
+          "t_dtw": -1
+        },
+        {
+          "text": " this",
+          "timestamps": {
+            "from": "00:00:00,440",
+            "to": "00:00:00,520"
+          },
+          "offsets": {
+            "from": 440,
+            "to": 520
+          },
+          "id": 341,
+          "p": 0.999397,
+          "t_dtw": -1
+        },
+        {
+          "text": " over",
+          "timestamps": {
+            "from": "00:00:00,600",
+            "to": "00:00:00,800"
+          },
+          "offsets": {
+            "from": 600,
+            "to": 800
+          },
+          "id": 670,
+          "p": 0.997563,
+          "t_dtw": -1
+        },
+        {
+          "text": " with",
+          "timestamps": {
+            "from": "00:00:00,800",
+            "to": "00:00:01,000"
+          },
+          "offsets": {
+            "from": 800,
+            "to": 1000
+          },
+          "id": 365,
+          "p": 0.994167,
+          "t_dtw": -1
+        },
+        {
+          "text": " shall",
+          "timestamps": {
+            "from": "00:00:01,140",
+            "to": "00:00:01,590"
+          },
+          "offsets": {
+            "from": 1140,
+            "to": 1590
+          },
+          "id": 4393,
+          "p": 0.965902,
+          "t_dtw": -1
+        },
+        {
+          "text": " we",
+          "timestamps": {
+            "from": "00:00:01,840",
+            "to": "00:00:01,840"
+          },
+          "offsets": {
+            "from": 1840,
+            "to": 1840
+          },
+          "id": 321,
+          "p": 0.996386,
+          "t_dtw": -1
+        }
+      ]
+    },
+    {
+      "filename": "speech-35320-593.mp3",
+      "source": "/Users/prax/Developer/ChessLab/references/chrome-session-2026-09-08/audio/speech-35320-593.mp3",
+      "sourceSha256": "01318767dbe42aaeae5d1ec7d43e07e621ce3809d53943438aceb1403890b4ee",
+      "sourceBytes": 76112,
+      "durationSeconds": 4.690431,
+      "rawAsr": "E4, solid way to start the game. Gary Kasparov and I approve.",
+      "rawJson": "/tmp/chesslab-coach-audio/speech-35320-593.json",
+      "rawLog": "/tmp/chesslab-coach-audio/speech-35320-593.run.log",
+      "command": [
+        "/tmp/chesslab-coach-audio/build/bin/whisper-cli",
+        "-m",
+        "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+        "-f",
+        "/tmp/chesslab-coach-audio/speech-35320-593.wav",
+        "-l",
+        "en",
+        "-t",
+        "4",
+        "-ng",
+        "-ojf",
+        "-otxt",
+        "-of",
+        "/tmp/chesslab-coach-audio/speech-35320-593",
+        "-nf"
+      ],
+      "meanLexicalTokenProbability": 0.9787578571428571,
+      "minimumLexicalTokenProbability": 0.888316,
+      "lexicalTokens": [
+        {
+          "text": " E",
+          "timestamps": {
+            "from": "00:00:00,020",
+            "to": "00:00:00,080"
+          },
+          "offsets": {
+            "from": 20,
+            "to": 80
+          },
+          "id": 462,
+          "p": 0.888316,
+          "t_dtw": -1
+        },
+        {
+          "text": " solid",
+          "timestamps": {
+            "from": "00:00:00,500",
+            "to": "00:00:00,590"
+          },
+          "offsets": {
+            "from": 500,
+            "to": 590
+          },
+          "id": 5100,
+          "p": 0.981623,
+          "t_dtw": -1
+        },
+        {
+          "text": " way",
+          "timestamps": {
+            "from": "00:00:00,980",
+            "to": "00:00:01,220"
+          },
+          "offsets": {
+            "from": 980,
+            "to": 1220
+          },
+          "id": 636,
+          "p": 0.993767,
+          "t_dtw": -1
+        },
+        {
+          "text": " to",
+          "timestamps": {
+            "from": "00:00:01,220",
+            "to": "00:00:01,400"
+          },
+          "offsets": {
+            "from": 1220,
+            "to": 1400
+          },
+          "id": 281,
+          "p": 0.991172,
+          "t_dtw": -1
+        },
+        {
+          "text": " start",
+          "timestamps": {
+            "from": "00:00:01,400",
+            "to": "00:00:01,830"
+          },
+          "offsets": {
+            "from": 1400,
+            "to": 1830
+          },
+          "id": 722,
+          "p": 0.9925,
+          "t_dtw": -1
+        },
+        {
+          "text": " the",
+          "timestamps": {
+            "from": "00:00:01,940",
+            "to": "00:00:01,980"
+          },
+          "offsets": {
+            "from": 1940,
+            "to": 1980
+          },
+          "id": 264,
+          "p": 0.989685,
+          "t_dtw": -1
+        },
+        {
+          "text": " game",
+          "timestamps": {
+            "from": "00:00:01,980",
+            "to": "00:00:02,140"
+          },
+          "offsets": {
+            "from": 1980,
+            "to": 2140
+          },
+          "id": 1216,
+          "p": 0.996896,
+          "t_dtw": -1
+        },
+        {
+          "text": " Gary",
+          "timestamps": {
+            "from": "00:00:02,740",
+            "to": "00:00:02,740"
+          },
+          "offsets": {
+            "from": 2740,
+            "to": 2740
+          },
+          "id": 13788,
+          "p": 0.899405,
+          "t_dtw": -1
+        },
+        {
+          "text": " Kas",
+          "timestamps": {
+            "from": "00:00:02,760",
+            "to": "00:00:02,900"
+          },
+          "offsets": {
+            "from": 2760,
+            "to": 2900
+          },
+          "id": 28059,
+          "p": 0.991221,
+          "t_dtw": -1
+        },
+        {
+          "text": "par",
+          "timestamps": {
+            "from": "00:00:03,030",
+            "to": "00:00:03,330"
+          },
+          "offsets": {
+            "from": 3030,
+            "to": 3330
+          },
+          "id": 2181,
+          "p": 0.992053,
+          "t_dtw": -1
+        },
+        {
+          "text": "ov",
+          "timestamps": {
+            "from": "00:00:03,330",
+            "to": "00:00:03,340"
+          },
+          "offsets": {
+            "from": 3330,
+            "to": 3340
+          },
+          "id": 5179,
+          "p": 0.999003,
+          "t_dtw": -1
+        },
+        {
+          "text": " and",
+          "timestamps": {
+            "from": "00:00:03,720",
+            "to": "00:00:03,870"
+          },
+          "offsets": {
+            "from": 3720,
+            "to": 3870
+          },
+          "id": 293,
+          "p": 0.998163,
+          "t_dtw": -1
+        },
+        {
+          "text": " I",
+          "timestamps": {
+            "from": "00:00:03,870",
+            "to": "00:00:03,970"
+          },
+          "offsets": {
+            "from": 3870,
+            "to": 3970
+          },
+          "id": 286,
+          "p": 0.999968,
+          "t_dtw": -1
+        },
+        {
+          "text": " approve",
+          "timestamps": {
+            "from": "00:00:03,970",
+            "to": "00:00:04,730"
+          },
+          "offsets": {
+            "from": 3970,
+            "to": 4730
+          },
+          "id": 18827,
+          "p": 0.988838,
+          "t_dtw": -1
+        }
+      ]
+    }
+  ]
+}

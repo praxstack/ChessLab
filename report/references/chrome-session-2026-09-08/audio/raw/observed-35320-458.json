@@ -1,0 +1,101 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | SME2 = 1 | ACCELERATE = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "large",
+		"multilingual": true,
+		"vocab": 51866,
+		"audio": {
+			"ctx": 1500,
+			"state": 1280,
+			"head": 20,
+			"layer": 32
+		},
+		"text": {
+			"ctx": 448,
+			"state": 1280,
+			"head": 20,
+			"layer": 4
+		},
+		"mels": 128,
+		"ftype": 7
+	},
+	"params": {
+		"model": "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,060"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 60
+			},
+			"text": " Bye.",
+			"tokens": [
+				{
+					"text": "[_BEG_]",
+					"timestamps": {
+						"from": "00:00:00,000",
+						"to": "00:00:00,000"
+					},
+					"offsets": {
+						"from": 0,
+						"to": 0
+					},
+					"id": 50365,
+					"p": 0.801749,
+					"t_dtw": -1
+				},
+				{
+					"text": " Bye",
+					"timestamps": {
+						"from": "00:00:00,000",
+						"to": "00:00:00,020"
+					},
+					"offsets": {
+						"from": 0,
+						"to": 20
+					},
+					"id": 4621,
+					"p": 0.300235,
+					"t_dtw": -1
+				},
+				{
+					"text": ".",
+					"timestamps": {
+						"from": "00:00:00,060",
+						"to": "00:00:00,060"
+					},
+					"offsets": {
+						"from": 60,
+						"to": 60
+					},
+					"id": 13,
+					"p": 0.808679,
+					"t_dtw": -1
+				},
+				{
+					"text": "[_TT_3]",
+					"timestamps": {
+						"from": "00:00:00,060",
+						"to": "00:00:00,060"
+					},
+					"offsets": {
+						"from": 60,
+						"to": 60
+					},
+					"id": 50368,
+					"p": 0.0556011,
+					"t_dtw": -1
+				}
+			]
+		}
+	]
+}

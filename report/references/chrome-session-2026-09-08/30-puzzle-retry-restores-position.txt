@@ -1,0 +1,48 @@
+2026-09-08T00:16:33.521Z
+- navigation "Main":
+  - link "Skip to content":
+    - /url: "#scroll-top-anchor"
+    - generic: Skip to content
+  - link "Chess.com - Play Chess Online":
+    - /url: https://www.chess.com/home
+  - link "Play":
+    - /url: https://www.chess.com/play
+    - generic: Play
+  - link "Puzzles":
+    - /url: https://www.chess.com/puzzles
+    - generic: Puzzles
+  - link "Learn":
+    - /url: https://www.chess.com/learn
+    - generic: Learn
+  - heading "More" [level=3]
+  - heading "Search" [level=2]
+  - link "Avatar of PraxStack PraxStack":
+    - /url: https://www.chess.com/member/praxstack
+    - img "Avatar of PraxStack"
+    - heading "PraxStack" [level=2]
+  - button:
+  - button:
+  - button "2":
+    - generic: "2"
+  - button:
+- button "Settings":
+- button "Back":
+- generic: "9"
+- generic: "9"
+- heading "Puzzles" [level=1]
+- button "Toggle Coach Audio":
+- button "View Path":
+- img "Ben"
+- generic: White to move
+- generic: This game has just started, but already there is a way to play checkmate with your queen, supported by your bishop. Can you find it?
+- generic: 1,079
+- generic: "+59"
+- generic: "19"
+- generic: "10"
+- generic: "10"
+- generic: 0:31
+- button "Hint":
+  - generic: Hint
+- button "Settings":
+- button "Previous Move":
+- button "Next Move" [disabled]:

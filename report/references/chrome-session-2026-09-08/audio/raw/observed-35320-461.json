@@ -1,0 +1,171 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | SME2 = 1 | ACCELERATE = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "large",
+		"multilingual": true,
+		"vocab": 51866,
+		"audio": {
+			"ctx": 1500,
+			"state": 1280,
+			"head": 20,
+			"layer": 32
+		},
+		"text": {
+			"ctx": 448,
+			"state": 1280,
+			"head": 20,
+			"layer": 4
+		},
+		"mels": 128,
+		"ftype": 7
+	},
+	"params": {
+		"model": "/Users/prax/.cache/huggingface/hub/models--ggerganov--whisper.cpp/snapshots/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo-q8_0.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:29,980"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 29980
+			},
+			"text": " I'll see you next time.",
+			"tokens": [
+				{
+					"text": "[_BEG_]",
+					"timestamps": {
+						"from": "00:00:00,000",
+						"to": "00:00:00,000"
+					},
+					"offsets": {
+						"from": 0,
+						"to": 0
+					},
+					"id": 50365,
+					"p": 0.800489,
+					"t_dtw": -1
+				},
+				{
+					"text": " I",
+					"timestamps": {
+						"from": "00:00:00,060",
+						"to": "00:00:00,260"
+					},
+					"offsets": {
+						"from": 60,
+						"to": 260
+					},
+					"id": 286,
+					"p": 0.0270397,
+					"t_dtw": -1
+				},
+				{
+					"text": "'ll",
+					"timestamps": {
+						"from": "00:00:01,590",
+						"to": "00:00:01,590"
+					},
+					"offsets": {
+						"from": 1590,
+						"to": 1590
+					},
+					"id": 603,
+					"p": 0.207775,
+					"t_dtw": -1
+				},
+				{
+					"text": " see",
+					"timestamps": {
+						"from": "00:00:01,590",
+						"to": "00:00:01,590"
+					},
+					"offsets": {
+						"from": 1590,
+						"to": 1590
+					},
+					"id": 536,
+					"p": 0.806118,
+					"t_dtw": -1
+				},
+				{
+					"text": " you",
+					"timestamps": {
+						"from": "00:00:01,590",
+						"to": "00:00:01,590"
+					},
+					"offsets": {
+						"from": 1590,
+						"to": 1590
+					},
+					"id": 291,
+					"p": 0.991336,
+					"t_dtw": -1
+				},
+				{
+					"text": " next",
+					"timestamps": {
+						"from": "00:00:01,590",
+						"to": "00:00:01,590"
+					},
+					"offsets": {
+						"from": 1590,
+						"to": 1590
+					},
+					"id": 958,
+					"p": 0.646036,
+					"t_dtw": -1
+				},
+				{
+					"text": " time",
+					"timestamps": {
+						"from": "00:00:01,590",
+						"to": "00:00:01,590"
+					},
+					"offsets": {
+						"from": 1590,
+						"to": 1590
+					},
+					"id": 565,
+					"p": 0.808525,
+					"t_dtw": -1
+				},
+				{
+					"text": ".",
+					"timestamps": {
+						"from": "00:00:01,590",
+						"to": "00:00:01,590"
+					},
+					"offsets": {
+						"from": 1590,
+						"to": 1590
+					},
+					"id": 13,
+					"p": 0.955851,
+					"t_dtw": -1
+				},
+				{
+					"text": "[_TT_1499]",
+					"timestamps": {
+						"from": "00:00:29,980",
+						"to": "00:00:29,980"
+					},
+					"offsets": {
+						"from": 29980,
+						"to": 29980
+					},
+					"id": 51864,
+					"p": 0.0402683,
+					"t_dtw": -1
+				}
+			]
+		}
+	]
+}

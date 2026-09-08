@@ -1,0 +1,65 @@
+2026-09-08T00:03:03.722Z
+- navigation "Main":
+  - link "Skip to content":
+    - /url: "#scroll-top-anchor"
+    - generic: Skip to content
+  - link "Chess.com - Play Chess Online":
+    - /url: https://www.chess.com/home
+  - link "Play":
+    - /url: https://www.chess.com/play
+    - generic: Play
+  - link "Puzzles":
+    - /url: https://www.chess.com/puzzles
+    - generic: Puzzles
+  - link "Learn":
+    - /url: https://www.chess.com/learn
+    - generic: Learn
+  - heading "More" [level=3]
+  - heading "Search" [level=2]
+  - link "Avatar of PraxStack PraxStack":
+    - /url: https://www.chess.com/member/praxstack
+    - img "Avatar of PraxStack"
+    - heading "PraxStack" [level=2]
+  - button:
+  - button:
+  - button "2":
+    - generic: "2"
+  - button:
+- img "Avatar"
+- generic: Coach Ben
+- generic: (100)
+- generic: "1.4"
+- button "Settings":
+- img "Avatar"
+- generic: PraxStack
+- img "Show your flair!"
+- heading "Play Coach" [level=1]
+- button:
+- generic: Can I show you something? This leaves your pawn hanging and vulnerable to capture.
+- button "Continue":
+  - text: Continue
+- button "Retry":
+  - text: Retry
+- generic: "Nimzowitsch Defense: Mikėnas Variation"
+- link "o":
+  - /url: /openings/Nimzowitsch-Defense-Mikenas-Variation
+  - generic: o
+- link "ġ":
+  - /url: /analysis/explorer?color=white&gameSource=master&moveList=e4+d6+d4+Nc6+Qh5&ne=1&ply=5
+  - generic: ġ
+- text: "1."
+- generic: e4
+- generic: d6
+- text: "2."
+- generic: d4
+- generic: Ė
+- text: c6
+- text: "3."
+- generic: Į
+- text: h5
+- button "Resign":
+- button "Show Hint" [disabled]:
+- button "Undo":
+- button "Share":
+- button "Download":
+- button "Settings":

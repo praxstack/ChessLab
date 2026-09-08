@@ -1,0 +1,39 @@
+2026-09-08T00:07:30.809Z
+- navigation "Main":
+  - link "Skip to content":
+    - /url: "#scroll-top-anchor"
+    - generic: Skip to content
+  - link "Chess.com - Play Chess Online":
+    - /url: https://www.chess.com/home
+  - link "Play":
+    - /url: https://www.chess.com/play
+    - generic: Play
+  - link "Puzzles":
+    - /url: https://www.chess.com/puzzles
+    - generic: Puzzles
+  - link "Learn":
+    - /url: https://www.chess.com/learn
+    - generic: Learn
+  - heading "More" [level=3]
+  - heading "Search" [level=2]
+  - link "Avatar of PraxStack PraxStack":
+    - /url: https://www.chess.com/member/praxstack
+    - img "Avatar of PraxStack"
+    - heading "PraxStack" [level=2]
+  - button:
+  - button:
+  - button "2":
+    - generic: "2"
+  - button:
+- dialog:
+  - button "Close" [active]:
+  - heading "Chess Puzzles" [level=1]
+  - heading "Train with chess puzzles and improve your game." [level=3]
+  - img "Chess Puzzles"
+  - list:
+    - heading "Solve puzzles to increase your rating" [level=2]
+    - heading "Puzzles get more difficult as you get better" [level=2]
+    - heading "Solve quickly for maximum time bonus" [level=2]
+  - button "Ok":
+    - generic: Ok
+- button "Settings":

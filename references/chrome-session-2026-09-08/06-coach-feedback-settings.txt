@@ -1,0 +1,59 @@
+2026-09-08T00:00:22.376Z
+- navigation "Main":
+  - link "Skip to content":
+    - /url: "#scroll-top-anchor"
+    - generic: Skip to content
+  - link "Chess.com - Play Chess Online":
+    - /url: https://www.chess.com/home
+  - link "Play":
+    - /url: https://www.chess.com/play
+    - generic: Play
+  - link "Puzzles":
+    - /url: https://www.chess.com/puzzles
+    - generic: Puzzles
+  - link "Learn":
+    - /url: https://www.chess.com/learn
+    - generic: Learn
+  - heading "More" [level=3]
+  - heading "Search" [level=2]
+  - link "Avatar of PraxStack PraxStack":
+    - /url: https://www.chess.com/member/praxstack
+    - img "Avatar of PraxStack"
+    - heading "PraxStack" [level=2]
+  - button:
+  - button:
+  - button "2":
+    - generic: "2"
+  - button:
+- img "Avatar"
+- generic: Coach Ben
+- generic: (100)
+- generic: "0.4"
+- button "Settings":
+- img "Avatar"
+- generic: PraxStack
+- img "Show your flair!"
+- heading "Play Coach" [level=1]
+- button:
+- generic: e4. OK. What do you want from me?
+- generic: The Pirc, interesting choice. Are you going to start getting tricky now?
+- generic: Pirc Defense
+- link "o":
+  - /url: /openings/Pirc-Defense
+  - generic: o
+- link "ġ":
+  - /url: /analysis/explorer?color=white&gameSource=master&moveList=e4+d6&ne=1&ply=2
+  - generic: ġ
+- text: "1."
+- generic: e4
+- generic: d6
+- generic: Suggestion Arrows
+- checkbox [checked]
+- generic: Threat Arrows
+- checkbox [checked]
+- generic: Evaluation Bar
+- checkbox [checked]
+- generic: Move Feedback
+- checkbox [checked]
+- button "Save":
+  - generic: Save

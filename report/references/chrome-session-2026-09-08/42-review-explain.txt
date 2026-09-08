@@ -1,0 +1,77 @@
+2026-09-08T00:25:44.265Z
+- navigation "Main":
+  - link "Skip to content":
+    - /url: "#scroll-top-anchor"
+    - generic: Skip to content
+  - link "Chess.com - Play Chess Online":
+    - /url: https://www.chess.com/home
+  - link "Play":
+    - /url: https://www.chess.com/play
+    - generic: Play
+  - link "Puzzles":
+    - /url: https://www.chess.com/puzzles
+    - generic: Puzzles
+  - link "Learn":
+    - /url: https://www.chess.com/learn
+    - generic: Learn
+  - heading "More" [level=3]
+  - heading "Search" [level=2]
+  - link "Avatar of PraxStack PraxStack":
+    - /url: https://www.chess.com/member/praxstack
+    - img "Avatar of PraxStack"
+    - heading "PraxStack" [level=2]
+  - button:
+  - button:
+  - button "2":
+    - generic: "2"
+  - button:
+- img "Avatar"
+- generic: Cliff - Triangle
+- img "Show your flair!"
+- generic: "0.2"
+- button "Settings":
+- img "Avatar"
+- generic: PraxStack
+- img "Show your flair!"
+- button "Back":
+- button "Add to Favorites":
+- heading "Game Review" [level=1]
+- button "Toggle Coach Audio":
+- button "Go to Analysis":
+- img "Ben"
+- generic: Explaining
+- generic: e5
+- link "+0.26":
+  - /url: //support.chess.com/article/656-what-do-the-computer-evaluation-numbers-mean-like-225
+- button:
+- button [disabled]:
+- button "Got it!":
+  - generic: Got it!
+- text: "1."
+- generic: e4
+- generic: ...
+- generic: "1."
+- generic: e4
+- generic: e5
+- text: "1."
+- generic: ...
+- generic: e5
+- text: "2."
+- generic: Į
+- text: h5
+- generic: Ė
+- text: h6
+- generic: 0-1
+- button "Highlights":
+  - generic: Highlights
+- button "New Game":
+  - generic: New Game
+- button "First Move":
+- button "Previous Move":
+- button "Play / Pause":
+- button "Next Move" [disabled]:
+- button "Last Move" [disabled]:
+- button "Skills":
+  - generic: Skills
+- button "Share":
+  - generic: Share

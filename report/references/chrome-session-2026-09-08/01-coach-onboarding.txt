@@ -1,0 +1,14 @@
+2026-09-07T23:55:51.955Z
+Browser tab: 325035087, Title: "Play Chess with a Virtual Coach - Chess.com", URL: "https://www.chess.com/play/coach?source=play_root".
+0 AXWebArea Play Chess with a Virtual Coach - Chess.com, URL: chess.com/play/coach?source=play_root
+	1 container
+		2 button Close
+		3 text Play and Learn with Coach
+		4 image Celebrities
+		5 content list
+			6 text Learn as you play
+			7 text Get helpful hints and takebacks
+			8 text Practice and learn how to win
+		9 button Start
+
+The focused UI element is 2 button Close

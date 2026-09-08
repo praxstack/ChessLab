@@ -1,0 +1,78 @@
+2026-09-08T03:25:06.028Z
+- navigation "Main":
+  - link "Skip to content":
+    - /url: "#scroll-top-anchor"
+    - generic: Skip to content
+  - link "Chess.com - Play Chess Online":
+    - /url: https://www.chess.com/home
+  - link "Play":
+    - /url: https://www.chess.com/play
+    - generic: Play
+  - link "Puzzles":
+    - /url: https://www.chess.com/puzzles
+    - generic: Puzzles
+  - link "Learn":
+    - /url: https://www.chess.com/learn
+    - generic: Learn
+  - heading "More" [level=3]
+  - heading "Search" [level=2]
+  - link "Avatar of PraxStack PraxStack":
+    - /url: https://www.chess.com/member/praxstack
+    - img "Avatar of PraxStack"
+    - heading "PraxStack" [level=2]
+  - button:
+  - button:
+  - button "2":
+    - generic: "2"
+  - button:
+- img "Avatar"
+- generic: Coach Ben
+- generic: (100)
+- generic: "0.4"
+- button "Settings":
+- img "Avatar"
+- generic: PraxStack
+- img "Show your flair!"
+- heading "Play Coach" [level=1]
+- generic: Welcome back. Let's play a friendly game when you're ready.
+- button "Casual" [expanded]:
+  - generic: Casual
+- generic: "Play As:"
+- button
+- button
+- button
+- listbox:
+  - option "Casual An easier game so you can focus on learning." [selected]:
+    - generic: Casual
+    - generic: An easier game so you can focus on learning.
+  - option "Balanced An even match to play while you learn.":
+    - generic: Balanced
+    - generic: An even match to play while you learn.
+  - option "Challenging A hard game that pushes you to compete and learn.":
+    - generic: Challenging
+    - generic: A hard game that pushes you to compete and learn.
+- button "Hide Levels" [expanded] [active]:
+  - generic: Hide Levels
+- list:
+  - button "New to Chess (100)":
+    - generic: New to Chess (100)
+  - button "Beginner (400)":
+    - generic: Beginner (400)
+  - button "Novice (600)":
+    - generic: Novice (600)
+  - button "Intermediate (900)":
+    - generic: Intermediate (900)
+  - button "Intermediate II (1200)":
+    - generic: Intermediate II (1200)
+  - button "Advanced (1600)":
+    - generic: Advanced (1600)
+  - button "Expert (2000)":
+    - generic: Expert (2000)
+  - button "Master (2400)":
+    - generic: Master (2400)
+  - button "Grandmaster (2800)":
+    - generic: Grandmaster (2800)
+  - button "Maximum (3200)":
+    - generic: Maximum (3200)
+- button "Play":
+  - generic: Play

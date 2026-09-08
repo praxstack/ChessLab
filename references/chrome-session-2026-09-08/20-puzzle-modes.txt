@@ -1,0 +1,54 @@
+2026-09-08T00:06:55.621Z
+- navigation "Main":
+  - link "Skip to content":
+    - /url: "#scroll-top-anchor"
+    - generic: Skip to content
+  - link "Chess.com - Play Chess Online":
+    - /url: https://www.chess.com/home
+  - link "Play":
+    - /url: https://www.chess.com/play
+    - generic: Play
+  - link "Puzzles":
+    - /url: https://www.chess.com/puzzles
+    - generic: Puzzles
+  - link "Learn":
+    - /url: https://www.chess.com/learn
+    - generic: Learn
+  - heading "More" [level=3]
+  - heading "Search" [level=2]
+  - link "Avatar of PraxStack PraxStack":
+    - /url: https://www.chess.com/member/praxstack
+    - img "Avatar of PraxStack"
+    - heading "PraxStack" [level=2]
+  - button:
+  - button:
+  - button "2":
+    - generic: "2"
+  - button:
+- button "Settings":
+- button "PraxStack":
+  - img "PraxStack"
+- generic: "8"
+- generic: "8"
+- heading "Puzzles" [level=1]
+- img "Ben"
+- generic: Puzzles help you play your openings more safely, your middlegames more confidently, and your endgames more accurately.
+- generic: "972"
+- generic: "17"
+- generic: "9"
+- generic: "9"
+- button "Expand Puzzles Menu" [active]:
+- button "Solve Puzzles":
+  - generic: Solve Puzzles
+- button "Close":
+- button "Solve Puzzles":
+  - generic: Solve Puzzles
+- link "Daily Puzzle":
+  - /url: /daily
+  - generic: Daily Puzzle
+- button "Puzzle Rush":
+  - generic: Puzzle Rush
+- button "Puzzle Battle":
+  - generic: Puzzle Battle
+- button "Custom":
+  - generic: Custom
