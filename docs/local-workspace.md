@@ -37,3 +37,7 @@ The [OpenSpec graph](../openspec/changes/local-web-first/tasks.md) orders the cu
 Pstack's installed setup skill configured confirmed Codex models in the user's model map and preserved the earlier Cursor mapping in a backup. There is no `peestack` shell executable. The installed Astra Team validator accepts only runtime 0.153.4 and rejects the current runtime. It also blocks native subagent spawns. Team acceptance and independent review remain unavailable; no validator was modified or bypassed.
 
 `just setup` and `just check` still report drift in the installed skill manifest, beginning with `unslop`. OpenSpec validation and application verification are separate and do not waive that failure.
+
+## Whole-game reports
+
+Finish a bot game, or import a completed PGN from My games. Choose Review whole game. Pause stops the current search; earlier moves stay saved, and Resume review continues after reload. The report graph and key moves open the saved engine evidence on the board. Adjust Game Review strength in Settings to generate a report with different search limits. These local centipawn summaries do not reproduce CAPS2 accuracy. [Recorded proof](verification/full-game-review/README.md) covers the complete flow.
