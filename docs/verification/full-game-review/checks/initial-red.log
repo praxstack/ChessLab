@@ -15,10 +15,10 @@ test at server/app.test.mjs:164:1
 ✖ full game review preserves ownership, resumes from disk and never rewrites games or studies (256.291708ms)
   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
   + actual - expected
-  
+
   + undefined
   - null
-  
+
       at TestContext.<anonymous> (file:///Users/prax/Developer/ChessLab-local-web/server/app.test.mjs:170:10)
       at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
       at async Test.run (node:internal/test_runner/test:1409:7)
@@ -34,9 +34,9 @@ test at server/app.test.mjs:164:1
 test at server/app.test.mjs:186:1
 ✖ review rejects concurrent or stale engine results and preserves the last saved step on failure (38.501166ms)
   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-  
+
   404 !== 200
-  
+
       at TestContext.<anonymous> (file:///Users/prax/Developer/ChessLab-local-web/server/app.test.mjs:192:10)
       at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
       at async Test.run (node:internal/test_runner/test:1409:7)
