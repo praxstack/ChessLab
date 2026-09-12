@@ -13,3 +13,5 @@ Root reviewed source, screenshots and video. Independent-agent review remains un
 The local service at http://127.0.0.1:8772/ was restarted with this build. It retains the previous 2 accounts and 2 games; a consistent pre-change database backup is stored locally. No hosted site was changed. The recording proves the isolated workflow, not gameplay in a real user's account.
 
 The [official review guide](https://support.chess.com/en/articles/8584089-how-does-game-review-work) informed the report/navigation flow. Local centipawn metrics and the existing local move classifications are not CAPS2 or proprietary classification equivalence. Opening recognition, full retry grading, coach voice, the complete curriculum and the conversational branching tutor remain unfinished parts of the full goal.
+
+[PR #2](https://github.com/praxstack/ChessLab/pull/2) is open on top of the local-polish PR. The app-source commit is f039fbc; later changes only record delivery and normalize log whitespace.

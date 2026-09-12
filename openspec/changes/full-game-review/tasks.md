@@ -8,6 +8,6 @@ Reference behavior → frozen game/study contracts → persisted review step →
 - [x] Implement persisted native-engine report steps and honest summaries.
 - [x] Build the evaluation graph, progress controls and key-move navigation.
 - [x] Verify engine evidence, terminal positions and the complete user flow with video.
-- [ ] Review and open a PR with explicit parity gaps.
+- [x] Review and open a PR with explicit parity gaps.
 
 Full platform parity remains unfinished after this change. The existing local-polish PR remains separately reviewable.
