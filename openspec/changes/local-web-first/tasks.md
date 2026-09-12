@@ -12,8 +12,8 @@
 - [x] Create and execute the project verification skill and feature map.
 - [x] Exercise desktop/mobile user flows and record video proof.
 - [x] Phase D: Keep the audit trail.
-- [ ] Phase E: Verify and hand back.
-- [ ] Open the reviewed PR with video proof and explicit gaps.
+- [x] Phase E: Verify and hand back.
+- [x] Open the reviewed PR with video proof and explicit gaps.
 
 ## Engineering graph
 ```mermaid

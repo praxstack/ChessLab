@@ -9,3 +9,5 @@ The video records UI actions against the real production build and native Stockf
 The [baseline screenshot](baseline/01-bot-picker.png) precedes the visual edits. The first proof run exposed a laptop sizing issue during manual review. The final run adds explicit above-fold checks for move entry and the play button.
 
 Root review covers the diff and visible screenshots. Independent-agent review and Astra Team acceptance are unavailable because the installed hook rejects this Codex runtime. Do not interpret this recording as cross-browser certification, proprietary bot equivalence, complete curriculum, multiplayer, billing, free-form tutor conversation, or 100 percent parity.
+
+The delivery PR is [ChessLab #1](https://github.com/praxstack/ChessLab/pull/1), open for review. The installed local app is http://127.0.0.1:8772/; its source is `/Users/prax/Developer/ChessLab-local-web`. The recorded app source remains unchanged after proof.
