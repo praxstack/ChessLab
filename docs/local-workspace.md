@@ -41,3 +41,7 @@ Pstack's installed setup skill configured confirmed Codex models in the user's m
 ## Whole-game reports
 
 Finish a bot game, or import a completed PGN from My games. Choose Review whole game. Pause stops the current search; earlier moves stay saved, and Resume review continues after reload. The report graph and key moves open the saved engine evidence on the board. Adjust Game Review strength in Settings to generate a report with different search limits. These local centipawn summaries do not reproduce CAPS2 accuracy. [Recorded proof](verification/full-game-review/README.md) covers the complete flow.
+
+## Position practice
+
+In Review, choose a position in the game or a saved variation, then Practice this position. Choose an opponent and side. The new game retains its earlier history, starts fresh clocks, and keeps its source study separate. Undo stops at the practice start; Restart position starts there again. Return to source study restores the original branch and note. [Recorded proof](verification/position-practice/README.md) includes native play and persistence checks.

@@ -1,0 +1,4 @@
+ts	phase	decision	why	evidence	result
+2026-09-12T23:09:29Z	implementation	Copy the complete saved history prefix	Retain repetition and imported starting position	server/bot-game.mjs; checks/tests.log	61 tests pass; protected 58 retained
+2026-09-12T23:09:29Z	verification	Record actual nested-branch practice and return	Prove independent play without changing the source study	proof/receipt.json; proof/local-user-flow.webm	20 flows pass; root source and visual review; team validator still blocked
+2026-09-12T23:09:29Z	local	Back up and restart the local service	Make verified functionality available on this Mac	before-position-practice-20260913.sqlite; local 8772 status and asset readback	2 accounts and 2 games retained; Stockfish 19 ready

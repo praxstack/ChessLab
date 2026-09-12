@@ -7,7 +7,7 @@ import { dirname, resolve } from 'node:path';
 import { Chess } from 'chess.js';
 import * as engine from './engine.mjs';
 import * as opponents from './opponent-engines.mjs';
-import {setupOptions,beginClock,settleClock,finishMoveClock,crownsFor,adaptiveRating,addBotChat,undoTurn,attackedPieces} from './bot-game.mjs';
+import {setupOptions,practiceSnapshot,beginClock,settleClock,finishMoveClock,crownsFor,adaptiveRating,addBotChat,undoTurn,attackedPieces} from './bot-game.mjs';
 const profiles = JSON.parse(readFileSync(new URL('./bot-profiles.json',import.meta.url),'utf8'));
 import { lessons, puzzles, catalog } from './content.mjs';
 import {hostingGuard} from './hosting.mjs';
@@ -174,15 +174,29 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   if(game.result||game.source!=='bot')fail(409,'This game is available for review, not further play.');
   return replay(game.moves,game.initialFen);
  };
- app.post('/api/games',async(req,res)=>{
-  const values=setupOptions(req.body,profiles);
+ const validatedOptions=async body=>{
+  const values=setupOptions(body,profiles);
   if(!values.legacyStrength){
    const selected=(await opponentApi.listOpponentEngines()).find(e=>e.id===values.engineId);
    if(!selected)fail(400,'Choose an engine from the current catalog.');
    if(!selected.available)fail(503,selected.reason||'This engine is unavailable on the server.');
   }
-  beginClock(values,nowMs());
+  return values;
+ };
+ app.post('/api/games',async(req,res)=>{
+  const values=await validatedOptions(req.body);beginClock(values,nowMs());
   res.status(201).json({game:insertGame(req.user.id,values)});
+ });
+ app.post('/api/games/:id/practice',async(req,res)=>{
+  const source=owned(req);expected(req,source);practiceSnapshot(source,req.body);
+  const values=await validatedOptions(req.body);
+  db.exec('BEGIN IMMEDIATE');
+  try{
+   const fresh=owned(req);expected(req,fresh);const snapshot=practiceSnapshot(fresh,req.body);
+   if(fresh.source==='bot'&&!fresh.result&&!fresh.reviewUsed){fresh.reviewUsed=true;db.prepare('UPDATE games SET data=? WHERE id=? AND user_id=?').run(JSON.stringify(fresh),fresh.id,req.user.id);}
+   Object.assign(values,snapshot,{title:`Position practice · ${values.botName}`.slice(0,100)});beginClock(values,nowMs());
+   const game=insertGame(req.user.id,values);db.exec('COMMIT');res.status(201).json({game});
+  }catch(error){db.exec('ROLLBACK');throw error;}
  });
  app.get('/api/games/:id',(req,res)=>res.json({game:liveGame(req)}));
  app.post('/api/games/:id/move',(req,res)=>{
@@ -244,7 +258,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   const help=game.assistance||{};
   const analysis=(help.evaluation||help.suggestions||help.engine)?await engineApi.analyze({moves:game.moves,initialFen:game.initialFen,movetime:350,lines:help.engine?3:1}):null;
   const lastPlayerPly=game.moves.length-2;
-  const feedback=help.feedback&&lastPlayerPly>=0?await engineApi.analyze({moves:game.moves.slice(0,lastPlayerPly),initialFen:game.initialFen,playedMove:game.moves[lastPlayerPly],movetime:350,lines:1}):null;
+  const feedback=help.feedback&&lastPlayerPly>=(game.practice?.startPly||0)?await engineApi.analyze({moves:game.moves.slice(0,lastPlayerPly),initialFen:game.initialFen,playedMove:game.moves[lastPlayerPly],movetime:350,lines:1}):null;
   const fresh=owned(req);expected(req,fresh);
   if(settleClock(fresh,nowMs()))return res.json({analysis:null,feedback:null,threats:[],game:storeGame(req.user.id,fresh,fresh.revision)});
   res.json({analysis,feedback,threats:help.threats?attackedPieces(game):[],game:fresh});

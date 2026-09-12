@@ -17,6 +17,25 @@ export function setupOptions(body, profiles) {
  if(body.assistance!==undefined){if(!body.assistance||Array.isArray(body.assistance)||typeof body.assistance!=='object')fail('Invalid assistance settings.');for(const [key,value] of Object.entries(body.assistance)){if(!Object.hasOwn(assistance,key)||typeof value!=='boolean')fail('Invalid assistance setting.');assistance[key]=value;}}
  return {color:color==='random'?(randomInt(2)?'w':'b'):color,level,title:title||profile?.name||`Practice · level ${level}`,botId,botName:profile?.name||'Engine opponent',engineId,rating,currentRating:rating,style:profile?.style||'balanced',adaptive:profile?.adaptive||false,timeControl:{initialSeconds:timeControl.initialSeconds,incrementSeconds:timeControl.incrementSeconds},assistance,hintsUsed:0,undosUsed:0,crownsAwarded:0,resultReason:null,chat:assistance.chat?[profile?(profile.description||`I'm ${profile.name}. Let's play.`):'Ready when you are. Choose your move.']:[],legacyStrength:body.rating===undefined&&!profile&&!body.engineId};
 }
+export function practiceSnapshot(source,body) {
+ if(body.restart!==undefined&&typeof body.restart!=='boolean')fail('Invalid practice restart.');
+ let history=source.moves,ply=body.ply,branchId=body.branchId??null;
+ if(body.restart){
+  if(!source.practice)fail('This game did not start from a practice position.');
+  ply=source.practice.startPly;branchId=null;
+ }else if(branchId!==null){
+  if(typeof branchId!=='string')fail('Choose a saved variation.');
+  if(body.studyRevision!==(source.studyRevision||0))throw Object.assign(new Error('The source study changed. Save or reload it before practicing.'),{status:409});
+  const branch=source.study?.branches?.find(branch=>branch.id===branchId);
+  if(!branch)fail('The selected variation was not found.');
+  history=branch.moves;
+ }
+ if(!Number.isInteger(ply)||ply<0||ply>history.length||ply>=1000)fail('Choose a position within the saved history with room to continue.');
+ const moves=history.slice(0,ply),initialFen=source.initialFen??null;
+ if(replay(moves,initialFen).isGameOver())fail('This position is already over. Choose an earlier position to practice.');
+ const practice=body.restart?{...source.practice}:{sourceGameId:source.id,sourceBranchId:branchId,sourcePly:ply,sourceTitle:source.title,startPly:ply};
+ return {moves,initialFen,practice};
+}
 export function beginClock(game,stamp) {
  const ms=(game.timeControl?.initialSeconds||0)*1000;
  game.clock={whiteMs:ms,blackMs:ms,activeSince:ms?stamp:null};
@@ -39,7 +58,7 @@ export function finishMoveClock(game,color,stamp) {
  game.clockHistory??=[];game.clockHistory.push({whiteMs:game.clock.whiteMs,blackMs:game.clock.blackMs});
 }
 export function crownsFor(game) {
- if(!game.botId||game.source!=='bot'||game.result!==(game.color==='w'?'1-0':'0-1'))return 0;
+ if(game.practice||!game.botId||game.source!=='bot'||game.result!==(game.color==='w'?'1-0':'0-1'))return 0;
  const automatic=game.reviewUsed||Object.entries(game.assistance||{}).some(([key,value])=>key!=='chat'&&value);
  const help=(game.hintsUsed||0)+(game.undosUsed||0);
  return automatic||help>3?1:help?2:3;
@@ -52,19 +71,20 @@ export function adaptiveRating(game) {
 }
 export function addBotChat(game,move) {
  if(!game.assistance?.chat)return;
- let text=game.result?'Good game. Let’s look at the decisions that mattered.':move.san.includes('+')?'Check. Look for a capture, a block, or a king move.':move.captured?'I captured a piece. Check the whole exchange before replying.':game.moves.length<6?'The center and development both matter here.':game.adaptive&&game.currentRating!==game.rating?'I’m adjusting the challenge as the material balance changes.':game.style==='aggressive'?'Keep an eye on checks and threats.':game.style==='solid'?'I’m looking for a safe position. What is your plan?':'Your move. Take a moment to look at the position.';
+ let text=game.result?'Good game. Let’s look at the decisions that mattered.':move.san.includes('+')?'Check. Look for a capture, a block, or a king move.':move.captured?'I captured a piece. Check the whole exchange before replying.':!game.practice&&game.moves.length<6?'The center and development both matter here.':game.adaptive&&game.currentRating!==game.rating?'I’m adjusting the challenge as the material balance changes.':game.style==='aggressive'?'Keep an eye on checks and threats.':game.style==='solid'?'I’m looking for a safe position. What is your plan?':'Your move. Take a moment to look at the position.';
  game.chat=[...(game.chat||[]),text].slice(-30);
 }
 export function undoTurn(game,stamp) {
  if(game.result||game.source!=='bot')fail('Only a game still in progress can be taken back.');
  const board=replay(game.moves,game.initialFen);
  const target=game.moves.length-(board.turn()===game.color?2:1);
- if(target<0)fail('Play a move before taking back a turn.');
+ const start=game.practice?.startPly||0;
+ if(target<start)fail('Play a move before taking back a turn. The starting position is preserved.');
  if((game.study?.anchorPly||0)>target||(game.study?.branches||[]).some(b=>!b.parentId&&b.anchorPly>target))fail('A saved study uses this part of the game. Keep its history and start a rematch instead.');
  game.moves=game.moves.slice(0,target);game.undosUsed=(game.undosUsed||0)+1;game.lastFeedback=null;
- const prior=game.clockHistory?.[target];
+ const prior=game.clockHistory?.[target-start];
  if(prior)game.clock={...prior,activeSince:game.timeControl?.initialSeconds?stamp:null};
- game.clockHistory=game.clockHistory?.slice(0,target+1)||[];
+ game.clockHistory=game.clockHistory?.slice(0,target-start+1)||[];
  if(game.assistance?.chat)game.chat=[...(game.chat||[]),'Turn taken back. Try a different idea.'].slice(-30);
  return game;
 }

@@ -215,3 +215,43 @@ test('disconnecting a review cancels its search and releases the game for resume
   assert.equal((await f.request(route,{method:'POST',cookie,body:bodyText})).body.review.entries.length,1);
  }finally{await f.close();}
 });
+
+test('position practice copies a saved branch, preserves its source and resets only new play',async()=>{
+ const opponentApi={listOpponentEngines:async()=>[{id:'stockfish19',available:true}],chooseOpponentMove:async()=>({move:'b8c6',engine:'Stockfish fixture'})};
+ const f=await fixture({opponentApi});try{
+  const {cookie}=await f.register('practiceowner'),other=await f.register('practiceother');
+  const imported=await f.request('/api/import',{method:'POST',cookie,body:{pgn:'1. e4 e5 2. Nf3 Nc6 *'}});const id=imported.body.game.id,route=`/api/games/${id}`;
+  const study={version:1,anchorPly:2,selectedBranchId:'nested',branches:[{id:'first',parentId:null,anchorPly:2,moves:['e2e4','e7e5','d2d4'],question:'Try the centre'},{id:'nested',parentId:'first',anchorPly:3,moves:['e2e4','e7e5','d2d4','e5d4'],question:'Recapture?'}]};
+  assert.equal((await f.request(route+'/study',{method:'POST',cookie,body:{study,studyRevision:0}})).status,200);
+  const source=(await f.request(route,{cookie})).body.game;
+  const body={revision:0,studyRevision:1,branchId:'nested',ply:4,botId:'martin',engineId:'stockfish19',rating:250,color:'w',timeControl:{initialSeconds:60,incrementSeconds:2}};
+  const practice=(extra={},owner=cookie)=>f.request(route+'/practice',{method:'POST',cookie:owner,body:{...body,...extra}});
+  assert.equal((await practice({},other.cookie)).status,404);assert.equal((await practice({revision:1})).status,409);assert.equal((await practice({studyRevision:0})).status,409);assert.equal((await practice({ply:5})).status,400);assert.equal((await practice({branchId:'absent'})).status,400);
+  const created=await practice();assert.equal(created.status,201);const game=created.body.game,child=`/api/games/${game.id}`;
+  assert.deepEqual(game.moves,study.branches[1].moves);assert.equal(game.initialFen,source.initialFen);assert.equal(game.practice.startPly,4);assert.equal(game.practice.sourceBranchId,'nested');assert.equal(game.practice.sourceGameId,id);assert.equal(game.clockHistory.length,1);
+  assert.equal((await f.request(child+'/undo',{method:'POST',cookie,body:{revision:0}})).status,400);
+  const moved=await f.request(child+'/move',{method:'POST',cookie,body:{move:'g1f3',revision:0}});assert.equal(moved.status,200);
+  const replied=await f.request(child+'/bot',{method:'POST',cookie,body:{revision:1}});assert.equal(replied.status,200);
+  const undone=await f.request(child+'/undo',{method:'POST',cookie,body:{revision:2}});assert.equal(undone.status,200);assert.deepEqual(undone.body.game.moves,game.moves);assert.equal(undone.body.game.clockHistory.length,1);assert.equal(undone.body.game.clock.whiteMs,60000);assert.equal(undone.body.game.clock.blackMs,60000);
+  const restarted=await f.request(child+'/practice',{method:'POST',cookie,body:{...body,revision:3,restart:true}});assert.equal(restarted.status,201);assert.deepEqual(restarted.body.game.moves,game.moves);assert.deepEqual(restarted.body.game.practice,game.practice);assert.equal(restarted.body.game.undosUsed,0);
+  assert.deepEqual((await f.request(route,{cookie})).body.game,source);
+  await f.restart();assert.deepEqual((await f.request(child,{cookie})).body.game.practice,game.practice);
+  const exported=await f.request(child+'/pgn',{cookie});const replayed=new Chess();replayed.loadPgn(exported.body);assert.equal(replayed.history().length,4);
+ }finally{await f.close();}
+});
+
+test('practice revalidates a changed source after engine readiness and marks live-source review assistance',async()=>{
+ let ready,release;const entered=new Promise(resolve=>ready=resolve);let pause=true;
+ const opponentApi={listOpponentEngines:async()=>{if(pause){ready();await new Promise(resolve=>release=resolve);}return [{id:'stockfish19',available:true}];}};
+ const f=await fixture({opponentApi});try{
+  const {cookie}=await f.register('practicefresh');const imported=await f.request('/api/import',{method:'POST',cookie,body:{pgn:'1. e4 e5 *'}}),source=imported.body.game,route=`/api/games/${source.id}`;
+  const study={version:1,anchorPly:1,selectedBranchId:'a',branches:[{id:'a',parentId:null,anchorPly:1,moves:['e2e4','c7c5'],question:''}]};
+  await f.request(route+'/study',{method:'POST',cookie,body:{study,studyRevision:0}});
+  const pending=f.request(route+'/practice',{method:'POST',cookie,body:{revision:0,studyRevision:1,branchId:'a',ply:2,engineId:'stockfish19',rating:800}});
+  await entered;await f.request(route+'/study',{method:'POST',cookie,body:{study:{...study,branches:[{...study.branches[0],moves:['e2e4','e7e6']}]},studyRevision:1}});pause=false;release();assert.equal((await pending).status,409);
+  assert.equal((await f.request('/api/games',{cookie})).body.games.length,1);
+  const live=await f.request('/api/games',{method:'POST',cookie,body:{color:'w',level:2}});const id=live.body.game.id;
+  const practice=await f.request(`/api/games/${id}/practice`,{method:'POST',cookie,body:{revision:0,ply:0,engineId:'stockfish19',rating:800,color:'b'}});assert.equal(practice.status,201);assert.equal(practice.body.game.color,'b');
+  assert.equal((await f.request(`/api/games/${id}`,{cookie})).body.game.reviewUsed,true);
+ }finally{release?.();await f.close();}
+});
