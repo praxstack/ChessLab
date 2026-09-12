@@ -7,6 +7,6 @@ Pinned CC0 source → legal catalogue and position index → failing API/history
 - [x] Implement bounded search, details, independent study creation and position recognition.
 - [x] Build searchable desktop/mobile opening study and practice flows.
 - [x] Verify native engine play, saved history and review recognition with video.
-- [ ] Review, open PR and promote the verified local build.
+- [x] Review, open PR and promote the verified local build.
 
 Full Chess.com parity remains active.
