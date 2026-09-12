@@ -49,3 +49,9 @@ In Review, choose a position in the game or a saved variation, then Practice thi
 ## Custom position setup
 
 Choose Set up position from the welcome screen, My games or board actions. Place or drag pieces, remove them, choose the turn and castling rights, or load FEN. The editor exposes en-passant and move counters. Save & analyze position creates a separate local study; the original game stays intact. The study supports branches, native analysis and position practice. A custom board begins new history and cannot recover earlier repetition. [Editor proof](verification/position-editor/README.md) includes invalid-draft recovery, mobile setup and timed Black-first practice.
+
+## Opening library
+
+Choose Openings to browse 3,810 named lines locally. Search a name or ECO code, play through its moves, then save a study or practice the selected position against a native bot. Review identifies the latest named opening, distinguishing a played line from a matching position. The source study retains the full line when practice begins earlier.
+
+The CC0 source files, pinned provenance and license are in `references/openings/`. Run `node scripts/build_openings.mjs --check` to replay every source line and verify the compiled catalogue. No network is needed at runtime. This catalogue does not include game statistics or opening lessons. [Recorded proof](verification/opening-library/README.md) covers desktop/mobile browsing, native play and persistence.

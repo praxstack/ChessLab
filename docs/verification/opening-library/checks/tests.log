@@ -1,0 +1,87 @@
+python3 scripts/setup_skills.py --self-test
+PASS: link creation, idempotence, conflict preservation, read-only checks
+npm test
+
+> chesslab@0.1.0 test
+> node --test --test-concurrency=1 server/*.test.mjs web/src/*.test.js
+
+✔ accounts, legal game updates, isolation, revision checks and persistent sessions (127.361708ms)
+Request failed: attempt to write a readonly database
+✔ nested studies reject altered history, missing parents, loops, illegal moves and survive bot races (42.072792ms)
+✔ Black games begin with engine turn and engine failure never fabricates a move (30.692417ms)
+✔ learning catalog hides answers, validates all authored positions, and persists only correct progress (37.047583ms)
+✔ selected engine, authoritative timeout, crowns and account isolation survive restart (60.846584ms)
+✔ hints, assistance and undo retain legal history and protect saved studies (36.534667ms)
+✔ a timeout saved during an engine request rejects the late reply without overwriting the result (31.672917ms)
+✔ full game review preserves ownership, resumes from disk and never rewrites games or studies (74.469125ms)
+✔ review rejects concurrent or stale engine results and preserves the last saved step on failure (33.791792ms)
+✔ disconnecting a review cancels its search and releases the game for resume (33.229792ms)
+✔ position practice copies a saved branch, preserves its source and resets only new play (76.044125ms)
+✔ practice revalidates a changed source after engine readiness and marks live-source review assistance (34.392375ms)
+✔ custom positions validate before saving and retain FEN through analysis, branches, practice, export and reload (69.399ms)
+✔ opening catalogue is bounded and opening studies retain complete owned history for practice (74.944916ms)
+✔ bot options validate trust boundaries; rating adaptation and crown tiers are explicit (4.718792ms)
+✔ clocks charge the active side once, add increments and stop at flag fall (0.598459ms)
+✔ undo restores a whole turn and protects branch history (1.018959ms)
+✔ threat arrows exclude illegal captures by pinned defenders (0.336875ms)
+✔ every observed bot profile can start with its declared local target (0.634208ms)
+✔ practice retains repetition history, blocks terminal starts and never awards roster crowns (4.41475ms)
+✔ request validation rejects malformed notation, illegal history, FEN command injection and limit abuse (2.7365ms)
+✔ real Stockfish gives legal PVs, identity, limits and deterministic facts (580.483417ms)
+✔ advanced analysis uses actual Lite with five legal lines and preserves strict engine selection (394.179667ms)
+✔ full history distinguishes a repeated game from its identical FEN (145.936ms)
+✔ terminal checkmate returns no fabricated move (148.209375ms)
+✔ scores retain White perspective when side to move changes (482.139666ms)
+✔ played capture and promotion explanations are replay-derived (869.019916ms)
+✔ coach demonstrates the capture and material consequence of hanging a queen (578.290583ms)
+✔ missing binary is explicit and never falls back to invented analysis (1.1265ms)
+✔ engine admits two active requests and eight queued requests, then rejects overload (970.557959ms)
+✔ unresponsive subprocess has a hard deadline (4055.339333ms)
+✔ legal castling and history-dependent en passant replay correctly (2.524583ms)
+✔ canceling active and queued analyses frees slots for the next position (292.091083ms)
+✔ private hosting fails closed and rejects cross-site or oversized proxy requests (9.2345ms)
+✔ opening recognition preserves move order and distinguishes position matches from played lines (7.247125ms)
+✔ opponent boundary rejects invalid engine, history, controls and completed games (3.425666ms)
+✔ UCI adapter sends complete history, checks readiness and refuses illegal engine moves (468.439417ms)
+▶ installed engines complete actual ready handshake and return a legal move with history
+  ✔ stockfish19 (240.919917ms)
+  ✔ stockfish18 (255.250667ms)
+  ✔ stockfish16 (262.682458ms)
+  ✔ stockfish18-lite (256.317417ms)
+  ✔ maia3 (800.01225ms)
+  ✔ maia3-23m (542.855958ms)
+  ✔ maia3-5m (485.5595ms)
+  ✔ maia2 (859.381583ms)
+  ✔ maia2-blitz (850.65425ms)
+  ✔ lc0 (124.412208ms)
+✔ installed engines complete actual ready handshake and return a legal move with history (9448.835792ms)
+✔ position validation admits check and en passant while rejecting contradictory rule state (1.866666ms)
+✔ cancel while authentication waits does not dispatch (0.72075ms)
+✔ refresh failure does not prevent original start payload (0.599417ms)
+✔ puzzle resumes normalized full attempted moves using installed account (0.231459ms)
+✔ lesson and import retain submitted payload (0.519042ms)
+✔ changed exercise cancels queued action (0.14ms)
+✔ late exercise response updates account progress but not another exercise (0.126ms)
+✔ late answer from different account is discarded (0.117ms)
+✔ late initial guest account install must preserve queued import (0.138958ms)
+✔ older games refresh must not overwrite later completed refresh (0.198167ms)
+✔ position save resumes its exact submitted draft after authentication (0.154042ms)
+✔ opening practice resumes the selected line and ply after authentication (0.126708ms)
+✔ SAN and UCI preserve legal state; illegal moves fail (2.385417ms)
+✔ nested exploration retains full history and exact mainline anchor (1.021833ms)
+✔ promotion requires explicit piece and supports underpromotion (0.261833ms)
+✔ return anchor follows a selected branch root, including older roots (0.082458ms)
+✔ study limits accept their boundaries and reject additions without changing histories (0.139334ms)
+✔ clock polling cannot replace a newer game or its study, and clocks count only the active side (0.097083ms)
+✔ rematch preserves legacy strength semantics and exact modern game options (0.077708ms)
+✔ Black-first custom positions display the clock of the actual side to move (0.044667ms)
+ℹ tests 68
+ℹ suites 0
+ℹ pass 68
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 19671.755125
+python3 scripts/local_snapshot_test.py
+SQLite WAL snapshot and overwrite protection passed

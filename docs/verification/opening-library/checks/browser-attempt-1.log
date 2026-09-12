@@ -1,0 +1,7 @@
+page.waitForResponse: Timeout 20000ms exceeded while waiting for event "response"
+    at responseFor (/private/tmp/chesslab-opening-library/scripts/check_app_browser.cjs:39:58)
+    at actionResponse (/private/tmp/chesslab-opening-library/scripts/check_app_browser.cjs:41:45)
+    at /private/tmp/chesslab-opening-library/scripts/check_app_browser.cjs:322:30 {
+  log: [],
+  name: 'TimeoutError'
+}

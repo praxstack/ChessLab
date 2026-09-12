@@ -1,0 +1,17 @@
+# Local opening library evidence
+
+Openings provides 3,810 locally stored named lines with name/ECO search, pagination, legal move playback, flip, FEN/PGN details, saved study and native bot practice from a selected move. Review identifies the latest named opening; a transposed or custom position is labelled Position match instead of claiming the named move order was played. Existing source histories remain separate.
+
+[Video](proof/local-user-flow.webm) · [Receipt](proof/receipt.json) · [Desktop library](proof/19-local-openings.png) · [Native practice](proof/20-opening-practice.png) · [Mobile](proof/21-mobile-openings.png)
+
+The [Lichess opening catalogue](https://github.com/lichess-org/chess-openings) is pinned at 4b8622759e7ae6f93f011cc6c83a3823401ab45e. Its five TSV files, CC0 license and checksums are retained locally. The reproducible importer verifies source hashes and legally replays every line with chess.js. The compiled catalogue uses existing dependencies. It contains no game statistics or explanatory lessons.
+
+All 68 application tests and SQLite snapshot checks pass, preserving the previous 65 tests. Added checks cover bounded search, legal recognition, move-order distinction, castling identity, ownership, source-history preservation, native-practice integration, PGN opening headers, restart persistence and exact sign-in continuation. Opening information in an unfinished bot game uses the existing review-used safeguard. Strict OpenSpec validation passes nine changes. The production-entrypoint doctor passes.
+
+The 32-flow production-build recording uses Stockfish 19 and synthetic accounts in temporary SQLite. It preserves all 26 previous flows and adds catalogue pagination/filtering/empty search, legal preview navigation, selected-prefix practice, real native play, source return/recognition/reload and mobile opening controls. No unexpected external resources or model downloads occurred. The harness closes its browser, server and engines and removes its temporary database; proof remains.
+
+The first recording failed because a decorative arrow entered the practice button's accessible name. Marking that arrow aria-hidden fixed the cause; the unchanged exact-name assertion then passed. The failed log is retained under checks and partial proof remains locally in ignored verification history. Root reviewed source, desktop/mobile screenshots and sampled video frames. The five-feature control-app map was updated in a bounded documentation pass.
+
+Independent review remains unavailable under the installed Astra runtime validator. Existing installed skill-manifest drift still blocks just setup and just check. No validator, evaluation threshold or governing policy was changed. The separate manifest binds source, assets, build and proof; older manifests remain historical evidence.
+
+The [official custom-position guide](https://support.chess.com/en/articles/8572788-how-can-i-play-the-computer-from-a-custom-position) informed the opening-to-computer practice flow. Full Chess.com parity remains active: complete curricula, drills, game statistics, calibrated proprietary bot behavior, the conversational branching tutor and later multiplayer/billing remain work.
