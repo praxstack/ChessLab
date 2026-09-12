@@ -255,3 +255,26 @@ test('practice revalidates a changed source after engine readiness and marks liv
   assert.equal((await f.request(`/api/games/${id}`,{cookie})).body.game.reviewUsed,true);
  }finally{release?.();await f.close();}
 });
+
+test('custom positions validate before saving and retain FEN through analysis, branches, practice, export and reload',async()=>{
+ const f=await fixture();try{
+  const fen='rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 12';
+  assert.equal((await f.request('/api/positions',{method:'POST',body:{fen}})).status,401);
+  const {cookie}=await f.register('positionowner'),other=await f.register('positionother');
+  const invalid=['8/8/8/8/8/8/8/8 w - - 0 1','8/8/8/8/8/8/4k3/4K3 w - - 0 1','4k3/8/8/8/8/8/8/4K2R w KQ - 0 1','4k3/8/8/8/8/8/8/4K3 b - e3 0 1','4k3/8/8/8/8/8/8/4R1K1 w - - 0 1',fen.replace('0 12','0x 12')];
+  for(const bad of invalid)assert.equal((await f.request('/api/positions',{method:'POST',cookie,body:{fen:bad}})).status,400,bad);
+  assert.equal((await f.request('/api/games',{cookie})).body.games.length,0);
+  const saved=await f.request('/api/positions',{method:'POST',cookie,body:{fen,title:'Black to move'}});assert.equal(saved.status,201);const game=saved.body.game,route=`/api/games/${game.id}`;
+  assert.equal(game.initialFen,fen);assert.deepEqual(game.moves,[]);assert.equal(game.positionSetup,true);assert.equal((await f.request(route,{cookie:other.cookie})).status,404);
+  const study={version:1,anchorPly:0,selectedBranchId:'line',branches:[{id:'line',parentId:null,anchorPly:0,moves:['e7e5'],question:'Black moves first'}]};
+  assert.equal((await f.request(route+'/study',{method:'POST',cookie,body:{study,studyRevision:0}})).status,200);
+  const practice=await f.request(route+'/practice',{method:'POST',cookie,body:{revision:0,ply:0,color:'b',level:2,timeControl:{initialSeconds:60,incrementSeconds:0}}});assert.equal(practice.status,201);assert.equal(practice.body.game.initialFen,fen);
+  const played=await f.request(`/api/games/${practice.body.game.id}/move`,{method:'POST',cookie,body:{revision:0,move:'e7e5'}});assert.equal(played.status,200);
+  const exported=await f.request(route+'/pgn',{cookie});assert.match(exported.body,/\[SetUp "1"\]/);assert.match(exported.body,/\[FEN /);
+  const imported=await f.request('/api/import',{method:'POST',cookie,body:{pgn:exported.body}});assert.equal(imported.status,201);assert.equal(imported.body.game.initialFen,fen);assert.deepEqual(imported.body.game.moves,[]);
+  const badPgn='[SetUp "1"]\n[FEN "4k3/8/8/8/8/8/8/4K2R w KQ - 0 1"]\n\n*';
+  assert.equal((await f.request('/api/import',{method:'POST',cookie,body:{pgn:badPgn}})).status,400);
+  const terminal=await f.request('/api/positions',{method:'POST',cookie,body:{fen:'7k/6Q1/5K2/8/8/8/8/8 b - - 0 1'}});assert.equal(terminal.status,201);assert.equal(terminal.body.game.result,'1-0');
+  await f.restart();const restored=(await f.request(route,{cookie})).body.game;assert.equal(restored.initialFen,fen);assert.deepEqual(restored.study,study);
+ }finally{await f.close();}
+});

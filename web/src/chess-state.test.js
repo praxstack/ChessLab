@@ -69,3 +69,9 @@ test('rematch preserves legacy strength semantics and exact modern game options'
   const modern={botId:null,engineId:'maia3',rating:1500,color:'w',timeControl:{initialSeconds:600,incrementSeconds:5},assistance:{chat:false}};
   assert.deepEqual(rematchOptions(modern,fallback),modern);
 });
+
+test('Black-first custom positions display the clock of the actual side to move',()=>{
+ const game={initialFen:'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 12',moves:[],timeControl:{initialSeconds:60},clock:{whiteMs:60000,blackMs:60000,activeSince:1000}};
+ assert.equal(clockText(game,'b',2500),'0:59');assert.equal(clockText(game,'w',2500),'1:00');
+ assert.equal(clockText({...game,moves:['e7e5']},'w',2500),'0:59');
+});

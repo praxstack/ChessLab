@@ -45,3 +45,7 @@ Finish a bot game, or import a completed PGN from My games. Choose Review whole 
 ## Position practice
 
 In Review, choose a position in the game or a saved variation, then Practice this position. Choose an opponent and side. The new game retains its earlier history, starts fresh clocks, and keeps its source study separate. Undo stops at the practice start; Restart position starts there again. Return to source study restores the original branch and note. [Recorded proof](verification/position-practice/README.md) includes native play and persistence checks.
+
+## Custom position setup
+
+Choose Set up position from the welcome screen, My games or board actions. Place or drag pieces, remove them, choose the turn and castling rights, or load FEN. The editor exposes en-passant and move counters. Save & analyze position creates a separate local study; the original game stays intact. The study supports branches, native analysis and position practice. A custom board begins new history and cannot recover earlier repetition. [Editor proof](verification/position-editor/README.md) includes invalid-draft recovery, mobile setup and timed Black-first practice.

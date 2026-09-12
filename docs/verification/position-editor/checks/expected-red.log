@@ -1,0 +1,49 @@
+✖ custom positions validate before saving and retain FEN through analysis, branches, practice, export and reload (95.78475ms)
+✖ Black-first custom positions display the clock of the actual side to move (0.998417ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 214.34475
+
+✖ failing tests:
+
+test at server/app.test.mjs:259:1
+✖ custom positions validate before saving and retain FEN through analysis, branches, practice, export and reload (95.78475ms)
+  AssertionError [ERR_ASSERTION]: 8/8/8/8/8/8/8/8 w - - 0 1
+
+  404 !== 400
+
+      at TestContext.<anonymous> (file:///Users/prax/Developer/ChessLab-local-web/server/app.test.mjs:265:35)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 404,
+    expected: 400,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at web/src/chess-state.test.js:73:1
+✖ Black-first custom positions display the clock of the actual side to move (0.998417ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  '1:00' !== '0:59'
+
+      at TestContext.<anonymous> (file:///Users/prax/Developer/ChessLab-local-web/web/src/chess-state.test.js:75:9)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '1:00',
+    expected: '0:59',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

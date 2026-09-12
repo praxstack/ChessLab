@@ -65,7 +65,8 @@ export function clockText(game, color, now = Date.now()) {
   if (!game?.timeControl?.initialSeconds) return '∞';
   const clock=game.clock;
   if (!clock) return '—';
-  const active=game.moves.length%2===0?'w':'b';
+  const startsBlack=game.initialFen?.trim().split(/\s+/)[1]==='b';
+  const active=(game.moves.length+(startsBlack?1:0))%2===0?'w':'b';
   const elapsed=!game.result && active===color && clock.activeSince ? Math.max(0,now-clock.activeSince) : 0;
   const seconds=Math.ceil(Math.max(0,(color==='w'?clock.whiteMs:clock.blackMs)-elapsed)/1000);
   return `${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
