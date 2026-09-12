@@ -8,6 +8,6 @@ Reference and source → history/clock/crown boundaries → failing tests → in
 - [x] Implement safe practice creation, restart, and source provenance.
 - [x] Add opponent setup and return-to-study controls.
 - [x] Verify native play, reload, undo and source return with video.
-- [ ] Review and open a stacked PR with the remaining scope explicit.
+- [x] Review and open a stacked PR with the remaining scope explicit.
 
 Full Chess.com parity remains active beyond this feature.

@@ -13,3 +13,5 @@ The 20-flow recording uses the production build, native Stockfish 19 and a synth
 Independent review remains unavailable under the installed Astra runtime validator; root review is not team acceptance. Existing skill-manifest drift still blocks `just setup` and `just check`. No governing gate or classification threshold changed.
 
 The [official custom-position guide](https://support.chess.com/en/articles/8572788-how-can-i-play-the-computer-from-a-custom-position) informed this flow. This feature does not complete full Chess.com parity: a custom board editor, opening/drill collections, midgame side switching, the full curriculum, proprietary bot equivalence and the conversational branching tutor remain unfinished. Full-game reports include the retained historical moves; automatic live feedback applies only to newly played moves.
+
+[PR #3](https://github.com/praxstack/ChessLab/pull/3) is open, stacked on the whole-game review PR. Source and recorded evidence are committed at bac9be20df14ee3c867f9f3b559b02df7720f448; later documentation records delivery.
