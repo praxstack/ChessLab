@@ -153,3 +153,65 @@ test('a timeout saved during an engine request rejects the late reply without ov
   const saved=(await f.request(route,{cookie})).body.game;assert.equal(saved.result,'0-1');assert.deepEqual(saved.moves,[]);
  }finally{release?.({move:'e2e4'});await f.close();}
 });
+
+function reviewEvidence({moves,initialFen,playedMove,movetime,threads}) {
+ const before=new Chess(initialFen||undefined);for(const move of moves)before.move({from:move.slice(0,2),to:move.slice(2,4),promotion:move[4]});
+ const turn=before.turn(),fen=before.fen(),best=before.moves({verbose:true})[0];
+ const played=before.move({from:playedMove.slice(0,2),to:playedMove.slice(2,4),promotion:playedMove[4]});
+ return {engine:'Stockfish fixture',fen,turn,bestmove:best.from+best.to,limits:{movetime,threads,lines:1,engineId:'stockfish19'},lines:[{move:best.from+best.to,moves:[best.from+best.to],san:[best.san],score:{type:'cp',value:30},depth:12}],explanation:'Verified test evidence',played:{move:playedMove,san:played.san,classification:before.isCheckmate()?'Checkmate':'Mistake',lossCp:before.isCheckmate()?null:200,afterScore:before.isCheckmate()?null:{type:'cp',value:turn==='w'?-170:230},explanation:'A test continuation.'}};
+}
+
+test('full game review preserves ownership, resumes from disk and never rewrites games or studies',async()=>{
+ let calls=0,failNext=false;const f=await fixture({engineApi:{analyze:async input=>{if(failNext)throw Object.assign(new Error('Engine unavailable'),{status:503});calls++;return reviewEvidence(input);}}});
+ try{
+  const {cookie}=await f.register('reviewowner'),bob=await f.register('reviewother');
+  const imported=await f.request('/api/import',{method:'POST',cookie,body:{pgn:'1. f3 e5 2. g4 Qh4# 0-1'}});let game=imported.body.game;const route=`/api/games/${game.id}/review`;
+  const study={version:1,anchorPly:1,selectedBranchId:'review-study',branches:[{id:'review-study',parentId:null,anchorPly:1,moves:['f2f3','d7d5'],question:'Can Black play in the centre?'}]};
+  assert.equal((await f.request(`/api/games/${game.id}/study`,{method:'POST',cookie,body:{study,studyRevision:0}})).status,200);game=(await f.request(`/api/games/${game.id}`,{cookie})).body.game;
+  assert.equal((await f.request(route)).status,401);assert.equal((await f.request(route,{cookie:bob.cookie})).status,404);
+  assert.equal((await f.request(route,{cookie})).body.review,null);
+  const step=(after,extra={})=>f.request(route,{method:'POST',cookie,body:{revision:game.revision,after,movetime:50,threads:1,...extra}});
+  assert.equal((await step(0,{revision:99})).status,409);assert.equal((await step(0,{movetime:90001})).status,400);assert.equal((await step(3)).status,409);
+  let result=await step(0);assert.equal(result.status,200);assert.equal(result.body.review.entries.length,1);assert.equal(result.body.review.complete,false);
+  const snapshot=structuredClone(result.body.review);await f.restart();
+  assert.deepEqual((await f.request(route,{cookie})).body.review,snapshot);assert.equal(calls,1,'Loading a saved report does not search');
+  assert.equal((await step(0)).status,409,'A duplicate cursor cannot skip or duplicate moves');
+  failNext=true;assert.equal((await step(1)).status,503);assert.deepEqual((await f.request(route,{cookie})).body.review,snapshot,'Engine failure preserves the saved step');failNext=false;
+  for(let after=1;after<4;after++){result=await step(after);assert.equal(result.status,200);}
+  const report=result.body.review;assert.equal(report.complete,true);assert.equal(report.entries.length,4);assert.equal(report.players.w.moves,2);assert.equal(report.players.b.moves,2);assert.equal(report.players.w.averageLossCp,200);assert.equal(report.players.b.measuredMoves,1);assert.equal(report.entries[3].evaluation.type,'result');assert.equal(report.entries[3].evaluation.value,'0-1');
+  assert.equal((await step(4)).status,200);assert.equal(calls,4,'Completed report is reused');
+  assert.deepEqual((await f.request(`/api/games/${game.id}`,{cookie})).body.game,game,'Review preserves complete game and study state');
+  const draw=await f.request('/api/import',{method:'POST',cookie,body:{pgn:'[SetUp "1"]\n[FEN "8/8/8/8/8/1k6/P7/7K b - - 0 1"]\n\n1... Kxa2 1/2-1/2'}});assert.equal(draw.status,201);
+  const drawn=await f.request(`/api/games/${draw.body.game.id}/review`,{method:'POST',cookie,body:{revision:0,after:0,movetime:50,threads:1}});assert.equal(drawn.status,200);assert.deepEqual(drawn.body.review.entries[0].evaluation,{type:'cp',value:0});
+  const live=await f.request('/api/games',{method:'POST',cookie,body:{color:'w',level:2}});
+  assert.equal((await f.request(`/api/games/${live.body.game.id}/review`,{method:'POST',cookie,body:{revision:0,after:0,movetime:50,threads:1}})).status,409);
+ }finally{await f.close();}
+});
+
+test('review rejects concurrent or stale engine results and preserves the last saved step on failure',async()=>{
+ let release,start,failNext=false;const begun=new Promise(resolve=>start=resolve);
+ const f=await fixture({engineApi:{analyze:input=>{if(failNext)throw Object.assign(new Error('Engine unavailable'),{status:503});start();return new Promise(resolve=>release=()=>resolve(reviewEvidence(input)));}}});
+ try{
+  const {cookie}=await f.register('reviewrace');const {body}=await f.request('/api/import',{method:'POST',cookie,body:{pgn:'1. e4 e5 2. Nf3 Nc6 *'}});const game=body.game,route=`/api/games/${game.id}/review`;
+  const request={method:'POST',cookie,body:{revision:0,after:0,movetime:50,threads:1}};
+  assert.equal((await f.request(route,{cookie})).status,200);
+  const running=f.request(route,request);await begun;
+  assert.equal((await f.request(route,request)).status,409);
+  const changed={...game,moves:game.moves.slice(0,2),revision:1};f.db.prepare('UPDATE games SET data=?,revision=? WHERE id=?').run(JSON.stringify(changed),1,game.id);
+  release();assert.equal((await running).status,409);assert.equal((await f.request(route,{cookie})).body.review,null);
+  failNext=true;assert.equal((await f.request(route,{...request,body:{...request.body,revision:1}})).status,503);assert.equal((await f.request(route,{cookie})).body.review,null);
+ }finally{release?.();await f.close();}
+});
+
+
+test('disconnecting a review cancels its search and releases the game for resume',{timeout:10000},async()=>{
+ let start,canceled,delay=true;const started=new Promise(resolve=>start=resolve),aborted=new Promise(resolve=>canceled=resolve);
+ const f=await fixture({engineApi:{analyze:async(input,{signal})=>{if(delay){start();await new Promise((resolve,reject)=>signal.addEventListener('abort',()=>{canceled();reject(Object.assign(new Error('Canceled'),{status:499}));},{once:true}));}return reviewEvidence(input);}}});
+ try{
+  const {cookie}=await f.register('reviewcancel');const {body}=await f.request('/api/import',{method:'POST',cookie,body:{pgn:'1. e4 e5 *'}});const route=`/api/games/${body.game.id}/review`,bodyText={revision:0,after:0,movetime:50,threads:1},controller=new AbortController();
+  const running=fetch(f.base+route,{method:'POST',headers:{Cookie:cookie,'Content-Type':'application/json'},body:JSON.stringify(bodyText),signal:controller.signal}).catch(error=>error);
+  await started;controller.abort();await running;await aborted;
+  assert.equal((await f.request(route,{cookie})).body.review,null);delay=false;
+  assert.equal((await f.request(route,{method:'POST',cookie,body:bodyText})).body.review.entries.length,1);
+ }finally{await f.close();}
+});

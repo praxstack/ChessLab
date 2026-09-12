@@ -10,4 +10,4 @@ The [baseline screenshot](baseline/01-bot-picker.png) precedes the visual edits.
 
 Root review covers the diff and visible screenshots. Independent-agent review and Astra Team acceptance are unavailable because the installed hook rejects this Codex runtime. Do not interpret this recording as cross-browser certification, proprietary bot equivalence, complete curriculum, multiplayer, billing, free-form tutor conversation, or 100 percent parity.
 
-The delivery PR is [ChessLab #1](https://github.com/praxstack/ChessLab/pull/1), open for review. The installed local app is http://127.0.0.1:8772/; its source is `/Users/prax/Developer/ChessLab-local-web`. The recorded app source remains unchanged after proof.
+The delivery PR is [ChessLab #1](https://github.com/praxstack/ChessLab/pull/1), open for review. The installed local app is http://127.0.0.1:8772/; its source is `/Users/prax/Developer/ChessLab-local-web`. That recording attests the local-polish revision c6b6a834eefda78155c9ad32747603589716cb03. Subsequent whole-game review has separate evidence in ../full-game-review/.

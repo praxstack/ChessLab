@@ -11,6 +11,7 @@ import {setupOptions,beginClock,settleClock,finishMoveClock,crownsFor,adaptiveRa
 const profiles = JSON.parse(readFileSync(new URL('./bot-profiles.json',import.meta.url),'utf8'));
 import { lessons, puzzles, catalog } from './content.mjs';
 import {hostingGuard} from './hosting.mjs';
+import {positionKey,reviewSignature,beginReview,appendReview} from './game-review.mjs';
 
 const derive = promisify(scrypt);
 const hash = value => createHash('sha256').update(value).digest('hex');
@@ -61,11 +62,12 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
  CREATE TABLE IF NOT EXISTS sessions (token_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), expires_at INTEGER NOT NULL);
  CREATE TABLE IF NOT EXISTS games (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), revision INTEGER NOT NULL, data TEXT NOT NULL);
  CREATE INDEX IF NOT EXISTS games_owner ON games(user_id);
+ CREATE TABLE IF NOT EXISTS game_reviews (game_id TEXT PRIMARY KEY REFERENCES games(id), data TEXT NOT NULL);
  CREATE TABLE IF NOT EXISTS progress (user_id TEXT NOT NULL REFERENCES users(id), kind TEXT NOT NULL, item_id TEXT NOT NULL, PRIMARY KEY(user_id,kind,item_id));
  CREATE TABLE IF NOT EXISTS bot_results (user_id TEXT NOT NULL REFERENCES users(id), bot_id TEXT NOT NULL, crowns INTEGER NOT NULL CHECK(crowns BETWEEN 1 AND 3), PRIMARY KEY(user_id,bot_id));`);
  const app = express(); app.disable('x-powered-by');
  app.use(hostingGuard());
- const rateWindows = new Map(); const pendingBot = new Set();
+ const rateWindows = new Map(); const pendingBot = new Set(); const pendingReview = new Set();
  function limit(key, max, period = 60000) {
   const stamp = Date.now(); const bucket = rateWindows.get(key);
   if (!bucket || bucket.until < stamp) {
@@ -271,6 +273,38 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   // Study edits keep the move revision stable; storeGame merges the latest saved study after asynchronous engine work.
   db.prepare('UPDATE games SET data=? WHERE id=? AND user_id=?').run(JSON.stringify({...game,updatedAt:now()}),game.id,req.user.id);
   res.json({game});
+ });
+ const savedReview=game=>{
+  const row=db.prepare('SELECT data FROM game_reviews WHERE game_id=?').get(game.id);
+  const report=row?JSON.parse(row.data):null;
+  return report?.positionKey===positionKey(game)?report:null;
+ };
+ app.get('/api/games/:id/review',(req,res)=>res.json({review:savedReview(owned(req))}));
+ app.post('/api/games/:id/review',async(req,res)=>{
+  const game=owned(req);expected(req,game);
+  if(game.source==='bot'&&!game.result)fail(409,'Finish this bot game before reviewing the whole game.');
+  if(!game.moves.length)fail(400,'There are no moves to review yet.');
+  const {movetime=1000,threads=1,after}=req.body;
+  if(!Number.isInteger(movetime)||movetime<50||movetime>90000||!Number.isInteger(threads)||threads<1||threads>8)fail(400,'Choose a search time from 50 to 90000 ms and 1 to 8 threads.');
+  const limits={movetime,threads,lines:1,engineId:'stockfish19'};
+  const stored=db.prepare('SELECT data FROM game_reviews WHERE game_id=?').get(game.id);
+  const prior=stored?JSON.parse(stored.data):null;
+  const report=prior?.signature===reviewSignature(game,limits)?prior:beginReview(game,limits);
+  if(!Number.isInteger(after)||after!==report.entries.length)fail(409,'Review progress changed. Reload the saved report before continuing.');
+  if(report.complete)return res.json({review:report});
+  if(pendingReview.has(game.id))fail(409,'This game is already being reviewed. Pause or wait for that step to finish.');
+  limit(`review:${req.user.id}`,1500,3600000);
+  const controller=new AbortController(),abort=()=>{if(!res.writableEnded)controller.abort();};res.on('close',abort);pendingReview.add(game.id);
+  try{
+   const analysis=await engineApi.analyze({...limits,moves:game.moves.slice(0,after),initialFen:game.initialFen,playedMove:game.moves[after]},{signal:controller.signal});
+   if(controller.signal.aborted)fail(499,'Review paused. Completed moves are saved.');
+   const fresh=owned(req);if(fresh.revision!==game.revision||positionKey(fresh)!==positionKey(game))fail(409,'The game changed while reviewing. Reload it before continuing.');
+   const next=appendReview(report,game,analysis);
+   // ponytail: one saved JSON report per game; use per-move rows if large reviews dominate writes.
+   const saved=db.prepare('INSERT INTO game_reviews (game_id,data) VALUES (?,?) ON CONFLICT(game_id) DO UPDATE SET data=excluded.data WHERE game_reviews.data=?').run(game.id,JSON.stringify(next),stored?.data??null);
+   if(!saved.changes)fail(409,'The saved review changed in another process. Reload it before continuing.');
+   res.json({review:next});
+  }finally{pendingReview.delete(game.id);res.off('close',abort);}
  });
  app.post('/api/analyze',async(req,res)=>{
   limit(`analysis:${req.user.id}`,100);

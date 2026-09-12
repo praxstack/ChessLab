@@ -1,0 +1,3 @@
+ts	phase	decision	why	evidence	result
+2026-09-12T22:44:24Z	design	Persist one native review step at a time	Pause and restart should retain completed moves without a background job service	openspec/changes/full-game-review/proposal.md; server/game-review.mjs; server/app.mjs	Original game and study contract preserved; no new runtime dependency
+2026-09-12T22:44:24Z	verify	Accept the recorded report and saved-evidence flow	Every move needs genuine engine evidence and usable navigation	proof/receipt.json; checks/test.log; checks/local-check.log; manifest.json	58 application tests and 16 browser flow checks passed; root visual review; independent agents unavailable
