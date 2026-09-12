@@ -6,6 +6,7 @@ import { mkdirSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { Chess } from 'chess.js';
 import {validatePosition} from '../shared/position.js';
+import {openingSource,openingById,searchOpenings,recognizeOpening} from './openings.mjs';
 import * as engine from './engine.mjs';
 import * as opponents from './opponent-engines.mjs';
 import {setupOptions,practiceSnapshot,beginClock,settleClock,finishMoveClock,crownsFor,adaptiveRating,addBotChat,undoTurn,attackedPieces} from './bot-game.mjs';
@@ -141,10 +142,17 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   res.clearCookie('chesslab_session',{path:'/',httpOnly:true,sameSite:'strict',secure:process.env.COOKIE_SECURE==='1'});res.json(me(null));
  });
  app.get('/api/learn',(req,res)=>res.json(catalog()));
+ app.get('/api/openings',(req,res)=>res.json(searchOpenings(req.query)));
+ app.get('/api/openings/:id',(req,res)=>{const opening=openingById(req.params.id);if(!opening)fail(404,'Opening not found.');res.json({opening,source:openingSource});});
  app.use('/api',requireUser);
  const owned = (req) => {
   const row = db.prepare('SELECT data FROM games WHERE id=? AND user_id=?').get(req.params.id,req.user.id);
   if (!row) fail(404,'This saved game was not found.'); return JSON.parse(row.data);
+ };
+ const markReviewAccess=(req,id)=>{
+  if(typeof id!=='string')fail(400,'Invalid game identifier.');
+  const game=owned({params:{id},user:req.user});
+  if(game.source==='bot'&&!game.result&&!game.reviewUsed){game.reviewUsed=true;db.prepare('UPDATE games SET data=? WHERE id=? AND user_id=?').run(JSON.stringify(game),game.id,req.user.id);}
  };
  const expected = (req,game) => { if (!Number.isInteger(req.body.revision) || req.body.revision !== game.revision) fail(409,'This game has changed. Reload it before moving again.'); };
  const storeGame = (userId,game,oldRevision) => {
@@ -264,6 +272,11 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   if(settleClock(fresh,nowMs()))return res.json({analysis:null,feedback:null,threats:[],game:storeGame(req.user.id,fresh,fresh.revision)});
   res.json({analysis,feedback,threats:help.threats?attackedPieces(game):[],game:fresh});
  });
+ app.post('/api/openings/recognize',(req,res)=>{limit(`opening:${req.user.id}`,300);const opening=recognizeOpening(req.body.moves,req.body.initialFen);if(req.body.gameId!==undefined)markReviewAccess(req,req.body.gameId);res.json({opening,source:openingSource});});
+ app.post('/api/openings/:id/study',(req,res)=>{
+  const opening=openingById(req.params.id);if(!opening)fail(404,'Opening not found.');
+  res.status(201).json({game:insertGame(req.user.id,{title:opening.name,source:'import',moves:[...opening.moves],opening:{id:opening.id,name:opening.name,eco:opening.eco},headers:{White:'White',Black:'Black'}})});
+ });
  app.post('/api/positions',(req,res)=>{
   let position;try{position=validatePosition(req.body.fen);}catch(error){fail(400,error.message);}
   const title=req.body.title??'Custom position';if(typeof title!=='string'||!title.trim()||title.length>100)fail(400,'Use a position title of 1–100 characters.');
@@ -286,6 +299,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   const game=owned(req);const chess=replay(game.moves,game.initialFen);
   for (const [key,value] of Object.entries({Event:'ChessLab study',White:game.color==='w'?req.user.username:(game.botName||'ChessLab bot'),Black:game.color==='b'?req.user.username:(game.botName||'ChessLab bot'),Result:game.result || '*'})) chess.setHeader(key,value);
   if(game.source==='import') {chess.setHeader('White',game.headers?.White || 'Imported White');chess.setHeader('Black',game.headers?.Black || 'Imported Black');}
+  if(game.opening){chess.setHeader('ECO',game.opening.eco);chess.setHeader('Opening',game.opening.name);}
   res.type('text/plain').set('Content-Disposition',`attachment; filename="chesslab-${game.id}.pgn"`).send(chess.pgn());
  });
  app.post('/api/games/:id/study',(req,res)=>{
@@ -330,13 +344,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
  });
  app.post('/api/analyze',async(req,res)=>{
   limit(`analysis:${req.user.id}`,100);
-  if(req.body.gameId!==undefined){
-   if(typeof req.body.gameId!=='string')fail(400,'Invalid game identifier.');
-   const row=db.prepare('SELECT data FROM games WHERE id=? AND user_id=?').get(req.body.gameId,req.user.id);
-   if(!row)fail(404,'This saved game was not found.');
-   const game=JSON.parse(row.data);
-   if(game.source==='bot'&&!game.result&&!game.reviewUsed){game.reviewUsed=true;db.prepare('UPDATE games SET data=? WHERE id=? AND user_id=?').run(JSON.stringify(game),game.id,req.user.id);}
-  }
+  if(req.body.gameId!==undefined)markReviewAccess(req,req.body.gameId);
   const controller=new AbortController();
   const cancel=()=>{if(!res.writableEnded)controller.abort();};
   res.once('close',cancel);

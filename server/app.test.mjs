@@ -278,3 +278,23 @@ test('custom positions validate before saving and retain FEN through analysis, b
   await f.restart();const restored=(await f.request(route,{cookie})).body.game;assert.equal(restored.initialFen,fen);assert.deepEqual(restored.study,study);
  }finally{await f.close();}
 });
+
+test('opening catalogue is bounded and opening studies retain complete owned history for practice',async()=>{
+ const f=await fixture();try{
+  const list=await f.request('/api/openings?q=Italian%20Game&eco=C');assert.equal(list.status,200);assert.ok(list.body.total>0);assert.ok(list.body.items.length<=24);assert.ok(list.body.items.every(item=>item.eco.startsWith('C')));
+  assert.equal((await f.request('/api/openings?page=-1')).status,400);assert.equal((await f.request('/api/openings?eco=Z')).status,400);assert.equal((await f.request('/api/openings?q=nonexistent_chess_name')).body.total,0);
+  const id=list.body.items.find(item=>item.name==='Italian Game').id,detail=await f.request('/api/openings/'+id);assert.equal(detail.status,200);assert.ok(detail.body.opening.moves.length>=5);
+  assert.equal((await f.request(`/api/openings/${id}/study`,{method:'POST',body:{}})).status,401);
+  const {cookie}=await f.register('openingowner'),other=await f.register('openingother');
+  const saved=await f.request(`/api/openings/${id}/study`,{method:'POST',cookie,body:{moves:['e2e3']}});assert.equal(saved.status,201);const game=saved.body.game,route=`/api/games/${game.id}`;
+  assert.deepEqual(game.moves,detail.body.opening.moves);assert.equal(game.opening.id,id);assert.equal((await f.request(route,{cookie:other.cookie})).status,404);
+  const practice=await f.request(route+'/practice',{method:'POST',cookie,body:{ply:2,revision:0,color:'w',level:2}});assert.equal(practice.status,201);assert.deepEqual(practice.body.game.moves,game.moves.slice(0,2));assert.deepEqual((await f.request(route,{cookie})).body.game.moves,game.moves);
+  const found=await f.request('/api/openings/recognize',{method:'POST',cookie,body:{moves:game.moves}});assert.equal(found.status,200);assert.equal(found.body.opening.name,'Italian Game');assert.equal(found.body.opening.matchType,'line');
+  assert.equal((await f.request('/api/openings/recognize',{method:'POST',cookie,body:{moves:['e2e5']}})).status,400);
+  const live=(await f.request('/api/games',{method:'POST',cookie,body:{color:'w',level:2}})).body.game;
+  assert.equal((await f.request('/api/openings/recognize',{method:'POST',cookie:other.cookie,body:{gameId:live.id,moves:[]}})).status,404);
+  assert.equal((await f.request('/api/openings/recognize',{method:'POST',cookie,body:{gameId:live.id,moves:[]}})).status,200);assert.equal((await f.request(`/api/games/${live.id}`,{cookie})).body.game.reviewUsed,true);
+  const exported=await f.request(route+'/pgn',{cookie});assert.match(exported.body,/\[Opening "Italian Game"\]/);assert.match(exported.body,/\[ECO "C50"\]/);
+  await f.restart();assert.equal((await f.request(route,{cookie})).body.game.opening.id,id);
+ }finally{await f.close();}
+});
