@@ -17,3 +17,5 @@ Root reviewed source, screenshots and video frames. Independent team review rema
 The local service at http://127.0.0.1:8772/ was restarted with this build. Native Stockfish 19 is ready; the consistent pre-change backup contains the existing 2 accounts and 2 games. No hosted site was changed. A separate manifest hashes source, local assets, build, tests and proof; earlier feature manifests remain historical evidence.
 
 The [official analysis-board guide](https://support.chess.com/en/articles/8583825-how-do-i-use-the-analysis-board) informed the setup flow. Full Chess.com parity remains incomplete: opening/drill collections, the complete curriculum, proprietary bot equivalence, the conversational branching tutor and later multiplayer/billing remain additional work.
+
+[PR #4](https://github.com/praxstack/ChessLab/pull/4) is open, stacked on position practice. The tested source and recording are committed at f61601cdd601af77962d8650ddb263d54a961b5f; later documentation records delivery.

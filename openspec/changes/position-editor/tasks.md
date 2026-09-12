@@ -6,6 +6,6 @@ Reference and source → validation and historical boundaries → failing checks
 - [x] Add failing position integrity and Black-first clock checks.
 - [x] Implement the editor, safe local study creation and validation.
 - [x] Record native analysis, practice, persistence and mobile controls.
-- [ ] Review and open the PR with video proof and remaining scope.
+- [x] Review and open the PR with video proof and remaining scope.
 
 Full Chess.com parity remains active.
