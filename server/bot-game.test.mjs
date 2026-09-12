@@ -33,3 +33,18 @@ test('every observed bot profile can start with its declared local target',()=>{
  const bot=bots.find(b=>b.category==='New to Chess');
  for(const rating of [100,125,150,175,200,225])assert.equal(setupOptions({botId:bot.id,rating},bots).rating,rating);
 });
+
+import {practiceSnapshot} from './bot-game.mjs';
+import {replay} from './engine.mjs';
+test('practice retains repetition history, blocks terminal starts and never awards roster crowns',()=>{
+ const moves=['g1f3','g8f6','f3g1','f6g8','g1f3','g8f6'],source={id:'source',title:'Repeated knights',moves,initialFen:null};
+ const snapshot=practiceSnapshot(source,{ply:6});assert.deepEqual(snapshot.moves,moves);
+ assert.equal(replay([...snapshot.moves,'f3g1','f6g8'],snapshot.initialFen).isThreefoldRepetition(),true);
+ assert.equal(replay(['f3g1','f6g8'],replay(moves).fen()).isThreefoldRepetition(),false,'A bare FEN would lose the draw history');
+ assert.throws(()=>practiceSnapshot({...source,moves:[...moves,'f3g1','f6g8']},{ply:8}),/already over/);
+ const custom={...source,initialFen:'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 12',moves:['e7e5']};
+ const customCopy=practiceSnapshot(custom,{ply:1});assert.equal(customCopy.initialFen,custom.initialFen);assert.equal(replay(customCopy.moves,customCopy.initialFen).fen(),replay(custom.moves,custom.initialFen).fen());
+ const restarted=practiceSnapshot({...snapshot,moves:[...snapshot.moves,'f3g1']},{restart:true});assert.deepEqual(restarted.moves,snapshot.moves);assert.deepEqual(restarted.practice,snapshot.practice);
+ const winner={...make(),result:'1-0',practice:snapshot.practice};assert.equal(crownsFor(winner),0);delete winner.practice;assert.equal(crownsFor(winner),3);
+ const ended={...source,moves:['f2f3','e7e5','g2g4','d8h4']};assert.throws(()=>practiceSnapshot(ended,{ply:4}),/already over/);assert.equal(practiceSnapshot(ended,{ply:2}).moves.length,2);
+});

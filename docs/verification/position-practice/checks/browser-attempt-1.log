@@ -1,0 +1,11 @@
+locator.waitFor: Error: strict mode violation: locator('.game-card') resolved to 3 elements:
+    1) <button class="game-card">…</button> aka getByRole('button', { name: 'POSITION PRACTICE Position' }).first()
+    2) <button class="game-card">…</button> aka getByRole('button', { name: 'POSITION PRACTICE Position' }).nth(1)
+    3) <button class="game-card">…</button> aka getByRole('button', { name: 'Martin · 250 Martin 1 moves' })
+
+Call log:
+  - waiting for locator('.game-card') to be visible
+
+    at /Users/prax/Developer/ChessLab-local-web/scripts/check_app_browser.cjs:190:38 {
+  log: [ "  - waiting for locator('.game-card') to be visible" ]
+}
