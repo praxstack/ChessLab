@@ -1,0 +1,26 @@
+{
+  "status": "pass",
+  "checkedAt": "2026-09-12T22:10:40.775Z",
+  "engine": "Stockfish 19",
+  "checks": [
+    "register and session cookie",
+    "typed e4 and real legal bot reply",
+    "engine review shown",
+    "saved game restored after reload",
+    "wrong/right lesson answers",
+    "wrong/right puzzle moves",
+    "progress restored after reload",
+    "bot search and visible identity",
+    "hint with engine evidence",
+    "nested study preserves original moves",
+    "board preference persists",
+    "mobile layout and account/settings access",
+    "no page errors or unexpected HTTP/model requests"
+  ],
+  "limitations": [
+    "Uses isolated temporary SQLite, not the user database",
+    "Does not establish deployment or cross-browser support"
+  ],
+  "video": "local-user-flow.webm"
+}
+Evidence saved to <workspace>/docs/verification/local-web/reviewed-proof

@@ -8,7 +8,11 @@ The learner plays an AI opponent at a chosen difficulty. Every move can be revis
 
 The board and explanation must agree. Arrows, highlighted pieces, capture sequences and material comparisons help explain the reasoning. Questions belong to the position and branch where they were asked. The tutor should support active calculation and learning rather than only reveal engine recommendations.
 
-## Current build direction — updated 8 September 2026
+## Local web priority — updated 13 September 2026
+
+The user rejects further hosted-site development and directs that the app, assets, engines, models, research/design sites and persistent data run locally on this Mac. `openspec/changes/local-web-first/` governs this additive delivery. Full Chess.com parity remains the goal, with the prior bot/coach-first sequence and full branching tutor objective preserved. Pstack setup, autonomous routing, an explicit work graph, real app-control verification and a PR with video proof are required. Tool installation is authorized when it serves delivery; installed tools are not product progress.
+
+## Previous build direction — updated 8 September 2026
 
 The user now requests one-to-one Chess.com web reference parity excluding human multiplayer before adding the original conversational differentiation. Their latest clarification prioritizes coach/bot play and defers actual human multiplayer; billing is last. The first application stage is specified in `openspec/changes/build-coach-web-platform/`: server-side Stockfish (no browser engine download), legal bot play, guided review, saved games, settings, and introductory puzzles/lessons. Implementation and a private GitHub repository are explicitly authorized. The earlier proposal below is retained as historical context, not the controlling build sequence.
 
@@ -46,4 +50,4 @@ Analyze completed games, study positions and this product's AI games. Do not bui
 
 ## Open decisions
 
-The user has authorized the coach/bot platform implementation and a private GitHub push. Hosting now uses owner-private Sites with a protected native service on this Mac; business model, commercial license, pricing, target audience and learning-experiment thresholds remain undecided. Human multiplayer comes after the bot/coach stage and billing comes last. Research market-size figures are scenarios, not validated demand. Local functional tests do not establish learning outcomes or full Chess.com parity.
+The user has authorized the coach/bot platform implementation and a private GitHub push. Earlier hosting used owner-private Sites with a protected native service on this Mac; local operation is now the delivery target; business model, commercial license, pricing, target audience and learning-experiment thresholds remain undecided. Human multiplayer comes after the bot/coach stage and billing comes last. Research market-size figures are scenarios, not validated demand. Local functional tests do not establish learning outcomes or full Chess.com parity.

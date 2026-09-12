@@ -6,6 +6,8 @@ import { closeEngine } from './engine.mjs';
 import { closeOpponentEngines } from './opponent-engines.mjs';
 
 const { app, close } = createApp();
+app.use('/research', express.static(resolve('report'), {dotfiles:'deny'}));
+app.use('/design', express.static(resolve('design'), {dotfiles:'deny'}));
 let vite;
 if (process.env.NODE_ENV === 'production') {
  const folder=resolve('web/dist');
@@ -14,10 +16,11 @@ if (process.env.NODE_ENV === 'production') {
  app.use((req,res)=>{if(req.method==='GET'&&req.accepts('html'))res.sendFile(resolve(folder,'index.html'));else res.status(404).end();});
 } else {
  const { createServer } = await import('vite');
- vite=await createServer({server:{middlewareMode:true},appType:'spa'});
+ vite=await createServer({server:{middlewareMode:true,host:'127.0.0.1',hmr:{host:'127.0.0.1'}},appType:'spa'});
  app.use(vite.middlewares);
 }
 const host=process.env.HOST||'127.0.0.1'; const port=Number(process.env.PORT||8770);
-const server=app.listen(port,host,()=>console.log(`ChessLab ready at http://${host}:${port}`));
-async function shutdown(){server.close();await vite?.close();closeEngine();closeOpponentEngines();close();process.exit(0);}
+const server=app.listen(port,host,()=>console.log(`ChessLab ready at http://${host}:${server.address().port}`));
+server.on('error',error=>{console.error(`ChessLab could not start: ${error.message}`);shutdown();process.exitCode=1;});
+async function shutdown(){server.close();await vite?.close();closeEngine();closeOpponentEngines();close();}
 process.once('SIGTERM',shutdown);process.once('SIGINT',shutdown);

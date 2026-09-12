@@ -1,0 +1,40 @@
+npm run build
+
+> chesslab@0.1.0 build
+> vite build
+
+vite v8.2.2 building client environment for production...
+transforming...
+✓ 20 modules transformed.
+rendering chunks...
+computing gzip size...
+web/dist/index.html                   0.56 kB │ gzip:  0.36 kB
+web/dist/assets/index-B6DZt9Gl.css   38.82 kB │ gzip:  9.56 kB
+web/dist/assets/index-BYxA4jPM.js   291.52 kB │ gzip: 91.76 kB
+
+✓ built in 145ms
+node scripts/check_app_browser.cjs
+{
+  "status": "pass",
+  "checkedAt": "2026-09-12T22:15:41.152Z",
+  "engine": "Stockfish 19",
+  "checks": [
+    "register and session cookie",
+    "typed e4 and real legal bot reply",
+    "engine review shown",
+    "saved game restored after reload",
+    "wrong/right lesson answers",
+    "wrong/right puzzle moves",
+    "progress restored after reload",
+    "bot search and visible identity",
+    "hint with engine evidence",
+    "nested study preserves original moves",
+    "board preference persists",
+    "mobile layout and account/settings access",
+    "no page errors or unexpected HTTP/model requests"
+  ],
+  "limitations": [
+    "Uses isolated temporary SQLite, not the user database",
+    "Does not establish deployment or cross-browser support"
+  ]
+}

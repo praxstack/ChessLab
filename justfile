@@ -15,6 +15,7 @@ check:
 test:
     python3 scripts/setup_skills.py --self-test
     npm test
+    python3 scripts/local_snapshot_test.py
 
 app:
     npm run dev
@@ -38,3 +39,11 @@ report-test:
 
 report-zip:
     python3 scripts/build_report.py --zip
+
+proof:
+    npm run build
+    CHESSLAB_EVIDENCE_DIR="data/proof-$(date +%Y%m%d-%H%M%S)" node scripts/check_app_browser.cjs
+
+local-check:
+    npm run build
+    node scripts/check_local_server.mjs

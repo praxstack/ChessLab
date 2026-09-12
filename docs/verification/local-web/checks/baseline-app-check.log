@@ -1,0 +1,81 @@
+npm test
+npm notice run chesslab@0.1.0 test
+npm notice run node --test --test-concurrency=1 server/*.test.mjs web/src/*.test.js
+✔ accounts, legal game updates, isolation, revision checks and persistent sessions (109.92425ms)
+Request failed: attempt to write a readonly database
+✔ nested studies reject altered history, missing parents, loops, illegal moves and survive bot races (38.260875ms)
+✔ Black games begin with engine turn and engine failure never fabricates a move (26.722917ms)
+✔ learning catalog hides answers, validates all authored positions, and persists only correct progress (35.78175ms)
+✔ selected engine, authoritative timeout, crowns and account isolation survive restart (56.676125ms)
+✔ hints, assistance and undo retain legal history and protect saved studies (47.457458ms)
+✔ a timeout saved during an engine request rejects the late reply without overwriting the result (26.626167ms)
+✔ bot options validate trust boundaries; rating adaptation and crown tiers are explicit (4.994583ms)
+✔ clocks charge the active side once, add increments and stop at flag fall (0.388375ms)
+✔ undo restores a whole turn and protects branch history (1.278417ms)
+✔ threat arrows exclude illegal captures by pinned defenders (0.475125ms)
+✔ every observed bot profile can start with its declared local target (0.694167ms)
+✔ request validation rejects malformed notation, illegal history, FEN command injection and limit abuse (2.56425ms)
+✔ real Stockfish gives legal PVs, identity, limits and deterministic facts (588.089625ms)
+✔ advanced analysis uses actual Lite with five legal lines and preserves strict engine selection (384.419584ms)
+✔ full history distinguishes a repeated game from its identical FEN (142.383667ms)
+✔ terminal checkmate returns no fabricated move (142.790916ms)
+✔ scores retain White perspective when side to move changes (489.7755ms)
+✔ played capture and promotion explanations are replay-derived (893.892708ms)
+✔ coach demonstrates the capture and material consequence of hanging a queen (593.74775ms)
+✔ missing binary is explicit and never falls back to invented analysis (1.344375ms)
+✔ engine admits two active requests and eight queued requests, then rejects overload (1028.119792ms)
+✔ unresponsive subprocess has a hard deadline (4059.314083ms)
+✔ legal castling and history-dependent en passant replay correctly (3.727791ms)
+✔ canceling active and queued analyses frees slots for the next position (299.069541ms)
+✔ private hosting fails closed and rejects cross-site or oversized proxy requests (9.615125ms)
+✔ opponent boundary rejects invalid engine, history, controls and completed games (4.471541ms)
+✔ UCI adapter sends complete history, checks readiness and refuses illegal engine moves (441.250916ms)
+▶ installed engines complete actual ready handshake and return a legal move with history
+  ✔ stockfish19 (245.561583ms)
+  ✔ stockfish18 (263.060416ms)
+  ✔ stockfish16 (269.58725ms)
+  ✔ stockfish18-lite (251.430375ms)
+  ✔ maia3 (898.802125ms)
+  ✔ maia3-23m (584.094416ms)
+  ✔ maia3-5m (492.781541ms)
+  ✔ maia2 (912.151417ms)
+  ✔ maia2-blitz (954.112125ms)
+  ✔ lc0 (139.917541ms)
+✔ installed engines complete actual ready handshake and return a legal move with history (10035.585208ms)
+✔ cancel while authentication waits does not dispatch (0.739125ms)
+✔ refresh failure does not prevent original start payload (0.476583ms)
+✔ puzzle resumes normalized full attempted moves using installed account (0.189ms)
+✔ lesson and import retain submitted payload (0.236625ms)
+✔ changed exercise cancels queued action (0.520958ms)
+✔ late exercise response updates account progress but not another exercise (0.158083ms)
+✔ late answer from different account is discarded (0.136125ms)
+✔ late initial guest account install must preserve queued import (0.153375ms)
+✔ older games refresh must not overwrite later completed refresh (0.226ms)
+✔ SAN and UCI preserve legal state; illegal moves fail (3.064625ms)
+✔ nested exploration retains full history and exact mainline anchor (0.828875ms)
+✔ promotion requires explicit piece and supports underpromotion (0.321875ms)
+✔ return anchor follows a selected branch root, including older roots (0.088625ms)
+✔ study limits accept their boundaries and reject additions without changing histories (0.179209ms)
+✔ clock polling cannot replace a newer game or its study, and clocks count only the active side (0.114416ms)
+✔ rematch preserves legacy strength semantics and exact modern game options (0.097708ms)
+ℹ tests 55
+ℹ suites 0
+ℹ pass 55
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 19804.468792
+npm run build
+npm notice run chesslab@0.1.0 build
+npm notice run vite build
+vite v8.2.2 building client environment for production...
+transforming...
+✓ 20 modules transformed.
+rendering chunks...
+computing gzip size...
+web/dist/index.html                   0.52 kB │ gzip:  0.34 kB
+web/dist/assets/index-C8oJD9Dv.css   54.89 kB │ gzip: 12.13 kB
+web/dist/assets/index-B1AxCY4E.js   289.83 kB │ gzip: 91.37 kB
+
+✓ built in 155ms

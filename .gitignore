@@ -20,5 +20,5 @@ __pycache__/
 design/**/*.stderr.txt
 
 # Local application accounts, sessions and saved games.
-data/
+/data
 web/dist/

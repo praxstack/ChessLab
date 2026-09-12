@@ -6,7 +6,7 @@ ChessLab now has a web application with the observed board layout,166 bot profil
 
 The current build follows the user's platform-first direction: bot and coach play first. Human multiplayer and billing are deferred. It does not reproduce Chess.com's full platform, content library or scoring system. The full branching conversational tutor remains the longer-term objective.
 
-The [private hosted build](https://chesslab-bot-studio.prax-lannister.chatgpt.site) uses ChatGPT owner access and a protected native backend on this Mac. Its continued availability requires the Mac and tunnel to remain running. See the [delivery receipt](references/sites-deployment.json).
+Development and delivery now target the local server. The prior hosted build remains historical. The [local migration and proof guide](docs/local-workspace.md) covers preserved account data, archive routes, the engineering graph, and recorded verification.
 
 ## Run the application
 
@@ -39,7 +39,7 @@ just e2e        # Built app in an isolated database and browser smoke test
 just check      # Local skill links/hashes, OpenSpec and whitespace
 ```
 
-Browser checks use an existing Playwright installation. Set `CHESSLAB_PLAYWRIGHT_ROOT` if it is not at the installed Codex path. Agent setup requires Python 3.10+, `just`, OpenSpec and the existing skill sources in `skills.local.json`. These tools are separate from the runtime dependencies. See [the setup guide](docs/agents/setup.md).
+Browser checks use the pinned project Playwright dependency. Run `npx playwright install chromium` once if its browser is missing. Use `just proof` to record a repeatable video with screenshots and a JSON receipt. Agent setup requires Python 3.10+, `just`, OpenSpec and the existing skill sources in `skills.local.json`. These tools are separate from the runtime dependencies. See [the setup guide](docs/agents/setup.md).
 
 The latest setup check stops at a missing installed Pstack `unslop` source. An earlier check also recorded `gstack-cso` entrypoint hash drift. The setup check reports that failure until the changed source is reviewed and the manifest is deliberately updated. Application checks do not waive the setup check. Passing local tests does not establish public deployment, scalable hosting or learning outcomes.
 
