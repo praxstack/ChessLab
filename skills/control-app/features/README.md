@@ -1,7 +1,7 @@
 # ChessLab feature map
 
 - [Bot play](play.md). Search, setup, legal turns and hints.
-- [Review and studies](review.md). Saved whole-game reports, key moves, engine evidence, nested variations and separate position practice.
+- [Review and studies](review.md). Saved whole-game reports, key moves, engine evidence, nested variations separate position practice and custom setup.
 - [Learning](learning.md). Lessons, puzzles and persisted progress.
 - [Workspace](workspace.md). Accounts, saved games and responsive preferences.
 

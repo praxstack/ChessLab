@@ -5,6 +5,7 @@ import { promisify } from 'node:util';
 import { mkdirSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { Chess } from 'chess.js';
+import {validatePosition} from '../shared/position.js';
 import * as engine from './engine.mjs';
 import * as opponents from './opponent-engines.mjs';
 import {setupOptions,practiceSnapshot,beginClock,settleClock,finishMoveClock,crownsFor,adaptiveRating,addBotChat,undoTurn,attackedPieces} from './bot-game.mjs';
@@ -263,16 +264,23 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   if(settleClock(fresh,nowMs()))return res.json({analysis:null,feedback:null,threats:[],game:storeGame(req.user.id,fresh,fresh.revision)});
   res.json({analysis,feedback,threats:help.threats?attackedPieces(game):[],game:fresh});
  });
+ app.post('/api/positions',(req,res)=>{
+  let position;try{position=validatePosition(req.body.fen);}catch(error){fail(400,error.message);}
+  const title=req.body.title??'Custom position';if(typeof title!=='string'||!title.trim()||title.length>100)fail(400,'Use a position title of 1–100 characters.');
+  res.status(201).json({game:insertGame(req.user.id,{title:title.trim(),source:'import',positionSetup:true,initialFen:position.fen,color:position.chess.turn(),result:gameResult(position.chess),headers:{White:'White',Black:'Black'}})});
+ });
  app.post('/api/import',(req,res)=>{
   const {pgn}=req.body;
   if(typeof pgn!=='string'||pgn.length<3||pgn.length>50000) fail(400,'Paste a PGN between 3 and 50,000 characters.');
   const chess=new Chess();try{chess.loadPgn(pgn,{strict:true});}catch{fail(400,'This PGN contains an invalid position or move. Your other games are unchanged.');}
   const moves=chess.history({verbose:true}).map(uci);
-  if(!moves.length||moves.length>1000) fail(400,'Import a game containing 1–1000 legal moves.');
-  const headers=chess.getHeaders();const initialFen=headers.FEN || null;replay(moves,initialFen);
+  const headers=chess.getHeaders();const initialFen=headers.FEN || null;
+  if(initialFen)try{validatePosition(initialFen);}catch(error){fail(400,error.message);}
+  if((!moves.length&&!initialFen)||moves.length>1000) fail(400,'Import 1–1000 legal moves, or a PGN with a starting FEN.');
+  replay(moves,initialFen);
   const result=gameResult(chess)||(['1-0','0-1','1/2-1/2'].includes(headers.Result)?headers.Result:null);
   const title=`${headers.White || 'White'} vs ${headers.Black || 'Black'}`.slice(0,100);
-  res.status(201).json({game:insertGame(req.user.id,{title,source:'import',moves,initialFen,result,headers:{White:String(headers.White || 'White').slice(0,100),Black:String(headers.Black || 'Black').slice(0,100)}})});
+  res.status(201).json({game:insertGame(req.user.id,{title,source:'import',positionSetup:!moves.length,moves,initialFen,result,headers:{White:String(headers.White || 'White').slice(0,100),Black:String(headers.Black || 'Black').slice(0,100)}})});
  });
  app.get('/api/games/:id/pgn',(req,res)=>{
   const game=owned(req);const chess=replay(game.moves,game.initialFen);

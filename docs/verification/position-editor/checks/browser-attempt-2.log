@@ -1,0 +1,10 @@
+locator.fill: Timeout 20000ms exceeded.
+Call log:
+  - waiting for getByRole('dialog', { name: 'Set up position', exact: true }).getByLabel('Load FEN', { exact: true })
+
+    at /Users/prax/Developer/ChessLab-local-web/scripts/check_app_browser.cjs:286:54 {
+  log: [
+    "  - waiting for getByRole('dialog', { name: 'Set up position', exact: true }).getByLabel('Load FEN', { exact: true })"
+  ],
+  name: 'TimeoutError'
+}
