@@ -1,0 +1,29 @@
+✖ collections isolate accounts, reject stale or partial edits and preserve games through restart and deletion (111.359166ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 232.664
+
+✖ failing tests:
+
+test at server/app.test.mjs:356:1
+✖ collections isolate accounts, reject stale or partial edits and preserve games through restart and deletion (111.359166ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  404 !== 400
+
+      at TestContext.<anonymous> (file:///private/tmp/chesslab-game-collections/server/app.test.mjs:367:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 404,
+    expected: 400,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

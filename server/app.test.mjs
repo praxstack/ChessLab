@@ -352,3 +352,49 @@ test('guided curriculum API protects answers, ownership and all-challenge comple
   result=await post('/action',{id:session.id,revision:session.revision,action:'move',move:'h8h2'});assert.equal(result.body.session.state,'complete');assert.deepEqual(result.body.progress.completed,['rook-lines']);assert.deepEqual((await f.request('/api/me',{cookie:alice.cookie})).body.progress.lessons,['rook-lines']);assert.deepEqual((await f.request('/api/lesson-progress',{cookie:bob.cookie})).body.completed,[]);
  }finally{await f.close();}
 });
+
+test('collections isolate accounts, reject stale or partial edits and preserve games through restart and deletion',async()=>{
+ const f=await fixture();try{
+  assert.equal((await f.request('/api/collections')).status,401);
+  const alice=await f.register('collector'),bob=await f.register('outsider'),cookie=alice.cookie;
+  const post=(path,body,c=cookie)=>f.request(path,{method:'POST',body,cookie:c});
+  const a=(await post('/api/import',{pgn:'[White "Archive"]\n[Black "Study"]\n\n1. e4 e5 2. Nf3 *'})).body.game;
+  const b=(await post('/api/games',{color:'w'})).body.game;
+  const foreign=(await post('/api/games',{color:'w'},bob.cookie)).body.game;
+  const study={version:1,branches:[{id:'branch-a',parentId:null,anchorPly:0,moves:['d2d4'],question:'Another center?'}],selectedBranchId:'branch-a',anchorPly:0};
+  await post(`/api/games/${a.id}/study`,{study,studyRevision:0});
+  const original=(await f.request(`/api/games/${a.id}`,{cookie})).body.game;
+  assert.equal((await post('/api/collections',{name:'  '})).status,400);
+  assert.equal((await post('/api/collections',{name:'x'.repeat(81)})).status,400);
+  let created=await post('/api/collections',{name:'  Opening ideas  ',description:'Lines to revisit'});assert.equal(created.status,201);
+  let c=created.body.collection;assert.equal(c.name,'Opening ideas');assert.deepEqual(c.gameIds,[]);
+  const other=(await post('/api/collections',{name:'Favorites'})).body.collection;
+  assert.equal((await post('/api/collections',{name:'opening ideas'})).status,409);
+  assert.deepEqual((await f.request('/api/collections',{cookie:bob.cookie})).body.collections,[]);
+  const route=`/api/collections/${c.id}`;
+  assert.equal((await post(route,{revision:0,name:'Stolen'},bob.cookie)).status,404);
+  assert.equal((await post(route+'/games',{revision:0,gameIds:[a.id,foreign.id],present:true})).status,404);
+  c=(await f.request('/api/collections',{cookie})).body.collections.find(x=>x.id===c.id);assert.equal(c.revision,0);assert.deepEqual(c.gameIds,[]);
+  assert.equal((await post(route+'/games',{revision:0,gameIds:[a.id],present:'yes'})).status,400);
+  c=(await post(route+'/games',{revision:0,gameIds:[a.id,b.id,a.id],present:true})).body.collection;assert.equal(c.gameIds.length,2);assert.equal(c.revision,1);
+  assert.equal((await post(route+'/games',{revision:0,gameIds:[a.id],present:false})).status,409);
+  assert.equal((await post(route,{revision:1,name:'Favorites'})).status,409);
+  assert.equal((await f.request('/api/collections',{cookie})).body.collections.find(x=>x.id===c.id).revision,1);
+  c=(await post(route,{revision:1,name:'My openings',description:'Saved lines'})).body.collection;assert.equal(c.revision,2);
+  await post(`/api/collections/${other.id}/games`,{revision:0,gameIds:[a.id],present:true});
+  f.db.exec("CREATE TRIGGER refuse_collection_change BEFORE UPDATE ON game_collections BEGIN SELECT RAISE(ABORT,'test failure'); END;");
+  assert.equal((await post(route+'/games',{revision:2,gameIds:[a.id],present:false})).status,500);
+  f.db.exec('DROP TRIGGER refuse_collection_change');
+  c=(await f.request('/api/collections',{cookie})).body.collections.find(x=>x.id===c.id);assert.equal(c.revision,2);assert.equal(c.gameIds.length,2);
+  c=(await post(route+'/games',{revision:2,gameIds:[a.id],present:false})).body.collection;assert.deepEqual(c.gameIds,[b.id]);
+  await f.restart();let all=(await f.request('/api/collections',{cookie})).body.collections;
+  assert.equal(all.find(x=>x.id===c.id).name,'My openings');assert.deepEqual(all.find(x=>x.id===other.id).gameIds,[a.id]);
+  assert.deepEqual((await f.request(`/api/games/${a.id}`,{cookie})).body.game,original);
+  assert.equal((await post(route+'/delete',{revision:3},bob.cookie)).status,404);
+  assert.equal((await post(route+'/delete',{revision:2})).status,409);
+  assert.equal((await post(route+'/delete',{revision:3})).status,200);
+  assert.equal(f.db.prepare('SELECT COUNT(*) n FROM collection_games WHERE collection_id=?').get(c.id).n,0);
+  assert.equal((await f.request('/api/games',{cookie})).body.games.length,2);
+  assert.deepEqual((await f.request(`/api/games/${a.id}`,{cookie})).body.game,original);
+ }finally{await f.close();}
+});
