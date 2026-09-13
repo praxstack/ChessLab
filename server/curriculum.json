@@ -1,0 +1,579 @@
+{
+  "courses": [
+    {
+      "id": "first-moves",
+      "level": "New to chess",
+      "title": "Meet your pieces",
+      "description": "Straight lines, diagonals and jumps. Learn how pieces reach their targets.",
+      "color": "green"
+    },
+    {
+      "id": "opening-habits",
+      "level": "Beginner",
+      "title": "Build a safe position",
+      "description": "Bring pieces into play, castle safely and collect loose material.",
+      "color": "blue"
+    },
+    {
+      "id": "tactical-tools",
+      "level": "Intermediate",
+      "title": "Turn an idea into a move",
+      "description": "Use forks and pins, then make promotion work for you.",
+      "color": "purple"
+    },
+    {
+      "id": "deep-calculation",
+      "level": "Advanced",
+      "title": "Calculate the whole line",
+      "description": "Work through mating nets, deflections and pawn races from real games.",
+      "color": "amber"
+    }
+  ],
+  "lessons": [
+    {
+      "id": "rook-lines",
+      "title": "Rooks travel in straight lines",
+      "courseId": "first-moves",
+      "topic": "Rules",
+      "description": "Use ranks and files to reach a target.",
+      "body": [
+        "A rook moves along a rank or a file. It can travel several squares in one move, but cannot jump over another piece. When it captures, it stops on the occupied square.",
+        "Trace the whole path before moving. Both challenges ask you to capture a loose bishop with your rook. Check that the route is clear, and notice how the same rule works for either color."
+      ],
+      "challenges": [
+        {
+          "title": "Up the file",
+          "prompt": "White to move. Capture the bishop on a7 with your rook.",
+          "fen": "4k3/b7/8/8/8/8/8/R3K3 w - - 0 1",
+          "solution": [
+            "a1a7"
+          ],
+          "explanation": "Rxa7 takes the bishop at the end of a clear file."
+        },
+        {
+          "title": "Down the file",
+          "prompt": "Black to move. Capture the bishop on h2 with your rook.",
+          "fen": "4k2r/8/8/8/8/8/7B/4K3 b - - 0 1",
+          "solution": [
+            "h8h2"
+          ],
+          "explanation": "Rxh2 follows the h-file and captures the bishop. Board orientation does not change how a rook moves."
+        }
+      ],
+      "keywords": [
+        "rook",
+        "rank",
+        "file",
+        "capture"
+      ]
+    },
+    {
+      "id": "bishop-diagonals",
+      "title": "Bishops follow diagonals",
+      "courseId": "first-moves",
+      "topic": "Rules",
+      "description": "Find the diagonal that connects attacker and target.",
+      "body": [
+        "A bishop moves diagonally and stays on squares of one color for the whole game. Like a rook, it cannot jump over a piece. Look at each square between the bishop and its target.",
+        "A bishop can take a more valuable piece if it can reach it safely. These exercises focus on finding a legal diagonal capture; they are examples of movement, not a complete evaluation of every possible continuation."
+      ],
+      "challenges": [
+        {
+          "title": "A long diagonal",
+          "prompt": "White to move. Capture the rook on g5 with your bishop.",
+          "fen": "7k/8/8/6r1/8/8/8/K1B5 w - - 0 1",
+          "solution": [
+            "c1g5"
+          ],
+          "explanation": "Bxg5 follows c1–d2–e3–f4–g5 and takes the rook."
+        },
+        {
+          "title": "The other direction",
+          "prompt": "Black to move. Capture the rook on b4 with your bishop.",
+          "fen": "5b1k/8/8/8/1R6/8/8/K7 b - - 0 1",
+          "solution": [
+            "f8b4"
+          ],
+          "explanation": "Bxb4 follows the diagonal through e7, d6 and c5."
+        }
+      ],
+      "keywords": [
+        "bishop",
+        "diagonal",
+        "capture"
+      ]
+    },
+    {
+      "id": "knight-jumps",
+      "title": "Knights can jump",
+      "courseId": "first-moves",
+      "topic": "Rules",
+      "description": "Reach a square that sliding pieces cannot.",
+      "body": [
+        "A knight moves two squares along a rank or file and then one square sideways. Its destination is always the opposite color from its starting square. Pieces between the start and destination do not block it.",
+        "Only the destination decides whether the knight captures. In each position your own pawns occupy the nearby rank, but the knight can jump over them to capture the rook."
+      ],
+      "challenges": [
+        {
+          "title": "Jump from b1",
+          "prompt": "White to move. Use the knight to capture the rook on c3.",
+          "fen": "4k3/8/8/8/8/2r5/PPP5/1N2K3 w - - 0 1",
+          "solution": [
+            "b1c3"
+          ],
+          "explanation": "Nxc3 jumps over the nearby pawns and captures on its destination."
+        },
+        {
+          "title": "Jump from g8",
+          "prompt": "Black to move. Use the knight to capture the rook on f6.",
+          "fen": "4k1n1/5ppp/5R2/8/8/8/8/4K3 b - - 0 1",
+          "solution": [
+            "g8f6"
+          ],
+          "explanation": "Nxf6 is a knight jump. The pawns on the seventh rank do not block it."
+        }
+      ],
+      "keywords": [
+        "knight",
+        "jump",
+        "movement"
+      ]
+    },
+    {
+      "id": "castle-safely",
+      "title": "Castle with a safe king",
+      "courseId": "opening-habits",
+      "topic": "Openings",
+      "description": "Move king and rook together when the conditions are right.",
+      "body": [
+        "Castling moves the king two squares toward a rook, then puts the rook on the square the king crossed. The king and that rook must retain castling rights, and the squares between them must be empty.",
+        "The king cannot castle out of check, through check or into check. A rook being attacked is not itself a ban. These prepared positions have a legal route; make the specified castle and watch both pieces move."
+      ],
+      "challenges": [
+        {
+          "title": "Castle kingside",
+          "prompt": "White to move. Castle kingside by moving the king to g1.",
+          "fen": "r3k2r/pppp1ppp/2n1bn2/4p3/4P3/2N1BN2/PPPP1PPP/R3K2R w KQkq - 0 1",
+          "solution": [
+            "e1g1"
+          ],
+          "explanation": "O-O moves the king to g1 and the rook to f1."
+        },
+        {
+          "title": "Castle queenside",
+          "prompt": "Black to move. Castle queenside by moving the king to c8.",
+          "fen": "r3k2r/pppp1ppp/2n1bn2/4p3/4P3/2N1BN2/PPPP1PPP/R3K2R b KQkq - 0 1",
+          "solution": [
+            "e8c8"
+          ],
+          "explanation": "O-O-O moves the king to c8 and the rook to d8. The b8 square also had to be empty."
+        }
+      ],
+      "keywords": [
+        "castling",
+        "castle",
+        "king safety"
+      ]
+    },
+    {
+      "id": "develop-together",
+      "title": "Bring both knights into play",
+      "courseId": "opening-habits",
+      "topic": "Openings",
+      "description": "Build a position instead of moving one piece repeatedly.",
+      "body": [
+        "Developing a piece means bringing it into useful play. Knights near the center can influence more squares than knights stuck on a corner. Development is a habit, not a rule that overrides immediate threats.",
+        "Practice one simple sequence: develop the kingside knight toward the center, observe the opponent’s knight reply, then develop the queenside knight. Many other opening moves are playable; this lesson follows the named development plan."
+      ],
+      "challenges": [
+        {
+          "title": "Develop White’s knights",
+          "prompt": "Play Nf3. After Black develops a knight, play Nc3.",
+          "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+          "solution": [
+            "g1f3",
+            "b8c6",
+            "b1c3"
+          ],
+          "explanation": "Both white knights now influence central squares. The displayed reply is one example, not a forced response."
+        },
+        {
+          "title": "Develop Black’s knights",
+          "prompt": "Black to move in this practice setup. Play Nf6, then Nc6 after the reply.",
+          "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1",
+          "solution": [
+            "g8f6",
+            "b1c3",
+            "b8c6"
+          ],
+          "explanation": "Both black knights have joined the game. Continue checking the opponent’s threats as you develop."
+        }
+      ],
+      "keywords": [
+        "development",
+        "knight",
+        "center"
+      ]
+    },
+    {
+      "id": "loose-material",
+      "title": "Notice the loose piece",
+      "courseId": "opening-habits",
+      "topic": "Tactics",
+      "description": "Look for useful captures before choosing a quiet move.",
+      "body": [
+        "An undefended piece can be a tactical opportunity. Before taking it, check whether the move is legal and whether the opponent has a reply that changes the material balance.",
+        "Pawns move forward but capture one square diagonally forward. Here a pawn can collect a loose rook. Compare the board after the capture rather than just noticing that two pieces were near each other."
+      ],
+      "challenges": [
+        {
+          "title": "White’s diagonal capture",
+          "prompt": "Capture the black rook on e4 with the d3 pawn.",
+          "fen": "4k3/8/8/8/4r3/3P4/8/4K3 w - - 0 1",
+          "solution": [
+            "d3e4"
+          ],
+          "explanation": "dxe4 removes the loose rook and leaves the white pawn on e4."
+        },
+        {
+          "title": "Black’s diagonal capture",
+          "prompt": "Capture the white rook on d5 with the e6 pawn.",
+          "fen": "4k3/8/4p3/3R4/8/8/8/4K3 b - - 0 1",
+          "solution": [
+            "e6d5"
+          ],
+          "explanation": "exd5 follows Black’s forward direction and captures the rook."
+        }
+      ],
+      "keywords": [
+        "hanging",
+        "undefended",
+        "pawn capture"
+      ]
+    },
+    {
+      "id": "fork-two-targets",
+      "title": "Create two threats",
+      "courseId": "tactical-tools",
+      "topic": "Tactics",
+      "description": "A checking fork gives the opponent an urgent problem.",
+      "body": [
+        "A fork attacks two targets with one piece. A checking fork is especially useful because the opponent must first make the king safe. The other target may then be available to capture.",
+        "Find a knight check that also attacks the queen. After the demonstrated king reply, collect the queen. Other legal king replies can exist; the lesson teaches one verified continuation rather than claiming the opponent has only one move."
+      ],
+      "challenges": [
+        {
+          "title": "White’s checking fork",
+          "prompt": "Find Ne7+, then capture the queen after the king reply.",
+          "fen": "6k1/8/8/3q1N2/8/8/8/6K1 w - - 0 1",
+          "solution": [
+            "f5e7",
+            "g8f7",
+            "e7d5"
+          ],
+          "explanation": "Ne7+ attacks the king and queen. After Kf7, Nxd5 collects the queen."
+        },
+        {
+          "title": "Black’s checking fork",
+          "prompt": "Find Ne2+, then capture the queen after the king reply.",
+          "fen": "6k1/8/8/8/3Q1n2/8/8/6K1 b - - 0 1",
+          "solution": [
+            "f4e2",
+            "g1f2",
+            "e2d4"
+          ],
+          "explanation": "Ne2+ attacks the king on g1 and queen on d4. After Kf2, Nxd4 takes the queen."
+        }
+      ],
+      "keywords": [
+        "fork",
+        "double attack",
+        "check"
+      ]
+    },
+    {
+      "id": "absolute-pin",
+      "title": "A pinned piece can still capture",
+      "courseId": "tactical-tools",
+      "topic": "Tactics",
+      "description": "Stay on the line protecting your king.",
+      "body": [
+        "An absolute pin stops a piece from leaving a line when doing so would expose its king. This does not always make the piece immobile: it may move along the line or capture the attacker if the king stays safe.",
+        "The rooks in these positions face each other along the e-file, with your king behind your rook. Capture the pinning rook. The move removes the attacker without exposing your king."
+      ],
+      "challenges": [
+        {
+          "title": "Capture along the pin",
+          "prompt": "White to move. Use the rook on e2 to capture the rook on e8.",
+          "fen": "k3r3/8/8/8/8/8/4R3/4K3 w - - 0 1",
+          "solution": [
+            "e2e8"
+          ],
+          "explanation": "Rxe8 removes the pinning rook. Moving off the e-file would have exposed the king."
+        },
+        {
+          "title": "The pin from Black’s side",
+          "prompt": "Black to move. Use the rook on e7 to capture the rook on e1.",
+          "fen": "4k3/4r3/8/8/8/8/8/K3R3 b - - 0 1",
+          "solution": [
+            "e7e1"
+          ],
+          "explanation": "Rxe1 keeps the king safe by removing the line attacker."
+        }
+      ],
+      "keywords": [
+        "pin",
+        "pinned",
+        "king safety"
+      ]
+    },
+    {
+      "id": "promotion-plan",
+      "title": "Promote with a plan",
+      "courseId": "tactical-tools",
+      "topic": "Endgames",
+      "description": "Choose the piece after checking the resulting position.",
+      "body": [
+        "When a pawn reaches the last rank, it must become a queen, rook, bishop or knight as part of that move. Usually a queen is useful, but the resulting position matters more than the piece’s nominal value.",
+        "In the second challenge, c8=Q would leave Black with no legal move while not in check: stalemate. Promoting to a rook keeps a legal black king move available. Use the requested rook promotion and compare the squares it controls."
+      ],
+      "challenges": [
+        {
+          "title": "Choose a queen",
+          "prompt": "White to move. Advance the a-pawn and promote to a queen.",
+          "fen": "7k/P7/6K1/8/8/8/8/8 w - - 0 1",
+          "solution": [
+            "a7a8q"
+          ],
+          "explanation": "a8=Q records the chosen promotion piece as part of the move."
+        },
+        {
+          "title": "Avoid stalemate",
+          "prompt": "White to move. Promote the c-pawn to a rook, not a queen.",
+          "fen": "8/k1P5/2K5/8/8/8/8/8 w - - 0 1",
+          "solution": [
+            "c7c8r"
+          ],
+          "explanation": "c8=R leaves Black the a6 square. c8=Q would cover that escape and cause stalemate."
+        }
+      ],
+      "keywords": [
+        "promotion",
+        "underpromotion",
+        "stalemate"
+      ]
+    },
+    {
+      "id": "mating-net",
+      "title": "Calculate a mating net",
+      "courseId": "deep-calculation",
+      "topic": "Tactics",
+      "description": "Follow checks until every escape is covered.",
+      "body": [
+        "A mating net works when checking pieces and supporting pieces cover the king’s remaining escapes. Do not stop calculating after the first check: ask where the king can go and which defender can intervene.",
+        "These two advanced source examples contain three learner moves. Calculate a continuation before moving, then update your picture after each reply. The final board is checkmate; the displayed defensive choices are the source line."
+      ],
+      "challenges": [
+        {
+          "title": "Calculation 1",
+          "prompt": "Find the continuation, then recalculate after each opponent reply.",
+          "sourceId": "1NJYL",
+          "initialFen": "7R/p1Q1bkpp/4bp2/8/8/2N5/P1q1KP1P/5R2 w - - 3 23",
+          "trigger": "e2f3",
+          "solution": [
+            "c2d3",
+            "f3g2",
+            "e6h3",
+            "g2g1",
+            "d3f1"
+          ],
+          "explanation": "You completed the legally replayed source continuation. Revisit the position and explain what changed after each move.",
+          "sourceUrl": "https://lichess.org/nGvvelcM#45",
+          "sourceRating": 2100,
+          "sourceThemes": [
+            "exposedKing",
+            "fork",
+            "long",
+            "mate",
+            "mateIn3",
+            "middlegame"
+          ],
+          "checkmate": true
+        },
+        {
+          "title": "Calculation 2",
+          "prompt": "Find the continuation, then recalculate after each opponent reply.",
+          "sourceId": "1VodF",
+          "initialFen": "5k2/5p2/1p3P2/1P1q1R1p/4r3/P1B5/1PQ3r1/5RK1 w - - 0 34",
+          "trigger": "g1g2",
+          "solution": [
+            "e4e2",
+            "g2g3",
+            "d5g2",
+            "g3h4",
+            "g2g4"
+          ],
+          "explanation": "You completed the legally replayed source continuation. Revisit the position and explain what changed after each move.",
+          "sourceUrl": "https://lichess.org/hm8Fj3QI#67",
+          "sourceRating": 2100,
+          "sourceThemes": [
+            "discoveredCheck",
+            "doubleCheck",
+            "endgame",
+            "exposedKing",
+            "long",
+            "mate",
+            "mateIn3"
+          ],
+          "checkmate": true
+        }
+      ],
+      "keywords": [
+        "checkmate",
+        "mate in three",
+        "calculation"
+      ]
+    },
+    {
+      "id": "deflect-defender",
+      "title": "Remove a defender",
+      "courseId": "deep-calculation",
+      "topic": "Tactics",
+      "description": "See what a defender stops protecting when it moves.",
+      "body": [
+        "Deflection draws a defending piece away from a task. A forcing move can make an attractive capture possible later. Track both the immediate check or threat and the piece that becomes vulnerable.",
+        "In these source examples, follow the forcing continuation and count what is removed from the board. A sacrifice is not justified just because it is forcing; the resulting position and the defender’s alternatives still matter."
+      ],
+      "challenges": [
+        {
+          "title": "Calculation 1",
+          "prompt": "Find the continuation, then recalculate after each opponent reply.",
+          "sourceId": "04iZY",
+          "initialFen": "2k4r/1pr5/q5p1/4P1p1/P3Q3/4B1p1/8/3R1RK1 w - - 0 30",
+          "trigger": "e5e6",
+          "solution": [
+            "a6e2",
+            "d1d2",
+            "h8h1",
+            "e4h1",
+            "e2e3",
+            "g1g2",
+            "e3d2"
+          ],
+          "explanation": "You completed the legally replayed source continuation. Revisit the position and explain what changed after each move.",
+          "sourceUrl": "https://lichess.org/c55QmGRP#59",
+          "sourceRating": 2100,
+          "sourceThemes": [
+            "crushing",
+            "deflection",
+            "exposedKing",
+            "fork",
+            "middlegame",
+            "sacrifice",
+            "veryLong"
+          ],
+          "checkmate": false
+        },
+        {
+          "title": "Calculation 2",
+          "prompt": "Find the continuation, then recalculate after each opponent reply.",
+          "sourceId": "0AkSb",
+          "initialFen": "3r2k1/p4ppp/1p6/2p5/5Q1P/4P1P1/Pq2BP2/4K2R w K - 0 22",
+          "trigger": "f4f3",
+          "solution": [
+            "b2c1",
+            "e2d1",
+            "c1d2",
+            "e1f1",
+            "d2d1"
+          ],
+          "explanation": "You completed the legally replayed source continuation. Revisit the position and explain what changed after each move.",
+          "sourceUrl": "https://lichess.org/Dzygl51C#43",
+          "sourceRating": 2100,
+          "sourceThemes": [
+            "advantage",
+            "deflection",
+            "endgame",
+            "long"
+          ],
+          "checkmate": false
+        }
+      ],
+      "keywords": [
+        "deflection",
+        "sacrifice",
+        "defender"
+      ]
+    },
+    {
+      "id": "pawn-race",
+      "title": "Calculate a pawn race",
+      "courseId": "deep-calculation",
+      "topic": "Endgames",
+      "description": "Count king moves as carefully as pawn moves.",
+      "body": [
+        "In a pawn ending, one tempo can decide whether a pawn promotes, is caught or forces a concession. Count moves for both sides and include king captures, not only the number of squares to promotion.",
+        "These examples ask you to calculate a complete local source line. One includes a promotion that is immediately captured; the other activates the king toward queenside pawns. Do not assume a promotion ends the calculation."
+      ],
+      "challenges": [
+        {
+          "title": "Calculation 1",
+          "prompt": "Find the continuation, then recalculate after each opponent reply.",
+          "sourceId": "0WvT6",
+          "initialFen": "8/8/4k1p1/5pP1/5K1P/8/8/8 w - - 1 45",
+          "trigger": "h4h5",
+          "solution": [
+            "g6h5",
+            "g5g6",
+            "h5h4",
+            "g6g7",
+            "e6f7",
+            "g7g8r",
+            "f7g8"
+          ],
+          "explanation": "You completed the legally replayed source continuation. Revisit the position and explain what changed after each move.",
+          "sourceUrl": "https://lichess.org/3ov8jy4b#89",
+          "sourceRating": 2100,
+          "sourceThemes": [
+            "crushing",
+            "endgame",
+            "pawnEndgame",
+            "quietMove",
+            "veryLong"
+          ],
+          "checkmate": false
+        },
+        {
+          "title": "Calculation 2",
+          "prompt": "Find the continuation, then recalculate after each opponent reply.",
+          "sourceId": "1Hx7O",
+          "initialFen": "8/2p5/3p1k2/1p1Pp2p/4P1pP/1P1P2P1/3K4/8 b - - 3 36",
+          "trigger": "f6e7",
+          "solution": [
+            "d2c3",
+            "e7d7",
+            "c3b4",
+            "c7c6",
+            "b4a5"
+          ],
+          "explanation": "You completed the legally replayed source continuation. Revisit the position and explain what changed after each move.",
+          "sourceUrl": "https://lichess.org/or43rVk1/black#72",
+          "sourceRating": 2100,
+          "sourceThemes": [
+            "crushing",
+            "endgame",
+            "long",
+            "pawnEndgame"
+          ],
+          "checkmate": false
+        }
+      ],
+      "keywords": [
+        "pawn endgame",
+        "promotion",
+        "king activity",
+        "tempo"
+      ]
+    }
+  ]
+}

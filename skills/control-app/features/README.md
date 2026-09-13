@@ -3,7 +3,7 @@
 - [Bot play](play.md). Search, setup, legal turns and hints.
 - [Review and studies](review.md). Saved whole-game reports, key moves, engine evidence, nested variations separate position practice and custom setup.
 - [Openings](openings.md). Offline search, legal playback, saved study, bot practice and recognition.
-- [Learning](learning.md). Starter lessons, puzzles and persisted progress.
+- [Learning](learning.md). Guided courses, searchable library, saved board challenges, starter lessons and puzzles.
 - [Puzzle training](puzzle-training.md). Full local catalogue, rated/custom/daily modes, Rush and Survival, protected scores, filters, attempts, retries and saved analysis.
 - [Workspace](workspace.md). Accounts, saved games and responsive preferences.
 

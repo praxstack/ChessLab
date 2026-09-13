@@ -1,0 +1,2 @@
+2026-09-13 05:16 UTC: mcp__astra_team__astra_team_check rejected the host before running its requested check. Returned text: astra-team: unsupported runtime; verified version is 0.153.4
+This is a failure record, not an independent acceptance receipt.

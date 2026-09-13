@@ -16,7 +16,7 @@ export function preparePuzzle(row){
  for(const move of moves.slice(1))play(board,move);
  return {id:row.id,initialFen:row.fen,fen,side,trigger:moves[0],triggerSan:trigger.san,solution:moves.slice(1),rating:row.rating,themes:row.themes.split(' '),gameUrl:row.game_url,openingTags:row.opening_tags};
 }
-function advancePuzzle(a,body){
+export function advancePuzzle(a,body){
   const board=new Chess(a.puzzle.fen);for(const move of a.moves)play(board,move);
   let correct=null,message;
   if(body.action==='move'){

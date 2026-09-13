@@ -1,0 +1,11 @@
+✔ curriculum has unique lessons, legal complete challenge lines and grounded promotion examples (7.23ms)
+✔ lesson progress requires every challenge, survives reinstantiation and rejects stale identities (1.611167ms)
+✔ multi-move lesson credit and failed-save rollback preserve accepted progress (1.479625ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 54.686584
