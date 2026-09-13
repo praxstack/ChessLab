@@ -81,3 +81,9 @@ Choose Puzzles → Puzzle Rush, then 3 minutes, 5 minutes or Survival. Finish ea
 ## Guided learning
 
 Learn now opens a four-level path with twelve original guided lessons and 24 board challenges. Use Continue lesson to resume an unfinished challenge, or Lesson library to search and filter by level/topic. Both challenges are required for completion. Next lesson follows the unfinished sequence; Practice again keeps prior completion. The six original lessons remain in Starter lessons with their saved progress. Six advanced positions are attributed CC0 examples from the local catalogue. [Recorded proof](verification/learning-path/README.md) covers full-course completion, reload, search, promotion and advanced calculation. This is a growing local curriculum, not complete vendor content parity.
+
+## Organize saved games
+
+Open My games to create a named collection, then select games from All games and choose Add selected. A game can belong to multiple collections. Search by title, opponent or opening; filter bot games, imports or games with variations. Sort games by recent activity, oldest first or title, and collections by recent updates or name. On phones, use the compact Open collection selector.
+
+Edit collection changes its name and optional description. Remove selected only removes membership. Delete collection requires confirmation and preserves all games, variations and other memberships. Collections are private to the local account and persist in the same SQLite database. This increment supports up to 100 collections per account and inherits the existing 500-game limit. Shared and community collections remain later platform work.

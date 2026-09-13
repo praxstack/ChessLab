@@ -15,6 +15,7 @@ import {createTrainer} from './puzzle-training.mjs';
 import { lessons, puzzles, catalog } from './content.mjs';
 import {curriculumCatalog} from './curriculum.mjs';
 import {createCourseProgress} from './course-progress.mjs';
+import {installCollections} from './game-collections.mjs';
 import {hostingGuard} from './hosting.mjs';
 import {positionKey,reviewSignature,beginReview,appendReview} from './game-review.mjs';
 
@@ -151,6 +152,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
  app.get('/api/openings',(req,res)=>res.json(searchOpenings(req.query)));
  app.get('/api/openings/:id',(req,res)=>{const opening=openingById(req.params.id);if(!opening)fail(404,'Opening not found.');res.json({opening,source:openingSource});});
  app.use('/api',requireUser);
+ installCollections(app,db);
  const owned = (req) => {
   const row = db.prepare('SELECT data FROM games WHERE id=? AND user_id=?').get(req.params.id,req.user.id);
   if (!row) fail(404,'This saved game was not found.'); return JSON.parse(row.data);

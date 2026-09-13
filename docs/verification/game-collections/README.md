@@ -1,0 +1,19 @@
+# Local game collections evidence
+
+My games now organizes the existing archive into account-private collections with names and descriptions. Games can belong to multiple collections. Bulk add/remove, text search, source/variation filters and game/collection sorting reuse the saved games. Deleting a collection requires confirmation and preserves the archive, nested studies and other memberships. The mobile view uses a native collection selector.
+
+[Video](proof/local-user-flow.webm) · [Receipt](proof/receipt.json) · [Desktop](proof/41-game-collections.png) · [Mobile](proof/42-mobile-collection.png) · [Preserved second collection](proof/43-preserved-collection.png)
+
+The [official Game Collections guide](https://support.chess.com/en/articles/13557248-how-do-i-use-game-collections), read 2026-09-13, informed the collection, editing, search and sorting workflow. This increment implements private local organization. Public/community collections and participant sharing remain later full-platform work. No vendor collection content is included.
+
+The account middleware protects every route. SQLite transactions enforce ownership of the collection and every selected game before changing membership. A revision rejects stale edits. Unique account/name and membership constraints prevent duplicate records; failed updates roll back the complete action. Collection deletion cascades only membership rows. No game data, review or study is rewritten by these operations. The existing limits are 500 saved games and, in this increment, 100 collections per account. No dependencies were added.
+
+All 82 application tests pass, protecting the preceding 81. The new HTTP check first failed against the absent feature, then passed create/edit, duplicate names, cross-account reads/writes, mixed owned/foreign game rejection, multiple membership, stale actions, injected storage failure and rollback, restart recovery, safe deletion and exact game/study preservation. SQLite snapshot and puzzle importer checks pass. Strict validation passes all fourteen OpenSpec changes; the production-entrypoint doctor passes.
+
+The recording uses synthetic accounts, temporary SQLite, the production build and native Stockfish 19 for the protected chess flows. It preserves the earlier 54 flows and adds six collection flows: creation/multiple membership, editing/search/sorting, remove/reload, mobile selection and cancelled deletion, confirmed deletion with game/study preservation, and opening a saved collection game. The browser checks prohibit unexpected external resource/model requests and clean up their own browser, server, engine and temporary account database.
+
+The first 60-flow recording passed functionally. Root visual inspection identified excessive phone navigation height and plural single-move labels. One repair introduced the compact native selector and correct singular labels. The first recording remains under ignored .scratch/game-collections/first-proof. Only the final build and recording are accepted in the adjacent manifest. Root serial review is distinct from independent review.
+
+Independent team acceptance remains unavailable: the installed Astra validator rejected the host at 05:36 UTC. The pre-existing installed unslop skill-manifest drift still fails just check. Exact outputs are retained; no governing gate or policy changed. Full platform parity, the original branching conversational tutor, later human multiplayer and billing remain active work. This evidence establishes the bounded local functionality, not equivalence to the entire reference platform.
+
+The accepted recording is 67.24 seconds with 44 screenshots; all 60 flows passed. Root inspected the final desktop/mobile evidence and the video at 63 seconds. The manifest hashes 533 source, build, specification, checks and proof files.
