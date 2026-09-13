@@ -19,6 +19,7 @@ import {installCollections} from './game-collections.mjs';
 import {validateStudy,readAnnotatedPgn,writeAnnotatedPgn,portableStudy,readPortableStudy} from './study-format.mjs';
 import {hostingGuard} from './hosting.mjs';
 import {positionKey,reviewSignature,beginReview,appendReview} from './game-review.mjs';
+import {installReviewPractice} from './review-practice.mjs';
 
 const derive = promisify(scrypt);
 const hash = value => createHash('sha256').update(value).digest('hex');
@@ -299,6 +300,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   const report=row?JSON.parse(row.data):null;
   return report?.positionKey===positionKey(game)?report:null;
  };
+ installReviewPractice(app,db,{owned,savedReview,analyze:engineApi.analyze,limit});
  app.get('/api/games/:id/review',(req,res)=>res.json({review:savedReview(owned(req))}));
  app.post('/api/games/:id/review',async(req,res)=>{
   const game=owned(req);expected(req,game);

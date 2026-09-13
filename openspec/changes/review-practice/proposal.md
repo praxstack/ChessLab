@@ -1,0 +1,7 @@
+# Guided game-review practice
+
+Baseline 72e0199 protects 89 application tests, 72 recorded flows, saved game/study identity, local assets and engines. Full platform parity and the original branching tutor remain unchanged. This candidate changes product behavior, not governing gates. Baseline source and manifests are rollback pointers; no dependencies or model downloads are needed.
+
+The official Game Review guide (https://support.chess.com/en/articles/8584089-how-does-game-review-work, dated 2026-08-07, read 2026-09-13) describes retrying key moves and feedback on incorrect tries. Add a guided practice loop to completed local reviews. Reuse report evidence, the shared board, existing analysis and SQLite. A dedicated practice panel keeps the answer hidden while the original game and study remain intact; overloading editable study branches would conflate practice attempts with saved analysis, so retain a separate practice record.
+
+Graph: current guide -> frozen eligibility/evidence/privacy rules -> failing state/HTTP checks -> shared board and saved-review integration -> native alternative evaluation -> production desktop/touch/reload proof -> root review/video PR -> backed-up exact local installation. One implementation and one evidence-driven repair cycle; stop after two no-gain candidates without weakening checks. Independent team runtime and existing skill-manifest blockers remain visible.

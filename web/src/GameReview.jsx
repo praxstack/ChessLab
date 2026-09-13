@@ -13,7 +13,7 @@ function evaluationText(score){
  if(score.type==='mate')return `Mate in ${Math.abs(score.value)} for ${score.value>=0?'White':'Black'}`;
  return `${score.value>=0?'+':''}${(score.value/100).toFixed(2)} for White`;
 }
-export default function GameReview({game,settings,selectedPly,onSelect,onReport,request}){
+export default function GameReview({game,settings,selectedPly,onSelect,onReport,request,onPractice}){
  const [report,setReport]=useState(null),[loading,setLoading]=useState(true),[running,setRunning]=useState(false),[error,setError]=useState(''),[expanded,setExpanded]=useState(false),[side,setSide]=useState('both');
  const controller=useRef(null),generation=useRef(0);
  const eligible=game.moves.length>0&&(game.source==='import'||!!game.result),historyKey=game.moves.join(' ');
@@ -54,6 +54,7 @@ export default function GameReview({game,settings,selectedPly,onSelect,onReport,
   <div className="report-heading"><button className="text-button" aria-expanded={expanded} onClick={()=>setExpanded(!expanded)}><strong>Game report</strong><span aria-hidden="true">{expanded?'⌃':'⌄'}</span></button><span>{loading?'Loading…':report?.complete?'Saved':entries.length?`${entries.length} / ${report.total} moves`:'Every move, both sides'}</span></div>
   {!report&&<p className="report-intro">See where the game turned. Review every move with your local chess engine.</p>}
   <div className="report-run"><button className="button primary" disabled={loading||running||(report?.complete&&matches)} onClick={run}>{running?`Reviewing ${Math.min(entries.length+1,game.moves.length)} / ${game.moves.length}`:report?.complete&&matches?'Review complete':entries.length&&matches?'Resume review':report?'Review with current settings':'Review whole game'}</button>{running&&<button className="button secondary" onClick={()=>controller.current?.abort()}>Pause review</button>}</div>
+  {report?.complete&&<button className="button secondary practice-review-button" disabled={running} onClick={()=>onPractice(side)}>Practice key moves</button>}
   {running&&<progress aria-label="Game review progress" value={entries.length} max={game.moves.length}/>}
   {error&&<p className="form-error" role="alert">{error} Completed moves remain saved.</p>}
   {expanded&&entries.length>0&&<>

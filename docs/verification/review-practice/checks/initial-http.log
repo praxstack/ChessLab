@@ -1,0 +1,31 @@
+✔ accounts, legal game updates, isolation, revision checks and persistent sessions (139.008041ms)
+Request failed: attempt to write a readonly database
+✔ nested studies reject altered history, missing parents, loops, illegal moves and survive bot races (43.853417ms)
+✔ Black games begin with engine turn and engine failure never fabricates a move (34.392917ms)
+✔ learning catalog hides answers, validates all authored positions, and persists only correct progress (42.823917ms)
+✔ selected engine, authoritative timeout, crowns and account isolation survive restart (63.076833ms)
+✔ hints, assistance and undo retain legal history and protect saved studies (38.787792ms)
+✔ a timeout saved during an engine request rejects the late reply without overwriting the result (34.0885ms)
+✔ full game review preserves ownership, resumes from disk and never rewrites games or studies (76.929625ms)
+✔ review rejects concurrent or stale engine results and preserves the last saved step on failure (36.822916ms)
+✔ disconnecting a review cancels its search and releases the game for resume (35.30625ms)
+✔ position practice copies a saved branch, preserves its source and resets only new play (79.074667ms)
+✔ practice revalidates a changed source after engine readiness and marks live-source review assistance (36.673167ms)
+✔ custom positions validate before saving and retain FEN through analysis, branches, practice, export and reload (65.427375ms)
+✔ opening catalogue is bounded and opening studies retain complete owned history for practice (67.454792ms)
+✔ training attempts protect solutions, ownership, revisions, hints and history across restart (107.021958ms)
+✔ guided curriculum API protects answers, ownership and all-challenge completion across restart (63.014834ms)
+Request failed: test failure
+✔ collections isolate accounts, reject stale or partial edits and preserve games through restart and deletion (72.080375ms)
+✔ annotated imports, node comments and portable study copies preserve original games and reject bad trees (67.983792ms)
+✔ undo cannot remove an annotated original-game position (33.30475ms)
+✔ board drawings persist at exact study nodes, travel in PGN and reject invalid or foreign writes (63.275ms)
+✔ review practice protects ownership, restarts, stale revisions, concurrent engine results and source games (89.368125ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1405.210333
