@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 ## Launch
 
-Run commands from this ChessLab checkout. Install `npm ci`, then `npx playwright install chromium` if Chromium is missing. Native Stockfish must be available at `STOCKFISH_PATH` or the existing platform default.
+Run commands from this ChessLab checkout. Install `npm ci`, then `npx playwright install chromium` if Chromium is missing. Native Stockfish must be available at `STOCKFISH_PATH` or the existing platform default. Full puzzle-training proof also needs the imported local catalogue at `data/puzzles/catalogue.sqlite` or `CHESSLAB_PUZZLES`; see `docs/local-workspace.md`.
 
 `just proof` builds and launches the production app in an isolated temporary SQLite database on a free loopback port, creates a synthetic account, drives the UI, records evidence, and stops its own server. It never uses the user's account database. Do not run engine suites concurrently with this proof on a memory-constrained Mac.
 

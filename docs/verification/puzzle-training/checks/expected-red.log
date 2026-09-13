@@ -1,0 +1,29 @@
+✖ training attempts protect solutions, ownership, revisions, hints and history across restart (121.720167ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 254.280333
+
+✖ failing tests:
+
+test at server/app.test.mjs:302:1
+✖ training attempts protect solutions, ownership, revisions, hints and history across restart (121.720167ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  'a2' !== null
+
+      at TestContext.<anonymous> (file:///private/tmp/chesslab-puzzle-training/server/app.test.mjs:321:183)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'a2',
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

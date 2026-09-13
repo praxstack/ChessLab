@@ -1,0 +1,2 @@
+ReferenceError: Chess is not defined
+    at /private/tmp/chesslab-puzzle-training/scripts/check_app_browser.cjs:351:25

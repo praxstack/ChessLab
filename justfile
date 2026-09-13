@@ -16,6 +16,7 @@ test:
     python3 scripts/setup_skills.py --self-test
     npm test
     python3 scripts/local_snapshot_test.py
+    python3 scripts/import_puzzles_test.py
 
 app:
     npm run dev

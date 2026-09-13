@@ -298,3 +298,35 @@ test('opening catalogue is bounded and opening studies retain complete owned his
   await f.restart();assert.equal((await f.request(route,{cookie})).body.game.opening.id,id);
  }finally{await f.close();}
 });
+
+test('training attempts protect solutions, ownership, revisions, hints and history across restart',async()=>{
+ const {DatabaseSync}=await import('node:sqlite');const {readFileSync}=await import('node:fs');
+ const temp=mkdtempSync(join(tmpdir(),'puzzle-source-')),sourcePath=join(temp,'catalogue.sqlite');const source=new DatabaseSync(sourcePath);
+ const rows=JSON.parse(readFileSync(new URL('../references/puzzles/test-lines.json',import.meta.url),'utf8'));
+ source.exec('CREATE TABLE puzzles(seq INTEGER PRIMARY KEY,id TEXT,fen TEXT,moves TEXT,rating INTEGER,themes TEXT,game_url TEXT,opening_tags TEXT);CREATE TABLE pool(theme TEXT,rating INTEGER,seq INTEGER);CREATE TABLE metadata(key TEXT,value TEXT);');
+ const row=rows[0];source.prepare('INSERT INTO puzzles VALUES (?,?,?,?,?,?,?,?)').run(...Object.values(row));source.prepare('INSERT INTO pool VALUES (?,?,?)').run('mateIn2',row.rating,row.seq);source.prepare('INSERT INTO pool VALUES (?,?,?)').run('',row.rating,row.seq);source.prepare('INSERT INTO metadata VALUES (?,?)').run('catalogue',JSON.stringify({count:1,themes:{mateIn2:1},source:'https://database.lichess.org/#puzzles',license:'CC0-1.0'}));source.close();
+ const f=await fixture({puzzleCataloguePath:sourcePath});try{
+  assert.equal((await f.request('/api/training/catalog')).body.count,1);assert.equal((await f.request('/api/training')).status,401);
+  const {cookie}=await f.register('trainer'),other=await f.register('outsider');
+  const request=(path,body,c=cookie)=>f.request(path,{method:'POST',cookie:c,body});
+  assert.equal((await request('/api/training/start',{theme:'unknown'})).status,400);
+  const first=await request('/api/training/start',{theme:'mateIn2',min:1000,max:2000});assert.equal(first.status,201);let a=first.body.attempt;const route='/api/training/'+a.id;
+  assert.equal(a.puzzle.id,row.id);assert.equal(a.puzzle.solution,undefined);assert.equal(a.solution,undefined);assert.equal(a.puzzle.initialFen,undefined);
+  const sourceMoves=row.moves.split(' '),board=new Chess(row.fen);board.move({from:sourceMoves[0].slice(0,2),to:sourceMoves[0].slice(2,4)});assert.equal(a.puzzle.fen,board.fen());assert.equal(a.puzzle.side,board.turn());
+  assert.equal((await request('/api/training/start',{})).status,409);assert.equal((await f.request(route,{cookie:other.cookie})).status,404);assert.equal((await request(route+'/action',{action:'reveal',revision:0},other.cookie)).status,404);
+  const wrong=board.moves({verbose:true}).find(m=>m.from+m.to+(m.promotion||'')!==sourceMoves[1]);const wrongMove=wrong.from+wrong.to+(wrong.promotion||'');
+  const missed=await request(route+'/action',{action:'move',move:wrongMove,revision:0});assert.equal(missed.status,200);assert.equal(missed.body.correct,false);a=missed.body.attempt;assert.equal(a.mistakes,1);assert.deepEqual(a.moves,[]);
+  assert.equal((await request(route+'/action',{action:'move',move:sourceMoves[1],revision:0})).status,409);
+  const hinted=await request(route+'/action',{action:'hint',revision:a.revision});a=hinted.body.attempt;assert.equal(a.assisted,true);assert.equal(a.hint,sourceMoves[1].slice(0,2));assert.equal(a.puzzle.solution,undefined);
+  const correct=await request(route+'/action',{action:'move',move:sourceMoves[1],revision:a.revision});a=correct.body.attempt;assert.deepEqual(a.moves,sourceMoves.slice(1,3));assert.equal(a.hint,null);
+  await f.restart();assert.deepEqual((await f.request('/api/training',{cookie})).body.attempt.moves,a.moves);
+  const solved=await request(route+'/action',{action:'move',move:sourceMoves[3],revision:a.revision});a=solved.body.attempt;assert.equal(a.state,'solved');assert.equal((await request(route+'/action',{action:'move',move:sourceMoves[3],revision:a.revision})).status,409);
+  let status=(await f.request('/api/training',{cookie})).body;assert.equal(status.totals.solved,1);assert.equal(status.totals.unassisted,0);assert.equal(status.history[0].puzzleId,row.id);
+  const saved=await request(route+'/study',{});assert.equal(saved.status,201);assert.equal(saved.body.game.initialFen,row.fen);assert.deepEqual(saved.body.game.moves,sourceMoves);assert.equal(saved.body.game.result,'1-0');
+  assert.equal((await f.request(`/api/games/${saved.body.game.id}`,{cookie:other.cookie})).status,404);
+  const retry=await request('/api/training/start',{failedOnly:true,theme:'mateIn2',min:1000,max:2000});assert.equal(retry.status,201);a=retry.body.attempt;assert.equal(a.puzzle.id,row.id);assert.equal(a.assisted,false);
+  const revealed=await request('/api/training/'+a.id+'/action',{action:'reveal',revision:0});assert.equal(revealed.body.attempt.state,'revealed');assert.deepEqual(revealed.body.attempt.solution,sourceMoves.slice(1));
+  assert.equal((await request('/api/training/start',{fromAttempt:a.id},other.cookie)).status,404);
+  status=(await f.request('/api/training',{cookie})).body;assert.equal(status.totals.attempts,2);assert.equal(status.totals.solved,1);
+ }finally{await f.close();rmSync(temp,{recursive:true,force:true});}
+});

@@ -11,6 +11,7 @@ import * as engine from './engine.mjs';
 import * as opponents from './opponent-engines.mjs';
 import {setupOptions,practiceSnapshot,beginClock,settleClock,finishMoveClock,crownsFor,adaptiveRating,addBotChat,undoTurn,attackedPieces} from './bot-game.mjs';
 const profiles = JSON.parse(readFileSync(new URL('./bot-profiles.json',import.meta.url),'utf8'));
+import {createTrainer} from './puzzle-training.mjs';
 import { lessons, puzzles, catalog } from './content.mjs';
 import {hostingGuard} from './hosting.mjs';
 import {positionKey,reviewSignature,beginReview,appendReview} from './game-review.mjs';
@@ -56,7 +57,7 @@ function validateStudy(study, game) {
  return {version:1,branches,selectedBranchId:selected,anchorPly:study.anchorPly};
 }
 
-export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('data/chesslab.sqlite'), engineApi = engine, opponentApi = opponents, nowMs = Date.now} = {}) {
+export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('data/chesslab.sqlite'), engineApi = engine, opponentApi = opponents, nowMs = Date.now, puzzleCataloguePath = process.env.CHESSLAB_PUZZLES || resolve('data/puzzles/catalogue.sqlite')} = {}) {
  if (databasePath !== ':memory:') mkdirSync(dirname(databasePath), {recursive:true});
  const db = new DatabaseSync(databasePath);
  db.exec(`PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON; PRAGMA busy_timeout=5000;
@@ -141,6 +142,8 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   if (token) db.prepare('DELETE FROM sessions WHERE token_hash=?').run(hash(token));
   res.clearCookie('chesslab_session',{path:'/',httpOnly:true,sameSite:'strict',secure:process.env.COOKIE_SECURE==='1'});res.json(me(null));
  });
+ const trainer=createTrainer({db,cataloguePath:puzzleCataloguePath,nowMs,insertStudy:(userId,value)=>insertGame(userId,{...value,result:gameResult(replay(value.moves,value.initialFen))})});
+ app.get('/api/training/catalog',(req,res)=>res.json(trainer.catalogue()));
  app.get('/api/learn',(req,res)=>res.json(catalog()));
  app.get('/api/openings',(req,res)=>res.json(searchOpenings(req.query)));
  app.get('/api/openings/:id',(req,res)=>{const opening=openingById(req.params.id);if(!opening)fail(404,'Opening not found.');res.json({opening,source:openingSource});});
@@ -272,6 +275,11 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   if(settleClock(fresh,nowMs()))return res.json({analysis:null,feedback:null,threats:[],game:storeGame(req.user.id,fresh,fresh.revision)});
   res.json({analysis,feedback,threats:help.threats?attackedPieces(game):[],game:fresh});
  });
+ app.get('/api/training',(req,res)=>res.json(trainer.state(req.user.id)));
+ app.post('/api/training/start',(req,res)=>res.status(201).json({attempt:trainer.start(req.user.id,req.body)}));
+ app.get('/api/training/:id',(req,res)=>res.json({attempt:trainer.get(req.user.id,req.params.id)}));
+ app.post('/api/training/:id/action',(req,res)=>res.json(trainer.act(req.user.id,req.params.id,req.body)));
+ app.post('/api/training/:id/study',(req,res)=>res.status(201).json({game:trainer.study(req.user.id,req.params.id)}));
  app.post('/api/openings/recognize',(req,res)=>{limit(`opening:${req.user.id}`,300);const opening=recognizeOpening(req.body.moves,req.body.initialFen);if(req.body.gameId!==undefined)markReviewAccess(req,req.body.gameId);res.json({opening,source:openingSource});});
  app.post('/api/openings/:id/study',(req,res)=>{
   const opening=openingById(req.params.id);if(!opening)fail(404,'Opening not found.');
@@ -375,5 +383,5 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   if(status===500)console.error('Request failed:',error.message);
   res.status(status).json({error:status===500?'The request could not be saved. Retry; your existing games are preserved.':error.type==='entity.parse.failed'?'The request body is not valid JSON.':error.message});
  });
- return {app,db,close:()=>db.close()};
+ return {app,db,close:()=>{trainer.close();db.close();}};
 }
