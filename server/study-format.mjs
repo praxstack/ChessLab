@@ -1,4 +1,5 @@
 import {Chess} from 'chess.js';
+import {validateMarks,readMarkComment,writeMarkComment} from '../shared/board-marks.js';
 import {parse} from 'chess.js/src/pgn.js';
 import {randomUUID} from 'node:crypto';
 import {replay} from './engine.mjs';
@@ -41,7 +42,8 @@ export function validateStudy(study, game) {
    const line=branch?branch.moves:game.moves,key=JSON.stringify([a.branchId,a.ply]);
    if(!Number.isInteger(a.ply)||a.ply<(branch?.anchorPly||0)||a.ply>line.length||keys.has(key))fail(400,'Each annotation needs one valid branch position.');
    if(typeof a.comment!=='string'||a.comment.length>2000||!Array.isArray(a.nags)||a.nags.length>8||a.nags.some(n=>!Number.isInteger(n)||n<0||n>255))fail(400,'Invalid comment or move annotation.');
-   keys.add(key);annotations.push({branchId:a.branchId,ply:a.ply,comment:a.comment,nags:[...new Set(a.nags)]});
+   let marks;if(a.marks!==undefined)try{marks=validateMarks(a.marks);}catch(error){fail(400,error.message);}
+   keys.add(key);annotations.push({branchId:a.branchId,ply:a.ply,comment:a.comment,nags:[...new Set(a.nags)],...(marks!==undefined?{marks}:{})});
   }
  }
  const result={version:1,branches,selectedBranchId:selected,anchorPly:study.anchorPly,...(study.annotations!==undefined?{annotations}:{})};
@@ -55,13 +57,14 @@ export function readAnnotatedPgn(pgn){
  let parsed;try{parsed=parse(pgn);}catch{fail(400,'This PGN contains an invalid position, move or variation.');}
  const initialFen=parsed.headers.FEN||null;if(initialFen)validatePosition(initialFen);
  const study={version:1,branches:[],selectedBranchId:null,anchorPly:0,annotations:[]};let total=0;
- const note=(node,branchId,ply)=>{const nags=[...(node.nag||[]).map(Number),...(glyphs[node.suffix?.join('')]?[glyphs[node.suffix.join('')]]:[])];if(node.comment||nags.length)study.annotations.push({branchId,ply,comment:node.comment||'',nags:[...new Set(nags)]});};
+ const note=(node,branchId,ply)=>{const nags=[...(node.nag||[]).map(Number),...(glyphs[node.suffix?.join('')]?[glyphs[node.suffix.join('')]]:[])];let parsed;try{parsed=readMarkComment(node.comment||'');}catch(error){fail(400,error.message); }if(parsed.comment||nags.length||parsed.marks.length)study.annotations.push({branchId,ply,comment:parsed.comment,nags:[...new Set(nags)],...(parsed.marks.length?{marks:parsed.marks}:{})});};
  function line(root,prefix,branchId){
-  const board=replay(prefix,initialFen),moves=[...prefix];let cursor=root;if(!branchId)note(root,null,moves.length);
+  const board=replay(prefix,initialFen),moves=[...prefix];let cursor=root;if(!branchId)note(root,null,moves.length);else{let parsed;try{parsed=readMarkComment(root.comment||'');}catch(error){fail(400,error.message);}if(parsed.marks.length)study.annotations.push({branchId,ply:moves.length,comment:'',nags:[],marks:parsed.marks});}
   while(cursor.variations?.length){
    for(const alternative of cursor.variations.slice(1)){
     if(study.branches.length>=40)fail(400,'Import at most 40 variations.');
-    const branch={id:randomUUID(),parentId:branchId,anchorPly:moves.length,moves:[],question:alternative.comment||''};study.branches.push(branch);branch.moves=line(alternative,moves,branch.id);
+    let alternativeText;try{alternativeText=readMarkComment(alternative.comment||'').comment;}catch(error){fail(400,error.message);}
+    const branch={id:randomUUID(),parentId:branchId,anchorPly:moves.length,moves:[],question:alternativeText};study.branches.push(branch);branch.moves=line(alternative,moves,branch.id);
    }
    const next=cursor.variations[0];let move;try{move=board.move(next.move,{strict:true});}catch{fail(400,'This PGN contains an illegal move in its game or a variation.');}
    if(!move||moves.length>=1000||++total>5000)fail(400,'Import at most 1,000 moves per line and 5,000 total moves.');
@@ -87,10 +90,10 @@ export function writeAnnotatedPgn(game,username){
  const study=game.study||{branches:[]},annotations=study.annotations||[];
  const comment=text=>text?`{${text.replace(/[{}]/g,c=>c==='{'?'[':']').replace(/[\r\n]+/g,' ')}}`:'';
  const at=(branchId,ply)=>annotations.find(a=>a.branchId===branchId&&a.ply===ply);
- const annotation=a=>a?[...(a.nags||[]).map(n=>`$${n}`),comment(a.comment)].filter(Boolean).join(' '):'';
+ const annotation=a=>a?[...(a.nags||[]).map(n=>`$${n}`),comment(writeMarkComment(a.comment,a.marks))].filter(Boolean).join(' '):'';
  const children=(branchId,ply)=>study.branches.filter(b=>b.parentId===branchId&&b.anchorPly===ply);
  function line(moves,branchId,start=0,extra=[]){
-  const board=replay(moves.slice(0,start),game.initialFen),branch=study.branches.find(b=>b.id===branchId),out=[comment([branch?.question,at(branchId,start)?.comment].filter(Boolean).join(' — '))].filter(Boolean);
+  const board=replay(moves.slice(0,start),game.initialFen),branch=study.branches.find(b=>b.id===branchId),out=[comment(writeMarkComment([branch?.question,at(branchId,start)?.comment].filter(Boolean).join(' — '),at(branchId,start)?.marks))].filter(Boolean);
   for(let i=start;i<moves.length;i++){
    const prefix=board.turn()==='w'?`${board.fen().split(' ')[5]}. `:i===start?`${board.fen().split(' ')[5]}... `:'';
    const move=board.move({from:moves[i].slice(0,2),to:moves[i].slice(2,4),promotion:moves[i][4]});out.push(`${prefix}${move.san}`,annotation(at(branchId,i+1)));

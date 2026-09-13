@@ -1,0 +1,12 @@
+✔ board marks validate, toggle and round trip standard PGN comments without losing text (14.825625ms)
+✔ annotated PGN preserves legal nested alternatives, comments, glyphs and black FEN move numbering (19.127917ms)
+✔ portable studies preserve exact tree identity and arbitrary note text without transplanting account or running state (5.521583ms)
+✔ PGN keeps the original boundary while carrying terminal continuations and adjacent comments (0.680625ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 94.777667

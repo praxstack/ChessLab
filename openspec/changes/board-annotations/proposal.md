@@ -1,0 +1,7 @@
+# Persistent board annotations
+
+Baseline 7a35ecf protects 87 application tests, 66 recorded flows, original games, exact study identities and portable analysis. The full local clone/tutor objective remains unchanged. This candidate changes product behavior, not governing gates. Baseline source and manifests are rollback pointers.
+
+The official arrow guide describes right-drag arrows, right-click square highlights and red/green/yellow/blue modifiers (https://support.chess.com/en/articles/8568781-how-can-i-draw-arrows-on-the-board-like-streamers-do, read 2026-09-13). Add these drawing controls in saved-game Review/Analysis, plus explicit keyboard/touch tools. Unlike transient reference-board marks, these study annotations remain attached to their exact node until explicitly cleared. Encode standard PGN cal/csl directives and preserve exact marks in local study files. Drawings are learner annotations, never legal-move or engine assertions.
+
+Graph: observed drawing workflow -> frozen node/gesture/serialization rules -> failing codec and persistence checks -> reuse Board/annotation storage -> pointer and accessible tap controls -> full recorded regression -> root review/video PR -> backed-up exact local promotion. No dependency. One implementation plus one evidence-driven repair cycle; stop after two no-gain candidates without weakening tests. Full free-form tutor, remaining parity, later human multiplayer and billing keep their existing order.

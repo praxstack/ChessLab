@@ -426,3 +426,18 @@ test('undo cannot remove an annotated original-game position',async()=>{
  const study={version:1,branches:[],selectedBranchId:null,anchorPly:0,annotations:[{branchId:null,ply:2,comment:'Keep this decision',nags:[5]}]};assert.equal((await post(route+'/study',{study,studyRevision:0})).status,200);assert.equal((await post(route+'/undo',{revision:2})).status,400);assert.deepEqual((await f.request(route,{cookie})).body.game.moves,['e2e4','e7e5']);
  }finally{await f.close();}
 });
+
+
+test('board drawings persist at exact study nodes, travel in PGN and reject invalid or foreign writes',async()=>{
+ const f=await fixture();try{
+  const {cookie}=await f.register('drawer'),other=await f.register('outsider');const post=(path,body,c=cookie)=>f.request(path,{method:'POST',cookie:c,body});
+  const g=(await post('/api/import',{pgn:'1. e4 {Center [%cal Ge2e4]} e5 (1... c5 {[%csl Bc5]}) *'})).body.game,route=`/api/games/${g.id}`,study=structuredClone(g.study);
+  study.annotations[0].comment='A changed note keeps its arrow.';study.annotations.push({branchId:study.branches[0].id,ply:1,comment:'Before c5',nags:[],marks:[{from:'b8',to:'c6',color:'Y'}]});
+  assert.equal((await post(route+'/study',{study,studyRevision:0},other.cookie)).status,404);assert.equal((await post(route+'/study',{study,studyRevision:0})).status,200);
+  const invalid=structuredClone(study);invalid.annotations[0].marks[0].color='purple';assert.equal((await post(route+'/study',{study:invalid,studyRevision:1})).status,400);
+  const portable=(await f.request(route+'/study-file',{cookie})).body;assert.deepEqual(portable.game.study,study);const copied=await post('/api/import-study',portable);assert.equal(copied.status,201);assert.deepEqual(copied.body.game.study,study);
+  const pgn=(await f.request(route+'/pgn',{cookie})).body;assert.match(pgn,/\[%cal Ge2e4\]/);assert.match(pgn,/\[%cal Yb8c6\]/);assert.match(pgn,/\[%csl Bc5\]/);const reimported=await post('/api/import',{pgn});assert.equal(reimported.status,201);assert.equal(reimported.body.game.study.annotations.reduce((n,a)=>n+(a.marks?.length||0),0),3);
+  const count=(await f.request('/api/games',{cookie})).body.games.length;assert.equal((await post('/api/import',{pgn:'1. e4 {[%cal Ra1a9]} *'})).status,400);assert.equal((await f.request('/api/games',{cookie})).body.games.length,count);
+  await f.restart();const stored=(await f.request(route,{cookie})).body.game;assert.deepEqual(stored.study,study);assert.deepEqual(stored.moves,g.moves);
+ }finally{await f.close();}
+});
