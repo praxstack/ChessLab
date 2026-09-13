@@ -22,3 +22,9 @@ This is local functional proof, not full Chess.com parity, proprietary bot equiv
 An automatic approval review rejected a conditional navigation skip and reduced diagnostic harness. The accepted approach retained the full evaluator and all assertions, explicitly selected a saved move before returning to the start, and fixed the actual save-response defect. Failed attempts remain under ignored `.scratch/chess960/`; only the complete passing recording is published here.
 
 The [manifest](manifest.json) binds source, build, dependencies, data and proof. Installation details are recorded separately after local readback. Rollback is the previous installed commit `2d58b3e53a5529e894adcb0ff6478b3516ca9ac1`; original main and unrelated work are preserved.
+
+## Installed readback
+
+Installed application commit `6cd1d4cc79702624b657a48c0bddc8f7bf934519` is served at http://127.0.0.1:8772/. All 586 source/build/proof files, rules packages, parsers, both catalogues and the opening archive matched the manifest. The served JavaScript/CSS bytes match the tested build. Five engines report Chess960 support; the opening corpus retains 280,155 games. Guest saved-game access returns 401.
+
+All 14 account tables exactly match `data/backups/before-chess960-20260913.sqlite`, including 2 users and 2 games. The first readiness probe arrived during restart; a fresh unchanged strict readback passed after the service became ready. The existing guest browser visibly shows Chess960, its random/numbered start control and five disabled Standard-only Maia models. No production account was created or changed. Original main and both unrelated design-log deletions remain preserved. [Installation receipt](installation.json).
