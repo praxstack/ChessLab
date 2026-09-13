@@ -6,7 +6,7 @@ Wrong/right lesson answers, puzzle moves, completion persistence.
 
 ## How to get to it (user POV)
 
-Choose Learn or Puzzles in Main navigation.
+Choose Learn in Main navigation. For the original six puzzle exercises, choose Puzzles → Starter exercises.
 
 ## Driving it with Playwright
 
@@ -14,4 +14,4 @@ Open Your king comes first. Submit Stay on e1 and pass, then Kxe2, capturing the
 
 ## Gotchas
 
-Only the original starter collection is implemented. This is not the reference curriculum or a calibrated puzzle rating.
+These checks cover the original starter collection. Full custom training has its own feature map; the full lesson curriculum and calibrated user puzzle ratings remain separate work.

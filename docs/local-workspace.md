@@ -55,3 +55,15 @@ Choose Set up position from the welcome screen, My games or board actions. Place
 Choose Openings to browse 3,810 named lines locally. Search a name or ECO code, play through its moves, then save a study or practice the selected position against a native bot. Review identifies the latest named opening, distinguishing a played line from a matching position. The source study retains the full line when practice begins earlier.
 
 The CC0 source files, pinned provenance and license are in `references/openings/`. Run `node scripts/build_openings.mjs --check` to replay every source line and verify the compiled catalogue. No network is needed at runtime. This catalogue does not include game statistics or opening lessons. [Recorded proof](verification/opening-library/README.md) covers desktop/mobile browsing, native play and persistence.
+
+## Custom puzzle training
+
+Puzzles now opens the full local catalogue: 6,100,952 positions across 73 themes. Choose a theme and source rating range, then Start training. The opponent's initial move is applied before you solve. Correct moves reveal the next reply; mistakes keep the accepted position intact. Hints and revealed solutions are marked assisted. Return to Puzzles after reload to resume the active attempt. Recent attempts, retry previous mistakes and solution playback remain local. Analyze solution creates a separate study with native analysis and the original puzzle FEN/history. Starter exercises remain available in the panel header.
+
+The installed archive and indexed database are in `data/puzzles/`. To reproduce the catalogue into a new path, download the official archive, verify its recorded hash in `references/puzzles/provenance.json`, then run:
+
+```sh
+python3 scripts/import_puzzles.py data/puzzles/lichess_db_puzzle.csv.zst data/puzzles/catalogue.sqlite
+```
+
+The importer requires the existing `zstd` executable and Python's standard library. It refuses to overwrite an existing catalogue. Set `CHESSLAB_PUZZLES` to another local catalogue path if needed. No puzzle archive, engine model or answer key is downloaded into the browser. Server attempts live in the account SQLite database and follow its backup policy. Custom practice uses source puzzle ratings; it does not provide a calibrated user rating. Rated adaptation, daily puzzles and rush remain subsequent work. [Training proof](verification/puzzle-training/README.md) covers the current flow.
