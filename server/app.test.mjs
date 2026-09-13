@@ -441,3 +441,30 @@ test('board drawings persist at exact study nodes, travel in PGN and reject inva
   await f.restart();const stored=(await f.request(route,{cookie})).body.game;assert.deepEqual(stored.study,study);assert.deepEqual(stored.moves,g.moves);
  }finally{await f.close();}
 });
+
+test('review practice protects ownership, restarts, stale revisions, concurrent engine results and source games',async()=>{
+ let waitForAttempt=false,entered,release;let enteredPromise;
+ const analyze=async input=>{
+  const board=new Chess(input.initialFen||undefined);for(const u of input.moves)board.move({from:u.slice(0,2),to:u.slice(2,4),promotion:u[4]});
+  const moves=board.moves({verbose:true}).map(m=>m.from+m.to+(m.promotion||'')),best=moves.find(m=>m!==input.playedMove)||moves[0],after=new Chess(board.fen());after.move({from:input.playedMove.slice(0,2),to:input.playedMove.slice(2,4),promotion:input.playedMove[4]});
+  if(waitForAttempt){entered();await new Promise(resolve=>{release=resolve;});}
+  return {fen:board.fen(),engine:'test native protocol',bestmove:best,lines:[{move:best,moves:[best],score:{type:'cp',value:100}}],limits:{movetime:input.movetime,threads:input.threads,lines:1,engineId:'stockfish19'},played:{move:input.playedMove,san:after.history().at(-1),classification:'Blunder',lossCp:400,afterScore:{type:'cp',value:-300},explanation:'Synthetic move evidence.'}};
+ };
+ const f=await fixture({engineApi:{analyze}});try{
+  const {cookie}=await f.register('reviewlearner'),other=await f.register('reviewoutsider'),post=(path,body,c=cookie)=>f.request(path,{method:'POST',cookie:c,body});
+  const g=(await post('/api/import',{pgn:'1. f3 e5 2. g4 Qh4#'})).body.game,route=`/api/games/${g.id}`,practiceRoute=route+'/practice-review';
+  assert.equal((await f.request(practiceRoute)).status,401);assert.equal((await post(practiceRoute+'/start',{side:'w'})).status,409);
+  let report;for(let i=0;i<g.moves.length;i++){const reviewed=await post(route+'/review',{revision:0,after:i,movetime:50,threads:1});assert.equal(reviewed.status,200);report=reviewed.body.review;}
+  assert.equal((await post(practiceRoute+'/start',{side:'w'},other.cookie)).status,404);let p=(await post(practiceRoute+'/start',{side:'w'})).body.practice;assert.equal(p.summary.total,2);assert.equal(p.current.answer,null);assert.equal((await f.request(practiceRoute,{cookie:other.cookie})).status,404);
+  const initialRevision=p.revision;p=(await post(practiceRoute+'/action',{type:'hint',revision:p.revision})).body.practice;assert.equal(p.current.hints,1);assert.equal((await post(practiceRoute+'/action',{type:'reveal',revision:initialRevision})).status,409);
+  await f.restart();assert.deepEqual((await f.request(practiceRoute,{cookie})).body.practice,p);
+  const recommendation=report.entries.find(e=>e.ply===p.current.ply).analysis.bestmove;
+  p=(await post(practiceRoute+'/action',{type:'move',move:recommendation,revision:p.revision})).body.practice;assert.equal(p.current.outcome,'solved');p=(await post(practiceRoute+'/action',{type:'next',revision:p.revision})).body.practice;assert.equal(p.index,1);
+  const legal=new Chess(p.current.fen).moves({verbose:true}),best=report.entries.find(e=>e.ply===p.current.ply).analysis.bestmove,wrong=legal.map(m=>m.from+m.to+(m.promotion||'')).find(m=>m!==best);
+  waitForAttempt=true;enteredPromise=new Promise(resolve=>{entered=resolve;});const pending=post(practiceRoute+'/action',{type:'move',move:wrong,revision:p.revision});await enteredPromise;
+  p=(await post(practiceRoute+'/action',{type:'hint',revision:p.revision})).body.practice;waitForAttempt=false;release();assert.equal((await pending).status,409);assert.deepEqual((await f.request(practiceRoute,{cookie})).body.practice,p);
+  p=(await post(practiceRoute+'/action',{type:'reveal',revision:p.revision})).body.practice;p=(await post(practiceRoute+'/action',{type:'next',revision:p.revision})).body.practice;assert.equal(p.complete,true);assert.deepEqual(p.summary,{total:2,finished:2,unassisted:0,learned:1,revealed:1,skipped:0});assert.equal((await post(practiceRoute+'/start',{side:'b',revision:initialRevision})).status,409);
+  p=(await post(practiceRoute+'/start',{side:'b',revision:p.revision})).body.practice;assert.equal(p.side,'b');assert.equal(p.current.color,'b');const unchanged=(await f.request(route,{cookie})).body.game;assert.deepEqual(unchanged.moves,g.moves);assert.deepEqual(unchanged.study,g.study);
+  const changed={...unchanged,moves:['e2e4']};f.db.prepare('UPDATE games SET data=? WHERE id=?').run(JSON.stringify(changed),g.id);assert.equal((await post(practiceRoute+'/action',{type:'skip',revision:p.revision})).status,409);const stale=(await f.request(practiceRoute,{cookie})).body;assert.equal(stale.stale,true);assert.equal(stale.revision,p.revision);
+ }finally{release?.();await f.close();}
+});

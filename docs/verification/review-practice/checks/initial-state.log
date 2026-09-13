@@ -1,0 +1,10 @@
+✔ review practice hides answers, resumes hints and separates attempts from original history (7.105625ms)
+✔ review attempts validate engine evidence and accept strong alternatives without losing failures (3.319125ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 68.171709
