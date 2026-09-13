@@ -1,0 +1,9 @@
+python3 scripts/setup_skills.py --check
+Traceback (most recent call last):
+  File "/private/tmp/chesslab-board-annotations/scripts/setup_skills.py", line 82, in <module>
+    main()
+    ~~~~^^
+  File "/private/tmp/chesslab-board-annotations/scripts/setup_skills.py", line 68, in main
+    raise RuntimeError(f"Skill changed since setup: {entrypoint}; review before updating the manifest")
+RuntimeError: Skill changed since setup: /Users/prax/.agents/skills/unslop/SKILL.md; review before updating the manifest
+error: recipe `check` failed on line 11 with exit code 1

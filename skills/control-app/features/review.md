@@ -29,3 +29,7 @@ Custom setup begins new history. The server also validates FEN in imported PGN. 
 ## Annotated studies
 
 Import a PGN with nested alternatives, root/move comments and glyphs. Edit notes at original and branch positions. Export a study with an unsaved question and verify the actual downloaded file contains the saved exact tree. Export PGN and re-import it; reload and mobile study import must retain annotations. Induce one real study revision conflict in the synthetic account: verify export is blocked and its unsaved textarea remains. This exact expected 409 is asserted separately; every unrelated HTTP failure remains forbidden. Never record real account files.
+
+## Board drawings
+
+In Review or Analysis, right-drag an arrow and right-click a square. Test yellow/red defaults and Ctrl, Alt and Shift colors, identical-mark removal, recoloring, flipped coordinates and cancellation outside the board. Use Draw arrow and Highlight square by keyboard and at 390px. Drawings belong to an exact branch and ply; changing positions or cancelling a partial gesture must not transplant them. Edit a comment, save, reload, and inspect actual PGN and study downloads for the same marks. Clear marks must preserve the comment, glyphs, other positions and original moves. Manual drawings remain visible when engine arrows are disabled. Only synthetic studies enter proof recordings.
