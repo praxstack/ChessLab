@@ -10,5 +10,5 @@
 - [x] Run setup/check (existing unslop drift blocks them), test/build, local doctor and complete browser proof serially.
 - [x] Inspect desktop/mobile screenshots and recorded interaction.
 - [x] Record source/build/proof hashes and explicit gaps.
-- [ ] Open private PR with video proof.
-- [ ] Back up and install locally; compare existing account tables and served build.
+- [x] Open private PR #16 with video proof.
+- [x] Back up and install locally; all 14 existing tables and the tested served build match. The new Vision table is empty.

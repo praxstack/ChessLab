@@ -1,0 +1,44 @@
+{
+  "checkedAt": "2026-09-13T09:46:00.865971+00:00",
+  "applicationCommit": "eda5245d2c5d8bb1d93bd87199cb8208fd00e78e",
+  "servedAssets": [
+    "/assets/index-BY3UM98q.js",
+    "/assets/index-BklPmbTC.css"
+  ],
+  "engine": {
+    "available": true,
+    "name": "Stockfish 19",
+    "chess960": true
+  },
+  "chess960Engines": [
+    "lc0",
+    "stockfish16",
+    "stockfish18",
+    "stockfish18-lite",
+    "stockfish19"
+  ],
+  "explorerGames": 280155,
+  "guestGames": 401,
+  "preservedTables": {
+    "bot_results": 0,
+    "collection_games": 0,
+    "daily_puzzles": 0,
+    "game_collections": 0,
+    "game_reviews": 0,
+    "games": 2,
+    "lesson_sessions": 0,
+    "progress": 0,
+    "puzzle_attempts": 0,
+    "puzzle_profiles": 0,
+    "puzzle_runs": 0,
+    "review_practice": 0,
+    "sessions": 1,
+    "users": 2
+  },
+  "addedTables": {
+    "vision_runs": 0
+  },
+  "guestVision": 401,
+  "backup": "/Users/prax/Developer/ChessLab-local-web/data/backups/before-vision-training-20260913.sqlite",
+  "manifestSha256": "f26aa9fe437c43e7d5b5e658cd6c03532993115a77d559cc19ecc99dcb34595c"
+}
