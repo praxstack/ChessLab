@@ -19,6 +19,7 @@ import {installCollections} from './game-collections.mjs';
 import {validateStudy,readAnnotatedPgn,writeAnnotatedPgn,portableStudy,readPortableStudy} from './study-format.mjs';
 import {hostingGuard} from './hosting.mjs';
 import {positionKey,reviewSignature,beginReview,appendReview} from './game-review.mjs';
+import {createExplorer} from './opening-explorer.mjs';
 import {installReviewPractice} from './review-practice.mjs';
 
 const derive = promisify(scrypt);
@@ -34,7 +35,7 @@ function moveOn(chess, value) {
 const replay = engine.replay;
 const gameResult = chess => chess.isCheckmate() ? (chess.turn() === 'w' ? '0-1' : '1-0') : chess.isDraw() ? '1/2-1/2' : null;
 
-export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('data/chesslab.sqlite'), engineApi = engine, opponentApi = opponents, nowMs = Date.now, puzzleCataloguePath = process.env.CHESSLAB_PUZZLES || resolve('data/puzzles/catalogue.sqlite')} = {}) {
+export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('data/chesslab.sqlite'), engineApi = engine, opponentApi = opponents, nowMs = Date.now, explorerCataloguePath = process.env.CHESSLAB_EXPLORER || resolve('data/explorer/catalogue.sqlite'), puzzleCataloguePath = process.env.CHESSLAB_PUZZLES || resolve('data/puzzles/catalogue.sqlite')} = {}) {
  if (databasePath !== ':memory:') mkdirSync(dirname(databasePath), {recursive:true});
  const db = new DatabaseSync(databasePath);
  db.exec(`PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON; PRAGMA busy_timeout=5000;
@@ -126,6 +127,9 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
  app.get('/api/curriculum',(req,res)=>res.json(curriculumCatalog()));
  app.get('/api/openings',(req,res)=>res.json(searchOpenings(req.query)));
  app.get('/api/openings/:id',(req,res)=>{const opening=openingById(req.params.id);if(!opening)fail(404,'Opening not found.');res.json({opening,source:openingSource});});
+ const explorer=createExplorer({cataloguePath:explorerCataloguePath,db});
+ app.get('/api/explorer',(req,res)=>{limit(`explorer:${req.user?.id||req.ip}`,300);res.json(explorer.position(req.query,req.user));});
+ app.get('/api/explorer/games/:id',(req,res)=>{limit(`explorer:${req.user?.id||req.ip}`,300);res.json({game:explorer.game(req.params.id,req.query.source,req.user)});});
  app.use('/api',requireUser);
  installCollections(app,db);
  const owned = (req) => {
@@ -361,5 +365,5 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   if(status===500)console.error('Request failed:',error.message);
   res.status(status).json({error:status===500?'The request could not be saved. Retry; your existing games are preserved.':error.type==='entity.parse.failed'?'The request body is not valid JSON.':error.message});
  });
- return {app,db,close:()=>{trainer.close();db.close();}};
+ return {app,db,close:()=>{trainer.close();explorer.close();db.close();}};
 }

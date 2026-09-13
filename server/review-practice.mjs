@@ -6,7 +6,7 @@ export function beginPractice(game,report,side){
  if(!['w','b','both'].includes(side))fail(400,'Choose White, Black or both sides.');
  if(game.source==='bot'&&!game.result||!report?.complete||report.positionKey!==positionKey(game))fail(409,'Finish the game and its whole-game review before practicing.');
  const questions=report.entries.filter(e=>(side==='both'||e.color===side)&&['Inaccuracy','Mistake','Blunder','Mate sequence'].includes(e.classification)&&e.analysis.bestmove!==game.moves[e.ply-1]).map(e=>{
-  const board=replay(game.moves.slice(0,e.ply-1),game.initialFen),move=e.analysis.bestmove,line=e.analysis.lines[0];
+  const board=replay(game.moves.slice(0,e.ply-1),game.initialFen),move=e.analysis.bestmove,line=e.analysis.lines.find(line=>line.move===move);
   if(!report.engine||e.analysis.fen!==board.fen()||!line||line.move!==move)fail(503,'This saved review does not contain usable practice evidence.');
   replay([...game.moves.slice(0,e.ply-1),move],game.initialFen);
   return {ply:e.ply,color:e.color,number:e.number,originalSan:e.san,classification:e.classification,move,line,engine:report.engine,limits:report.limits};

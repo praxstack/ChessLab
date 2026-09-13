@@ -1,0 +1,120 @@
+python3 scripts/setup_skills.py --self-test
+PASS: link creation, idempotence, conflict preservation, read-only checks
+npm test
+
+> chesslab@0.1.0 test
+> node --test --test-concurrency=1 server/*.test.mjs web/src/*.test.js
+
+✔ accounts, legal game updates, isolation, revision checks and persistent sessions (159.443084ms)
+Request failed: attempt to write a readonly database
+✔ nested studies reject altered history, missing parents, loops, illegal moves and survive bot races (56.355167ms)
+✔ Black games begin with engine turn and engine failure never fabricates a move (38.692792ms)
+✔ learning catalog hides answers, validates all authored positions, and persists only correct progress (52.7125ms)
+✔ selected engine, authoritative timeout, crowns and account isolation survive restart (80.530792ms)
+✔ hints, assistance and undo retain legal history and protect saved studies (54.651125ms)
+✔ a timeout saved during an engine request rejects the late reply without overwriting the result (43.622541ms)
+✔ full game review preserves ownership, resumes from disk and never rewrites games or studies (107.784333ms)
+✔ review rejects concurrent or stale engine results and preserves the last saved step on failure (48.966875ms)
+✔ disconnecting a review cancels its search and releases the game for resume (46.858125ms)
+✔ position practice copies a saved branch, preserves its source and resets only new play (123.4635ms)
+✔ practice revalidates a changed source after engine readiness and marks live-source review assistance (57.688792ms)
+✔ custom positions validate before saving and retain FEN through analysis, branches, practice, export and reload (109.214375ms)
+✔ opening catalogue is bounded and opening studies retain complete owned history for practice (93.870584ms)
+✔ training attempts protect solutions, ownership, revisions, hints and history across restart (142.583333ms)
+✔ guided curriculum API protects answers, ownership and all-challenge completion across restart (105.239125ms)
+Request failed: test failure
+✔ collections isolate accounts, reject stale or partial edits and preserve games through restart and deletion (115.325125ms)
+✔ annotated imports, node comments and portable study copies preserve original games and reject bad trees (95.415666ms)
+✔ undo cannot remove an annotated original-game position (48.607208ms)
+✔ board drawings persist at exact study nodes, travel in PGN and reject invalid or foreign writes (88.831083ms)
+✔ review practice protects ownership, restarts, stale revisions, concurrent engine results and source games (107.2945ms)
+✔ opening explorer exposes corpus separately from private completed games and creates isolated study copies (91.430166ms)
+✔ board marks validate, toggle and round trip standard PGN comments without losing text (9.746708ms)
+✔ bot options validate trust boundaries; rating adaptation and crown tiers are explicit (6.14525ms)
+✔ clocks charge the active side once, add increments and stop at flag fall (0.876084ms)
+✔ undo restores a whole turn and protects branch history (1.496834ms)
+✔ threat arrows exclude illegal captures by pinned defenders (0.377292ms)
+✔ every observed bot profile can start with its declared local target (0.726583ms)
+✔ practice retains repetition history, blocks terminal starts and never awards roster crowns (5.114583ms)
+✔ curriculum has unique lessons, legal complete challenge lines and grounded promotion examples (11.772459ms)
+✔ lesson progress requires every challenge, survives reinstantiation and rejects stale identities (2.112916ms)
+✔ multi-move lesson credit and failed-save rollback preserve accepted progress (2.199208ms)
+✔ request validation rejects malformed notation, illegal history, FEN command injection and limit abuse (3.60525ms)
+✔ real Stockfish gives legal PVs, identity, limits and deterministic facts (455.8245ms)
+✔ advanced analysis uses actual Lite with five legal lines and preserves strict engine selection (444.586833ms)
+✔ full history distinguishes a repeated game from its identical FEN (180.378584ms)
+✔ terminal checkmate returns no fabricated move (177.689958ms)
+✔ scores retain White perspective when side to move changes (701.323ms)
+✔ played capture and promotion explanations are replay-derived (1029.778ms)
+✔ coach demonstrates the capture and material consequence of hanging a queen (660.976458ms)
+✔ missing binary is explicit and never falls back to invented analysis (1.78375ms)
+✔ engine admits two active requests and eight queued requests, then rejects overload (1239.325542ms)
+✔ unresponsive subprocess has a hard deadline (4054.493917ms)
+✔ legal castling and history-dependent en passant replay correctly (1.352166ms)
+✔ canceling active and queued analyses frees slots for the next position (328.819ms)
+✔ a final bestmove uses its own PV when a partial iteration changes the ranking (41.958333ms)
+✔ private hosting fails closed and rejects cross-site or oversized proxy requests (14.7ms)
+✔ position identity, first encounter, personal ownership, invalid input and read-only corpus (13.543959ms)
+✔ opening recognition preserves move order and distinguishes position matches from played lines (10.621ms)
+✔ opponent boundary rejects invalid engine, history, controls and completed games (3.971084ms)
+✔ UCI adapter sends complete history, checks readiness and refuses illegal engine moves (624.618708ms)
+▶ installed engines complete actual ready handshake and return a legal move with history
+  ✔ stockfish19 (272.468084ms)
+  ✔ stockfish18 (309.992084ms)
+  ✔ stockfish16 (299.786584ms)
+  ✔ stockfish18-lite (303.792791ms)
+  ✔ maia3 (1267.641041ms)
+  ✔ maia3-23m (753.234542ms)
+  ✔ maia3-5m (687.498917ms)
+  ✔ maia2 (1240.207875ms)
+  ✔ maia2-blitz (1217.792ms)
+  ✔ lc0 (167.166084ms)
+✔ installed engines complete actual ready handshake and return a legal move with history (13421.976625ms)
+✔ position validation admits check and en passant while rejecting contradictory rule state (1.859209ms)
+✔ local puzzle rating follows fixed Elo expectation and bounded changes (1.645417ms)
+✔ rated scoring is atomic and once-only; practice and daily cannot farm rating (72.155959ms)
+✔ daily is shared, pinned across rollover and restart, and credited once per account/date (65.607375ms)
+✔ Rush scores complete solutions once, increases difficulty and ends on three failed puzzles (70.243084ms)
+✔ timed Rush expires exactly at its server deadline across restart; Survival does not (65.796125ms)
+✔ Rush isolates accounts, excludes concurrent practice, and rolls back a failed atomic save (65.056834ms)
+✔ source trigger and every continuation replay legally; malformed lines fail closed (5.524167ms)
+✔ alternate immediate mates count once; skip, unavailable source and empty retry remain explicit (7.696583ms)
+✔ review practice hides answers, resumes hints and separates attempts from original history (5.768166ms)
+✔ review attempts validate engine evidence and accept strong alternatives without losing failures (4.095084ms)
+✔ annotated PGN preserves legal nested alternatives, comments, glyphs and black FEN move numbering (13.922834ms)
+✔ portable studies preserve exact tree identity and arbitrary note text without transplanting account or running state (4.081125ms)
+✔ PGN keeps the original boundary while carrying terminal continuations and adjacent comments (0.857708ms)
+✔ cancel while authentication waits does not dispatch (1.336084ms)
+✔ refresh failure does not prevent original start payload (0.530625ms)
+✔ puzzle resumes normalized full attempted moves using installed account (0.254708ms)
+✔ lesson and import retain submitted payload (0.312375ms)
+✔ changed exercise cancels queued action (0.170417ms)
+✔ late exercise response updates account progress but not another exercise (0.209ms)
+✔ late answer from different account is discarded (0.585083ms)
+✔ late initial guest account install must preserve queued import (0.192959ms)
+✔ older games refresh must not overwrite later completed refresh (0.335041ms)
+✔ position save resumes its exact submitted draft after authentication (0.430417ms)
+✔ opening practice resumes the selected line and ply after authentication (0.220917ms)
+✔ SAN and UCI preserve legal state; illegal moves fail (3.057875ms)
+✔ nested exploration retains full history and exact mainline anchor (2.243917ms)
+✔ promotion requires explicit piece and supports underpromotion (0.481167ms)
+✔ return anchor follows a selected branch root, including older roots (0.118542ms)
+✔ study limits accept their boundaries and reject additions without changing histories (0.211042ms)
+✔ clock polling cannot replace a newer game or its study, and clocks count only the active side (0.124333ms)
+✔ rematch preserves legacy strength semantics and exact modern game options (0.100209ms)
+✔ Black-first custom positions display the clock of the actual side to move (0.054708ms)
+ℹ tests 95
+ℹ suites 0
+ℹ pass 95
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 26724.587458
+python3 scripts/local_snapshot_test.py
+SQLite WAL snapshot and overwrite protection passed
+python3 scripts/import_puzzles_test.py
+Building catalogue indexes
+{"source": "https://database.lichess.org/#puzzles", "download": "https://database.lichess.org/lichess_db_puzzle.csv.zst", "license": "CC0-1.0", "archiveSha256": "2868e92c7fcf5ae170787f7c7577195d7ab83c977ab69f45f94b57726fa1a342", "archiveBytes": 269, "importedAt": "2026-09-13T08:11:54.815614+00:00", "count": 1, "themes": {"mate": 1, "mateIn2": 1, "middlegame": 1, "short": 1}, "validation": "Every source row structurally validated; each selected solution legally replayed before serving."}
+zstd: /var/folders/n0/4hwt0zvx1vx60vk91xlm1y700000gn/T/tmpkjz4a4m8/source.zst: unsupported format
+Puzzle import integrity, complete row, source hash and overwrite protection passed

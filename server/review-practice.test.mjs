@@ -11,6 +11,8 @@ test('review practice hides answers, resumes hints and separates attempts from o
  p=await advancePractice(p,game,{type:'hint'});assert.equal(practiceView(p,game).current.hint.square,'e2');assert.equal(practiceView(p,game).current.hint.move,undefined);
  p=await advancePractice(p,game,{type:'hint'});assert.equal(practiceView(p,game).current.hint.move,'e2e4');
  const before=structuredClone(game);p=await advancePractice(p,game,{type:'move',move:'e2e4'});assert.equal(p.current.outcome,'solved');p=await advancePractice(p,game,{type:'next'});view=practiceView(p,game);assert.equal(view.complete,true);assert.equal(view.summary.unassisted,0);assert.equal(view.summary.learned,1);assert.deepEqual(game,before);
+ const reordered=structuredClone(report);reordered.entries[0].analysis.lines.unshift({move:'a2a3',moves:['a2a3'],score:{type:'cp',value:-200}});assert.equal(beginPractice(game,reordered,'w').questions[0].line.move,'e2e4');
+ const missing=structuredClone(report);missing.entries[0].analysis.lines[0].move='a2a3';assert.throws(()=>beginPractice(game,missing,'w'),error=>error.status===503);
  assert.throws(()=>beginPractice(game,{...report,complete:false},'w'));assert.equal(beginPractice(game,report,'b').questions.length,0);
 });
 test('review attempts validate engine evidence and accept strong alternatives without losing failures',async()=>{

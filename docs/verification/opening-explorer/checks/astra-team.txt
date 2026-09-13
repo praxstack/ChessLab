@@ -1,0 +1,7 @@
+2026-09-13 07:50 UTC
+Native Astra Team check, root /private/tmp/chesslab-opening-explorer
+Command requested: node --test server/opening-explorer.test.mjs
+Result: isError=true
+astra-team: unsupported runtime; verified version is 0.153.4
+
+The validator checks the immutable native task session metadata. Installing a different CLI does not change that metadata. Both installed Astra Team and Astra Cursor Team require this gate. No policy or validator was edited; no independent-agent acceptance is claimed.

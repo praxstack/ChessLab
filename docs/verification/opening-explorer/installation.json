@@ -1,0 +1,41 @@
+{
+  "servedAssets": [
+    "/assets/index-CgxnLdX0.js",
+    "/assets/index-BmmFRWi_.css"
+  ],
+  "engine": {
+    "available": true,
+    "name": "Stockfish 19"
+  },
+  "explorerGames": 280155,
+  "guestMyGames": 401,
+  "exampleReplayPlies": 76,
+  "preservedTables": {
+    "bot_results": 0,
+    "collection_games": 0,
+    "daily_puzzles": 0,
+    "game_collections": 0,
+    "game_reviews": 0,
+    "games": 2,
+    "lesson_sessions": 0,
+    "progress": 0,
+    "puzzle_attempts": 0,
+    "puzzle_profiles": 0,
+    "puzzle_runs": 0,
+    "review_practice": 0,
+    "sessions": 1,
+    "users": 2
+  },
+  "integrity": "ok",
+  "installedAt": "2026-09-13T08:21:09.142780+00:00",
+  "testedSourceCommit": "7b8d067eb5d475ccac38e6e2f27d46a967059b28",
+  "verifiedFiles": 571,
+  "manifestSha256": "7c21d13e4c0b46c7fed8476de6a0e53e8991124a18fcb3e7c5d3d1b907ce4833",
+  "backup": "data/backups/before-opening-explorer-20260913.sqlite",
+  "localUrl": "http://127.0.0.1:8772/",
+  "pullRequest": "https://github.com/praxstack/ChessLab/pull/14",
+  "preservedWorkingChanges": [
+    " D design/imagine-refinements-run.txt",
+    " D design/imagine-refinements.txt"
+  ]
+}

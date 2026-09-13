@@ -153,3 +153,11 @@ test('canceling active and queued analyses frees slots for the next position', a
   const next=await analyze({moves:[],movetime:50,lines:1});
   assert.ok(next.bestmove);assert.ok(Date.now()-start<1500);
 });
+
+test('a final bestmove uses its own PV when a partial iteration changes the ranking',async()=>{
+ const directory=await mkdtemp(join(tmpdir(),'chesslab-ranking-')),binary=join(directory,'engine'),previous=process.env.STOCKFISH_PATH;
+ await writeFile(binary,`#!${process.execPath}\nlet buffer='';process.stdin.on('data',chunk=>{buffer+=chunk;let end;while((end=buffer.indexOf('\\n'))>=0){const line=buffer.slice(0,end);buffer=buffer.slice(end+1);if(line==='uci')console.log('id name Stockfish Ranking Fixture\\nuciok');else if(line==='isready')console.log('readyok');else if(line.startsWith('go '))console.log('info depth 10 multipv 1 score cp 20 pv d2d4 d7d5\\ninfo depth 10 multipv 2 score cp 10 pv e2e4 e7e5\\ninfo depth 11 multipv 1 score cp 30 pv e2e4 e7e5\\nbestmove e2e4');}});\n`,{mode:0o700});
+ process.env.STOCKFISH_PATH=binary;
+ try{const result=await analyze({moves:[],movetime:50,lines:2});assert.equal(result.bestmove,'e2e4');assert.equal(result.lines[0].move,result.bestmove);assert.equal(result.lines[0].score.value,10);assert.equal(result.lines.length,2);assert.equal(new Set(result.lines.map(line=>line.depth)).size,1);assert.equal(new Set(result.lines.map(line=>line.move)).size,2);assert.match(result.explanation,/Sample line: e4 → e5/);}
+ finally{if(previous===undefined)delete process.env.STOCKFISH_PATH;else process.env.STOCKFISH_PATH=previous;await rm(directory,{recursive:true,force:true});}
+});
