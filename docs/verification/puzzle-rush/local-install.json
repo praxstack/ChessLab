@@ -1,0 +1,26 @@
+{
+  "verifiedAt": "2026-09-13T04:55:59.117476+00:00",
+  "sourceCommit": "01433edcccaa7b17e746246bea9caf08714e2b52",
+  "url": "http://127.0.0.1:8772/",
+  "manifestFilesMatched": 508,
+  "engine": "Stockfish 19",
+  "puzzleCount": 6100952,
+  "servedAssets": [
+    "index-BENAAvI0.js",
+    "index-CA4yThfN.css"
+  ],
+  "servedBytesMatchBuild": true,
+  "guestModesVerified": [
+    "3 minutes",
+    "5 minutes",
+    "Survival"
+  ],
+  "backup": "data/backups/before-puzzle-rush-20260913.sqlite",
+  "backupCounts": {
+    "users": 2,
+    "games": 2,
+    "progress": 0
+  },
+  "pr": "https://github.com/praxstack/ChessLab/pull/8",
+  "originalMainClean": true
+}
