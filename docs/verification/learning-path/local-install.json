@@ -1,0 +1,25 @@
+{
+  "verifiedAt": "2026-09-13T05:25:35.755366+00:00",
+  "sourceCommit": "68dc1add07e175ac38a024102738f9e5b30aaa73",
+  "url": "http://127.0.0.1:8772/",
+  "manifestFilesMatched": 521,
+  "engine": "Stockfish 19",
+  "courses": 4,
+  "guidedLessons": 12,
+  "challenges": 24,
+  "preservedStarterLessons": 6,
+  "servedAssets": [
+    "index-CYNnHWHF.js",
+    "index-DmoOjb1o.css"
+  ],
+  "servedBytesMatchBuild": true,
+  "guestPathVerified": true,
+  "backup": "data/backups/before-learning-path-20260913.sqlite",
+  "backupCounts": {
+    "users": 2,
+    "games": 2,
+    "progress": 0
+  },
+  "pr": "https://github.com/praxstack/ChessLab/pull/9",
+  "originalMainClean": true
+}
