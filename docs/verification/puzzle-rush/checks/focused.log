@@ -1,0 +1,11 @@
+✔ Rush scores complete solutions once, increases difficulty and ends on three failed puzzles (112.112667ms)
+✔ timed Rush expires exactly at its server deadline across restart; Survival does not (51.787542ms)
+✔ Rush isolates accounts, excludes concurrent practice, and rolls back a failed atomic save (55.089791ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 304.025416

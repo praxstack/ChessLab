@@ -328,5 +328,13 @@ test('training attempts protect solutions, ownership, revisions, hints and histo
   const revealed=await request('/api/training/'+a.id+'/action',{action:'reveal',revision:0});assert.equal(revealed.body.attempt.state,'revealed');assert.deepEqual(revealed.body.attempt.solution,sourceMoves.slice(1));
   assert.equal((await request('/api/training/start',{fromAttempt:a.id},other.cookie)).status,404);
   status=(await f.request('/api/training',{cookie})).body;assert.equal(status.totals.attempts,2);assert.equal(status.totals.solved,1);
+  assert.equal((await f.request('/api/rush')).status,401);
+  let rush=(await request('/api/rush/start',{variant:'survival'})).body.run;assert.ok(rush.id);const rushRoute='/api/rush/'+rush.id;
+  assert.equal((await f.request(rushRoute,{cookie:other.cookie})).status,404);assert.equal((await request(rushRoute+'/retry',{index:0},other.cookie)).status,404);
+  const firstRushMove=await request(rushRoute+'/action',{action:'move',move:sourceMoves[1],revision:0});assert.equal(firstRushMove.status,200);rush=firstRushMove.body.run;assert.equal(rush.score,0);assert.equal(rush.items.length,0);assert.deepEqual(rush.current.moves,sourceMoves.slice(1,3));assert.equal(rush.current.puzzle.solution,undefined);
+  await f.restart();assert.equal((await f.request('/api/training',{cookie})).body.rush.id,rush.id);assert.deepEqual((await f.request('/api/rush',{cookie})).body.run.current.moves,rush.current.moves);
+  rush=(await request(rushRoute+'/action',{action:'move',move:sourceMoves[3],revision:rush.revision})).body.run;assert.equal(rush.score,1);assert.equal(rush.state,'finished');assert.equal(rush.reason,'catalogue');
+  const rushRetry=await request(rushRoute+'/retry',{index:0});assert.equal(rushRetry.status,201);assert.equal(rushRetry.body.attempt.mode,'custom');assert.equal(rushRetry.body.attempt.puzzle.id,row.id);
+
  }finally{await f.close();rmSync(temp,{recursive:true,force:true});}
 });

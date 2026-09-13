@@ -2,6 +2,7 @@ import {DatabaseSync} from 'node:sqlite';
 import {existsSync} from 'node:fs';
 import {createHash,randomInt,randomUUID} from 'node:crypto';
 import {Chess} from 'chess.js';
+import {createRush} from './puzzle-rush.mjs';
 
 const fail=(status,message)=>{throw Object.assign(new Error(message),{status});};
 const movePattern=/^[a-h][1-8][a-h][1-8][qrbn]?$/;
@@ -14,6 +15,25 @@ export function preparePuzzle(row){
  const trigger=play(board,moves[0]),fen=board.fen(),side=board.turn();
  for(const move of moves.slice(1))play(board,move);
  return {id:row.id,initialFen:row.fen,fen,side,trigger:moves[0],triggerSan:trigger.san,solution:moves.slice(1),rating:row.rating,themes:row.themes.split(' '),gameUrl:row.game_url,openingTags:row.opening_tags};
+}
+function advancePuzzle(a,body){
+  const board=new Chess(a.puzzle.fen);for(const move of a.moves)play(board,move);
+  let correct=null,message;
+  if(body.action==='move'){
+   if(typeof body.move!=='string'||!movePattern.test(body.move))fail(400,'Submit one coordinate move.');
+   let played;try{played=play(board,body.move);}catch{fail(400,'That move is not legal in this position.');}
+   const alternateMate=board.isCheckmate();correct=body.move===a.puzzle.solution[a.moves.length]||alternateMate;
+   if(correct){
+    a.hint=null;a.moves.push(body.move);
+    if(alternateMate||a.moves.length===a.puzzle.solution.length){a.state='solved';message=alternateMate?`${played.san} is checkmate.`:'You completed the verified source line.';}
+    else {const reply=a.puzzle.solution[a.moves.length];play(board,reply);a.moves.push(reply);message='Correct. Find your continuation after the reply.';}
+   }else{a.mistakes++;message='That is not the source solution. The position is unchanged; try again.';}
+  }else if(body.action==='hint'){
+   a.assisted=true;a.hint=a.puzzle.solution[a.moves.length].slice(0,2);message=`Look at the piece on ${a.hint}. This attempt now uses assistance.`;
+  }else if(body.action==='reveal'){a.assisted=true;a.state='revealed';a.moves=[...a.puzzle.solution];message='Solution revealed. Play through it or analyze the position.';}
+  else if(body.action==='skip'){a.state='skipped';message='Puzzle skipped. You can return to it from recent attempts.';}
+  else fail(400,'Choose move, hint, reveal or skip.');
+  return {correct,message};
 }
 export function createTrainer({db,cataloguePath,nowMs=Date.now,insertStudy}){
  const source=existsSync(cataloguePath)?new DatabaseSync(cataloguePath,{readOnly:true}):null;
@@ -39,10 +59,11 @@ export function createTrainer({db,cataloguePath,nowMs=Date.now,insertStudy}){
   const attempt=today?JSON.parse(today.data):null;return {date,streak,completedDates,today:attempt?{id:attempt.id,state:attempt.state,assisted:attempt.assisted}:null};
  };
  const state=userId=>{
+  const activeRush=rush.active(userId);
   const active=db.prepare("SELECT data FROM puzzle_attempts WHERE user_id=? AND state='active'").get(userId);
   const history=db.prepare("SELECT data FROM puzzle_attempts WHERE user_id=? AND state!='active' ORDER BY updated_at DESC,rowid DESC LIMIT 20").all(userId).map(row=>{const a=JSON.parse(row.data);return {id:a.id,mode:a.mode||'custom',ratingChange:a.ratingChange||null,dailyDate:a.dailyDate||null,puzzleId:a.puzzle.id,rating:a.puzzle.rating,themes:a.puzzle.themes,state:a.state,mistakes:a.mistakes,assisted:a.assisted,updatedAt:a.updatedAt};});
   const totals=db.prepare(`SELECT COUNT(*) attempts,COALESCE(SUM(state='solved'),0) solved,COALESCE(SUM(state='solved' AND json_extract(data,'$.mistakes')=0 AND json_extract(data,'$.assisted')=0),0) unassisted FROM puzzle_attempts WHERE user_id=? AND state!='active'`).get(userId);
-  return {attempt:active?visible(JSON.parse(active.data)):null,history,totals,profile:profile(userId),daily:dailyProgress(userId)};
+  return {rush:activeRush?{id:activeRush.id}:null,attempt:active?visible(JSON.parse(active.data)):null,history,totals,profile:profile(userId),daily:dailyProgress(userId)};
  };
  const filters=body=>{
   const theme=body.theme??'',min=body.min??800,max=body.max??1800,failedOnly=body.failedOnly??false;
@@ -56,6 +77,7 @@ export function createTrainer({db,cataloguePath,nowMs=Date.now,insertStudy}){
   try{return preparePuzzle(source.prepare('SELECT * FROM puzzles WHERE seq=?').get(selected.seq));}catch{fail(422,'This source puzzle has an invalid line. Choose another puzzle.');}
  }
  function start(userId,body){
+  if(rush.active(userId))fail(409,'Finish your current Rush run first.');
   const mode=body.fromAttempt!==undefined?'custom':body.mode??'custom';if(!['custom','rated','daily'].includes(mode))fail(400,'Choose rated, daily or custom mode.');
   const date=localDay(nowMs());
   if(mode==='daily'){
@@ -90,7 +112,11 @@ export function createTrainer({db,cataloguePath,nowMs=Date.now,insertStudy}){
     }else puzzle=selectPuzzle(theme,min,max);
    }
   }
-  const attempt={id:randomUUID(),mode,difficulty,dailyDate:mode==='daily'?date:null,ratingChange:null,puzzle,moves:[],revision:0,state:'active',mistakes:0,assisted:false,hint:null,createdAt:nowMs(),updatedAt:nowMs()};
+  return insertAttempt(userId,puzzle,{mode,difficulty,dailyDate:mode==='daily'?date:null});
+ }
+ function insertAttempt(userId,puzzle,{mode='custom',difficulty=null,dailyDate=null}={}){
+  if(db.prepare("SELECT id FROM puzzle_attempts WHERE user_id=? AND state='active'").get(userId))fail(409,'Finish, reveal or skip the current puzzle first.');
+  const attempt={id:randomUUID(),mode,difficulty,dailyDate,ratingChange:null,puzzle,moves:[],revision:0,state:'active',mistakes:0,assisted:false,hint:null,createdAt:nowMs(),updatedAt:nowMs()};
   db.prepare('INSERT INTO puzzle_attempts VALUES (?,?,?,?,?)').run(attempt.id,userId,attempt.state,attempt.updatedAt,JSON.stringify(attempt));return visible(attempt);
  }
  function score(userId,a){
@@ -102,24 +128,19 @@ export function createTrainer({db,cataloguePath,nowMs=Date.now,insertStudy}){
  function act(userId,id,body){
   const a=owned(userId,id);if(!Number.isInteger(body.revision)||body.revision!==a.revision)fail(409,'This attempt changed. Reload it before continuing.');
   if(a.state!=='active')fail(409,'This puzzle attempt is already finished.');
-  const board=new Chess(a.puzzle.fen);for(const move of a.moves)play(board,move);
-  let correct=null,message;
-  if(body.action==='move'){
-   if(typeof body.move!=='string'||!movePattern.test(body.move))fail(400,'Submit one coordinate move.');
-   let played;try{played=play(board,body.move);}catch{fail(400,'That move is not legal in this position.');}
-   const alternateMate=board.isCheckmate();correct=body.move===a.puzzle.solution[a.moves.length]||alternateMate;
-   if(correct){
-    a.hint=null;a.moves.push(body.move);
-    if(alternateMate||a.moves.length===a.puzzle.solution.length){a.state='solved';message=alternateMate?`${played.san} is checkmate.`:'You completed the verified source line.';}
-    else {const reply=a.puzzle.solution[a.moves.length];play(board,reply);a.moves.push(reply);message='Correct. Find your continuation after the reply.';}
-   }else{a.mistakes++;message='That is not the source solution. The position is unchanged; try again.';}
-  }else if(body.action==='hint'){
-   a.assisted=true;a.hint=a.puzzle.solution[a.moves.length].slice(0,2);message=`Look at the piece on ${a.hint}. This attempt now uses assistance.`;
-  }else if(body.action==='reveal'){a.assisted=true;a.state='revealed';a.moves=[...a.puzzle.solution];message='Solution revealed. Play through it or analyze the position.';}
-  else if(body.action==='skip'){a.state='skipped';message='Puzzle skipped. You can return to it from recent attempts.';}
-  else fail(400,'Choose move, hint, reveal or skip.');
+  const {correct,message}=advancePuzzle(a,body);
   a.revision++;let attempt;db.exec('BEGIN IMMEDIATE');try{score(userId,a);attempt=store(userId,a);db.exec('COMMIT');}catch(error){db.exec('ROLLBACK');throw error;}return {attempt,correct,message,profile:profile(userId),daily:dailyProgress(userId)};
  }
  function study(userId,id){const a=owned(userId,id);if(a.state==='active')fail(409,'Finish or reveal the puzzle before analysis.');return insertStudy(userId,{title:`Puzzle ${a.puzzle.id}`,source:'import',initialFen:a.puzzle.initialFen,moves:[a.puzzle.trigger,...(a.state==='solved'?a.moves:a.puzzle.solution)],headers:{White:'Puzzle White',Black:'Puzzle Black'},puzzleSource:{id:a.puzzle.id,url:a.puzzle.gameUrl,rating:a.puzzle.rating,themes:a.puzzle.themes}});}
- return {catalogue,state,start,act,study,get:(userId,id)=>visible(owned(userId,id)),close:()=>source?.close()};
+ const rush=createRush({db,nowMs,advancePuzzle,insertPractice:insertAttempt,selectPuzzle:(min,seen)=>{
+  if(!source)fail(503,'Install the local puzzle catalogue before starting Rush.');
+  const lookup=source.prepare('SELECT seq FROM puzzles WHERE id=?'),excluded=JSON.stringify(seen.map(id=>lookup.get(id)?.seq).filter(Number.isInteger));
+  const floor=source.prepare("SELECT rating FROM pool WHERE theme='' AND rating>=? AND seq NOT IN (SELECT value FROM json_each(?)) ORDER BY rating LIMIT 1").get(min,excluded)?.rating;
+  if(floor===undefined)return null;
+  const count=source.prepare("SELECT COUNT(*) count FROM pool WHERE theme='' AND rating BETWEEN ? AND ? AND seq NOT IN (SELECT value FROM json_each(?))").get(floor,Math.min(5000,floor+120),excluded).count;
+  const selected=source.prepare("SELECT seq FROM pool WHERE theme='' AND rating BETWEEN ? AND ? AND seq NOT IN (SELECT value FROM json_each(?)) LIMIT 1 OFFSET ?").get(floor,Math.min(5000,floor+120),excluded,randomInt(count));
+  const row=source.prepare('SELECT * FROM puzzles WHERE seq=?').get(selected.seq);
+  try{return preparePuzzle(row);}catch{fail(422,'This source puzzle has an invalid line. Try starting again.');}
+ }});
+ return {rush,catalogue,state,start,act,study,get:(userId,id)=>visible(owned(userId,id)),close:()=>source?.close()};
 }

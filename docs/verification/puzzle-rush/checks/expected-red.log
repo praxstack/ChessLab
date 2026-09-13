@@ -1,0 +1,64 @@
+✖ Rush scores complete solutions once, increases difficulty and ends on three failed puzzles (46.351625ms)
+✖ timed Rush expires exactly at its server deadline across restart; Survival does not (42.089125ms)
+✖ Rush isolates accounts, excludes concurrent practice, and rolls back a failed atomic save (43.815333ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 0
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 191.794625
+
+✖ failing tests:
+
+test at server/puzzle-rush.test.mjs:18:1
+✖ Rush scores complete solutions once, increases difficulty and ends on three failed puzzles (46.351625ms)
+  TypeError: Cannot read properties of undefined (reading 'start')
+      at TestContext.<anonymous> (file://<checkout>/server/puzzle-rush.test.mjs:20:26)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+
+test at server/puzzle-rush.test.mjs:31:1
+✖ timed Rush expires exactly at its server deadline across restart; Survival does not (42.089125ms)
+  TypeError: Cannot read properties of undefined (reading 'start')
+      at TestContext.<anonymous> (file://<checkout>/server/puzzle-rush.test.mjs:34:27)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+
+test at server/puzzle-rush.test.mjs:40:1
+✖ Rush isolates accounts, excludes concurrent practice, and rolls back a failed atomic save (43.815333ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /mode/. Input:
+
+  "TypeError: Cannot read properties of undefined (reading 'start')"
+
+      at TestContext.<anonymous> (file://<checkout>/server/puzzle-rush.test.mjs:42:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: TypeError: Cannot read properties of undefined (reading 'start')
+        at file://<checkout>/server/puzzle-rush.test.mjs:42:36
+        at getActual (node:assert:580:5)
+        at strict.throws (node:assert:728:24)
+        at TestContext.<anonymous> (file://<checkout>/server/puzzle-rush.test.mjs:42:10)
+        at Test.runInAsyncScope (node:async_hooks:226:14)
+        at Test.run (node:internal/test_runner/test:1402:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+        at Test.postRun (node:internal/test_runner/test:1542:19)
+        at Test.run (node:internal/test_runner/test:1467:12)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: /mode/,
+    operator: 'throws',
+    diff: 'simple'
+  }

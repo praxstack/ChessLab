@@ -275,6 +275,11 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   if(settleClock(fresh,nowMs()))return res.json({analysis:null,feedback:null,threats:[],game:storeGame(req.user.id,fresh,fresh.revision)});
   res.json({analysis,feedback,threats:help.threats?attackedPieces(game):[],game:fresh});
  });
+ app.get('/api/rush',(req,res)=>res.json(trainer.rush.state(req.user.id)));
+ app.post('/api/rush/start',(req,res)=>res.status(201).json(trainer.rush.start(req.user.id,req.body)));
+ app.get('/api/rush/:id',(req,res)=>res.json(trainer.rush.get(req.user.id,req.params.id)));
+ app.post('/api/rush/:id/action',(req,res)=>res.json(trainer.rush.act(req.user.id,req.params.id,req.body)));
+ app.post('/api/rush/:id/retry',(req,res)=>res.status(201).json({attempt:trainer.rush.retry(req.user.id,req.params.id,req.body.index)}));
  app.get('/api/training',(req,res)=>res.json(trainer.state(req.user.id)));
  app.post('/api/training/start',(req,res)=>res.status(201).json({attempt:trainer.start(req.user.id,req.body)}));
  app.get('/api/training/:id',(req,res)=>res.json({attempt:trainer.get(req.user.id,req.params.id)}));
