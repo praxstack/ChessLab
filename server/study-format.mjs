@@ -1,11 +1,12 @@
 import {Chess} from 'chess.js';
+import {gameVariant} from '../shared/chess.js';
 import {validateMarks,readMarkComment,writeMarkComment} from '../shared/board-marks.js';
 import {parse} from 'chess.js/src/pgn.js';
 import {randomUUID} from 'node:crypto';
 import {replay} from './engine.mjs';
 import {validatePosition as rawPosition} from '../shared/position.js';
 const fail=(status,message)=>{throw Object.assign(new Error(message),{status});};
-function validatePosition(fen){try{return rawPosition(fen);}catch(error){fail(400,error.message);}}
+function validatePosition(fen,variant){try{return rawPosition(fen,variant);}catch(error){fail(400,error.message);}}
 const uci=m=>m.from+m.to+(m.promotion||'');
 export function validateStudy(study, game) {
  if (!study || study.version !== 1 || !Array.isArray(study.branches) || study.branches.length > 40) fail(400, 'This study format is invalid or too large.');
@@ -16,7 +17,7 @@ export function validateStudy(study, game) {
   if (!Number.isInteger(b.anchorPly) || b.anchorPly < 0 || !Array.isArray(b.moves) || b.anchorPly > b.moves.length) fail(400, 'A branch has an invalid starting point.');
   total += b.moves.length;
   if (total > 5000) fail(400, 'This study has too many moves. Export or split the study before adding more.');
-  replay(b.moves, game.initialFen);
+  replay(b.moves, game.initialFen, game.variant);
   if (b.question !== undefined && (typeof b.question !== 'string' || b.question.length > 2000)) fail(400, 'Keep each question under 2000 characters.');
   if (b.parentId !== null && b.parentId !== undefined && typeof b.parentId !== 'string') fail(400, 'Invalid branch parent.');
   return {id:b.id,parentId:b.parentId || null,anchorPly:b.anchorPly,moves:b.moves,question:b.question || ''};
@@ -55,11 +56,12 @@ const glyphs={'!':1,'?':2,'!!':3,'??':4,'!?':5,'?!':6};
 export function readAnnotatedPgn(pgn){
  if(typeof pgn!=='string'||pgn.length<3||Buffer.byteLength(pgn)>900000)fail(400,'Import a PGN between 3 characters and 900 KB.');
  let parsed;try{parsed=parse(pgn);}catch{fail(400,'This PGN contains an invalid position, move or variation.');}
- const initialFen=parsed.headers.FEN||null;if(initialFen)validatePosition(initialFen);
+ const tag=parsed.headers.Variant;let variant;if(tag===undefined||tag==='Standard')variant='standard';else if(['Chess960','Fischerandom','FischerRandom','Fischer Random'].includes(tag))variant='chess960';else fail(400,'Only Standard and Chess960 PGNs are supported.');
+ const initialFen=parsed.headers.FEN||null;if(variant==='chess960'&&!initialFen)fail(400,'A Chess960 PGN needs its starting FEN.');if(initialFen)validatePosition(initialFen,variant);
  const study={version:1,branches:[],selectedBranchId:null,anchorPly:0,annotations:[]};let total=0;
  const note=(node,branchId,ply)=>{const nags=[...(node.nag||[]).map(Number),...(glyphs[node.suffix?.join('')]?[glyphs[node.suffix.join('')]]:[])];let parsed;try{parsed=readMarkComment(node.comment||'');}catch(error){fail(400,error.message); }if(parsed.comment||nags.length||parsed.marks.length)study.annotations.push({branchId,ply,comment:parsed.comment,nags:[...new Set(nags)],...(parsed.marks.length?{marks:parsed.marks}:{})});};
  function line(root,prefix,branchId){
-  const board=replay(prefix,initialFen),moves=[...prefix];let cursor=root;if(!branchId)note(root,null,moves.length);else{let parsed;try{parsed=readMarkComment(root.comment||'');}catch(error){fail(400,error.message);}if(parsed.marks.length)study.annotations.push({branchId,ply:moves.length,comment:'',nags:[],marks:parsed.marks});}
+  const board=replay(prefix,initialFen,variant),moves=[...prefix];let cursor=root;if(!branchId)note(root,null,moves.length);else{let parsed;try{parsed=readMarkComment(root.comment||'');}catch(error){fail(400,error.message);}if(parsed.marks.length)study.annotations.push({branchId,ply:moves.length,comment:'',nags:[],marks:parsed.marks});}
   while(cursor.variations?.length){
    for(const alternative of cursor.variations.slice(1)){
     if(study.branches.length>=40)fail(400,'Import at most 40 variations.');
@@ -82,9 +84,9 @@ export function readAnnotatedPgn(pgn){
    study.branches.unshift(branch);moves=moves.slice(0,n);
   }
  }
- const board=replay(moves,initialFen),result=board.isCheckmate()?(board.turn()==='w'?'0-1':'1-0'):board.isDraw()?'1/2-1/2':['1-0','0-1','1/2-1/2'].includes(parsed.result||parsed.headers.Result)?parsed.result||parsed.headers.Result:null;
+ const board=replay(moves,initialFen,variant),result=board.isCheckmate()?(board.turn()==='w'?'0-1':'1-0'):board.isDraw()?'1/2-1/2':['1-0','0-1','1/2-1/2'].includes(parsed.result||parsed.headers.Result)?parsed.result||parsed.headers.Result:null;
  const headers=Object.fromEntries(Object.entries(parsed.headers).filter(([k,v])=>/^[A-Za-z]+$/.test(k)&&typeof v==='string'&&v.length<=500));
- const game={title:`${headers.White||'White'} vs ${headers.Black||'Black'}`.slice(0,100),source:'import',positionSetup:!moves.length,moves,initialFen,result,headers};game.study=validateStudy(study,game);return game;
+ const game={title:`${headers.White||'White'} vs ${headers.Black||'Black'}`.slice(0,100),source:'import',positionSetup:!moves.length,moves,initialFen,...(variant==='chess960'?{variant}:{}),result,headers};game.study=validateStudy(study,game);return game;
 }
 export function writeAnnotatedPgn(game,username){
  const study=game.study||{branches:[]},annotations=study.annotations||[];
@@ -93,7 +95,7 @@ export function writeAnnotatedPgn(game,username){
  const annotation=a=>a?[...(a.nags||[]).map(n=>`$${n}`),comment(writeMarkComment(a.comment,a.marks))].filter(Boolean).join(' '):'';
  const children=(branchId,ply)=>study.branches.filter(b=>b.parentId===branchId&&b.anchorPly===ply);
  function line(moves,branchId,start=0,extra=[]){
-  const board=replay(moves.slice(0,start),game.initialFen),branch=study.branches.find(b=>b.id===branchId),out=[comment(writeMarkComment([branch?.question,at(branchId,start)?.comment].filter(Boolean).join(' — '),at(branchId,start)?.marks))].filter(Boolean);
+  const board=replay(moves.slice(0,start),game.initialFen,game.variant),branch=study.branches.find(b=>b.id===branchId),out=[comment(writeMarkComment([branch?.question,at(branchId,start)?.comment].filter(Boolean).join(' — '),at(branchId,start)?.marks))].filter(Boolean);
   for(let i=start;i<moves.length;i++){
    const prefix=board.turn()==='w'?`${board.fen().split(' ')[5]}. `:i===start?`${board.fen().split(' ')[5]}... `:'';
    const move=board.move({from:moves[i].slice(0,2),to:moves[i].slice(2,4),promotion:moves[i][4]});out.push(`${prefix}${move.san}`,annotation(at(branchId,i+1)));
@@ -107,16 +109,17 @@ export function writeAnnotatedPgn(game,username){
  }
  const headers={...game.headers,ChessLabOriginalPly:String(game.moves.length),Event:game.headers?.Event||'ChessLab study',White:game.source==='import'?game.headers?.White||'White':game.color==='w'?username:game.botName||'ChessLab bot',Black:game.source==='import'?game.headers?.Black||'Black':game.color==='b'?username:game.botName||'ChessLab bot',Result:game.result||'*'};
  if(game.initialFen||!game.moves.length){headers.SetUp='1';headers.FEN=game.initialFen||new Chess().fen();}else{delete headers.SetUp;delete headers.FEN;}
+ if(game.variant==='chess960')headers.Variant='Chess960';else delete headers.Variant;
  if(game.opening){headers.ECO=game.opening.eco;headers.Opening=game.opening.name;}
  const tags=Object.entries(headers).filter(([k,v])=>/^[A-Za-z]+$/.test(k)&&typeof v==='string').map(([k,v])=>`[${k} "${v.replace(/["\\\r\n]/g,' ')}"]`).join('\n');
  return `${tags}\n\n${line(game.moves,null).replace(/}\s*{/g,' — ')} ${game.result||'*'}\n`;
 }
-export function portableStudy(game,username='Player'){return {format:'chesslab-study',version:1,game:{title:game.title,initialFen:game.initialFen||null,moves:game.moves,result:game.result||null,headers:game.source==='bot'?{...game.headers,White:game.color==='w'?username:game.botName||'ChessLab bot',Black:game.color==='b'?username:game.botName||'ChessLab bot'}:game.headers||{},study:game.study||{version:1,branches:[],selectedBranchId:null,anchorPly:0}}};}
+export function portableStudy(game,username='Player'){return {format:'chesslab-study',version:1,game:{title:game.title,...(game.variant==='chess960'?{variant:game.variant}:{}),initialFen:game.initialFen||null,moves:game.moves,result:game.result||null,headers:game.source==='bot'?{...game.headers,White:game.color==='w'?username:game.botName||'ChessLab bot',Black:game.color==='b'?username:game.botName||'ChessLab bot'}:game.headers||{},study:game.study||{version:1,branches:[],selectedBranchId:null,anchorPly:0}}};}
 export function readPortableStudy(value){
  if(!value||value.format!=='chesslab-study'||value.version!==1||!value.game||typeof value.game!=='object')fail(400,'Choose a supported ChessLab study file.');
- const g=value.game;if(typeof g.title!=='string'||!g.title.trim()||g.title.length>100||!Array.isArray(g.moves)||g.moves.length>1000||![null,'1-0','0-1','1/2-1/2'].includes(g.result))fail(400,'Invalid study title, moves or result.');
- if(g.initialFen!==null){if(typeof g.initialFen!=='string')fail(400,'Invalid starting position.');validatePosition(g.initialFen);}
- replay(g.moves,g.initialFen);
+ const g=value.game;let variant;try{variant=gameVariant(g.variant);}catch(error){fail(400,error.message);}if(variant==='chess960'&&!g.initialFen)fail(400,'A Chess960 study needs its starting FEN.');if(typeof g.title!=='string'||!g.title.trim()||g.title.length>100||!Array.isArray(g.moves)||g.moves.length>1000||![null,'1-0','0-1','1/2-1/2'].includes(g.result))fail(400,'Invalid study title, moves or result.');
+ if(g.initialFen!==null){if(typeof g.initialFen!=='string')fail(400,'Invalid starting position.');validatePosition(g.initialFen,variant);}
+ replay(g.moves,g.initialFen,variant);
  if(!g.headers||typeof g.headers!=='object'||Array.isArray(g.headers)||Object.keys(g.headers).length>100||Object.entries(g.headers).some(([k,v])=>!/^[A-Za-z]+$/.test(k)||typeof v!=='string'||v.length>500))fail(400,'Invalid study headers.');
- const game={title:g.title,initialFen:g.initialFen,moves:g.moves,result:g.result,headers:g.headers,source:'import',positionSetup:!g.moves.length};game.study=validateStudy(g.study,game);return game;
+ const game={title:g.title,...(variant==='chess960'?{variant}:{}),initialFen:g.initialFen,moves:g.moves,result:g.result,headers:g.headers,source:'import',positionSetup:!g.moves.length};game.study=validateStudy(g.study,game);return game;
 }

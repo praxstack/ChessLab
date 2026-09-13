@@ -118,3 +118,13 @@ data/explorer/.venv/bin/python scripts/import_explorer.py data/explorer/lichess_
 ```
 
 The importer refuses overwrite, rejects illegal/nonstandard/unfinished games, records source SHA-256 and counts, checks SQLite integrity and atomically publishes only the completed database. It does not download during application use. The Python package is used only for offline imports; the web runtime retains React, Express, chess.js and native SQLite/engines.
+
+## Chess960
+
+Game options → Game type → Chess960 starts one of 960 numbered positions. Leave the number blank for a random start, or choose 0–959; position 518 is the familiar arrangement under Chess960 rules. Rematch keeps the starting number. The saved variant remains attached after castling rights disappear.
+
+Castle by clicking or dragging your king onto its rook, or type O-O / O-O-O. The king finishes on g/c and the rook on f/d, including positions where either piece stays put. PGN imports/exports use `Variant "Chess960"` and the starting FEN; study JSON preserves the variant and exact tree. Position practice retains the source variant. The position editor offers Chess960 with rook-file castling rights.
+
+The four installed Stockfish versions and Leela support the required protocol. Maia models are Standard only and unavailable for Chess960 selection. Named openings, public game frequencies and puzzle corpora remain Standard chess. These are local bot simulations, not proprietary Chess.com behavior.
+
+Chess960 rules use pinned [chessops 0.15.1](https://github.com/niklasf/chessops), GPL-3.0-or-later. Its [license](../web/public/licenses/chessops/LICENSE.txt) and [source archive](../web/public/licenses/chessops/chessops-0.15.1-source.tar.gz) ship locally under `/licenses/chessops/`. Existing chess.js rules still govern Standard. Differential checks use the already-installed python-chess 1.11.2 at `data/explorer/.venv/bin/python`; override `CHESSLAB_ORACLE_PYTHON` for an equivalent local installation. No rules, engines or weights require a remote service at runtime.

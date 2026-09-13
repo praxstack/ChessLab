@@ -1,0 +1,52 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdtempSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {createApp} from './app.mjs';
+import {replay} from './engine.mjs';
+import {chess960Fen} from '../shared/chess.js';
+import {positionKey} from './game-review.mjs';
+import {rematchOptions} from '../web/src/chess-state.js';
+
+test('Chess960 remains owned and variant-aware through play, undo, practice, study, export and restart',async()=>{
+ const dir=mkdtempSync(join(tmpdir(),'chess960-api-')),calls=[];
+ const analyze=async input=>{assert.equal(input.variant,'chess960');calls.push(input);const b=replay(input.moves,input.initialFen,input.variant),m=b.moves({verbose:true})[0],move=m.from+m.to+(m.promotion||'');return {engine:'variant test',fen:b.fen(),bestmove:move,lines:[{move,moves:[move],san:[m.san],score:{type:'cp',value:0},depth:1}]};};
+ const options={databasePath:join(dir,'test.sqlite'),engineApi:{engineStatus:async()=>({available:true,name:'variant test'}),analyze},opponentApi:{listOpponentEngines:async()=>[{id:'stockfish19',available:true,chess960:true},{id:'maia3',available:true,chess960:false}],chooseOpponentMove:async input=>({move:(await analyze(input)).bestmove,engine:'variant test'})}};
+ let state=createApp(options),server=state.app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
+ let base=`http://127.0.0.1:${server.address().port}`,cookie;
+ const request=async(path,body,status=200,as=cookie)=>{const r=await fetch(base+path,{method:body===undefined?'GET':'POST',headers:{'content-type':'application/json',...(as?{cookie:as}:{})},body:body===undefined?undefined:JSON.stringify(body)});assert.equal(r.status,status,path+' '+(r.status===status?'':await r.clone().text()));return r;};
+ const json=async(path,body,status=200)=>(await request(path,body,status)).json();
+ try{
+  cookie=(await request('/api/register',{username:'variant-owner',password:'synthetic-password'},201)).headers.get('set-cookie').split(';')[0];
+  const other=(await request('/api/register',{username:'variant-other',password:'synthetic-password'},201,null)).headers.get('set-cookie').split(';')[0];
+  for(const body of [{variant:'atomic'},{variant:null},{variant:'chess960',positionNumber:960},{variant:'chess960',positionNumber:'42'},{variant:'standard',positionNumber:42},{variant:'chess960',engineId:'maia3'}])await request('/api/games',body,400);
+  let game=(await json('/api/games',{variant:'chess960',positionNumber:42,engineId:'stockfish19',color:'w'},201)).game;
+  assert.equal(game.initialFen,chess960Fen(42));assert.equal(game.variant,'chess960');assert.equal(rematchOptions(game,{}).positionNumber,42);
+  await request('/api/games/'+game.id,undefined,404,other);
+  let route='/api/games/'+game.id;
+  game=(await json(route+'/move',{move:'e2e4',revision:0})).game;
+  game=(await json(route+'/bot',{revision:1})).game;assert.equal(game.moves.length,2);assert.equal(calls.length,1);
+  game=(await json(route+'/undo',{revision:2})).game;assert.deepEqual(game.moves,[]);assert.equal(game.initialFen,chess960Fen(42));
+  const pgn='[Variant "Chess960"]\n[SetUp "1"]\n[FEN "4k3/8/8/8/8/8/8/R4K1R w HA - 0 1"]\n[White "Synthetic White"]\n[Black "Synthetic Black"]\n\n1. O-O (1. Kg1 Kd7 (1... Kf7)) Kd7 *';
+  const source=(await json('/api/import',{pgn},201)).game;assert.equal(source.variant,'chess960');assert.deepEqual(source.moves,['f1h1','e8d7']);assert.equal(source.study.branches.length,2);
+  const exported=await (await request('/api/games/'+source.id+'/pgn')).text();assert.match(exported,/\[Variant "Chess960"\]/);assert.match(exported,/1\. O-O/);
+  const imported=(await json('/api/import',{pgn:exported},201)).game;assert.deepEqual(imported.moves,source.moves);assert.equal(imported.study.branches.length,2);
+  const portable=await (await request('/api/games/'+source.id+'/study-file')).json();
+  const copied=(await json('/api/import-study',portable,201)).game;assert.equal(copied.variant,'chess960');assert.deepEqual(copied.study,source.study);
+  state.db.prepare('UPDATE games SET data=? WHERE id=?').run(JSON.stringify({...copied,updatedAt:'2000-01-01T00:00:00.000Z'}),copied.id);
+  const saved=(await json('/api/games/'+copied.id+'/study',{study:copied.study,studyRevision:0})).game;
+  assert.deepEqual(saved,(await json('/api/games/'+copied.id)).game,'Study-save response must equal the committed record');
+  const practice=(await json('/api/games/'+source.id+'/practice',{revision:0,ply:0,engineId:'stockfish19',color:'w',variant:'standard'},201)).game;
+  assert.equal(practice.variant,'chess960','source rules override a mismatching setup choice');assert.equal(practice.positionNumber,null);route='/api/games/'+practice.id;
+  game=(await json(route+'/move',{move:'f1h1',revision:0})).game;assert.equal(replay(game.moves,game.initialFen,game.variant).get('g1').type,'k');assert.equal(replay(game.moves,game.initialFen,game.variant).get('f1').type,'r');
+  await json(route+'/bot',{revision:1});assert.equal(calls.at(-1).variant,'chess960');
+  assert.deepEqual((await json('/api/games/'+source.id)).game,source);
+  assert.notEqual(positionKey(source),positionKey({...source,variant:'standard'}));
+  await request('/api/import',{pgn:pgn.replace('[Variant "Chess960"]','[Variant "Atomic"]')},400);
+  await request('/api/import-study',{...portable,game:{...portable.game,variant:'atomic'}},400);
+  const position=(await json('/api/positions',{variant:'chess960',fen:'4k3/8/8/8/8/8/8/R5KR w HA - 0 1',title:'Stationary king'},201)).game;assert.equal(position.variant,'chess960');
+  await new Promise(r=>server.close(r));state.close();state=createApp(options);server=state.app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));base=`http://127.0.0.1:${server.address().port}`;
+  const restored=(await json('/api/games/'+source.id)).game;assert.deepEqual(restored,source);assert.equal((await json('/api/games/'+practice.id)).game.variant,'chess960');
+ }finally{await new Promise(r=>server.close(r));state.close();rmSync(dir,{recursive:true,force:true});}
+});

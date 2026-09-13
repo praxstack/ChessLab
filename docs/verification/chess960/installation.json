@@ -1,0 +1,48 @@
+{
+  "checkedAt": "2026-09-13T09:11:06.810983+00:00",
+  "applicationCommit": "6cd1d4cc79702624b657a48c0bddc8f7bf934519",
+  "servedAssets": [
+    "/assets/index-2GBiz0_m.js",
+    "/assets/index-Cyvnjr0F.css"
+  ],
+  "engine": {
+    "available": true,
+    "name": "Stockfish 19",
+    "chess960": true
+  },
+  "chess960Engines": [
+    "lc0",
+    "stockfish16",
+    "stockfish18",
+    "stockfish18-lite",
+    "stockfish19"
+  ],
+  "explorerGames": 280155,
+  "guestGames": 401,
+  "preservedTables": {
+    "bot_results": 0,
+    "collection_games": 0,
+    "daily_puzzles": 0,
+    "game_collections": 0,
+    "game_reviews": 0,
+    "games": 2,
+    "lesson_sessions": 0,
+    "progress": 0,
+    "puzzle_attempts": 0,
+    "puzzle_profiles": 0,
+    "puzzle_runs": 0,
+    "review_practice": 0,
+    "sessions": 1,
+    "users": 2
+  },
+  "backup": "/Users/prax/Developer/ChessLab-local-web/data/backups/before-chess960-20260913.sqlite",
+  "manifestSha256": "4167ad2af89fd214c3c5c67fad7309d568cff063ff3ecd922911699f69272937",
+  "browserReadback": {
+    "checkedAt": "2026-09-13T09:11:36Z",
+    "tab": "existing local guest tab",
+    "gameType": "Chess960",
+    "positionNumber": "random available",
+    "standardOnlyModelsDisabled": 5,
+    "accountMutation": false
+  }
+}

@@ -1,21 +1,21 @@
-import { Chess } from 'chess.js';
+import {createChess,copyChess} from '../../shared/chess.js';
 
-export function replay(moves = [], initialFen = null) {
-  const chess = initialFen ? new Chess(initialFen) : new Chess();
+export function replay(moves = [], initialFen = null, variant) {
+  const chess = createChess(initialFen,variant);
   for (const uci of moves) chess.move({from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4]});
   return chess;
 }
 export function uci(move) { return move.from + move.to + (move.promotion || ''); }
 export function parseMove(chess, input) {
   const value = input.trim();
-  const copy = new Chess(chess.fen());
+  const copy = copyChess(chess);
   const move = /^[a-h][1-8][a-h][1-8][qrbn]?$/i.test(value)
     ? copy.move({from:value.slice(0,2).toLowerCase(), to:value.slice(2,4).toLowerCase(), promotion:value[4]?.toLowerCase()})
     : copy.move(value);
   return uci(move);
 }
-export function moveRows(moves, initialFen) {
-  const chess = initialFen ? new Chess(initialFen) : new Chess();
+export function moveRows(moves, initialFen, variant) {
+  const chess = createChess(initialFen,variant);
   return moves.map((value, index) => {
     const number = Number(chess.fen().split(' ')[5]);
     const move = chess.move({from:value.slice(0,2), to:value.slice(2,4), promotion:value[4]});
@@ -73,6 +73,6 @@ export function clockText(game, color, now = Date.now()) {
 }
 
 export function rematchOptions(game, fallback) {
-  if (game.legacyStrength || !game.engineId) return {color:game.color, level:game.level};
-  return {botId:game.botId??null,engineId:game.engineId,rating:game.rating??fallback.rating,color:game.color,timeControl:game.timeControl??fallback.timeControl,assistance:game.assistance??fallback.assistance};
+  if (game.legacyStrength || !game.engineId) return {color:game.color, level:game.level,...(game.variant==='chess960'?{variant:game.variant,positionNumber:game.positionNumber}: {})};
+  return {...(game.variant==='chess960'?{variant:game.variant,positionNumber:game.positionNumber}:{}),botId:game.botId??null,engineId:game.engineId,rating:game.rating??fallback.rating,color:game.color,timeControl:game.timeControl??fallback.timeControl,assistance:game.assistance??fallback.assistance};
 }

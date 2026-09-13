@@ -1,5 +1,6 @@
 import {readFileSync} from 'node:fs';
 import {Chess} from 'chess.js';
+import {gameVariant} from '../shared/chess.js';
 import {validatePosition} from '../shared/position.js';
 
 const catalogue=JSON.parse(readFileSync(new URL('./openings.json',import.meta.url),'utf8'));
@@ -16,7 +17,8 @@ export function searchOpenings({q='',eco='',page='0'}={}){
  const words=normalize(q).split(/\s+/).filter(Boolean),matches=searchRows.filter(row=>row.entry.eco.startsWith(eco)&&words.every(word=>row.text.includes(word)));
  return {items:matches.slice(Number(page)*24,Number(page)*24+24).map(({entry})=>({id:entry.id,name:entry.name,eco:entry.eco,pgn:entry.pgn,plies:entry.moves.length})),total:matches.length,page:Number(page),pageSize:24,source:openingSource};
 }
-export function recognizeOpening(moves=[],initialFen=null){
+export function recognizeOpening(moves=[],initialFen=null,variant){
+ try{if(gameVariant(variant)==='chess960')return null;}catch(error){fail(error.message);}
  if(!Array.isArray(moves)||moves.length>1000||moves.some(move=>typeof move!=='string'||!/^[a-h][1-8][a-h][1-8][qrbn]?$/.test(move)))fail('Provide at most 1,000 legal coordinate moves.');
  let chess;try{chess=initialFen==null?new Chess():validatePosition(initialFen).chess;}catch(error){fail(error.message);}
  let found=null;

@@ -95,7 +95,7 @@ function runUci(id, input) {
     const [path, args] = command(id);
     const child = spawn(path, args, { cwd: root, env: { ...process.env, CHESSLAB_ENGINES_DIR: data, OMP_NUM_THREADS: '1', MKL_NUM_THREADS: '1', HF_HUB_OFFLINE: '1' }, stdio: ['pipe', 'pipe', 'pipe'], shell: false });
     children.add(child);
-    let settled = false, phase = 'uci', buffer = '', bytes = 0, name = '';
+    let settled = false, phase = 'uci', buffer = '', bytes = 0, name = '', chess960 = false;
     const timer = setTimeout(() => finish(failure(`${id} initialization or search timed out.`, 503)), 25000 + (input?.movetime || 0));
     function finish(error, result) {
       if (settled) return;
@@ -107,11 +107,14 @@ function runUci(id, input) {
     }
     function write(line) { if (!settled) child.stdin.write(line + '\n'); }
     function onLine(line) {
+      if (/^option name UCI_Chess960 type check\b/.test(line)) chess960 = true;
       if (line.startsWith('id name ')) name = line.slice(8).trim().slice(0, 120);
       if (phase === 'uci' && line === 'uciok') {
         const expected = id.startsWith('stockfish') ? new RegExp(`^Stockfish ${id.slice(9).replace('-lite', '')}\\b`, 'i') : id === 'lc0' ? /^(lc0|leela)/i : new RegExp(id.split('-')[0], 'i');
         if (!expected.test(name)) return finish(failure(`${id} returned an unexpected engine identity.`, 503));
+        if (input?.variant==='chess960'&&!chess960) return finish(failure(`${id} does not support Chess960.`, 503));
         phase = 'ready';
+        if (input?.variant==='chess960') write('setoption name UCI_Chess960 value true');
         if (id.startsWith('stockfish')) {
           write('setoption name Threads value 1');
           write('setoption name Hash value 32');
@@ -123,14 +126,14 @@ function runUci(id, input) {
         write('ucinewgame');
         write('isready');
       } else if (phase === 'ready' && line === 'readyok') {
-        if (!input) return finish(null, { engine: name, engineId: id });
+        if (!input) return finish(null, { engine: name, engineId: id, chess960 });
         phase = 'search';
-        const start = input.initialFen == null ? 'startpos' : `fen ${replay([], input.initialFen).fen()}`;
+        const start = input.initialFen == null ? 'startpos' : `fen ${replay([], input.initialFen, input.variant).fen()}`;
         write(`position ${start}${input.moves.length ? ` moves ${input.moves.join(' ')}` : ''}`);
         write(`go movetime ${input.movetime}${input.nodes ? ` nodes ${input.nodes}` : ''}`);
       } else if (phase === 'search' && line.startsWith('bestmove ')) {
         const move = line.split(/\s+/)[1];
-        try { replay([...input.moves, move], input.initialFen); }
+        try { replay([...input.moves, move], input.initialFen, input.variant); }
         catch { return finish(failure(`${id} returned an illegal move.`, 503)); }
         finish(null, { move, engine: name, engineId: id });
       }
@@ -168,7 +171,7 @@ export async function listOpponentEngines() {
         try {
           const result = entry.id === 'stockfish19' ? await engineStatus() : await withSlot(() => runUci(entry.id));
           if (entry.id === 'stockfish19' && (!result.available || !/^Stockfish 19\b/i.test(result.name))) throw failure('Stockfish 19 is not configured on this server.', 503);
-          entries.push({ ...entry, available: true, version: manifest[entry.id]?.version || result.engine || result.name });
+          entries.push({ ...entry, available: true, chess960:!!result.chess960&&!entry.humanLike, version: manifest[entry.id]?.version || result.engine || result.name });
         } catch (error) { entries.push({ ...entry, available: false, reason: error.message }); }
       }
       availabilityAt = Date.now();
@@ -185,7 +188,9 @@ export async function chooseOpponentMove(input) {
   if (!entry) throw failure('Unknown opponent engine.');
   const moves = Array.isArray(input.moves) ? [...input.moves] : input.moves;
   const initialFen = input.initialFen ?? null;
-  const board = replay(moves, initialFen);
+  const variant=input.variant;
+  const board = replay(moves, initialFen, variant);
+  if(variant==='chess960'&&entry.humanLike)throw failure('Choose a Chess960-capable engine. Maia models are Standard only.');
   if (board.isGameOver()) throw failure('The game is over.');
   const movetime = integer(input.movetime, 350, 50, 2000, 'movetime');
   const skill = integer(input.skill, 20, 0, 20, 'skill');
@@ -196,12 +201,12 @@ export async function chooseOpponentMove(input) {
   const modelRating = entry.id.startsWith('maia2') ? (rating < 1100 ? 1099 : Math.min(2000, rating)) : entry.ratings ? Math.max(entry.ratings.min, Math.min(entry.ratings.max, rating)) : undefined;
   if (entry.id === 'stockfish19') {
     if (closed) throw failure('Opponent engines are shutting down.', 503);
-    const result = await analyze({ moves, initialFen, movetime, skill, lines: 1 });
+    const result = await analyze({ moves, initialFen, variant, movetime, skill, lines: 1 });
     if (!/^Stockfish 19\b/i.test(result.engine)) throw failure('Stockfish 19 is not configured on this server.', 503);
     return stockfishPolicy({ move: result.bestmove, engine: result.engine, engineId: entry.id }, board, rating, skill, style);
   }
   const nodes = entry.id === 'lc0' ? Math.round(2 ** ((rating - 250) / 300)) : undefined;
-  const result = await withSlot(() => runUci(entry.id, { moves, initialFen, movetime, skill, modelRating, nodes }));
+  const result = await withSlot(() => runUci(entry.id, { moves, initialFen, variant, movetime, skill, modelRating, nodes }));
   if (entry.id.startsWith('stockfish')) return stockfishPolicy(result, board, rating, skill, style);
   return { ...result, ...(entry.humanLike ? { requestedRating: rating, modelRating, policy: { id: 'maia-model', calibrated: false } } : { policy: { id: 'lc0-search-budget', nodes, movetime, calibrated: false } }) };
 }

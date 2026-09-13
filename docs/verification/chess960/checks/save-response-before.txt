@@ -1,0 +1,41 @@
+✖ Chess960 remains owned and variant-aware through play, undo, practice, study, export and restart (122.657708ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 244.529708
+
+✖ failing tests:
+
+test at server/chess960-app.test.mjs:12:1
+✖ Chess960 remains owned and variant-aware through play, undo, practice, study, export and restart (122.657708ms)
+  AssertionError [ERR_ASSERTION]: Study-save response must equal the committed record
+  + actual - expected
+  ... Skipped lines
+
+    {
+      color: 'w',
+      createdAt: '2026-09-13T08:56:32.164Z',
+      headers: {
+        Black: 'Synthetic Black',
+  ...
+      title: 'Synthetic White vs Synthetic Black',
+  +   updatedAt: '2000-01-01T00:00:00.000Z',
+  -   updatedAt: '2026-09-13T08:56:32.165Z',
+      variant: 'chess960'
+    }
+
+      at TestContext.<anonymous> (file:///private/tmp/chesslab-chess960/server/chess960-app.test.mjs:39:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: { id: '8f32fefc-fd6c-4798-ba2c-4f8dc8174008', title: 'Synthetic White vs Synthetic Black', color: 'w', level: 2, moves: [ 'f1h1', 'e8d7' ], initialFen: '4k3/8/8/8/8/8/8/R4K1R w HA - 0 1', result: null, revision: 0, createdAt: '2026-09-13T08:56:32.164Z', updatedAt: '2000-01-01T00:00:00.000Z', study: { version: 1, branches: [Array], selectedBranchId: null, anchorPly: 0, annotations: [] }, studyRevision: 1, source: 'import', variant: 'chess960', headers: { Variant: 'Chess960', SetUp: '1', FEN: '4k3/8/8/8/8/8/8/R4K1R w HA - 0 1', White: 'Synthetic White', Black: 'Synthetic Black' }, positionSetup: false },
+    expected: { id: '8f32fefc-fd6c-4798-ba2c-4f8dc8174008', title: 'Synthetic White vs Synthetic Black', color: 'w', level: 2, moves: [ 'f1h1', 'e8d7' ], initialFen: '4k3/8/8/8/8/8/8/R4K1R w HA - 0 1', result: null, revision: 0, createdAt: '2026-09-13T08:56:32.164Z', updatedAt: '2026-09-13T08:56:32.165Z', study: { version: 1, branches: [Array], selectedBranchId: null, anchorPly: 0, annotations: [] }, studyRevision: 1, source: 'import', variant: 'chess960', headers: { Variant: 'Chess960', SetUp: '1', FEN: '4k3/8/8/8/8/8/8/R4K1R w HA - 0 1', White: 'Synthetic White', Black: 'Synthetic Black' }, positionSetup: false },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

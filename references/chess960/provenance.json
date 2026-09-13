@@ -1,0 +1,74 @@
+{
+  "packages": {
+    "chessops": {
+      "version": "0.15.1",
+      "license": "GPL-3.0-or-later",
+      "source": "github:niklasf/chessops",
+      "files": {
+        "src/variant.ts": "532527d1e8112d22420308b314f2265c6ee098e069e1d160ce1fe61b4682d971",
+        "src/pgn.ts": "11fd99c997b59b1bc359c5c9d1d6ea0edf1ee4a9171b0a39d2a66d0bbb924f00",
+        "src/attacks.ts": "f4eceb6f8c0b58b3347b1277fe5bcfbe839868f074b4e1652015719d7b3c04d9",
+        "src/squareSet.ts": "ff7d195ec77b2367769dbca27776bb7d17208ece2546259c1eca377415ea8731",
+        "src/transform.ts": "91c4af5c436f15ae96ae44dac9ff0a5f52153006012cdebef0c727d46d9ef17a",
+        "src/debug.ts": "d0fe89a3714e1e0b8e527aa1f293889de5b4bec85f3c3fcd2e538102bb0dc319",
+        "src/setup.ts": "21b8e9cc00097ba130b2b62af865f7e7b401f34f63c9b71b7f8ad869df3df5da",
+        "src/types.ts": "e4481bceddc9477cc964db7a44cce30700dc3ec041fc8b253541ff21a8d70f26",
+        "src/util.ts": "b43c133283ad8ecb9337d509858133e62e241e5632fb4f6eec94d9cd76f7e0f8",
+        "src/san.ts": "8b985a70bc8b3c08477269657cd669a8cce05e43c00c9c1987f7fbb20eeb0db9",
+        "src/index.ts": "8a56dea17de5c6d01ddb186409260a775a3da010f0b9595105a72f467ccf33f2",
+        "src/compat.ts": "4e5dc613b229aa4008522a99808f0e96e28d883014ba7ffbb99192eb63c3f2a2",
+        "src/board.ts": "25d4a7a6c3885a0645a44141d9fffeaccd017206503d237074e8da450fdce3fb",
+        "src/fen.ts": "3fce1603f4c2302b86d27328d90af504e706f9b53bfb349821a547517934176e",
+        "src/chess.ts": "5ec05793db2d4f5a6e6ceebe48c1bf2bd01b2b7aa8fef9381bc73db09cc0810d",
+        "dist/esm/fen.js.map": "e69b1e3cc46c219368fdb6b7497f61221de662f1769d93c58334c242cce9ad44",
+        "dist/esm/util.js": "e454a8e6e7a2954d6b260b394332fc35742042507c1d48c6b6e072baa6a3f365",
+        "dist/esm/types.js": "0d1bf5b70d49015ad4649731f0277a26a262f566fac970e92135cc8a2e052e0c",
+        "dist/esm/types.js.map": "127c99fa6483b8a586ff06d4eee61df6536e317513690ac631be1537fc4caad9",
+        "dist/esm/attacks.js.map": "bff50ce21d408ce29fa4b84a41b70bf91a5c8e262b0f0ad4feb414928e88af54",
+        "dist/esm/util.js.map": "d1f9e8fc16ebe4567585511113f3b2ca6883f2492f58bf1a1a51c37eccbeb63c",
+        "dist/esm/board.js": "4da5f7ddfcd680567cd72b86b3b48ac77194507a94d33f8483d79da26bac7b2a",
+        "dist/esm/fen.js": "0c01422cf28c8faef8121961a7075c1e103462710a20e61ff2a915f92942ed84",
+        "dist/esm/chess.js": "ca4ffca6df899e06465a397fc983c3fa55c755c35f6febe071fe5896ade67132",
+        "dist/esm/san.js": "bf3c8452745c168b8479df0032f500e867d039b164c2b5380b39ecb9230f9539",
+        "dist/esm/index.js": "8107327e23f63ce65e2bbc0cc8abb444eef08fbc099970127c486e1eff93c885",
+        "dist/esm/chess.js.map": "f54019f353dd7a1c7aa5fcfc8a75310f70d877511e369d514ce146d2792fa62b",
+        "dist/esm/compat.js": "883722ed669a9b7d9a3a1792f028acf5b5b9b44a60568645d42cc72f6cedf455",
+        "dist/esm/setup.js.map": "d3d32a2122225a6ece15b5bf6e53b119b1c599deb1114a383d5a211de08be1e7",
+        "dist/esm/variant.js.map": "abae22881ad4cff2277453a632250aa16735e67c0770410c9f611880e2dd223e",
+        "dist/esm/squareSet.js": "838c400af128d051b693ce2f1424dfd79f446e6362bca9e93bfa546080d249c9",
+        "dist/esm/variant.js": "215fb7fc95df8f992a9c03a6361873c622b3ede3fb869757f0c0891cd99b25a5",
+        "dist/esm/pgn.js": "7521e312c8d950e07533dfcbc2285f87aba5c94a6ded0cad7f69f59dfcd70e3f",
+        "dist/esm/index.js.map": "27c81daae34adf5eb6b4eb1f21734317b9ab466398fb3c933ed4fc806cdc122a",
+        "dist/esm/attacks.js": "d2769e8e46af668b706d0f7b710337d1d80246648bd6afc6eb7eeef5085e2886",
+        "dist/esm/debug.js.map": "2645a69d487ccb2e3a21649d1b9c34fde547896420c0d811e5132e84c075a905",
+        "dist/esm/setup.js": "59581828957569f915fae2320add6f55fc46d2359905e2ed80bda8836957168a",
+        "dist/esm/compat.js.map": "7b3eced0294b11877cab5cec434f76ea7b18cf246aef41d8398a523c4639fcd2",
+        "dist/esm/transform.js.map": "6be904cb7881f3d271a35891e75a145c0edd7a5f30f512b7a5de39c04e10cb41",
+        "dist/esm/board.js.map": "8c5f5291c24d89e7332f7912bdd3d6f55fbfd5e198a22059688653a77107d466",
+        "dist/esm/pgn.js.map": "d27aaedd93cc28f15b0d6bd7ba3d251e54ab0d03e94d4311f2501a2bd5effce6",
+        "dist/esm/transform.js": "504c7928ace61a8e62ba71df2cc5ee88a90b6a3edd165b7ef8a7fe9f8e0c16ac",
+        "dist/esm/debug.js": "00127220dd3886dce3565a5a01fe16a85c6f60a58df17fd0d92a1c3ccf99a649",
+        "dist/esm/squareSet.js.map": "c0c9c1a491e438ae76d6170c08aee2ff0bb90fcb22577df3b4b0d59b8d234bb6",
+        "dist/esm/san.js.map": "3359ce5b9a378b04d37a70ed28fde5652fd32716f2256d10b7a6adc0310a6c2b"
+      }
+    },
+    "@badrap/result": {
+      "version": "0.3.1",
+      "license": "MIT",
+      "source": {
+        "type": "git",
+        "url": "git+https://github.com/badrap/result.git"
+      },
+      "files": {
+        "src/index.esm.mts": "97e1818573679b5d3d697406abd3e5f1e9cd00da1f2783ab236912180462f5be",
+        "src/index.ts": "5dd59ee90cf734f29b58c43647bc32e860d81ff0d6644eeb8a794fef0ee416fc"
+      }
+    }
+  },
+  "oracle": {
+    "name": "python-chess",
+    "version": "1.11.2",
+    "path": "data/explorer/.venv/bin/python"
+  },
+  "nativeEngineProtocol": "UCI_Chess960 is required and checked at each handshake; castling moves use king-to-rook coordinates."
+}
