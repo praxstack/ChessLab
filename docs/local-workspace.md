@@ -128,3 +128,9 @@ Castle by clicking or dragging your king onto its rook, or type O-O / O-O-O. The
 The four installed Stockfish versions and Leela support the required protocol. Maia models are Standard only and unavailable for Chess960 selection. Named openings, public game frequencies and puzzle corpora remain Standard chess. These are local bot simulations, not proprietary Chess.com behavior.
 
 Chess960 rules use pinned [chessops 0.15.1](https://github.com/niklasf/chessops), GPL-3.0-or-later. Its [license](../web/public/licenses/chessops/LICENSE.txt) and [source archive](../web/public/licenses/chessops/chessops-0.15.1-source.tar.gz) ship locally under `/licenses/chessops/`. Existing chess.js rules still govern Standard. Differential checks use the already-installed python-chess 1.11.2 at `data/explorer/.venv/bin/python`; override `CHESSLAB_ORACLE_PYTHON` for an equivalent local installation. No rules, engines or weights require a remote service at runtime.
+
+## Vision training
+
+Choose **Vision** in the navigation to practice coordinates, moves or both in 30-second rounds. Move the displayed piece for notation prompts; click the square for coordinate prompts. Clicks, dragging, touch and typed answers are supported. Choose White, Black or a randomly selected perspective and turn board coordinates on or off before starting. The three-second countdown gives you time to prepare.
+
+The local server keeps the deadline and score through reloads and restarts. Sign in with a local account to train. Results and recent history remain in the same local SQLite database; personal bests compare identical settings. Ending early preserves the attempt but excludes it from bests. The exercise uses lone non-pawn pieces on an otherwise empty board, separate from a full game. No engine, network service or new package is needed.
