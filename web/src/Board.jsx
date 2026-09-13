@@ -5,7 +5,7 @@ const names = {p:'pawn',n:'knight',b:'bishop',r:'rook',q:'queen',k:'king'};
 export function Piece({type, color, animation=0, offset}) {
   return <img src={`/pieces/chesscom/${color}${type}.png`} className={`piece ${offset?'moving':''}`} style={{animationDuration:`${animation}ms`,'--move-x':`${offset?.[0]||0}%`,'--move-y':`${offset?.[1]||0}%`}} width="150" height="150" alt="" aria-hidden="true" draggable={false}/>;
 }
-export default function Board({chess, orientation='w', selected, onSquare, onMove, enabled, settings, arrows=[], lastMove, classification, label, editing=false,marks=[],onMark,markTool='move',markColor='Y',positionKey}) {
+export default function Board({chess, orientation='w', selected, onSquare, onMove, enabled, settings, arrows=[], lastMove, lastMoveDetails, classification, label, editing=false,marks=[],onMark,markTool='move',markColor='Y',positionKey}) {
   const markerId=useId().replace(/[^a-zA-Z0-9_-]/g,''),gesture=useRef(null),[tapFrom,setTapFrom]=useState(null);
   useEffect(()=>{gesture.current=null;setTapFrom(null);},[positionKey,markTool,orientation]);
   const toolActive=!!onMark&&markTool!=='move';
@@ -22,7 +22,8 @@ export default function Board({chess, orientation='w', selected, onSquare, onMov
     {[...ranks].flatMap((rank,row)=>[...files].map((file,col)=>{
       const square=file+rank, piece=chess.get(square), dark=(file.charCodeAt(0)-97+Number(rank))%2===0;
       let from=lastMove?.[1]===square?lastMove[0]:null;
-      if(piece?.type==='r'&&lastMove?.[0]?.[0]==='e'&&chess.get(lastMove[1])?.type==='k'&&lastMove[1][1]===rank){if(lastMove[1][0]==='g'&&file==='f')from='h'+rank;if(lastMove[1][0]==='c'&&file==='d')from='a'+rank;}
+      if(lastMoveDetails?.castle&&piece?.type==='r'&&square===lastMoveDetails.castle.rookTo)from=lastMoveDetails.castle.rookFrom;
+      if(!lastMoveDetails?.castle&&piece?.type==='r'&&lastMove?.[0]?.[0]==='e'&&chess.get(lastMove[1])?.type==='k'&&lastMove[1][1]===rank){if(lastMove[1][0]==='g'&&file==='f')from='h'+rank;if(lastMove[1][0]==='c'&&file==='d')from='a'+rank;}
       const offset=from?[(files.indexOf(from[0])-col)*100,(ranks.indexOf(from[1])-row)*100]:null;
       const check = !editing && piece?.type==='k' && piece.color===chess.turn() && chess.isCheck();
       return <button type="button" key={square} className={`square ${dark?'dark':'light'} ${selected===square?'selected':''} ${settings.lastMove && lastMove?.includes(square)?'last-move':''} ${check?'in-check':''} ${tapFrom&&tapFrom.key===positionKey&&tapFrom.square===square?'drawing-start':''}`} aria-label={`${square}${piece?`, ${piece.color==='w'?'white':'black'} ${names[piece.type]}`:', empty'}${targets.has(square)?', legal destination':''}${check?', in check':''}`} onClick={()=>chooseSquare(square)} draggable={!toolActive && enabled && !!piece && (editing || piece.color===chess.turn())} onDragStart={event=>{event.dataTransfer.setData('text/plain',square);event.dataTransfer.effectAllowed='move';if(!editing)onSquare(square);}} onDragOver={event=>!toolActive&&enabled&&event.preventDefault()} onDrop={event=>{event.preventDefault();const from=event.dataTransfer.getData('text/plain');if(!toolActive&&enabled&&(/^[a-h][1-8]$/.test(from)||(editing&&/^[wb][pnbrqk]$/.test(from))))onMove(from,square);}}>
@@ -30,7 +31,7 @@ export default function Board({chess, orientation='w', selected, onSquare, onMov
         {settings.coordinates && col===0 && <span className="rank">{rank}</span>}
         {piece && <Piece key={piece.color+piece.type+square} type={piece.type} color={piece.color} animation={settings.animation} offset={offset}/>}
         {classification&&lastMove?.[1]===square&&<span className={`move-classification ${classification.toLowerCase().replaceAll(' ','-')}`} title={classification} aria-label={`Move classification: ${classification}`}>{{Best:'★',Good:'✓',Inaccuracy:'?!',Mistake:'?',Blunder:'??',Checkmate:'#'}[classification]||'!'}</span>}
-        {settings.legalMoves && targets.has(square) && <span className={piece?'legal-capture':'legal-dot'}/>}
+        {settings.legalMoves && targets.has(square) && <span className={piece&&piece.color!==chess.turn()?'legal-capture':'legal-dot'}/>}
         {settings.coordinates && row===7 && <span className="file">{file}</span>}
       </button>;
     }))}

@@ -292,3 +292,5 @@ input::placeholder, textarea::placeholder { color: #aaa69e; }
 @media(max-width:760px){.explorer-heading{display:block}.explorer-heading h2{font-size:27px}.explorer-heading label{margin-top:20px}.explorer-heading select{width:100%}.explorer-layout{grid-template-columns:minmax(0,1fr);gap:28px}.explorer-table-head,.explorer-row{grid-template-columns:48px 64px minmax(0,1fr)}.explorer-legend{justify-content:space-between;gap:8px}.explorer-count strong{font-size:29px}.opening-tabs{margin-bottom:18px}.opening-tabs button{flex:1;padding:10px}.explorer-example-actions>button{flex:1}.explorer-results{min-width:0}}
 
 .explorer-expand{width:100%;background:transparent;border:1px solid #ffffff18;border-radius:6px;color:#bdd795;font-size:12px;padding:10px;margin-top:8px}.explorer-expand:hover{background:#ffffff08}
+
+.variant-note{font-size:12px;line-height:1.6;color:var(--text-muted,#b4b2ae);margin:8px 0 0}.options-body input[type=number]{width:100%;margin-top:6px;padding:10px;border:1px solid #55534e;border-radius:6px;background:#252422;color:#fff}

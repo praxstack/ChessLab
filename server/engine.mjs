@@ -8,7 +8,7 @@ const analysisCommands = {
   stockfish16: () => [resolve(engineDirectory, 'stockfish16/stockfish'), []],
   'stockfish18-lite': () => [process.execPath, [resolve(engineDirectory, 'stockfish18-lite/stockfish-18-lite.js')]],
 };
-import { Chess } from 'chess.js';
+import {createChess,copyChess,gameVariant} from '../shared/chess.js';
 
 const UCI_MOVE = /^[a-h][1-8][a-h][1-8][qrbn]?$/;
 const VALUES = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
@@ -27,11 +27,11 @@ function moveObject(move) {
   return { from: move.slice(0, 2), to: move.slice(2, 4), ...(move[4] ? { promotion: move[4] } : {}) };
 }
 
-export function replay(moves, initialFen = null) {
+export function replay(moves, initialFen = null, variant) {
   if (!Array.isArray(moves) || moves.length > 1000) throw failure('Provide an array of at most 1000 moves.');
   if (initialFen != null && (typeof initialFen !== 'string' || initialFen.length > 120 || /[\r\n\0]/.test(initialFen))) throw failure('Invalid starting FEN.');
   let board;
-  try { board = initialFen == null ? new Chess() : new Chess(initialFen); }
+  try { board = createChess(initialFen,variant); }
   catch { throw failure('Invalid starting FEN.'); }
   const pieces = board.board().flat().filter(Boolean);
   for (const color of ['w', 'b']) {
@@ -91,7 +91,7 @@ function enginePath() {
   return process.env.STOCKFISH_PATH || ['/opt/homebrew/bin/stockfish', '/usr/local/bin/stockfish', '/usr/games/stockfish'].find(existsSync) || 'stockfish';
 }
 
-function runUci({ moves, initialFen, board, movetime, lines, skill, engineId, threads=1, signal } = {}) {
+function runUci({ moves, initialFen, variant, board, movetime, lines, skill, engineId, threads=1, signal } = {}) {
   // ponytail: fresh processes isolate searches; pool them if startup time becomes material.
   return new Promise((resolve, reject) => {
     if (signal?.aborted) return reject(canceled());
@@ -102,7 +102,7 @@ function runUci({ moves, initialFen, board, movetime, lines, skill, engineId, th
     let phase = 'uci';
     let buffer = '';
     let totalBytes = 0;
-    let name = '';
+    let name = '', chess960 = false;
     const iterations = new Map();
     const timer = setTimeout(() => finish(failure('Stockfish search timed out. Try again.', 503)), (movetime || 0) + 4000);
     const abort = () => finish(canceled());
@@ -120,10 +120,13 @@ function runUci({ moves, initialFen, board, movetime, lines, skill, engineId, th
       if (!settled) child.stdin.write(`${command}\n`);
     }
     function onLine(line) {
+      if (/^option name UCI_Chess960 type check\b/.test(line)) chess960 = true;
       if (line.startsWith('id name ')) name = line.slice(8).trim().slice(0, 120);
       if (phase === 'uci' && line === 'uciok') {
         if (!name.toLowerCase().includes('stockfish')) return finish(failure('Configured engine did not identify as Stockfish.', 503));
+        if (variant==='chess960'&&!chess960) return finish(failure('This engine does not support Chess960.', 503));
         phase = 'ready';
+        if (variant==='chess960') write('setoption name UCI_Chess960 value true');
         write(`setoption name Threads value ${threads}`);
         write('setoption name Hash value 32');
         write(`setoption name MultiPV value ${lines || 1}`);
@@ -131,9 +134,9 @@ function runUci({ moves, initialFen, board, movetime, lines, skill, engineId, th
         write('ucinewgame');
         write('isready');
       } else if (phase === 'ready' && line === 'readyok') {
-        if (!board || board.isGameOver()) return finish(null, { name, bestmove: null, lines: [] });
+        if (!board || board.isGameOver()) return finish(null, { name, chess960, bestmove: null, lines: [] });
         phase = 'search';
-        const start = initialFen == null ? 'startpos' : `fen ${replay([], initialFen).fen()}`;
+        const start = initialFen == null ? 'startpos' : `fen ${replay([], initialFen, variant).fen()}`;
         write(`position ${start}${moves.length ? ` moves ${moves.join(' ')}` : ''}`);
         write(`go movetime ${movetime}`);
       } else if (phase === 'search' && line.startsWith('info ')) {
@@ -145,7 +148,7 @@ function runUci({ moves, initialFen, board, movetime, lines, skill, engineId, th
         const value = Number(match[2]) * (board.turn() === 'w' ? 1 : -1);
         if (!Number.isSafeInteger(value)) return;
         const candidateMoves = pv[1].trim().split(/\s+/).slice(0, 20);
-        const candidate = replay(moves, initialFen);
+        const candidate = replay(moves, initialFen, variant);
         const san = [];
         try {
           for (const move of candidateMoves) san.push(candidate.move(moveObject(move)).san);
@@ -157,7 +160,7 @@ function runUci({ moves, initialFen, board, movetime, lines, skill, engineId, th
         }
       } else if (phase === 'search' && line.startsWith('bestmove ')) {
         const bestmove = line.split(/\s+/)[1];
-        try { replay([...moves, bestmove], initialFen); }
+        try { replay([...moves, bestmove], initialFen, variant); }
         catch { return finish(failure('Stockfish returned an invalid move.', 503)); }
         // Rank changes during an unfinished MultiPV iteration must not duplicate candidates.
         const ranked=[...iterations.entries()].sort((a,b)=>b[0]-a[0]).map(([,entries])=>[...entries.entries()].sort((a,b)=>a[0]-b[0]).map(([,value])=>value));
@@ -196,7 +199,7 @@ function facts(board) {
 }
 
 function moveEvidence(board, uci) {
-  const copy = new Chess(board.fen());
+  const copy = copyChess(board);
   const move = copy.move(moveObject(uci));
   const details = [];
   if (move.captured) details.push(`captures a ${PIECES[move.captured]}${move.flags.includes('e') ? ' en passant' : ''}`);
@@ -210,7 +213,7 @@ function moveEvidence(board, uci) {
 function lineEvidence(board, moves = []) {
   if (!moves.length) return '';
   const history = board.history({ verbose: true });
-  const copy = replay(history.map(move => move.from + move.to + (move.promotion || '')), history[0]?.before ?? board.fen());
+  const copy = replay(history.map(move => move.from + move.to + (move.promotion || '')), history[0]?.before ?? board.fen(),board.variant);
   const before = facts(copy).material;
   const san = [];
   const captures = [];
@@ -247,7 +250,7 @@ function scoreText(score) {
 }
 
 export async function engineStatus() {
-  try { const result = await withSlot(() => runUci()); return { available: true, name: result.name }; }
+  try { const result = await withSlot(() => runUci()); return { available: true, name: result.name, chess960: result.chess960 }; }
   catch { return { available: false, name: 'Stockfish' }; }
 }
 
@@ -255,7 +258,8 @@ export async function analyze(input, {signal} = {}) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) throw failure('Provide an analysis request object.');
   const moves = Array.isArray(input.moves) ? [...input.moves] : input.moves;
   const initialFen = input.initialFen ?? null;
-  const board = replay(moves, initialFen);
+  let variant;try{variant=gameVariant(input.variant);}catch(error){throw failure(error.message);}
+  const board = replay(moves, initialFen, variant);
   const engineId = input.engineId;
   if (engineId !== undefined && (typeof engineId !== 'string' || (engineId !== 'stockfish19' && !Object.hasOwn(analysisCommands, engineId)))) throw failure('Choose an installed analysis engine.');
   const threads = bounded(input.threads, 1, 1, engineId ? 8 : 1, 'threads');
@@ -266,16 +270,16 @@ export async function analyze(input, {signal} = {}) {
   let afterBoard;
   if (playedMove !== undefined) {
     if (board.isGameOver()) throw failure('Cannot review another move after the game is over.');
-    afterBoard = replay([...moves, playedMove], initialFen);
+    afterBoard = replay([...moves, playedMove], initialFen, variant);
   }
   return withSlot(async () => {
-    const result = await runUci({ moves, initialFen, board, movetime, lines, skill, engineId, threads, signal });
+    const result = await runUci({ moves, initialFen, variant, board, movetime, lines, skill, engineId, threads, signal });
     const positionFacts = facts(board);
     const materialText = `Material: White ${positionFacts.material.white}, Black ${positionFacts.material.black}.`;
     const explanation = board.isGameOver() ? `${terminalText(board)} ${materialText}` : `${board.turn() === 'w' ? 'White' : 'Black'} to move${positionFacts.inCheck ? ', in check' : ''}. ${moveEvidence(board, result.bestmove).text} ${lineEvidence(board, result.lines[0].moves)} ${scoreText(result.lines[0].score)}`;
     const analysis = { engine: result.name, fen: board.fen(), turn: board.turn(), bestmove: result.bestmove, lines: result.lines, limits: { movetime, lines, ...(engineId ? {threads,engineId} : {}) }, facts: positionFacts, explanation };
     if (afterBoard) {
-      const after = await runUci({ moves: [...moves, playedMove], initialFen, board: afterBoard, movetime, lines: 1, skill: 20, engineId, threads, signal });
+      const after = await runUci({ moves: [...moves, playedMove], initialFen, variant, board: afterBoard, movetime, lines: 1, skill: 20, engineId, threads, signal });
       const beforeScore = result.lines[0]?.score;
       const afterScore = after.lines[0]?.score ?? (afterBoard.isGameOver() && !afterBoard.isCheckmate() ? { type: 'cp', value: 0 } : null);
       const lossCp = beforeScore?.type === 'cp' && afterScore?.type === 'cp' ? Math.max(0, Math.round((beforeScore.value - afterScore.value) * (board.turn() === 'w' ? 1 : -1))) : null;

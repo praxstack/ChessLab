@@ -168,13 +168,14 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
  const playable=(req,game)=>{
   expected(req,game);
   if(game.result||game.source!=='bot')fail(409,'This game is available for review, not further play.');
-  return replay(game.moves,game.initialFen);
+  return replay(game.moves,game.initialFen,game.variant);
  };
  const validatedOptions=async body=>{
   const values=setupOptions(body,profiles);
   if(!values.legacyStrength){
    const selected=(await opponentApi.listOpponentEngines()).find(e=>e.id===values.engineId);
    if(!selected)fail(400,'Choose an engine from the current catalog.');
+   if(values.variant==='chess960'&&!selected.chess960)fail(400,'Choose a Chess960-capable engine.');
    if(!selected.available)fail(503,selected.reason||'This engine is unavailable on the server.');
   }
   return values;
@@ -185,7 +186,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
  });
  app.post('/api/games/:id/practice',async(req,res)=>{
   const source=owned(req);expected(req,source);practiceSnapshot(source,req.body);
-  const values=await validatedOptions(req.body);
+  const values=await validatedOptions({...req.body,variant:source.variant||'standard',positionNumber:null});
   db.exec('BEGIN IMMEDIATE');
   try{
    const fresh=owned(req);expected(req,fresh);const snapshot=practiceSnapshot(fresh,req.body);
@@ -213,9 +214,9 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
    game.currentRating=adaptiveRating(game);
    let decision;
    if(game.legacyStrength||!game.engineId){
-    const analysis=await engineApi.analyze({moves:game.moves,initialFen:game.initialFen,movetime:[80,150,250,400,700][game.level-1],lines:1,skill:[0,4,8,14,20][game.level-1]});
+    const analysis=await engineApi.analyze({moves:game.moves,initialFen:game.initialFen,variant:game.variant,movetime:[80,150,250,400,700][game.level-1],lines:1,skill:[0,4,8,14,20][game.level-1]});
     decision={move:analysis.bestmove,engine:analysis.engine,engineId:'stockfish19'};
-   }else decision=await opponentApi.chooseOpponentMove({engineId:game.engineId,moves:game.moves,initialFen:game.initialFen,rating:game.currentRating,...(game.botId&&game.rating<250?{profileRating:game.rating}:{}),skill:Math.max(0,Math.min(20,Math.round((game.currentRating-600)/110))),movetime:Math.max(80,Math.min(1200,Math.round(game.currentRating/3))),style:game.style});
+   }else decision=await opponentApi.chooseOpponentMove({engineId:game.engineId,moves:game.moves,initialFen:game.initialFen,variant:game.variant,rating:game.currentRating,...(game.botId&&game.rating<250?{profileRating:game.rating}:{}),skill:Math.max(0,Math.min(20,Math.round((game.currentRating-600)/110))),movetime:Math.max(80,Math.min(1200,Math.round(game.currentRating/3))),style:game.style});
    if(!decision.move)fail(503,'The engine returned no move. Retry the opponent turn.');
    const fresh=owned(req);expected(req,fresh);
    if(settleClock(fresh,nowMs()))return res.json({game:storeGame(req.user.id,fresh,fresh.revision)});
@@ -240,7 +241,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   limit(`analysis:${req.user.id}`,100);
   const game=liveGame(req),chess=playable(req,game);
   if(chess.turn()!==game.color)fail(409,'Wait for your turn before asking for a hint.');
-  const analysis=await engineApi.analyze({moves:game.moves,initialFen:game.initialFen,movetime:400,lines:1});
+  const analysis=await engineApi.analyze({moves:game.moves,initialFen:game.initialFen,variant:game.variant,movetime:400,lines:1});
   if(!analysis.bestmove)fail(503,'The coach returned no hint. Try again.');
   const move=moveOn(chess,analysis.bestmove),fresh=owned(req);expected(req,fresh);
   if(settleClock(fresh,nowMs()))return res.json({game:storeGame(req.user.id,fresh,fresh.revision)});
@@ -252,9 +253,9 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   const game=liveGame(req),chess=playable(req,game);
   if(chess.turn()!==game.color)fail(409,'Assistance is available on your turn.');
   const help=game.assistance||{};
-  const analysis=(help.evaluation||help.suggestions||help.engine)?await engineApi.analyze({moves:game.moves,initialFen:game.initialFen,movetime:350,lines:help.engine?3:1}):null;
+  const analysis=(help.evaluation||help.suggestions||help.engine)?await engineApi.analyze({moves:game.moves,initialFen:game.initialFen,variant:game.variant,movetime:350,lines:help.engine?3:1}):null;
   const lastPlayerPly=game.moves.length-2;
-  const feedback=help.feedback&&lastPlayerPly>=(game.practice?.startPly||0)?await engineApi.analyze({moves:game.moves.slice(0,lastPlayerPly),initialFen:game.initialFen,playedMove:game.moves[lastPlayerPly],movetime:350,lines:1}):null;
+  const feedback=help.feedback&&lastPlayerPly>=(game.practice?.startPly||0)?await engineApi.analyze({moves:game.moves.slice(0,lastPlayerPly),initialFen:game.initialFen,variant:game.variant,playedMove:game.moves[lastPlayerPly],movetime:350,lines:1}):null;
   const fresh=owned(req);expected(req,fresh);
   if(settleClock(fresh,nowMs()))return res.json({analysis:null,feedback:null,threats:[],game:storeGame(req.user.id,fresh,fresh.revision)});
   res.json({analysis,feedback,threats:help.threats?attackedPieces(game):[],game:fresh});
@@ -273,15 +274,15 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
  app.get('/api/training/:id',(req,res)=>res.json({attempt:trainer.get(req.user.id,req.params.id)}));
  app.post('/api/training/:id/action',(req,res)=>res.json(trainer.act(req.user.id,req.params.id,req.body)));
  app.post('/api/training/:id/study',(req,res)=>res.status(201).json({game:trainer.study(req.user.id,req.params.id)}));
- app.post('/api/openings/recognize',(req,res)=>{limit(`opening:${req.user.id}`,300);const opening=recognizeOpening(req.body.moves,req.body.initialFen);if(req.body.gameId!==undefined)markReviewAccess(req,req.body.gameId);res.json({opening,source:openingSource});});
+ app.post('/api/openings/recognize',(req,res)=>{limit(`opening:${req.user.id}`,300);const opening=recognizeOpening(req.body.moves,req.body.initialFen,req.body.variant);if(req.body.gameId!==undefined)markReviewAccess(req,req.body.gameId);res.json({opening,source:openingSource});});
  app.post('/api/openings/:id/study',(req,res)=>{
   const opening=openingById(req.params.id);if(!opening)fail(404,'Opening not found.');
   res.status(201).json({game:insertGame(req.user.id,{title:opening.name,source:'import',moves:[...opening.moves],opening:{id:opening.id,name:opening.name,eco:opening.eco},headers:{White:'White',Black:'Black'}})});
  });
  app.post('/api/positions',(req,res)=>{
-  let position;try{position=validatePosition(req.body.fen);}catch(error){fail(400,error.message);}
+  let position;try{position=validatePosition(req.body.fen,req.body.variant);}catch(error){fail(400,error.message);}
   const title=req.body.title??'Custom position';if(typeof title!=='string'||!title.trim()||title.length>100)fail(400,'Use a position title of 1–100 characters.');
-  res.status(201).json({game:insertGame(req.user.id,{title:title.trim(),source:'import',positionSetup:true,initialFen:position.fen,color:position.chess.turn(),result:gameResult(position.chess),headers:{White:'White',Black:'Black'}})});
+  res.status(201).json({game:insertGame(req.user.id,{title:title.trim(),source:'import',positionSetup:true,...(req.body.variant==='chess960'?{variant:'chess960'}:{}),initialFen:position.fen,color:position.chess.turn(),result:gameResult(position.chess),headers:{White:'White',Black:'Black'}})});
  });
  app.post('/api/import',(req,res)=>res.status(201).json({game:insertGame(req.user.id,readAnnotatedPgn(req.body.pgn))}));
  app.post('/api/import-study',(req,res)=>res.status(201).json({game:insertGame(req.user.id,readPortableStudy(req.body))}));
@@ -296,7 +297,8 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   if (!Number.isInteger(req.body.studyRevision) || req.body.studyRevision !== (game.studyRevision || 0)) fail(409,'This study changed in another tab. Keep your draft and reload before saving again.');
   game.study=validateStudy(req.body.study,game);game.studyRevision=(game.studyRevision || 0)+1;
   // Study edits keep the move revision stable; storeGame merges the latest saved study after asynchronous engine work.
-  db.prepare('UPDATE games SET data=? WHERE id=? AND user_id=?').run(JSON.stringify({...game,updatedAt:now()}),game.id,req.user.id);
+  game.updatedAt=now();
+  db.prepare('UPDATE games SET data=? WHERE id=? AND user_id=?').run(JSON.stringify(game),game.id,req.user.id);
   res.json({game});
  });
  const savedReview=game=>{
@@ -322,7 +324,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   limit(`review:${req.user.id}`,1500,3600000);
   const controller=new AbortController(),abort=()=>{if(!res.writableEnded)controller.abort();};res.on('close',abort);pendingReview.add(game.id);
   try{
-   const analysis=await engineApi.analyze({...limits,moves:game.moves.slice(0,after),initialFen:game.initialFen,playedMove:game.moves[after]},{signal:controller.signal});
+   const analysis=await engineApi.analyze({...limits,moves:game.moves.slice(0,after),initialFen:game.initialFen,variant:game.variant,playedMove:game.moves[after]},{signal:controller.signal});
    if(controller.signal.aborted)fail(499,'Review paused. Completed moves are saved.');
    const fresh=owned(req);if(fresh.revision!==game.revision||positionKey(fresh)!==positionKey(game))fail(409,'The game changed while reviewing. Reload it before continuing.');
    const next=appendReview(report,game,analysis);

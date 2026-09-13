@@ -1,5 +1,5 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
-import {Chess} from 'chess.js';
+import {createChess} from '../../shared/chess.js';
 import Board,{Piece} from './Board.jsx';
 import {parseMove,scoreText} from './chess-state.js';
 const pieceNames={p:'pawn',n:'knight',b:'bishop',r:'rook',q:'queen',k:'king'};
@@ -10,10 +10,10 @@ export default function ReviewPractice({game,settings,side='both',request}){
  async function load(){const abort=new AbortController();controller.current?.abort();controller.current=abort;setLoading(true);setError('');try{const data=await request(route,undefined,abort.signal);if(!abort.signal.aborted){install(data.practice);setStaleRevision(data.revision);}}catch(e){if(e.name!=='AbortError'&&alive.current)setError(e.message);}finally{if(alive.current&&!abort.signal.aborted)setLoading(false);if(controller.current===abort)controller.current=null;}}
  useEffect(()=>{alive.current=true;load();return()=>{alive.current=false;controller.current?.abort();};},[game.id]);
  async function act(type,move){if(controller.current)return;const abort=new AbortController();controller.current=abort;setBusy(true);setError('');try{const body=type==='start'?{side:choice,revision:practice?.revision??staleRevision}:{type,move,revision:practice.revision};const data=await request(route+(type==='start'?'/start':'/action'),body,abort.signal);if(!abort.signal.aborted)install(data.practice);}catch(e){if(e.name!=='AbortError'&&alive.current)setError(e.message);}finally{if(controller.current===abort)controller.current=null;if(alive.current)setBusy(false);}}
- const current=practice?.current,chess=useMemo(()=>new Chess(current?.fen),[current?.fen]),enabled=!!current&&current.outcome==='active'&&!current.feedback&&!busy&&!loading,orientation=flipped?(current?.color==='w'?'b':'w'):(current?.color||'w');
+ const current=practice?.current,chess=useMemo(()=>createChess(current?.fen,current?game.variant:undefined),[current?.fen,game.variant]),enabled=!!current&&current.outcome==='active'&&!current.feedback&&!busy&&!loading,orientation=flipped?(current?.color==='w'?'b':'w'):(current?.color||'w');
  function submit(value){if(!enabled)return;try{act('move',parseMove(chess,value));}catch{setError('Choose a legal move in this position.');}}
  function boardMove(from,to){if(!enabled)return;const possible=chess.moves({square:from,verbose:true}).filter(m=>m.to===to);if(!possible.length){setError('Choose a legal destination.');return;}if(possible.some(m=>m.promotion)){setPromotion({from,to,choices:possible.map(m=>m.promotion)});return;}submit(from+to);}
- function square(value){if(!enabled)return;const piece=chess.get(value);if(selected===value)setSelected(null);else if(selected&&piece?.color!==chess.turn())boardMove(selected,value);else setSelected(piece?.color===chess.turn()?value:null);}
+ function square(value){if(!enabled)return;const piece=chess.get(value);if(selected===value)setSelected(null);else if(selected&&(piece?.color!==chess.turn()||chess.moves({square:selected,verbose:true}).some(m=>m.to===value)))boardMove(selected,value);else setSelected(piece?.color===chess.turn()?value:null);}
  if(loading)return <p className="practice-loading" role="status">Opening your saved practice…</p>;
  const summary=practice?.summary;
  return <div className="review-practice" aria-label="Guided review practice">

@@ -1,7 +1,9 @@
 import {Chess,validateFen} from 'chess.js';
+import {createChess,gameVariant} from './chess.js';
 
-export function validatePosition(value) {
+export function validatePosition(value,variant) {
  if(typeof value!=='string'||value.length>200)throw new Error('Enter a FEN of at most 200 characters.');
+ if(gameVariant(variant)==='chess960'){const chess=createChess(value,variant);if(value.trim().split(/\s+/).slice(4).some(n=>Number(n)>10000))throw new Error('Use move counters up to 10,000.');for(const color of ['w','b']){const pieces=chess.board().flat().filter(p=>p?.color===color);if(pieces.length>16||pieces.filter(p=>p.type==='p').length>8)throw new Error('Starting FEN has too many pieces.');}return {fen:chess.fen({forceEnpassantSquare:true}),chess};}
  const fen=value.trim().replace(/\s+/g,' '),fields=fen.split(' ');
  if(fields.length!==6)throw new Error('FEN needs the board, turn, castling, en passant and two move counters.');
  if(!/^(?:K?Q?k?q?|-)$/.test(fields[2])||!fields[2])throw new Error('Use each castling right once, in KQkq order, or a dash.');

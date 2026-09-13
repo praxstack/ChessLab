@@ -1,10 +1,13 @@
 import { randomInt } from 'node:crypto';
-import { Chess } from 'chess.js';
+import {createChess,chess960Fen,gameVariant} from '../shared/chess.js';
 import { replay } from './engine.mjs';
 
 const fail = message => { throw Object.assign(new Error(message), {status:400}); };
 export const assistanceDefaults = {chat:true,evaluation:false,threats:false,suggestions:false,feedback:false,engine:false};
 export function setupOptions(body, profiles) {
+ let variant;try{variant=gameVariant(body.variant);}catch(error){fail(error.message);}
+ if(body.positionNumber!==undefined&&body.positionNumber!==null&&(!Number.isInteger(body.positionNumber)||body.positionNumber<0||body.positionNumber>959||variant!=='chess960'))fail('Choose a Chess960 position from 0 to 959.');
+ const positionNumber=variant==='chess960'?(body.positionNumber??randomInt(960)):undefined;
  const {color='w',level=2,title,botId=null,engineId='stockfish19'}=body;
  if(!['w','b','random'].includes(color)||!Number.isInteger(level)||level<1||level>5||typeof engineId!=='string'||(title!==undefined&&(typeof title!=='string'||title.length>100)))fail('Choose a color, an available engine and a valid strength.');
  const profile=botId===null?null:profiles.find(p=>p.id===botId);
@@ -15,7 +18,7 @@ export function setupOptions(body, profiles) {
  if(!timeControl||Array.isArray(timeControl)||!Number.isInteger(timeControl.initialSeconds)||!(timeControl.initialSeconds===0||(timeControl.initialSeconds>=60&&timeControl.initialSeconds<=3600))||!Number.isInteger(timeControl.incrementSeconds)||timeControl.incrementSeconds<0||timeControl.incrementSeconds>60||(timeControl.initialSeconds===0&&timeControl.incrementSeconds!==0))fail('Choose no clock, or 1–60 minutes with an increment of 0–60 seconds.');
  const assistance={...assistanceDefaults};
  if(body.assistance!==undefined){if(!body.assistance||Array.isArray(body.assistance)||typeof body.assistance!=='object')fail('Invalid assistance settings.');for(const [key,value] of Object.entries(body.assistance)){if(!Object.hasOwn(assistance,key)||typeof value!=='boolean')fail('Invalid assistance setting.');assistance[key]=value;}}
- return {color:color==='random'?(randomInt(2)?'w':'b'):color,level,title:title||profile?.name||`Practice · level ${level}`,botId,botName:profile?.name||'Engine opponent',engineId,rating,currentRating:rating,style:profile?.style||'balanced',adaptive:profile?.adaptive||false,timeControl:{initialSeconds:timeControl.initialSeconds,incrementSeconds:timeControl.incrementSeconds},assistance,hintsUsed:0,undosUsed:0,crownsAwarded:0,resultReason:null,chat:assistance.chat?[profile?(profile.description||`I'm ${profile.name}. Let's play.`):'Ready when you are. Choose your move.']:[],legacyStrength:body.rating===undefined&&!profile&&!body.engineId};
+ return {...(variant==='chess960'?{variant,positionNumber,initialFen:chess960Fen(positionNumber)}:{}),color:color==='random'?(randomInt(2)?'w':'b'):color,level,title:title||profile?.name||`Practice · level ${level}`,botId,botName:profile?.name||'Engine opponent',engineId,rating,currentRating:rating,style:profile?.style||'balanced',adaptive:profile?.adaptive||false,timeControl:{initialSeconds:timeControl.initialSeconds,incrementSeconds:timeControl.incrementSeconds},assistance,hintsUsed:0,undosUsed:0,crownsAwarded:0,resultReason:null,chat:assistance.chat?[profile?(profile.description||`I'm ${profile.name}. Let's play.`):'Ready when you are. Choose your move.']:[],legacyStrength:body.rating===undefined&&!profile&&!body.engineId};
 }
 export function practiceSnapshot(source,body) {
  if(body.restart!==undefined&&typeof body.restart!=='boolean')fail('Invalid practice restart.');
@@ -32,9 +35,9 @@ export function practiceSnapshot(source,body) {
  }
  if(!Number.isInteger(ply)||ply<0||ply>history.length||ply>=1000)fail('Choose a position within the saved history with room to continue.');
  const moves=history.slice(0,ply),initialFen=source.initialFen??null;
- if(replay(moves,initialFen).isGameOver())fail('This position is already over. Choose an earlier position to practice.');
+ if(replay(moves,initialFen,source.variant).isGameOver())fail('This position is already over. Choose an earlier position to practice.');
  const practice=body.restart?{...source.practice}:{sourceGameId:source.id,sourceBranchId:branchId,sourcePly:ply,sourceTitle:source.title,startPly:ply};
- return {moves,initialFen,practice};
+ return {moves,initialFen,variant:source.variant||'standard',positionNumber:source.positionNumber??null,practice};
 }
 export function beginClock(game,stamp) {
  const ms=(game.timeControl?.initialSeconds||0)*1000;
@@ -43,7 +46,7 @@ export function beginClock(game,stamp) {
 }
 export function settleClock(game,stamp) {
  if(game.result||!game.timeControl?.initialSeconds||game.clock?.activeSince==null)return false;
- const board=replay(game.moves,game.initialFen),turn=board.turn(),key=turn==='w'?'whiteMs':'blackMs';
+ const board=replay(game.moves,game.initialFen,game.variant),turn=board.turn(),key=turn==='w'?'whiteMs':'blackMs';
  game.clock[key]=Math.max(0,game.clock[key]-Math.max(0,stamp-game.clock.activeSince));game.clock.activeSince=stamp;
  if(game.clock[key]>0)return false;
  const winner=turn==='w'?'b':'w';
@@ -66,7 +69,7 @@ export function crownsFor(game) {
 export function adaptiveRating(game) {
  if(!game.adaptive)return game.rating;
  const values={p:1,n:3,b:3,r:5,q:9,k:0};let advantage=0;
- for(const p of replay(game.moves,game.initialFen).board().flat())if(p)advantage+=(p.color===game.color?1:-1)*values[p.type];
+ for(const p of replay(game.moves,game.initialFen,game.variant).board().flat())if(p)advantage+=(p.color===game.color?1:-1)*values[p.type];
  return Math.max(250,Math.min(3200,game.rating+Math.max(-350,Math.min(350,advantage*80))));
 }
 export function addBotChat(game,move) {
@@ -76,7 +79,7 @@ export function addBotChat(game,move) {
 }
 export function undoTurn(game,stamp) {
  if(game.result||game.source!=='bot')fail('Only a game still in progress can be taken back.');
- const board=replay(game.moves,game.initialFen);
+ const board=replay(game.moves,game.initialFen,game.variant);
  const target=game.moves.length-(board.turn()===game.color?2:1);
  const start=game.practice?.startPly||0;
  if(target<start)fail('Play a move before taking back a turn. The starting position is preserved.');
@@ -89,8 +92,9 @@ export function undoTurn(game,stamp) {
  return game;
 }
 export function attackedPieces(game) {
- const board=replay(game.moves,game.initialFen),enemy=game.color==='w'?'b':'w';
+ const board=replay(game.moves,game.initialFen,game.variant),enemy=game.color==='w'?'b':'w';
+ if(board.variant==='chess960')return board.threats(enemy);
  const fields=board.fen().split(' ');if(fields[1]!==enemy){fields[1]=enemy;fields[3]='-';}
- const opponent=new Chess(fields.join(' '));
+ const opponent=createChess(fields.join(' '),game.variant);
  return opponent.moves({verbose:true}).filter(move=>move.captured).map(move=>({from:move.from,to:move.to}));
 }
