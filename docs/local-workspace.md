@@ -67,3 +67,9 @@ python3 scripts/import_puzzles.py data/puzzles/lichess_db_puzzle.csv.zst data/pu
 ```
 
 The importer requires the existing `zstd` executable and Python's standard library. It refuses to overwrite an existing catalogue. Set `CHESSLAB_PUZZLES` to another local catalogue path if needed. No puzzle archive, engine model or answer key is downloaded into the browser. Server attempts live in the account SQLite database and follow its backup policy. Custom practice uses source puzzle ratings; it does not provide a calibrated user rating. Rated adaptation, daily puzzles and rush remain subsequent work. [Training proof](verification/puzzle-training/README.md) covers the current flow.
+
+## Rated and daily puzzles
+
+Puzzles offers Rated, Daily and Custom practice. Rated selects unseen puzzles around your local puzzle rating. Choose Standard, Hard or Extra Hard. A clean complete solution wins; the first mistake, hint, reveal or skip scores one loss. Continuing afterward or replaying the puzzle does not score it again. Rating receipts, best rating and attempt count stay in the account database. This local Elo rating starts at 1500 with K=32; it is separate from Chess.com ratings and chess playing strength.
+
+Daily pins one position for the server’s local calendar date, shared across accounts. Return to Puzzles after reload to resume the saved date and position. Completion history and consecutive-day streaks persist. Reopening the same day returns the same attempt; Try again creates custom practice. A saved attempt spanning midnight keeps and credits its original date when solved. Rated scores do not change during daily or custom play. The last seven days appear in the daily calendar. Full rated calibration, rush, battle and richer daily archives remain work. [Mode proof](verification/rated-daily-puzzles/README.md) covers the current behavior.

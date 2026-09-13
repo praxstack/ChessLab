@@ -1,0 +1,13 @@
+✔ local puzzle rating follows fixed Elo expectation and bounded changes (1.130958ms)
+✔ rated scoring is atomic and once-only; practice and daily cannot farm rating (53.026167ms)
+✔ daily is shared, pinned across rollover and restart, and credited once per account/date (43.890458ms)
+✔ source trigger and every continuation replay legally; malformed lines fail closed (8.387334ms)
+✔ alternate immediate mates count once; skip, unavailable source and empty retry remain explicit (7.196084ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 148.943042
