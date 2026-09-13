@@ -1,0 +1,27 @@
+{
+  "verifiedAt": "2026-09-13T05:48:04.203617+00:00",
+  "sourceCommit": "7a0f62e5c914fc77b424f7fb89700ed3fd18eb89",
+  "url": "http://127.0.0.1:8772/",
+  "manifestFilesMatched": 533,
+  "engine": "Stockfish 19",
+  "servedAssets": [
+    "index-C_6Ejn_y.js",
+    "index-bg283Xc2.css"
+  ],
+  "servedBytesMatchBuild": true,
+  "guestLibraryVerified": true,
+  "collectionsRequireAccount": true,
+  "sqliteIntegrity": "ok",
+  "backup": "data/backups/before-game-collections-20260913.sqlite",
+  "preservedCounts": {
+    "users": 2,
+    "games": 2,
+    "progress": 0
+  },
+  "newCollectionCounts": {
+    "game_collections": 0,
+    "collection_games": 0
+  },
+  "pr": "https://github.com/praxstack/ChessLab/pull/10",
+  "originalMainClean": true
+}
