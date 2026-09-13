@@ -1,0 +1,27 @@
+{
+  "verifiedAt": "2026-09-13T04:33:15.004760+00:00",
+  "sourceCommit": "45e9b65d6aaa1a0ac6a96ff3f912ca8ef1cc935e",
+  "url": "http://127.0.0.1:8772/",
+  "manifestFilesMatched": 498,
+  "engine": "Stockfish 19",
+  "puzzleCount": 6100952,
+  "serverDate": "2026-09-13",
+  "timeZone": "Asia/Calcutta",
+  "servedAssets": [
+    "index-oP9-zts7.js",
+    "index-gDx3aQOM.css"
+  ],
+  "servedBytesMatchBuild": true,
+  "browserModesVerified": [
+    "Rated",
+    "Daily"
+  ],
+  "backup": "data/backups/before-rated-daily-20260913.sqlite",
+  "backupCounts": {
+    "users": 2,
+    "games": 2,
+    "progress": 0
+  },
+  "pr": "https://github.com/praxstack/ChessLab/pull/7",
+  "originalMainClean": true
+}

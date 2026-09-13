@@ -1,0 +1,7 @@
+# Rated and daily puzzle modes
+
+User-authorized additive work toward full local Chess.com parity. Baseline d5c716b; protect all 71 application tests, source catalogue, custom training, gameplay, accounts, saved studies and proof workflow. Full parity and the branching tutor remain active; no governing gate changes.
+
+Implement adaptive local puzzle rating, difficulty selection and a shared local daily puzzle using the existing protected attempt engine. A rated puzzle is scored once: a clean complete solution wins, while the first wrong move, hint, reveal or skip loses. Further practice does not rescore it. Source puzzle ratings remain fixed. Use a transparent Elo update with K=32 and initial local rating 1500; do not claim proprietary rating equivalence or calibrated chess strength. Glicko-2's additional uncertainty/period machinery is not required for this current fixed-source local rating; preserve provenance and retain calibration as an explicit parity gap.
+
+Graph: observed reference behavior -> frozen score/date invariants -> failing deterministic checks -> transactional score/daily persistence -> mode UI and history -> recorded protected flows -> PR and local promotion. Reuse the board, source index, attempts and study analysis. Daily selection is stable per server-local calendar date and shared by accounts on this server. Calendar completion and streaks are local. Rush follows; battle follows human multiplayer; billing remains last.
