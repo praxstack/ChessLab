@@ -398,3 +398,31 @@ test('collections isolate accounts, reject stale or partial edits and preserve g
   assert.deepEqual((await f.request(`/api/games/${a.id}`,{cookie})).body.game,original);
  }finally{await f.close();}
 });
+
+test('annotated imports, node comments and portable study copies preserve original games and reject bad trees',async()=>{
+ const f=await fixture();try{
+  const {cookie}=await f.register('annotator'),bob=await f.register('different');
+  const post=(path,body,c=cookie)=>f.request(path,{method:'POST',cookie:c,body});
+  const pgn='[White "Student"]\n[Black "Coach"]\n\n1. e4 {Central space} e5 (1... c5 $1 2. Nf3 (2. Nc3 {A different knight})) 2. Nf3 *';
+  const imported=await post('/api/import',{pgn});assert.equal(imported.status,201);const g=imported.body.game,id=g.id;assert.equal(g.study.branches.length,2);
+  const study=structuredClone(g.study);study.selectedBranchId=study.branches[1].id;study.annotations.push({branchId:study.branches[0].id,ply:1,comment:'At this exact branch root {keep me}',nags:[]});
+  const saved=await post(`/api/games/${id}/study`,{study,studyRevision:0});assert.equal(saved.status,200);
+  assert.equal((await post(`/api/games/${id}/study`,{study,studyRevision:0})).status,409);
+  const portable=(await f.request(`/api/games/${id}/study-file`,{cookie})).body;
+  assert.equal((await f.request(`/api/games/${id}/study-file`,{cookie:bob.cookie})).status,404);
+  const copied=await post('/api/import-study',portable);assert.equal(copied.status,201);assert.notEqual(copied.body.game.id,id);assert.deepEqual(copied.body.game.study,study);
+  const exported=(await f.request(`/api/games/${id}/pgn`,{cookie})).body;assert.match(exported,/Nc3/);assert.match(exported,/Central space/);assert.equal((await post('/api/import',{pgn:exported})).status,201);
+  const count=(await f.request('/api/games',{cookie})).body.games.length;
+  assert.equal((await post('/api/import',{pgn:'1. e4 (1. d5) e5 *'})).status,400);
+  portable.game.study.annotations[0].ply=999;assert.equal((await post('/api/import-study',portable)).status,400);assert.equal((await f.request('/api/games',{cookie})).body.games.length,count);
+  await f.restart();assert.deepEqual((await f.request(`/api/games/${id}`,{cookie})).body.game.study,study);
+  assert.deepEqual((await f.request(`/api/games/${id}`,{cookie})).body.game.moves,g.moves);
+ }finally{await f.close();}
+});
+
+test('undo cannot remove an annotated original-game position',async()=>{
+ const f=await fixture();try{const {cookie}=await f.register('notekeeper');const post=(path,body)=>f.request(path,{method:'POST',cookie,body});const g=(await post('/api/games',{color:'w',level:2})).body.game;
+ const route=`/api/games/${g.id}`;await post(route+'/move',{move:'e2e4',revision:0});await post(route+'/bot',{revision:1});
+ const study={version:1,branches:[],selectedBranchId:null,anchorPly:0,annotations:[{branchId:null,ply:2,comment:'Keep this decision',nags:[5]}]};assert.equal((await post(route+'/study',{study,studyRevision:0})).status,200);assert.equal((await post(route+'/undo',{revision:2})).status,400);assert.deepEqual((await f.request(route,{cookie})).body.game.moves,['e2e4','e7e5']);
+ }finally{await f.close();}
+});

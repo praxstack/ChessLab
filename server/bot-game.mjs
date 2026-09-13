@@ -80,7 +80,7 @@ export function undoTurn(game,stamp) {
  const target=game.moves.length-(board.turn()===game.color?2:1);
  const start=game.practice?.startPly||0;
  if(target<start)fail('Play a move before taking back a turn. The starting position is preserved.');
- if((game.study?.anchorPly||0)>target||(game.study?.branches||[]).some(b=>!b.parentId&&b.anchorPly>target))fail('A saved study uses this part of the game. Keep its history and start a rematch instead.');
+ if((game.study?.annotations||[]).some(a=>a.branchId===null&&a.ply>target)||(game.study?.anchorPly||0)>target||(game.study?.branches||[]).some(b=>!b.parentId&&b.anchorPly>target))fail('A saved study uses this part of the game. Keep its history and start a rematch instead.');
  game.moves=game.moves.slice(0,target);game.undosUsed=(game.undosUsed||0)+1;game.lastFeedback=null;
  const prior=game.clockHistory?.[target-start];
  if(prior)game.clock={...prior,activeSince:game.timeControl?.initialSeconds?stamp:null};

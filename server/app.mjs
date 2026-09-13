@@ -16,6 +16,7 @@ import { lessons, puzzles, catalog } from './content.mjs';
 import {curriculumCatalog} from './curriculum.mjs';
 import {createCourseProgress} from './course-progress.mjs';
 import {installCollections} from './game-collections.mjs';
+import {validateStudy,readAnnotatedPgn,writeAnnotatedPgn,portableStudy,readPortableStudy} from './study-format.mjs';
 import {hostingGuard} from './hosting.mjs';
 import {positionKey,reviewSignature,beginReview,appendReview} from './game-review.mjs';
 
@@ -31,34 +32,6 @@ function moveOn(chess, value) {
 }
 const replay = engine.replay;
 const gameResult = chess => chess.isCheckmate() ? (chess.turn() === 'w' ? '0-1' : '1-0') : chess.isDraw() ? '1/2-1/2' : null;
-function validateStudy(study, game) {
- if (!study || study.version !== 1 || !Array.isArray(study.branches) || study.branches.length > 40) fail(400, 'This study format is invalid or too large.');
- const ids = new Set(); let total = 0;
- const branches = study.branches.map(b => {
-  if (!b || typeof b.id !== 'string' || !/^[\w-]{1,80}$/.test(b.id) || ids.has(b.id)) fail(400, 'Each branch needs a unique identifier.');
-  ids.add(b.id);
-  if (!Number.isInteger(b.anchorPly) || b.anchorPly < 0 || !Array.isArray(b.moves) || b.anchorPly > b.moves.length) fail(400, 'A branch has an invalid starting point.');
-  total += b.moves.length;
-  if (total > 5000) fail(400, 'This study has too many moves. Export or split the study before adding more.');
-  replay(b.moves, game.initialFen);
-  if (b.question !== undefined && (typeof b.question !== 'string' || b.question.length > 2000)) fail(400, 'Keep each question under 2000 characters.');
-  if (b.parentId !== null && b.parentId !== undefined && typeof b.parentId !== 'string') fail(400, 'Invalid branch parent.');
-  return {id:b.id,parentId:b.parentId || null,anchorPly:b.anchorPly,moves:b.moves,question:b.question || ''};
- });
- const byId = new Map(branches.map(b=>[b.id,b]));
- for (const b of branches) {
-  const parent = b.parentId ? byId.get(b.parentId) : null;
-  if (b.parentId && !parent) fail(400, 'A branch refers to a missing parent.');
-  const original = parent ? parent.moves : game.moves;
-  if (b.anchorPly > original.length || b.moves.slice(0,b.anchorPly).some((m,i)=>m !== original[i])) fail(400, 'A branch must preserve the moves before its starting point.');
-  const visited = new Set([b.id]); let p = parent;
-  while (p) { if (visited.has(p.id)) fail(400, 'Branch parents cannot form a loop.'); visited.add(p.id); p = p.parentId ? byId.get(p.parentId) : null; }
- }
- const selected = study.selectedBranchId ?? null;
- if (selected !== null && !byId.has(selected)) fail(400, 'The selected branch does not exist.');
- if (!Number.isInteger(study.anchorPly) || study.anchorPly < 0 || study.anchorPly > game.moves.length) fail(400, 'The return point is outside the actual game.');
- return {version:1,branches,selectedBranchId:selected,anchorPly:study.anchorPly};
-}
 
 export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('data/chesslab.sqlite'), engineApi = engine, opponentApi = opponents, nowMs = Date.now, puzzleCataloguePath = process.env.CHESSLAB_PUZZLES || resolve('data/puzzles/catalogue.sqlite')} = {}) {
  if (databasePath !== ':memory:') mkdirSync(dirname(databasePath), {recursive:true});
@@ -96,6 +69,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   }
   next();
  });
+ app.use(['/api/import','/api/import-study','/api/games/:id/study'],express.json({limit:'1mb',strict:true}));
  app.use(express.json({limit:'256kb',strict:true}));
  app.use('/api',(req,res,next)=>{
   if (req.body && (Array.isArray(req.body) || typeof req.body !== 'object')) return res.status(400).json({error:'Expected a JSON object.'});
@@ -304,25 +278,13 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   const title=req.body.title??'Custom position';if(typeof title!=='string'||!title.trim()||title.length>100)fail(400,'Use a position title of 1–100 characters.');
   res.status(201).json({game:insertGame(req.user.id,{title:title.trim(),source:'import',positionSetup:true,initialFen:position.fen,color:position.chess.turn(),result:gameResult(position.chess),headers:{White:'White',Black:'Black'}})});
  });
- app.post('/api/import',(req,res)=>{
-  const {pgn}=req.body;
-  if(typeof pgn!=='string'||pgn.length<3||pgn.length>50000) fail(400,'Paste a PGN between 3 and 50,000 characters.');
-  const chess=new Chess();try{chess.loadPgn(pgn,{strict:true});}catch{fail(400,'This PGN contains an invalid position or move. Your other games are unchanged.');}
-  const moves=chess.history({verbose:true}).map(uci);
-  const headers=chess.getHeaders();const initialFen=headers.FEN || null;
-  if(initialFen)try{validatePosition(initialFen);}catch(error){fail(400,error.message);}
-  if((!moves.length&&!initialFen)||moves.length>1000) fail(400,'Import 1–1000 legal moves, or a PGN with a starting FEN.');
-  replay(moves,initialFen);
-  const result=gameResult(chess)||(['1-0','0-1','1/2-1/2'].includes(headers.Result)?headers.Result:null);
-  const title=`${headers.White || 'White'} vs ${headers.Black || 'Black'}`.slice(0,100);
-  res.status(201).json({game:insertGame(req.user.id,{title,source:'import',positionSetup:!moves.length,moves,initialFen,result,headers:{White:String(headers.White || 'White').slice(0,100),Black:String(headers.Black || 'Black').slice(0,100)}})});
- });
+ app.post('/api/import',(req,res)=>res.status(201).json({game:insertGame(req.user.id,readAnnotatedPgn(req.body.pgn))}));
+ app.post('/api/import-study',(req,res)=>res.status(201).json({game:insertGame(req.user.id,readPortableStudy(req.body))}));
  app.get('/api/games/:id/pgn',(req,res)=>{
-  const game=owned(req);const chess=replay(game.moves,game.initialFen);
-  for (const [key,value] of Object.entries({Event:'ChessLab study',White:game.color==='w'?req.user.username:(game.botName||'ChessLab bot'),Black:game.color==='b'?req.user.username:(game.botName||'ChessLab bot'),Result:game.result || '*'})) chess.setHeader(key,value);
-  if(game.source==='import') {chess.setHeader('White',game.headers?.White || 'Imported White');chess.setHeader('Black',game.headers?.Black || 'Imported Black');}
-  if(game.opening){chess.setHeader('ECO',game.opening.eco);chess.setHeader('Opening',game.opening.name);}
-  res.type('text/plain').set('Content-Disposition',`attachment; filename="chesslab-${game.id}.pgn"`).send(chess.pgn());
+  const game=owned(req);res.type('text/plain').set('Content-Disposition',`attachment; filename="chesslab-${game.id}.pgn"`).send(writeAnnotatedPgn(game,req.user.username));
+ });
+ app.get('/api/games/:id/study-file',(req,res)=>{
+  const game=owned(req);res.set('Content-Disposition',`attachment; filename="chesslab-${game.id}.chesslab.json"`).json(portableStudy(game,req.user.username));
  });
  app.post('/api/games/:id/study',(req,res)=>{
   const game=owned(req);
