@@ -2,4 +2,4 @@
 - [x] Import and verify the complete selected archive locally.
 - [x] Implement position statistics, account boundaries and explorer UI.
 - [x] Run protected checks and record production desktop/mobile proof.
-- [ ] Root review, video PR and backed-up exact local installation.
+- [x] Root review, video PR and backed-up exact local installation.
