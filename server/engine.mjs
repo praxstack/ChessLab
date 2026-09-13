@@ -161,8 +161,9 @@ function runUci({ moves, initialFen, board, movetime, lines, skill, engineId, th
         catch { return finish(failure('Stockfish returned an invalid move.', 503)); }
         // Rank changes during an unfinished MultiPV iteration must not duplicate candidates.
         const ranked=[...iterations.entries()].sort((a,b)=>b[0]-a[0]).map(([,entries])=>[...entries.entries()].sort((a,b)=>a[0]-b[0]).map(([,value])=>value));
-        const complete=ranked.find(entries=>entries.length===Math.min(lines,board.moves().length)&&new Set(entries.map(line=>line.move)).size===entries.length);
-        const resultLines = complete || (ranked[0]||[]).filter((line,index,all)=>all.findIndex(item=>item.move===line.move)===index);
+        const matching=ranked.filter(entries=>entries.some(line=>line.move===bestmove));
+        const complete=matching.find(entries=>entries.length===Math.min(lines,board.moves().length)&&new Set(entries.map(line=>line.move)).size===entries.length);
+        const resultLines = (complete || matching[0] || []).filter((line,index,all)=>all.findIndex(item=>item.move===line.move)===index).sort((a,b)=>Number(b.move===bestmove)-Number(a.move===bestmove));
         if (!resultLines.length) return finish(failure('Stockfish returned no usable analysis. Try again.', 503));
         finish(null, { name, bestmove, lines: resultLines });
       }

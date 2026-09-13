@@ -101,3 +101,20 @@ Review and Analysis support saved board drawings. Right-drag an arrow or right-c
 
 
 Completed Game Review reports offer Practice key moves. Choose White, Black or both, then retry inaccuracies, mistakes, blunders and non-recommended mate-sequence decisions. A practice run pins the saved native recommendation and keeps its progress separate from your original game, notes and branches. Legal alternatives are checked by the local engine at the review settings, capped at two seconds per position; numerical Good alternatives below 50 centipawns, current Best moves and actual checkmates are accepted. Uncertain mate comparisons are identified explicitly. A rejected attempt shows the resulting board; Try again returns to the question. Hints reveal the piece and then its arrow. Reload and reopen practice to resume. Results distinguish first-try unassisted solves, repeated/assisted solves, reveals and skips. Starting again explicitly replaces that practice run.
+
+## Local game explorer
+
+Open Openings → Game explorer, or select Explore this position from a named line. Move-count rows, result bars and example games come from the downloaded Lichess Elite November 2025 archive. The first 60 half-moves are indexed; every accepted game is legally parsed in full and retained for replay. Repeated positions contribute only their first encounter per game. Example games are a sample, not a ranking. My Games uses only your completed standard games, including local bot games; custom starting positions and unfinished games are excluded.
+
+Replay an example, explore from its selected position, or Study this example to save a separate owned copy. Existing study drafts are saved through the normal import flow. Full platform parity remains unfinished; this selected online corpus is not Chess.com's master database.
+
+The archive and database live in `data/explorer/`; `CHESSLAB_EXPLORER` can select another imported database. The server opens it read-only. To reproduce the import, use the pinned project-local environment and a new destination:
+
+```sh
+uv venv data/explorer/.venv
+uv pip install --python data/explorer/.venv/bin/python chess==1.11.2
+data/explorer/.venv/bin/python scripts/import_explorer_test.py
+data/explorer/.venv/bin/python scripts/import_explorer.py data/explorer/lichess_elite_2025-11.zip data/explorer/catalogue-new.sqlite --label 'Lichess Elite · November 2025' --url https://database.nikonoel.fr/lichess_elite_2025-11.zip
+```
+
+The importer refuses overwrite, rejects illegal/nonstandard/unfinished games, records source SHA-256 and counts, checks SQLite integrity and atomically publishes only the completed database. It does not download during application use. The Python package is used only for offline imports; the web runtime retains React, Express, chess.js and native SQLite/engines.

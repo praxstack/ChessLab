@@ -468,3 +468,23 @@ test('review practice protects ownership, restarts, stale revisions, concurrent 
   const changed={...unchanged,moves:['e2e4']};f.db.prepare('UPDATE games SET data=? WHERE id=?').run(JSON.stringify(changed),g.id);assert.equal((await post(practiceRoute+'/action',{type:'skip',revision:p.revision})).status,409);const stale=(await f.request(practiceRoute,{cookie})).body;assert.equal(stale.stale,true);assert.equal(stale.revision,p.revision);
  }finally{release?.();await f.close();}
 });
+
+test('opening explorer exposes corpus separately from private completed games and creates isolated study copies',async()=>{
+ const f=await fixture({explorerCataloguePath:'/nonexistent/explorer.sqlite'});try{
+  assert.equal((await f.request('/api/explorer')).body.available,false);
+  assert.equal((await f.request('/api/explorer?source=mine')).status,401);
+  assert.equal((await f.request('/api/explorer?fen=bad')).status,400);
+  const alice=await f.register('explorer_alice'),bob=await f.register('explorer_bob');
+  const pgn='[White "Local White"]\n[Black "Local Black"]\n[Result "1-0"]\n\n1. e4 e5 2. Nf3 Nc6 1-0';
+  const imported=(await f.request('/api/import',{method:'POST',body:{pgn},cookie:alice.cookie})).body.game;
+  const result=await f.request('/api/explorer?source=mine',{cookie:alice.cookie});assert.equal(result.status,200);assert.equal(result.body.total,1);assert.equal(result.body.moves[0].san,'e4');
+  assert.equal((await f.request('/api/explorer?source=mine',{cookie:bob.cookie})).body.total,0);
+  assert.equal((await f.request(`/api/explorer/games/${imported.id}?source=mine`,{cookie:bob.cookie})).status,404);
+  const example=(await f.request(`/api/explorer/games/${imported.id}?source=mine`,{cookie:alice.cookie})).body.game;
+  const copy=(await f.request('/api/import',{method:'POST',body:{pgn:example.pgn},cookie:alice.cookie})).body.game;
+  assert.notEqual(copy.id,imported.id);assert.deepEqual(copy.moves,imported.moves);assert.deepEqual((await f.request(`/api/games/${imported.id}`,{cookie:alice.cookie})).body.game,imported);
+  const bot=(await f.request('/api/games',{method:'POST',body:{color:'w'},cookie:alice.cookie})).body.game;await f.request(`/api/games/${bot.id}/move`,{method:'POST',body:{move:'d2d4',revision:0},cookie:alice.cookie});await f.request(`/api/games/${bot.id}/resign`,{method:'POST',body:{revision:1},cookie:alice.cookie});
+  const ownBot=(await f.request(`/api/explorer/games/${bot.id}?source=mine`,{cookie:alice.cookie})).body.game;assert.equal(ownBot.headers.White,'explorer_alice');assert.ok(ownBot.headers.Black);assert.match(ownBot.pgn,/d4/);
+  await f.restart();assert.equal((await f.request('/api/explorer?source=mine',{cookie:alice.cookie})).body.total,3);
+ }finally{await f.close();}
+});
