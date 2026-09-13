@@ -1,0 +1,17 @@
+npm run build
+
+> chesslab@0.1.0 build
+> vite build
+
+vite v8.2.2 building client environment for production...
+transforming...
+✓ 27 modules transformed.
+rendering chunks...
+computing gzip size...
+web/dist/index.html                   0.56 kB │ gzip:   0.36 kB
+web/dist/assets/index-DmoOjb1o.css   69.94 kB │ gzip:  15.35 kB
+web/dist/assets/index-CYNnHWHF.js   362.53 kB │ gzip: 109.52 kB
+
+✓ built in 124ms
+node scripts/check_local_server.mjs
+{"status":"pass","checks":["loopback startup","web app","research archive","design archive","local piece asset","native engine ready","private data paths unavailable"]}

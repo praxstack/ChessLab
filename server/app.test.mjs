@@ -338,3 +338,17 @@ test('training attempts protect solutions, ownership, revisions, hints and histo
 
  }finally{await f.close();rmSync(temp,{recursive:true,force:true});}
 });
+
+
+test('guided curriculum API protects answers, ownership and all-challenge completion across restart',async()=>{
+ const f=await fixture();try{
+  const publicLessons=await f.request('/api/curriculum');assert.equal(publicLessons.status,200);assert.equal(publicLessons.body.courses.length,4);assert.equal(publicLessons.body.lessons.length,12);assert.equal(publicLessons.body.lessons[0].challenges[0].solution,undefined);
+  assert.equal((await f.request('/api/lesson-progress')).status,401);const alice=await f.register('course_alice'),bob=await f.register('course_bob'),route='/api/course-lessons/rook-lines';
+  const post=(suffix,body,cookie=alice.cookie)=>f.request(route+suffix,{method:'POST',body,cookie});let result=await post('/start',{});assert.equal(result.status,201);let session=result.body.session;assert.equal(session.current.puzzle.solution,undefined);
+  assert.equal((await post('/action',{id:session.id,revision:0,action:'move',move:'a1a7'},bob.cookie)).status,404);assert.equal((await f.request('/api/lessons/rook-lines/answer',{method:'POST',cookie:alice.cookie,body:{choice:0}})).status,404);
+  result=await post('/action',{id:session.id,revision:0,action:'move',move:'a1a2'});assert.equal(result.body.correct,false);session=result.body.session;assert.deepEqual(session.current.moves,[]);assert.deepEqual(result.body.progress.completed,[]);
+  result=await post('/action',{id:session.id,revision:session.revision,action:'move',move:'a1a7'});session=result.body.session;assert.deepEqual(result.body.progress.completed,[]);
+  session=(await post('/action',{id:session.id,revision:session.revision,action:'next'})).body.session;await f.restart();assert.equal((await post('/start',{})).body.session.step,1);
+  result=await post('/action',{id:session.id,revision:session.revision,action:'move',move:'h8h2'});assert.equal(result.body.session.state,'complete');assert.deepEqual(result.body.progress.completed,['rook-lines']);assert.deepEqual((await f.request('/api/me',{cookie:alice.cookie})).body.progress.lessons,['rook-lines']);assert.deepEqual((await f.request('/api/lesson-progress',{cookie:bob.cookie})).body.completed,[]);
+ }finally{await f.close();}
+});

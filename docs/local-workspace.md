@@ -77,3 +77,7 @@ Daily pins one position for the server’s local calendar date, shared across ac
 ## Puzzle Rush
 
 Choose Puzzles → Puzzle Rush, then 3 minutes, 5 minutes or Survival. Finish each line for one point; the first legal wrong move or skip uses one life. Three failed puzzles end the run. Timed clocks keep running across reloads; Survival saves without a deadline. Local personal bests and recent runs are saved per account. After a run, choose any result to retry in Custom practice, then reveal or analyze the source solution. Rush does not change your rated puzzle profile or Daily credit. [Recorded proof](verification/puzzle-rush/README.md) covers the board, reload, results, retries and mobile clock.
+
+## Guided learning
+
+Learn now opens a four-level path with twelve original guided lessons and 24 board challenges. Use Continue lesson to resume an unfinished challenge, or Lesson library to search and filter by level/topic. Both challenges are required for completion. Next lesson follows the unfinished sequence; Practice again keeps prior completion. The six original lessons remain in Starter lessons with their saved progress. Six advanced positions are attributed CC0 examples from the local catalogue. [Recorded proof](verification/learning-path/README.md) covers full-course completion, reload, search, promotion and advanced calculation. This is a growing local curriculum, not complete vendor content parity.

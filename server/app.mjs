@@ -13,6 +13,8 @@ import {setupOptions,practiceSnapshot,beginClock,settleClock,finishMoveClock,cro
 const profiles = JSON.parse(readFileSync(new URL('./bot-profiles.json',import.meta.url),'utf8'));
 import {createTrainer} from './puzzle-training.mjs';
 import { lessons, puzzles, catalog } from './content.mjs';
+import {curriculumCatalog} from './curriculum.mjs';
+import {createCourseProgress} from './course-progress.mjs';
 import {hostingGuard} from './hosting.mjs';
 import {positionKey,reviewSignature,beginReview,appendReview} from './game-review.mjs';
 
@@ -145,6 +147,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
  const trainer=createTrainer({db,cataloguePath:puzzleCataloguePath,nowMs,insertStudy:(userId,value)=>insertGame(userId,{...value,result:gameResult(replay(value.moves,value.initialFen))})});
  app.get('/api/training/catalog',(req,res)=>res.json(trainer.catalogue()));
  app.get('/api/learn',(req,res)=>res.json(catalog()));
+ app.get('/api/curriculum',(req,res)=>res.json(curriculumCatalog()));
  app.get('/api/openings',(req,res)=>res.json(searchOpenings(req.query)));
  app.get('/api/openings/:id',(req,res)=>{const opening=openingById(req.params.id);if(!opening)fail(404,'Opening not found.');res.json({opening,source:openingSource});});
  app.use('/api',requireUser);
@@ -275,6 +278,10 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   if(settleClock(fresh,nowMs()))return res.json({analysis:null,feedback:null,threats:[],game:storeGame(req.user.id,fresh,fresh.revision)});
   res.json({analysis,feedback,threats:help.threats?attackedPieces(game):[],game:fresh});
  });
+ const courseProgress=createCourseProgress({db,nowMs});
+ app.get('/api/lesson-progress',(req,res)=>res.json(courseProgress.list(req.user.id)));
+ app.post('/api/course-lessons/:id/start',(req,res)=>res.status(201).json(courseProgress.start(req.user.id,req.params.id,req.body)));
+ app.post('/api/course-lessons/:id/action',(req,res)=>res.json(courseProgress.act(req.user.id,req.params.id,req.body)));
  app.get('/api/rush',(req,res)=>res.json(trainer.rush.state(req.user.id)));
  app.post('/api/rush/start',(req,res)=>res.status(201).json(trainer.rush.start(req.user.id,req.body)));
  app.get('/api/rush/:id',(req,res)=>res.json(trainer.rush.get(req.user.id,req.params.id)));
