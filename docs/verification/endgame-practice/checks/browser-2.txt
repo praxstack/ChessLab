@@ -1,0 +1,5 @@
+page.waitForFunction: Timeout 20000ms exceeded.
+    at /private/tmp/chesslab-endgame-practice/scripts/check_app_browser.cjs:792:16 {
+  log: [],
+  name: 'TimeoutError'
+}

@@ -12,3 +12,5 @@
 [Chess960 play and studies](chess960.md): numbered starts, compatible engines, castling, variations, exports, practice, editor and mobile touch.
 
 [Vision training](vision.md): timed coordinates and lone-piece notation, clicks/drag/touch/keyboard, flipped boards and private results.
+
+[Endgame practice](endgames.md): original positions, local solved starting results, configurable native play, private attempts, source-preserving restart and mobile promotion.

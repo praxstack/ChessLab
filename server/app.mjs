@@ -17,6 +17,7 @@ import {curriculumCatalog} from './curriculum.mjs';
 import {createCourseProgress} from './course-progress.mjs';
 import {installCollections} from './game-collections.mjs';
 import {installVision} from './vision-training.mjs';
+import {endgames,endgameById} from './endgames.mjs';
 import {validateStudy,readAnnotatedPgn,writeAnnotatedPgn,portableStudy,readPortableStudy} from './study-format.mjs';
 import {hostingGuard} from './hosting.mjs';
 import {positionKey,reviewSignature,beginReview,appendReview} from './game-review.mjs';
@@ -125,6 +126,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
  const trainer=createTrainer({db,cataloguePath:puzzleCataloguePath,nowMs,insertStudy:(userId,value)=>insertGame(userId,{...value,result:gameResult(replay(value.moves,value.initialFen))})});
  app.get('/api/training/catalog',(req,res)=>res.json(trainer.catalogue()));
  app.get('/api/learn',(req,res)=>res.json(catalog()));
+ app.get('/api/endgames',(req,res)=>res.json({items:endgames}));
  app.get('/api/curriculum',(req,res)=>res.json(curriculumCatalog()));
  app.get('/api/openings',(req,res)=>res.json(searchOpenings(req.query)));
  app.get('/api/openings/:id',(req,res)=>{const opening=openingById(req.params.id);if(!opening)fail(404,'Opening not found.');res.json({opening,source:openingSource});});
@@ -162,6 +164,11 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   const game = {id:randomUUID(),title:'Practice game',color:'w',level:2,moves:[],initialFen:null,result:null,revision:0,createdAt:now(),updatedAt:now(),study:null,studyRevision:0,source:'bot',...values};
   db.prepare('INSERT INTO games VALUES (?,?,?,?)').run(game.id,userId,game.revision,JSON.stringify(game)); return game;
  };
+ app.get('/api/endgame-attempts',(req,res)=>res.json({attempts:db.prepare('SELECT data FROM games WHERE user_id=? ORDER BY rowid DESC').all(req.user.id).map(row=>JSON.parse(row.data)).filter(game=>game.practice?.endgameId&&endgameById(game.practice.endgameId)).map(game=>({id:game.id,endgameId:game.practice.endgameId,color:game.color,result:game.result,resultReason:game.resultReason,moves:game.moves.length-game.practice.startPly,engine:game.botName,engineId:game.engineId,rating:game.rating,hints:game.hintsUsed||0,undos:game.undosUsed||0,updatedAt:game.updatedAt}))}));
+ app.post('/api/endgames/:id/study',(req,res)=>{
+  const drill=endgameById(req.params.id);if(!drill)fail(404,'Endgame not found.');
+  res.status(201).json({game:insertGame(req.user.id,{title:drill.title,source:'import',initialFen:drill.fen,color:drill.fen.split(' ')[1],endgameId:drill.id,headers:{White:'White',Black:'Black'}})});
+ });
  app.get('/api/games',(req,res)=>res.json({games:db.prepare('SELECT data FROM games WHERE user_id=? ORDER BY rowid DESC').all(req.user.id).map(row=>JSON.parse(row.data))}));
  const liveGame=req=>{
   const game=owned(req);

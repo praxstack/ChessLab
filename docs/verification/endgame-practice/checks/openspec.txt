@@ -1,0 +1,22 @@
+✓ change/add-chess960
+✓ change/add-endgame-practice
+✓ change/add-vision-training
+✓ change/annotated-studies
+✓ change/board-annotations
+✓ change/build-coach-web-platform
+✓ change/expand-bot-platform
+✓ change/explore-one-mistake
+✓ change/full-game-review
+✓ change/game-collections
+✓ change/learning-path
+✓ change/local-web-first
+✓ change/match-nonmultiplayer-platform
+✓ change/opening-explorer
+✓ change/opening-library
+✓ change/position-editor
+✓ change/position-practice
+✓ change/puzzle-rush
+✓ change/puzzle-training
+✓ change/rated-daily-puzzles
+✓ change/review-practice
+Totals: 21 passed, 0 failed (21 items)

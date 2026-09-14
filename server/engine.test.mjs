@@ -161,3 +161,12 @@ test('a final bestmove uses its own PV when a partial iteration changes the rank
  try{const result=await analyze({moves:[],movetime:50,lines:2});assert.equal(result.bestmove,'e2e4');assert.equal(result.lines[0].move,result.bestmove);assert.equal(result.lines[0].score.value,10);assert.equal(result.lines.length,2);assert.equal(new Set(result.lines.map(line=>line.depth)).size,1);assert.equal(new Set(result.lines.map(line=>line.move)).size,2);assert.match(result.explanation,/Sample line: e4 → e5/);}
  finally{if(previous===undefined)delete process.env.STOCKFISH_PATH;else process.env.STOCKFISH_PATH=previous;await rm(directory,{recursive:true,force:true});}
 });
+
+
+test('weakened engine retains the selected fourth candidate with its own score while returning the requested line count',async()=>{
+ const directory=await mkdtemp(join(tmpdir(),'chesslab-skill-')),binary=join(directory,'engine'),previous=process.env.STOCKFISH_PATH;
+ await writeFile(binary,`#!${process.execPath}\nlet buffer='',count=1;process.stdin.on('data',chunk=>{buffer+=chunk;let end;while((end=buffer.indexOf('\\n'))>=0){const line=buffer.slice(0,end);buffer=buffer.slice(end+1);if(line==='uci')console.log('id name Stockfish Skill Fixture\\nuciok');else if(line.startsWith('setoption name MultiPV value '))count=Number(line.split(' ').at(-1));else if(line==='isready')console.log('readyok');else if(line.startsWith('go ')){const moves=['e2e4','d2d4','g1f3','b1c3'];moves.slice(0,count).forEach((move,i)=>console.log('info depth 10 multipv '+(i+1)+' score cp '+(40-i*10)+' pv '+move+' e7e5'));console.log('bestmove b1c3');}}});\n`,{mode:0o700});
+ process.env.STOCKFISH_PATH=binary;
+ try{const result=await analyze({moves:[],movetime:50,lines:1,skill:0});assert.equal(result.bestmove,'b1c3');assert.equal(result.lines.length,1);assert.equal(result.lines[0].move,'b1c3');assert.equal(result.lines[0].score.value,10);assert.equal(result.limits.lines,1);assert.match(result.explanation,/Nc3/);}
+ finally{if(previous===undefined)delete process.env.STOCKFISH_PATH;else process.env.STOCKFISH_PATH=previous;await rm(directory,{recursive:true,force:true});}
+});
