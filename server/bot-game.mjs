@@ -36,7 +36,7 @@ export function practiceSnapshot(source,body) {
  if(!Number.isInteger(ply)||ply<0||ply>history.length||ply>=1000)fail('Choose a position within the saved history with room to continue.');
  const moves=history.slice(0,ply),initialFen=source.initialFen??null;
  if(replay(moves,initialFen,source.variant).isGameOver())fail('This position is already over. Choose an earlier position to practice.');
- const practice=body.restart?{...source.practice}:{sourceGameId:source.id,sourceBranchId:branchId,sourcePly:ply,sourceTitle:source.title,startPly:ply};
+ const practice=body.restart?{...source.practice}:{sourceGameId:source.id,sourceBranchId:branchId,sourcePly:ply,sourceTitle:source.title,startPly:ply,...(source.endgameId&&branchId===null&&ply===0?{endgameId:source.endgameId}:{})};
  return {moves,initialFen,variant:source.variant||'standard',positionNumber:source.positionNumber??null,practice};
 }
 export function beginClock(game,stamp) {

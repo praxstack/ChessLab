@@ -3,7 +3,7 @@ import { randomInt } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { analyze, engineStatus, replay } from './engine.mjs';
+import { analyze, engineStatus, replay, localTablebasePath } from './engine.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const data = resolve(process.env.CHESSLAB_ENGINES_DIR || resolve(root, 'data/engines'));
@@ -95,7 +95,7 @@ function runUci(id, input) {
     const [path, args] = command(id);
     const child = spawn(path, args, { cwd: root, env: { ...process.env, CHESSLAB_ENGINES_DIR: data, OMP_NUM_THREADS: '1', MKL_NUM_THREADS: '1', HF_HUB_OFFLINE: '1' }, stdio: ['pipe', 'pipe', 'pipe'], shell: false });
     children.add(child);
-    let settled = false, phase = 'uci', buffer = '', bytes = 0, name = '', chess960 = false;
+    let settled = false, phase = 'uci', buffer = '', bytes = 0, name = '', chess960 = false, syzygy = false;
     const timer = setTimeout(() => finish(failure(`${id} initialization or search timed out.`, 503)), 25000 + (input?.movetime || 0));
     function finish(error, result) {
       if (settled) return;
@@ -107,6 +107,7 @@ function runUci(id, input) {
     }
     function write(line) { if (!settled) child.stdin.write(line + '\n'); }
     function onLine(line) {
+      if (/^option name SyzygyPath type string\b/.test(line)) syzygy = true;
       if (/^option name UCI_Chess960 type check\b/.test(line)) chess960 = true;
       if (line.startsWith('id name ')) name = line.slice(8).trim().slice(0, 120);
       if (phase === 'uci' && line === 'uciok') {
@@ -114,6 +115,7 @@ function runUci(id, input) {
         if (!expected.test(name)) return finish(failure(`${id} returned an unexpected engine identity.`, 503));
         if (input?.variant==='chess960'&&!chess960) return finish(failure(`${id} does not support Chess960.`, 503));
         phase = 'ready';
+        if (syzygy && id!=='stockfish18-lite' && localTablebasePath()) write(`setoption name SyzygyPath value ${localTablebasePath()}`);
         if (input?.variant==='chess960') write('setoption name UCI_Chess960 value true');
         if (id.startsWith('stockfish')) {
           write('setoption name Threads value 1');

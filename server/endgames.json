@@ -1,0 +1,242 @@
+[
+  {
+    "id": "king-in-front",
+    "title": "King before the pawn",
+    "group": "Pawn endings",
+    "fen": "4k3/8/4K3/8/8/8/4P3/8 w - - 0 1",
+    "note": "Bring your king ahead of the pawn. Use it to control the promotion route before advancing.",
+    "wdl": 2,
+    "dtz": 1,
+    "whiteOutcome": 2
+  },
+  {
+    "id": "opposition",
+    "title": "The opposition",
+    "group": "Pawn endings",
+    "fen": "8/4k3/8/4K3/4P3/8/8/8 w - - 0 1",
+    "note": "Count the squares between the kings. A pawn move changes whose turn it is to give way.",
+    "wdl": 0,
+    "dtz": 0,
+    "whiteOutcome": 0
+  },
+  {
+    "id": "rook-pawn",
+    "title": "The rook-pawn corner",
+    "group": "Pawn endings",
+    "fen": "k7/P7/K7/8/8/8/8/8 w - - 0 1",
+    "note": "The edge removes a route around the defending king. Check stalemate before pushing.",
+    "wdl": 0,
+    "dtz": 0,
+    "whiteOutcome": 0
+  },
+  {
+    "id": "promotion",
+    "title": "Choose a promotion",
+    "group": "Pawn endings",
+    "fen": "k7/6P1/6K1/8/8/8/8/8 w - - 0 1",
+    "note": "Compare each promotion. A queen has the most power, but every new position needs a stalemate check.",
+    "wdl": 2,
+    "dtz": 1,
+    "whiteOutcome": 2
+  },
+  {
+    "id": "pawn-race",
+    "title": "A pawn race",
+    "group": "Pawn endings",
+    "fen": "8/6p1/7k/8/8/K7/1P6/8 w - - 0 1",
+    "note": "Count pawn moves and king moves separately. Recalculate after either side gives check.",
+    "wdl": 2,
+    "dtz": 1,
+    "whiteOutcome": 2
+  },
+  {
+    "id": "connected-pawns",
+    "title": "Connected passers",
+    "group": "Pawn endings",
+    "fen": "4k3/8/4K3/3PP3/8/8/8/8 w - - 0 1",
+    "note": "Keep the pawns connected. Advancing the wrong pawn can leave its partner without support.",
+    "wdl": 2,
+    "dtz": 1,
+    "whiteOutcome": 2
+  },
+  {
+    "id": "separated-pawns",
+    "title": "Separated passers",
+    "group": "Pawn endings",
+    "fen": "4k3/8/4K3/2P2P2/8/8/8/8 w - - 0 1",
+    "note": "A distant passer can pull the defending king away. Compare its route to both promotion squares.",
+    "wdl": 2,
+    "dtz": 1,
+    "whiteOutcome": 2
+  },
+  {
+    "id": "black-promotion",
+    "title": "Black goes up the board",
+    "group": "Pawn endings",
+    "fen": "8/8/8/8/8/1k6/1p6/7K b - - 0 1",
+    "note": "From Black\u2019s side, promotion is on the first rank. Use your king to protect the pawn and avoid stalemate.",
+    "wdl": 2,
+    "dtz": 1,
+    "whiteOutcome": -2
+  },
+  {
+    "id": "rook-box",
+    "title": "Shrink the box",
+    "group": "Rook endings",
+    "fen": "7k/8/5K2/8/8/8/R7/8 w - - 0 1",
+    "note": "Use the rook to restrict ranks or files, then bring your king closer. Keep the rook safe from the king.",
+    "wdl": 2,
+    "dtz": 3,
+    "whiteOutcome": 2
+  },
+  {
+    "id": "rook-cutoff",
+    "title": "Cut off the king",
+    "group": "Rook endings",
+    "fen": "4k3/8/8/3K4/8/8/R7/8 w - - 0 1",
+    "note": "Cut the king off with the rook. Improve your king before giving checks that let the defender escape.",
+    "wdl": 2,
+    "dtz": 5,
+    "whiteOutcome": 2
+  },
+  {
+    "id": "rook-defense",
+    "title": "Rook against a passer",
+    "group": "Rook endings",
+    "fen": "8/8/8/8/8/1k6/1p6/R5K1 w - - 0 1",
+    "note": "Calculate the next promotion before chasing the king. Checks can gain time for the rook to reach the pawn.",
+    "wdl": 0,
+    "dtz": 0,
+    "whiteOutcome": 0
+  },
+  {
+    "id": "rook-and-pawn",
+    "title": "Rook and pawn teamwork",
+    "group": "Rook endings",
+    "fen": "6k1/8/8/4K3/4P3/8/8/R7 w - - 0 1",
+    "note": "Coordinate the king, rook and pawn. The extra material does not remove the need to check stalemate.",
+    "wdl": 2,
+    "dtz": 3,
+    "whiteOutcome": 2
+  },
+  {
+    "id": "rook-versus-rook",
+    "title": "Active rooks",
+    "group": "Rook endings",
+    "fen": "6k1/7r/8/8/3K4/8/8/R7 w - - 0 1",
+    "note": "Rook activity and king safety both matter. Before trading, calculate the king ending that remains.",
+    "wdl": 0,
+    "dtz": 0,
+    "whiteOutcome": 0
+  },
+  {
+    "id": "black-rook",
+    "title": "Rook technique as Black",
+    "group": "Rook endings",
+    "fen": "8/7r/8/8/8/2k5/8/K7 b - - 0 1",
+    "note": "Use your rook to make the board smaller for White\u2019s king. Your own king must help with the final net.",
+    "wdl": 2,
+    "dtz": 3,
+    "whiteOutcome": -2
+  },
+  {
+    "id": "queen-net",
+    "title": "Finish the queen mate",
+    "group": "Queen endings",
+    "fen": "7k/5K2/6Q1/8/8/8/8/8 w - - 0 1",
+    "note": "Look for a mating net supported by your king. Distinguish checkmate from leaving the king with no legal move.",
+    "wdl": 2,
+    "dtz": 1,
+    "whiteOutcome": 2
+  },
+  {
+    "id": "queen-room",
+    "title": "Leave one square",
+    "group": "Queen endings",
+    "fen": "7k/8/8/3Q4/3K4/8/8/8 w - - 0 1",
+    "note": "Restrict the king without stalemating it. Bring your king into the net before the final check.",
+    "wdl": 2,
+    "dtz": 7,
+    "whiteOutcome": 2
+  },
+  {
+    "id": "queen-pawn",
+    "title": "Queen against an advanced pawn",
+    "group": "Queen endings",
+    "fen": "8/8/8/8/3K4/8/2pk4/7Q w - - 0 1",
+    "note": "A pawn on the seventh rank demands exact calculation. Check promotion threats and stalemate resources.",
+    "wdl": 2,
+    "dtz": 5,
+    "whiteOutcome": 2
+  },
+  {
+    "id": "queen-rook",
+    "title": "Queen versus rook",
+    "group": "Queen endings",
+    "fen": "6k1/7r/8/8/3K4/8/8/Q7 w - - 0 1",
+    "note": "Look for checks that separate the rook from its king. Check whether a capture changes the result.",
+    "wdl": 2,
+    "dtz": 29,
+    "whiteOutcome": 2
+  },
+  {
+    "id": "two-bishops",
+    "title": "Two bishops working together",
+    "group": "Minor-piece endings",
+    "fen": "7k/8/8/3K4/8/8/2BB4/8 w - - 0 1",
+    "note": "The bishops cover opposite color complexes. Coordinate them with your king to reduce the defender\u2019s space.",
+    "wdl": 2,
+    "dtz": 10,
+    "whiteOutcome": 2
+  },
+  {
+    "id": "bishop-knight",
+    "title": "Bishop and knight coordination",
+    "group": "Minor-piece endings",
+    "fen": "7k/8/8/3K4/8/8/2BN4/8 w - - 0 1",
+    "note": "Coordinate all three pieces. The bishop\u2019s color determines which corner can support the final mating net.",
+    "wdl": 2,
+    "dtz": 46,
+    "whiteOutcome": 2
+  },
+  {
+    "id": "wrong-bishop",
+    "title": "The wrong bishop and rook pawn",
+    "group": "Minor-piece endings",
+    "fen": "k7/P7/K7/8/8/8/8/2B5 w - - 0 1",
+    "note": "Compare the bishop\u2019s color with the promotion square. A king anchored in the corner can change everything.",
+    "wdl": 0,
+    "dtz": 0,
+    "whiteOutcome": 0
+  },
+  {
+    "id": "right-bishop",
+    "title": "The other color bishop",
+    "group": "Minor-piece endings",
+    "fen": "k7/P7/K7/8/8/8/8/1B6 w - - 0 1",
+    "note": "The bishop can control this promotion square. Work with your king to dislodge the defender.",
+    "wdl": 2,
+    "dtz": 1,
+    "whiteOutcome": 2
+  },
+  {
+    "id": "knight-pawn",
+    "title": "Knight against a passer",
+    "group": "Minor-piece endings",
+    "fen": "8/6k1/8/8/8/1p6/8/1N4K1 w - - 0 1",
+    "note": "Find the knight\u2019s route to blockade the pawn. A knight may need several moves to reach a nearby square.",
+    "wdl": 0,
+    "dtz": 0,
+    "whiteOutcome": 0
+  },
+  {
+    "id": "bishop-pawn",
+    "title": "Bishop against a passer",
+    "group": "Minor-piece endings",
+    "fen": "8/6k1/8/8/8/1p6/8/2B3K1 w - - 0 1",
+    "note": "Trace the bishop\u2019s diagonals to the promotion square. The defending king may have to cover squares of the other color.",
+    "wdl": 0,
+    "dtz": 0,
+    "whiteOutcome": 0
+  }
+]

@@ -1,0 +1,1 @@
+{"status": "pass", "files": 290, "bytes": 983957920, "positions": 24, "legalContinuationsProbed": 371, "pythonChess": "1.11.2"}

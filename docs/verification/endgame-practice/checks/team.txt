@@ -1,0 +1,5 @@
+2026-09-13T10:13:41Z
+astra_team_check: node --check server/endgames.mjs
+isError: true
+astra-team: unsupported runtime; verified version is 0.153.4
+No delegation or validator bypass.

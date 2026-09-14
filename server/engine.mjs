@@ -3,6 +3,11 @@ import { existsSync } from 'node:fs';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 const engineDirectory = resolve(process.env.CHESSLAB_ENGINES_DIR || fileURLToPath(new URL('../data/engines', import.meta.url)));
+export function localTablebasePath() {
+  const path=resolve(process.env.CHESSLAB_TABLEBASES || fileURLToPath(new URL('../data/tablebases/standard',import.meta.url)));
+  if(/[\r\n\0]/.test(path))throw Object.assign(new Error('Invalid local tablebase path.'),{status:503});
+  return existsSync(path)?path:null;
+}
 const analysisCommands = {
   stockfish18: () => [resolve(engineDirectory, 'stockfish18/stockfish'), []],
   stockfish16: () => [resolve(engineDirectory, 'stockfish16/stockfish'), []],
@@ -92,6 +97,8 @@ function enginePath() {
 }
 
 function runUci({ moves, initialFen, variant, board, movetime, lines, skill, engineId, threads=1, signal } = {}) {
+  // Weakened Stockfish can select any of its four candidate moves. Keep that move's actual evidence.
+  const candidateCount=Math.max(lines||1,(skill??20)<20?4:1);
   // ponytail: fresh processes isolate searches; pool them if startup time becomes material.
   return new Promise((resolve, reject) => {
     if (signal?.aborted) return reject(canceled());
@@ -102,7 +109,7 @@ function runUci({ moves, initialFen, variant, board, movetime, lines, skill, eng
     let phase = 'uci';
     let buffer = '';
     let totalBytes = 0;
-    let name = '', chess960 = false;
+    let name = '', chess960 = false, syzygy = false, tablebaseHits = 0;
     const iterations = new Map();
     const timer = setTimeout(() => finish(failure('Stockfish search timed out. Try again.', 503)), (movetime || 0) + 4000);
     const abort = () => finish(canceled());
@@ -120,31 +127,34 @@ function runUci({ moves, initialFen, variant, board, movetime, lines, skill, eng
       if (!settled) child.stdin.write(`${command}\n`);
     }
     function onLine(line) {
+      if (/^option name SyzygyPath type string\b/.test(line)) syzygy = true;
       if (/^option name UCI_Chess960 type check\b/.test(line)) chess960 = true;
       if (line.startsWith('id name ')) name = line.slice(8).trim().slice(0, 120);
       if (phase === 'uci' && line === 'uciok') {
         if (!name.toLowerCase().includes('stockfish')) return finish(failure('Configured engine did not identify as Stockfish.', 503));
         if (variant==='chess960'&&!chess960) return finish(failure('This engine does not support Chess960.', 503));
         phase = 'ready';
+        if (syzygy && engineId!=='stockfish18-lite' && localTablebasePath()) write(`setoption name SyzygyPath value ${localTablebasePath()}`);
         if (variant==='chess960') write('setoption name UCI_Chess960 value true');
         write(`setoption name Threads value ${threads}`);
         write('setoption name Hash value 32');
-        write(`setoption name MultiPV value ${lines || 1}`);
+        write(`setoption name MultiPV value ${candidateCount}`);
         write(`setoption name Skill Level value ${skill ?? 20}`);
         write('ucinewgame');
         write('isready');
       } else if (phase === 'ready' && line === 'readyok') {
-        if (!board || board.isGameOver()) return finish(null, { name, chess960, bestmove: null, lines: [] });
+        if (!board || board.isGameOver()) return finish(null, { name, chess960, tablebases:syzygy&&engineId!=='stockfish18-lite'&&!!localTablebasePath(), bestmove: null, lines: [] });
         phase = 'search';
         const start = initialFen == null ? 'startpos' : `fen ${replay([], initialFen, variant).fen()}`;
         write(`position ${start}${moves.length ? ` moves ${moves.join(' ')}` : ''}`);
         write(`go movetime ${movetime}`);
       } else if (phase === 'search' && line.startsWith('info ')) {
+        tablebaseHits=Math.max(tablebaseHits,Number(line.match(/\btbhits (\d+)\b/)?.[1]||0));
         const match = line.match(/\bscore (cp|mate) (-?\d+)\b/);
         const pv = line.match(/\bpv (.+)$/);
         const depth = line.match(/\bdepth (\d+)\b/);
         const index = Number(line.match(/\bmultipv (\d+)\b/)?.[1] || 1);
-        if (!match || !pv || !depth || index > lines || /\b(?:upperbound|lowerbound)\b/.test(line)) return;
+        if (!match || !pv || !depth || index > candidateCount || /\b(?:upperbound|lowerbound)\b/.test(line)) return;
         const value = Number(match[2]) * (board.turn() === 'w' ? 1 : -1);
         if (!Number.isSafeInteger(value)) return;
         const candidateMoves = pv[1].trim().split(/\s+/).slice(0, 20);
@@ -165,10 +175,10 @@ function runUci({ moves, initialFen, variant, board, movetime, lines, skill, eng
         // Rank changes during an unfinished MultiPV iteration must not duplicate candidates.
         const ranked=[...iterations.entries()].sort((a,b)=>b[0]-a[0]).map(([,entries])=>[...entries.entries()].sort((a,b)=>a[0]-b[0]).map(([,value])=>value));
         const matching=ranked.filter(entries=>entries.some(line=>line.move===bestmove));
-        const complete=matching.find(entries=>entries.length===Math.min(lines,board.moves().length)&&new Set(entries.map(line=>line.move)).size===entries.length);
+        const complete=matching.find(entries=>entries.length===Math.min(candidateCount,board.moves().length)&&new Set(entries.map(line=>line.move)).size===entries.length);
         const resultLines = (complete || matching[0] || []).filter((line,index,all)=>all.findIndex(item=>item.move===line.move)===index).sort((a,b)=>Number(b.move===bestmove)-Number(a.move===bestmove));
         if (!resultLines.length) return finish(failure('Stockfish returned no usable analysis. Try again.', 503));
-        finish(null, { name, bestmove, lines: resultLines });
+        finish(null, { name, bestmove, tablebaseHits, lines: resultLines.slice(0,lines||1) });
       }
     }
     child.stdout.setEncoding('utf8');
@@ -250,7 +260,7 @@ function scoreText(score) {
 }
 
 export async function engineStatus() {
-  try { const result = await withSlot(() => runUci()); return { available: true, name: result.name, chess960: result.chess960 }; }
+  try { const result = await withSlot(() => runUci()); return { available: true, name: result.name, chess960: result.chess960, tablebases:result.tablebases }; }
   catch { return { available: false, name: 'Stockfish' }; }
 }
 
@@ -277,7 +287,7 @@ export async function analyze(input, {signal} = {}) {
     const positionFacts = facts(board);
     const materialText = `Material: White ${positionFacts.material.white}, Black ${positionFacts.material.black}.`;
     const explanation = board.isGameOver() ? `${terminalText(board)} ${materialText}` : `${board.turn() === 'w' ? 'White' : 'Black'} to move${positionFacts.inCheck ? ', in check' : ''}. ${moveEvidence(board, result.bestmove).text} ${lineEvidence(board, result.lines[0].moves)} ${scoreText(result.lines[0].score)}`;
-    const analysis = { engine: result.name, fen: board.fen(), turn: board.turn(), bestmove: result.bestmove, lines: result.lines, limits: { movetime, lines, ...(engineId ? {threads,engineId} : {}) }, facts: positionFacts, explanation };
+    const analysis = { engine: result.name, tablebaseHits:result.tablebaseHits||0, fen: board.fen(), turn: board.turn(), bestmove: result.bestmove, lines: result.lines, limits: { movetime, lines, ...(engineId ? {threads,engineId} : {}) }, facts: positionFacts, explanation };
     if (afterBoard) {
       const after = await runUci({ moves: [...moves, playedMove], initialFen, variant, board: afterBoard, movetime, lines: 1, skill: 20, engineId, threads, signal });
       const beforeScore = result.lines[0]?.score;

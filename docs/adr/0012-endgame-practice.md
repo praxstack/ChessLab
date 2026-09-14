@@ -1,0 +1,15 @@
+# Endgame practice through saved source studies
+
+The current app already has a validated position editor, owned source studies, revisioned practice games, native UCI opponents, complete move history, restart and source-return controls. Add a catalogue at this boundary. A selected drill creates a normal source study; the existing practice dialog chooses engine, strength, side, clocks and assistance. Practice metadata carries a server-owned catalogue identifier. List attempts from those saved games. No new progress database or game controller is necessary.
+
+Alternative: a separate endgame session API, table and board controller. This isolates drill-specific scoring but duplicates move authority, engine turns, ownership, restart and review. Reject it. Adopt its useful catalogue/attempt presentation only. Pstack architect/how/arena comparison performed sequentially by root because the installed Astra runtime validator blocks team execution; this is not independent review.
+
+Use the complete 3–5-piece Syzygy WDL/DTZ set, not a manually selected dependency subset. Published hashes pin the 983,957,920-byte, 290-file dataset. Python-chess already installed locally verifies initial legal positions and outcomes. UCI clients detect SyzygyPath before configuring it; no new runtime service. Reference: https://python-chess.readthedocs.io/en/stable/syzygy.html and https://tablebase.lichess.ovh/tables/standard/.
+
+Initial catalogue evidence applies to a zero half-move counter. Syzygy DTZ measures plies to a zeroing move under optimal play, not mate distance. Do not infer arbitrary history outcomes from bare FEN. Native Stockfish handles its tablebase search and rule state; other engines may use ordinary search. A chosen lower skill is still a training simulation, not perfect play or a calibrated vendor rating.
+
+Protected baseline/current accepted version: 1d3b2d1f47e0d58e4ebfa1d2538d09e110231320. Preserve all 102 tests, 103 browser flows, user data, unrelated deletions, policies and existing gates. This candidate changes product paths, not those gates. Keep failed runs separate; stop after two no-gain candidates. Rollback is that checkout plus a consistent pre-install snapshot. Receipts remain outside their attested content set. Full parity and the original branching tutor remain unfinished.
+
+## Shared engine defect found by protected proof
+
+The first full browser run failed during ordinary nested-position practice, before the new endgame flows. The recorded position e4 d6 e5 Nd7 reproduced four failures in twelve native Skill 0 searches: the chosen bestmove was absent from the single requested PV. Weak Stockfish selects among four internal candidates. Request at least four lines at reduced skill, retain a coherent iteration containing the selected move and its own score, then return only the caller's requested count. This preserves the earlier partial-iteration fix. A deterministic fourth-candidate fixture and twelve native repetitions check the correction; no browser assertion was removed or skipped.

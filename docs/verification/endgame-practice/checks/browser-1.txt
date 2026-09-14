@@ -1,0 +1,4 @@
+TypeError: Cannot read properties of undefined (reading 'moves')
+    at /private/tmp/chesslab-endgame-practice/scripts/check_app_browser.cjs:142:33
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at process.processImmediate (node:internal/timers:541:9)
