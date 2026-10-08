@@ -25,3 +25,12 @@ test('PGN keeps the original boundary while carrying terminal continuations and 
  game.study.branches=[{id:'end',parentId:null,anchorPly:0,moves:['e8d7'],question:'Try this defense'}];game.study.annotations=[{branchId:null,ply:0,comment:'Original setup',nags:[]},{branchId:'end',ply:1,comment:'King moves',nags:[]}];
  const copy=readAnnotatedPgn(writeAnnotatedPgn(game,'local'));assert.deepEqual(copy.moves,[]);assert.deepEqual(copy.study.branches[0].moves,['e8d7']);assert.equal(copy.study.branches[0].anchorPly,0);assert.ok(copy.study.annotations.some(a=>a.comment==='King moves'));
 });
+
+test('exports carry the AskTheMove name while study files from earlier builds still import',()=>{
+ const pgn=writeAnnotatedPgn({...readAnnotatedPgn('1. e4 e5 *'),source:'bot',color:'w',headers:{}},'Learner');
+ assert.match(pgn,/\[Event "AskTheMove study"\]/);assert.match(pgn,/\[White "Learner"\]/);assert.match(pgn,/\[Black "AskTheMove bot"\]/);assert.ok(!/ChessLab (study|bot)/.test(pgn));
+ assert.match(pgn,/\[ChessLabOriginalPly "2"\]/,'The original-game boundary header keeps its name so earlier exports and other copies still read it');
+ const earlier={format:'chesslab-study',version:1,game:{title:'Saved before the rename',initialFen:null,moves:['e2e4','e7e5'],result:null,headers:{Event:'ChessLab study',White:'Learner',Black:'ChessLab bot'},study:{version:1,branches:[],selectedBranchId:null,anchorPly:0}}};
+ const restored=readPortableStudy(structuredClone(earlier));assert.deepEqual(restored.moves,['e2e4','e7e5']);assert.equal(restored.headers.Black,'ChessLab bot');
+ assert.throws(()=>readPortableStudy({...earlier,format:'askthemove-study'}),error=>error.status===400&&error.message.includes('.chesslab.json')&&!error.message.includes('ChessLab'));
+});
