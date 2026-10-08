@@ -20,7 +20,7 @@ Run `just local-check`. It launches the production entrypoint in isolation, conf
 
 ## Drive
 
-Use [the feature map](features/README.md) and `scripts/check_app_browser.cjs`. Stable handles include `Search bots`, `Play Martin, 250`, `Play entered move`, `Try a variation`, `Save study`, and `Open settings`.
+Use [the feature map](features/README.md) and `scripts/check_app_browser.cjs`. Stable handles include `Search bots`, `Play Marlo, 250`, `Play entered move`, `Try a variation`, `Save study`, and `Open settings`.
 
 For a chosen evidence folder, build first, then run:
 
