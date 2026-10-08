@@ -235,7 +235,8 @@ function outputs() {
       ROBOTS: page.robots || 'index, follow',
     });
     if (page.src === 'index.html') html = renderHome(html);
-    html = html.replace(/\n{3,}/g, '\n\n');
+    // Empty optional slots (such as the Turnstile widget) leave blank, indented lines.
+    html = html.replace(/[ \t]+$/gm, '').replace(/\n{3,}/g, '\n\n');
     files.set(page.out, html);
   }
 
