@@ -1,8 +1,10 @@
-// Draws each bot's portrait from its id, so the roster's artwork is original and reproducible.
-// Usage: node scripts/generate_bot_avatars.mjs [--check]
-// The same id always produces the same SVG. --check fails when a committed portrait differs.
+// Draws each bot's portrait from its id, category and style, so the roster's artwork is original and
+// reproducible: the id seeds the face, the category the background, and the style the shirt, brows
+// and mouth. Usage: node scripts/generate_bot_avatars.mjs [--check]
+// The same id, category and style always produce the same SVG. --check fails when a committed
+// portrait differs or when any other file is in web/public/bots.
 import {createHash} from 'node:crypto';
-import {readFileSync, writeFileSync, existsSync, readdirSync, unlinkSync} from 'node:fs';
+import {readFileSync, writeFileSync, existsSync, readdirSync, statSync, unlinkSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -122,10 +124,13 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
       if (!existsSync(file) || readFileSync(file, 'utf8') !== svg) { console.error(`${profile.id}: portrait differs; run node scripts/generate_bot_avatars.mjs`); problems++; }
     } else writeFileSync(file, svg);
   }
-  for (const name of readdirSync(root + 'web/public/bots')) {
-    if (name.endsWith('.svg') && !expected.has(name)) {
-      if (check) { console.error(`${name}: no profile uses this portrait`); problems++; } else unlinkSync(root + 'web/public/bots/' + name);
-    }
+  // Every file under the folder, at any depth, must be a profile's portrait. Writing removes stale
+  // top-level SVGs, which are this script's own output; anything else is reported, never deleted.
+  const folder = root + 'web/public/bots/';
+  for (const name of readdirSync(folder, {recursive: true})) {
+    if (expected.has(name) || !statSync(folder + name).isFile()) continue;
+    if (!check && name.endsWith('.svg') && !name.includes('/')) unlinkSync(folder + name);
+    else { console.error(`${name}: no profile uses this file`); problems++; }
   }
   if (problems) process.exit(1);
   console.log(`${check ? 'Checked' : 'Wrote'} ${profiles.length} portraits.`);

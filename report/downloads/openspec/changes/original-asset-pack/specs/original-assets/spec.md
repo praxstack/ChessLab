@@ -19,8 +19,8 @@ The board SHALL render one piece set, cburnett, from unmodified files whose sour
 Navigation icons SHALL come from a pinned `lucide-static` release whose integrity hash and file hashes are recorded, with the ISC licence served beside them. No icon file from another chess site MAY remain.
 
 #### Scenario: Icon audit
-- **WHEN** the icon folder is compared with its provenance record
-- **THEN** every icon matches a recorded Lucide file and hash
+- **WHEN** the test suite compares the icon folder with its provenance record
+- **THEN** the folder holds exactly the recorded Lucide files, and each matches its recorded hash
 
 ### Requirement: OA-003 Original palette with readable contrast
 The interface and default board SHALL use the project's own palette. Body text, muted text, primary-button text and board coordinates SHALL each have a contrast ratio of at least 4.5:1 against their backgrounds. Stored board theme ids from earlier builds MUST map to a current theme, and unknown ids MUST fall back to the default.
@@ -30,18 +30,26 @@ The interface and default board SHALL use the project's own palette. Body text, 
 - **THEN** the board loads Slate & sand or Walnut & ivory respectively
 
 ### Requirement: OA-004 Original bot roster
-Every bot SHALL have an invented name, an original description and a category of the app's own. The roster MUST NOT name real people, link to other sites or carry country flags. Each portrait SHALL be produced by a committed generator that gives the same file for the same bot id, and a check mode SHALL fail when a committed portrait differs or is unused.
+Every bot SHALL have an invented name, an original description and a category of the app's own. The roster MUST NOT name real people, link to other sites or carry country flags. Each portrait SHALL be produced by a committed generator from the bot's id, category and style: the id seeds the face, the category picks the background, and the style picks the shirt colours, brows and mouth. The same three values SHALL always give the same file, and no other profile field MAY change it. A check mode SHALL fail when a committed portrait differs, or when the portrait folder holds any other file at any depth.
 
 #### Scenario: Roster audit
 - **WHEN** the automated roster test reads the catalog
 - **THEN** ids are unique, no entry contains another site's name, a URL or a country field, and every avatar equals the generator's output
 
+#### Scenario: Bot moved to another category
+- **WHEN** a bot keeps its id but its category or style changes
+- **THEN** the generator draws a portrait for the new values, and the check fails until the committed file is regenerated
+
 ### Requirement: OA-005 Engine-defined strength ladder
-Bot ratings and raw engine levels SHALL be levels of one ladder defined by the engine controls the server applies: below 1100 a share of moves is sampled from the legal moves, and higher levels add Stockfish skill and thinking time. Each level SHALL map to distinct controls. The interface MUST NOT describe ladder ratings as calibrated human ratings. Wins SHALL earn gold, silver or bronze medals under the existing assistance rule.
+Bot ratings and raw engine levels SHALL be levels of one ladder defined by the engine controls the server applies: below 1100 a share of moves is sampled from the legal moves, and higher levels add Stockfish skill and thinking time. Each level SHALL map to distinct controls. An adaptive bot's target during play SHALL also be a ladder level: each pawn of material the learner leads or trails by shifts it by about 80 points, capped at 350, and the result lands on the nearest level, at least one level in the direction of the shift. The interface MUST NOT describe ladder ratings as calibrated human ratings. Wins SHALL earn gold, silver or bronze medals under the existing assistance rule.
 
 #### Scenario: Distinct levels
 - **WHEN** the controls for every ladder level are computed
 - **THEN** no two levels have identical skill, think time and sampled share
+
+#### Scenario: Adaptive bot after a capture
+- **WHEN** the learner leads the 650 Adaptive bot by one pawn
+- **THEN** its target becomes 850, the next ladder level, and its moves use that level's controls
 
 #### Scenario: Medal after a win
 - **WHEN** a learner beats a bot after one hint

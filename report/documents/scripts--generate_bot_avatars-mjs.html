@@ -20,11 +20,13 @@
 <header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
 <main id="main" tabindex="-1">
 <header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Generate Bot Avatars</h1><p class="lede">scripts/generate_bot_avatars.mjs</p></header>
-<div class="reading-layout"><article class="prose" aria-label="Generate Bot Avatars"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/generate_bot_avatars.mjs" download>Download original file ↗</a></div><p class="source-meta">scripts/generate_bot_avatars.mjs<br>SHA-256: 2f691a2a27fbc5f9cab366e63a7dec34e35bf0518acfa231d31ce295af321588</p><pre><code>// Draws each bot&#x27;s portrait from its id, so the roster&#x27;s artwork is original and reproducible.
-// Usage: node scripts/generate_bot_avatars.mjs [--check]
-// The same id always produces the same SVG. --check fails when a committed portrait differs.
+<div class="reading-layout"><article class="prose" aria-label="Generate Bot Avatars"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/generate_bot_avatars.mjs" download>Download original file ↗</a></div><p class="source-meta">scripts/generate_bot_avatars.mjs<br>SHA-256: 3f4895f2a9a997e13906c922f35a3aa4c707b0f0dfd2631f47ec145a179ba4d6</p><pre><code>// Draws each bot&#x27;s portrait from its id, category and style, so the roster&#x27;s artwork is original and
+// reproducible: the id seeds the face, the category the background, and the style the shirt, brows
+// and mouth. Usage: node scripts/generate_bot_avatars.mjs [--check]
+// The same id, category and style always produce the same SVG. --check fails when a committed
+// portrait differs or when any other file is in web/public/bots.
 import {createHash} from &#x27;node:crypto&#x27;;
-import {readFileSync, writeFileSync, existsSync, readdirSync, unlinkSync} from &#x27;node:fs&#x27;;
+import {readFileSync, writeFileSync, existsSync, readdirSync, statSync, unlinkSync} from &#x27;node:fs&#x27;;
 import {fileURLToPath} from &#x27;node:url&#x27;;
 
 const root = fileURLToPath(new URL(&#x27;../&#x27;, import.meta.url));
@@ -144,10 +146,13 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
       if (!existsSync(file) || readFileSync(file, &#x27;utf8&#x27;) !== svg) { console.error(`${profile.id}: portrait differs; run node scripts/generate_bot_avatars.mjs`); problems++; }
     } else writeFileSync(file, svg);
   }
-  for (const name of readdirSync(root + &#x27;web/public/bots&#x27;)) {
-    if (name.endsWith(&#x27;.svg&#x27;) &amp;&amp; !expected.has(name)) {
-      if (check) { console.error(`${name}: no profile uses this portrait`); problems++; } else unlinkSync(root + &#x27;web/public/bots/&#x27; + name);
-    }
+  // Every file under the folder, at any depth, must be a profile&#x27;s portrait. Writing removes stale
+  // top-level SVGs, which are this script&#x27;s own output; anything else is reported, never deleted.
+  const folder = root + &#x27;web/public/bots/&#x27;;
+  for (const name of readdirSync(folder, {recursive: true})) {
+    if (expected.has(name) || !statSync(folder + name).isFile()) continue;
+    if (!check &amp;&amp; name.endsWith(&#x27;.svg&#x27;) &amp;&amp; !name.includes(&#x27;/&#x27;)) unlinkSync(folder + name);
+    else { console.error(`${name}: no profile uses this file`); problems++; }
   }
   if (problems) process.exit(1);
   console.log(`${check ? &#x27;Checked&#x27; : &#x27;Wrote&#x27;} ${profiles.length} portraits.`);

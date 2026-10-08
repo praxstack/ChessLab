@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdirSync,mkdtempSync,cpSync,rmSync} from 'node:fs';
+import {spawnSync} from 'node:child_process';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {setupOptions,resolveProfile,beginClock,settleClock,finishMoveClock,undoTurn,crownsFor,adaptiveRating,attackedPieces} from './bot-game.mjs';
 import {strengthLadder,ladderLevel,engineControls,strengthChoices} from '../shared/strength-ladder.js';
 import {avatarSvg,avatarPath} from '../scripts/generate_bot_avatars.mjs';
@@ -9,8 +13,53 @@ const make=(body={})=>({source:'bot',moves:[],result:null,...setupOptions({botId
 test('bot options validate trust boundaries; rating adaptation and crown tiers are explicit',()=>{
  for(const body of [{rating:249},{rating:3201},{engineId:{}},{botId:42},{botId:'../absent'},{botId:''},{assistance:{constructor:true}},{assistance:[]},{timeControl:{initialSeconds:0,incrementSeconds:1}},{timeControl:{initialSeconds:59,incrementSeconds:0}}])assert.throws(()=>make(body));
  const g=make({color:'random'});assert.ok(['w','b'].includes(g.color));g.color='w';g.result='1-0';assert.equal(crownsFor(g),3);g.hintsUsed=1;assert.equal(crownsFor(g),2);g.undosUsed=3;assert.equal(crownsFor(g),1);g.hintsUsed=0;g.undosUsed=0;g.assistance.evaluation=true;assert.equal(crownsFor(g),1);g.assistance.evaluation=false;g.reviewUsed=true;assert.equal(crownsFor(g),1);g.result='0-1';assert.equal(crownsFor(g),0);
- g.moves=['e2e4','d7d5','e4d5'];assert.equal(adaptiveRating(g),980);g.adaptive=false;assert.equal(adaptiveRating(g),900);
+ g.moves=['e2e4','d7d5','e4d5'];assert.equal(adaptiveRating(g),1050);g.adaptive=false;assert.equal(adaptiveRating(g),900);
  assert.ok(attackedPieces({...make(),moves:['e2e4','d7d5']}).some(x=>x.from==='d5'&&x.to==='e4'));
+});
+test('adaptive targets stay on the strength ladder and move with the material balance',()=>{
+ const adaptive=JSON.parse(readFileSync(new URL('./bot-profiles.json',import.meta.url))).filter(b=>b.adaptive);
+ assert.ok(adaptive.length);
+ // The learner plays White and is ahead (n>0) or behind (n<0) by n pawns.
+ const rank=(piece,n)=>n?piece.repeat(n)+(n<8?String(8-n):''):'8';
+ const fen=n=>`4k3/${rank('p',Math.max(0,-n))}/8/8/8/8/${rank('P',Math.max(0,n))}/4K3 w - - 0 1`;
+ for(const bot of adaptive){
+  let previous=0;
+  for(let n=-6;n<=6;n++){
+   const target=adaptiveRating({adaptive:true,rating:bot.rating,color:'w',moves:[],initialFen:fen(n)});
+   assert.ok(strengthLadder.includes(target),`${bot.id} at ${n} pawns targets ${target}, a ladder level`);
+   assert.equal(Math.sign(target-bot.rating),Math.sign(n),`${bot.id} at ${n} pawns moves with the material`);
+   assert.ok(target>=previous,`${bot.id} grows stronger as the learner gains material`);previous=target;
+  }
+ }
+ const mirra=adaptive.find(b=>b.rating===650);
+ assert.equal(adaptiveRating({adaptive:true,rating:650,color:'w',moves:[],initialFen:fen(1)}),850,`${mirra.id} moves one level for one pawn`);
+ assert.equal(adaptiveRating({adaptive:true,rating:650,color:'w',moves:[],initialFen:fen(5)}),1050,'the shift stays capped at about 350 points');
+});
+test('a portrait depends on the bot id, category and style, and on nothing else',()=>{
+ const bots=JSON.parse(readFileSync(new URL('./bot-profiles.json',import.meta.url)));
+ for(const bot of bots){
+  const svg=avatarSvg(bot);
+  assert.equal(avatarSvg({id:bot.id,category:bot.category,style:bot.style}),svg,bot.id);
+  assert.equal(avatarSvg({...bot,name:'Renamed',rating:3200,level:22,description:'Another description.',adaptive:!bot.adaptive,avatar:'/elsewhere.svg'}),svg,`${bot.id}: other fields leave the portrait unchanged`);
+  assert.notEqual(avatarSvg({...bot,category:bot.category==='Club'?'Expert':'Club'}),svg,`${bot.id}: the category is part of the portrait`);
+  assert.notEqual(avatarSvg({...bot,style:bot.style==='solid'?'aggressive':'solid'}),svg,`${bot.id}: the style is part of the portrait`);
+ }
+});
+test('the portrait check fails on any file no profile uses, at any depth',()=>{
+ const check=root=>spawnSync(process.execPath,[join(root,'scripts/generate_bot_avatars.mjs'),'--check'],{encoding:'utf8'});
+ const repo=fileURLToPath(new URL('../',import.meta.url));
+ assert.equal(check(repo).status,0,'the committed portraits pass');
+ const copy=mkdtempSync(join(tmpdir(),'portraits-'));
+ try{
+  for(const file of ['scripts/generate_bot_avatars.mjs','server/bot-profiles.json'])cpSync(join(repo,file),join(copy,file));
+  cpSync(join(repo,'web/public/bots'),join(copy,'web/public/bots'),{recursive:true});
+  assert.equal(check(copy).status,0);
+  writeFileSync(join(copy,'web/public/bots/unused.png'),'x');
+  mkdirSync(join(copy,'web/public/bots/roster'));writeFileSync(join(copy,'web/public/bots/roster/bot-001.png'),'x');
+  const result=check(copy);
+  assert.equal(result.status,1,'stray files fail the check');
+  assert.match(result.stderr,/unused\.png/);assert.match(result.stderr,/roster\/bot-001\.png/);
+ }finally{rmSync(copy,{recursive:true,force:true});}
 });
 test('clocks charge the active side once, add increments and stop at flag fall',()=>{
  const g=make({timeControl:{initialSeconds:60,incrementSeconds:2}});beginClock(g,1000);
