@@ -30,7 +30,7 @@ The interface and default board SHALL use the project's own palette. Body text, 
 - **THEN** the board loads Slate & sand or Walnut & ivory respectively
 
 ### Requirement: OA-004 Original bot roster
-Every bot SHALL have an invented name, an original description and a category of the app's own. The roster MUST NOT name real people, link to other sites or carry country flags. Each portrait SHALL be produced by a committed generator that gives the same file for the same bot id, and a check mode SHALL fail when a committed portrait differs or is unused.
+Every bot SHALL have an invented name, an original description and a category of the app's own. The roster MUST NOT name real people, link to other sites or carry country flags. Each portrait SHALL be produced by a committed generator that gives the same file for the same bot id, and a check mode SHALL fail when a committed portrait differs, or when the portrait folder holds any other file at any depth.
 
 #### Scenario: Roster audit
 - **WHEN** the automated roster test reads the catalog

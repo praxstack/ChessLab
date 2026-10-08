@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdirSync,mkdtempSync,cpSync,rmSync} from 'node:fs';
+import {spawnSync} from 'node:child_process';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {setupOptions,resolveProfile,beginClock,settleClock,finishMoveClock,undoTurn,crownsFor,adaptiveRating,attackedPieces} from './bot-game.mjs';
 import {strengthLadder,ladderLevel,engineControls,strengthChoices} from '../shared/strength-ladder.js';
 import {avatarSvg,avatarPath} from '../scripts/generate_bot_avatars.mjs';
@@ -30,6 +34,22 @@ test('adaptive targets stay on the strength ladder and move with the material ba
  const mirra=adaptive.find(b=>b.rating===650);
  assert.equal(adaptiveRating({adaptive:true,rating:650,color:'w',moves:[],initialFen:fen(1)}),850,`${mirra.id} moves one level for one pawn`);
  assert.equal(adaptiveRating({adaptive:true,rating:650,color:'w',moves:[],initialFen:fen(5)}),1050,'the shift stays capped at about 350 points');
+});
+test('the portrait check fails on any file no profile uses, at any depth',()=>{
+ const check=root=>spawnSync(process.execPath,[join(root,'scripts/generate_bot_avatars.mjs'),'--check'],{encoding:'utf8'});
+ const repo=fileURLToPath(new URL('../',import.meta.url));
+ assert.equal(check(repo).status,0,'the committed portraits pass');
+ const copy=mkdtempSync(join(tmpdir(),'portraits-'));
+ try{
+  for(const file of ['scripts/generate_bot_avatars.mjs','server/bot-profiles.json'])cpSync(join(repo,file),join(copy,file));
+  cpSync(join(repo,'web/public/bots'),join(copy,'web/public/bots'),{recursive:true});
+  assert.equal(check(copy).status,0);
+  writeFileSync(join(copy,'web/public/bots/unused.png'),'x');
+  mkdirSync(join(copy,'web/public/bots/roster'));writeFileSync(join(copy,'web/public/bots/roster/bot-001.png'),'x');
+  const result=check(copy);
+  assert.equal(result.status,1,'stray files fail the check');
+  assert.match(result.stderr,/unused\.png/);assert.match(result.stderr,/roster\/bot-001\.png/);
+ }finally{rmSync(copy,{recursive:true,force:true});}
 });
 test('clocks charge the active side once, add increments and stop at flag fall',()=>{
  const g=make({timeControl:{initialSeconds:60,incrementSeconds:2}});beginClock(g,1000);

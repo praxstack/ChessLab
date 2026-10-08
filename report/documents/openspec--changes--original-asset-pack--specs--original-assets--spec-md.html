@@ -20,7 +20,7 @@
 <header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
 <main id="main" tabindex="-1">
 <header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/original-asset-pack/specs/original-assets/spec.md</p></header>
-<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/original-asset-pack/specs/original-assets/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/original-asset-pack/specs/original-assets/spec.md<br>SHA-256: 18a829f9280b6faf751de1704dea4bfd1de9855b87a364848c45203c826ddc9c</p><h3 id="purpose">Purpose</h3>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/original-asset-pack/specs/original-assets/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/original-asset-pack/specs/original-assets/spec.md<br>SHA-256: 6b11e78af7bf41a9ac9c1d8bbf90114dd0d4edf99929cf9e11cc8318d8a906e0</p><h3 id="purpose">Purpose</h3>
 <p>Ship only original or openly licensed artwork, bots and wording, so the app can be shown to outside testers and the repository distributes no other product's assets or captures.</p>
 <h3 id="added-requirements">ADDED Requirements</h3>
 <h4 id="requirement-oa-001-openly-licensed-piece-set">Requirement: OA-001 Openly licensed piece set</h4>
@@ -50,7 +50,7 @@
 <li><strong>THEN</strong> the board loads Slate &amp; sand or Walnut &amp; ivory respectively</li>
 </ul>
 <h4 id="requirement-oa-004-original-bot-roster">Requirement: OA-004 Original bot roster</h4>
-<p>Every bot SHALL have an invented name, an original description and a category of the app's own. The roster MUST NOT name real people, link to other sites or carry country flags. Each portrait SHALL be produced by a committed generator that gives the same file for the same bot id, and a check mode SHALL fail when a committed portrait differs or is unused.</p>
+<p>Every bot SHALL have an invented name, an original description and a category of the app's own. The roster MUST NOT name real people, link to other sites or carry country flags. Each portrait SHALL be produced by a committed generator that gives the same file for the same bot id, and a check mode SHALL fail when a committed portrait differs, or when the portrait folder holds any other file at any depth.</p>
 <h5 id="scenario-roster-audit">Scenario: Roster audit</h5>
 <ul>
 <li><strong>WHEN</strong> the automated roster test reads the catalog</li>
