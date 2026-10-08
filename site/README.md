@@ -71,7 +71,7 @@ This gives you a working site and waitlist at `https://askthemove.pages.dev`. It
    npx wrangler pages project create askthemove --production-branch main
    ```
 
-   If the name `askthemove` is taken, pick another (for example `askthemove-beta`), change `name` in `wrangler.toml`, change `siteUrl` in `site.config.json` to match, and run `npm run build`.
+   If the name `askthemove` is taken, pick another (for example `askthemove-beta`), change `name` in `wrangler.toml`, change `siteUrl` in `site.config.json` to match, and run `npm run build`. Then use your name wherever a later command or address in this guide says `askthemove`: the `--project-name` in step 6 and section 5, the `pages.dev` address in step 8 and sections 4 and 5, and the project you open in section 2. A secret set on the wrong project leaves yours without it, and sign-ups return 503 until `IP_HASH_SALT` is set.
 
 6. Set the two secrets. Each command asks you to paste a value. Use a long random string for each, for example the output of `openssl rand -hex 32`. Keep `ADMIN_TOKEN` somewhere safe: you need it to download the waitlist.
 
@@ -126,11 +126,13 @@ npm run deploy
 ## 4. Download the waitlist as a CSV
 
 ```sh
-curl -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
-  https://askthemove.pages.dev/api/waitlist/export -o waitlist.csv
+printf 'Admin token: '; read -rs ADMIN_TOKEN; echo
+printf 'header = "Authorization: Bearer %s"\n' "$ADMIN_TOKEN" \
+  | curl -fsS -K - https://askthemove.pages.dev/api/waitlist/export -o waitlist.csv
+unset ADMIN_TOKEN
 ```
 
-Use your own domain once it is set up. The file has one row per person: email, when they joined, their rating answer, the form they used and any campaign tags.
+Paste `ADMIN_TOKEN` at the prompt; nothing is shown as you paste. The token is passed to `curl` on its standard input, so it never appears in your shell history or in the list of running processes. Don't type it into the command itself. Use your own domain once it is set up. The file has one row per person: email, when they joined, their rating answer, the form they used and any campaign tags.
 
 To delete someone who asks:
 

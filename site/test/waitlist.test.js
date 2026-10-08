@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { setTimeout as sleep } from 'node:timers/promises';
 import { onRequestPost, onRequest as waitlistAny } from '../functions/api/waitlist.js';
 import { onRequestGet as exportGet, onRequest as exportAny } from '../functions/api/waitlist/export.js';
 import { onRequestGet as healthGet } from '../functions/api/health.js';
@@ -253,6 +254,19 @@ test('Turnstile is enforced only when TURNSTILE_SECRET is set', async () => {
   assert.equal(passed.status, 200);
   assert.ok(calls.every((c) => c.url.includes('challenges.cloudflare.com')));
   assert.ok(calls.at(-1).body.includes('secret=ts-secret'));
+});
+
+test('a stalled Turnstile check fails closed instead of hanging', async () => {
+  const { verifyTurnstile } = await import('../src/lib/turnstile.js');
+  // Siteverify accepts the connection and never answers; only an abort ends the request.
+  const fetchImpl = (url, init) => new Promise((_, reject) => {
+    init.signal?.addEventListener('abort', () => reject(init.signal.reason));
+  });
+  const giveUp = new AbortController();
+  const stalled = sleep(1000, 'still waiting', { signal: giveUp.signal }).catch(() => {});
+  const result = await Promise.race([verifyTurnstile({ secret: 's', token: 't', fetchImpl, timeoutMs: 50 }), stalled]);
+  giveUp.abort();
+  assert.equal(result, false);
 });
 
 test('database failure returns a generic 500', async () => {
