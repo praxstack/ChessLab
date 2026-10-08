@@ -6,27 +6,27 @@
 
 ## Engine: three distinct scopes
 
-[![10:15: engine settings grouped into Game Review, Analysis and Cloud](video/study/crops/0615.jpg)](video/study/frames/0615.jpg)
+*Recorded frame, 10:15: engine settings grouped into Game Review, Analysis and Cloud. The capture was removed from the repository on 2026-10-08.*
 
 | Scope / control | Visible options or value | Evidence |
 | --- | --- | --- |
-| Game Review / Chess Engine | Open list: Stockfish; Torch Human. Torch Human selected. | [10:26](video/study/frames/0626.jpg) |
-| Game Review / Strength | Fast (~1 sec, 3270 Rating); Standard (~5 sec, 3430 Rating); Deep (~20 sec, 3500 Rating); Maximum (~1 min 30 sec, 3560 Rating). Fast initially; Maximum displayed later. | [10:28](video/study/frames/0628.jpg), [10:32](video/study/frames/0632.jpg) |
-| Analysis / Chess Engine | Stockfish 18 (108MB download); Stockfish 18 Lite (7MB download); Torch 4 (73MB download); Torch 4 Lite (6MB download); Engine Off. Lite initially; Stockfish 18 displayed later. | [10:33](video/study/frames/0633.jpg), [10:37](video/study/frames/0637.jpg) |
-| Analysis / Maximum Time | 3 sec; 5 sec; 10 sec; 20 sec; 30 sec; Unlimited. Initially 5 sec; later 10 sec. | [10:38](video/study/frames/0638.jpg), [10:42](video/study/frames/0642.jpg) |
-| Analysis / Number of Lines | 1, 2, 3, 4, 5. Initially 3; later 5. | [10:40](video/study/frames/0640.jpg), [10:42](video/study/frames/0642.jpg) |
-| Analysis / Threads | Numeric stepper displaying 2. Minimum, maximum and resource impact not demonstrated. | [10:42](video/study/frames/0642.jpg) |
-| Cloud / Chess Engine | Open list: Stockfish 16; Komodo Dragon. Stockfish 16 selected. | [10:44](video/study/frames/0644.jpg) |
+| Game Review / Chess Engine | Open list: Stockfish; Torch Human. Torch Human selected. | 10:26 |
+| Game Review / Strength | Fast (~1 sec, 3270 Rating); Standard (~5 sec, 3430 Rating); Deep (~20 sec, 3500 Rating); Maximum (~1 min 30 sec, 3560 Rating). Fast initially; Maximum displayed later. | 10:28, 10:32 |
+| Analysis / Chess Engine | Stockfish 18 (108MB download); Stockfish 18 Lite (7MB download); Torch 4 (73MB download); Torch 4 Lite (6MB download); Engine Off. Lite initially; Stockfish 18 displayed later. | 10:33, 10:37 |
+| Analysis / Maximum Time | 3 sec; 5 sec; 10 sec; 20 sec; 30 sec; Unlimited. Initially 5 sec; later 10 sec. | 10:38, 10:42 |
+| Analysis / Number of Lines | 1, 2, 3, 4, 5. Initially 3; later 5. | 10:40, 10:42 |
+| Analysis / Threads | Numeric stepper displaying 2. Minimum, maximum and resource impact not demonstrated. | 10:42 |
+| Cloud / Chess Engine | Open list: Stockfish 16; Komodo Dragon. Stockfish 16 selected. | 10:44 |
 
 The time/rating pairings above are labels in the recorded UI. They do not independently prove search speed, engine strength or the presence of any particular backend implementation. Selecting a value does not prove a download finished or that an earlier review was recomputed.
 
-[![10:33: available local analysis engines](video/study/crops/0633.jpg)](video/study/frames/0633.jpg)
+*Recorded frame, 10:33: available local analysis engines. The capture was removed from the repository on 2026-10-08.*
 
 **For ChessLab:** a simple “Analyze further” action can precede advanced controls for time and candidate count. Show progress, cancellation, engine version and the limits attached to a result when relevant. Keep opponent difficulty in game setup. Never imply that increasing analysis time raises the learner's rating or changes the opponent's behavior.
 
 ## Interface → Review
 
-[![10:20: Review interface controls and their displayed values](video/study/crops/0620.jpg)](video/study/frames/0620.jpg)
+*Recorded frame, 10:20: Review interface controls and their displayed values. The capture was removed from the repository on 2026-10-08.*
 
 | Control | Visible value at 10:20 | What remains unknown |
 | --- | --- | --- |
@@ -46,7 +46,7 @@ An Analysis subtab is visible beside Review, but its contents were not shown in 
 
 ## Board
 
-[![10:17: board appearance and interaction controls](video/study/crops/0617.jpg)](video/study/frames/0617.jpg)
+*Recorded frame, 10:17: board appearance and interaction controls. The capture was removed from the repository on 2026-10-08.*
 
 | Control | Displayed value at 10:17 |
 | --- | --- |
