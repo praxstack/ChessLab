@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Tasks · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Tasks</h1><p class="lede">openspec/changes/rename-askthemove/tasks.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Tasks"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/rename-askthemove/tasks.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/rename-askthemove/tasks.md<br>SHA-256: f487cc77d49ca40827a7e81bc7936e69df2d8ca1c6c86a03c98413db72c68ae8</p><h3 id="1-baseline">1. Baseline</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked=""></input>1.1 Record <code>npm test</code> on <code>claude/original-assets</code> (129 tests: 114 pass, 6 environment failures, 9 skipped), <code>npm run build</code>, strict OpenSpec validation and the dossier check.</label></li>
+</ul>
+<h3 id="2-interface">2. Interface</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked=""></input>2.1 PN-001 Rename the page title, the sidebar wordmark and its accessible label, the footer and the lesson attribution; describe the study format by its extension in the import dialog.</label></li>
+<li><label><input type="checkbox" checked=""></input>2.2 PN-002 Name new downloads <code>askthemove-&lt;id&gt;</code> and use AskTheMove in default PGN Event and bot names, keeping <code>ChessLabOriginalPly</code> and the <code>chesslab-study</code> format id.</label></li>
+<li><label><input type="checkbox" checked=""></input>2.3 PN-003 Keep storage keys, cookie, database, environment and format identifiers; name the extension in the unsupported-file error; test import of a study file exported before the rename.</label></li>
+</ul>
+<h3 id="3-documentation">3. Documentation</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked=""></input>3.1 Name the product AskTheMove in README and CONTEXT and list the identifiers that keep the working name.</label></li>
+<li><label><input type="checkbox"></input>3.2 Founder decision: rename the repository, package, Docker image and the internal identifiers in the non-goals, with a migration for each stored one.</label></li>
+</ul>
+<h3 id="4-delivery">4. Delivery</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked=""></input>4.1 Run the full test suite, production build, strict OpenSpec validation and dossier check; record environment failures separately.</label></li>
+<li><label><input type="checkbox" checked=""></input>4.2 Capture the sidebar, a game review and the import dialog in Chromium and confirm no visible text reads ChessLab.</label></li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

@@ -107,16 +107,16 @@ export function writeAnnotatedPgn(game,username){
   if(continued.length)out.push(line(continued[0].moves,continued[0].id,moves.length,continued.slice(1)));
   return out.filter(Boolean).join(' ');
  }
- const headers={...game.headers,ChessLabOriginalPly:String(game.moves.length),Event:game.headers?.Event||'ChessLab study',White:game.source==='import'?game.headers?.White||'White':game.color==='w'?username:game.botName||'ChessLab bot',Black:game.source==='import'?game.headers?.Black||'Black':game.color==='b'?username:game.botName||'ChessLab bot',Result:game.result||'*'};
+ const headers={...game.headers,ChessLabOriginalPly:String(game.moves.length),Event:game.headers?.Event||'AskTheMove study',White:game.source==='import'?game.headers?.White||'White':game.color==='w'?username:game.botName||'AskTheMove bot',Black:game.source==='import'?game.headers?.Black||'Black':game.color==='b'?username:game.botName||'AskTheMove bot',Result:game.result||'*'};
  if(game.initialFen||!game.moves.length){headers.SetUp='1';headers.FEN=game.initialFen||new Chess().fen();}else{delete headers.SetUp;delete headers.FEN;}
  if(game.variant==='chess960')headers.Variant='Chess960';else delete headers.Variant;
  if(game.opening){headers.ECO=game.opening.eco;headers.Opening=game.opening.name;}
  const tags=Object.entries(headers).filter(([k,v])=>/^[A-Za-z]+$/.test(k)&&typeof v==='string').map(([k,v])=>`[${k} "${v.replace(/["\\\r\n]/g,' ')}"]`).join('\n');
  return `${tags}\n\n${line(game.moves,null).replace(/}\s*{/g,' — ')} ${game.result||'*'}\n`;
 }
-export function portableStudy(game,username='Player'){return {format:'chesslab-study',version:1,game:{title:game.title,...(game.variant==='chess960'?{variant:game.variant}:{}),initialFen:game.initialFen||null,moves:game.moves,result:game.result||null,headers:game.source==='bot'?{...game.headers,White:game.color==='w'?username:game.botName||'ChessLab bot',Black:game.color==='b'?username:game.botName||'ChessLab bot'}:game.headers||{},study:game.study||{version:1,branches:[],selectedBranchId:null,anchorPly:0}}};}
+export function portableStudy(game,username='Player'){return {format:'chesslab-study',version:1,game:{title:game.title,...(game.variant==='chess960'?{variant:game.variant}:{}),initialFen:game.initialFen||null,moves:game.moves,result:game.result||null,headers:game.source==='bot'?{...game.headers,White:game.color==='w'?username:game.botName||'AskTheMove bot',Black:game.color==='b'?username:game.botName||'AskTheMove bot'}:game.headers||{},study:game.study||{version:1,branches:[],selectedBranchId:null,anchorPly:0}}};}
 export function readPortableStudy(value){
- if(!value||value.format!=='chesslab-study'||value.version!==1||!value.game||typeof value.game!=='object')fail(400,'Choose a supported ChessLab study file.');
+ if(!value||value.format!=='chesslab-study'||value.version!==1||!value.game||typeof value.game!=='object')fail(400,'Choose a supported study file (.chesslab.json).');
  const g=value.game;let variant;try{variant=gameVariant(g.variant);}catch(error){fail(400,error.message);}if(variant==='chess960'&&!g.initialFen)fail(400,'A Chess960 study needs its starting FEN.');if(typeof g.title!=='string'||!g.title.trim()||g.title.length>100||!Array.isArray(g.moves)||g.moves.length>1000||![null,'1-0','0-1','1/2-1/2'].includes(g.result))fail(400,'Invalid study title, moves or result.');
  if(g.initialFen!==null){if(typeof g.initialFen!=='string')fail(400,'Invalid starting position.');validatePosition(g.initialFen,variant);}
  replay(g.moves,g.initialFen,variant);
