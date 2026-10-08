@@ -1,5 +1,7 @@
 # Full local game review
 
+> Superseded in part on 2026-10-08: the original-asset policy in `original-asset-pack` replaced the Chess.com reference-parity goal and Chess.com-derived assets for the hosted beta. The text below is kept as the record of the earlier direction.
+
 The current app analyzes one selected move but has no complete saved game report. Implement the observed full-game review flow as the next part of the unchanged full Chess.com parity objective: an advantage graph, per-color classifications, key moves and persistent review progress. Reuse native analysis, account ownership, SQLite and existing board/study controls.
 
 The primary reference is https://support.chess.com/en/articles/8584089-how-does-game-review-work, read 13 September 2026. Its accuracy description does not disclose CAPS2 mathematics; this delivery reports the existing local centipawn metric explicitly. Proprietary classification equivalence, opening recognition, voice coach and retry grading remain separate gaps.

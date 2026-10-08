@@ -8,4 +8,4 @@ Reference and source → validation and historical boundaries → failing checks
 - [x] Record native analysis, practice, persistence and mobile controls.
 - [x] Review and open the PR with video proof and remaining scope.
 
-Full Chess.com parity remains active.
+Full Chess.com parity remained active at the time of this change; on 2026-10-08 `original-asset-pack` superseded that goal for the hosted beta.

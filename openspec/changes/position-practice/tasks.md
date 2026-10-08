@@ -10,4 +10,4 @@ Reference and source → history/clock/crown boundaries → failing tests → in
 - [x] Verify native play, reload, undo and source return with video.
 - [x] Review and open a stacked PR with the remaining scope explicit.
 
-Full Chess.com parity remains active beyond this feature.
+Full Chess.com parity remained active beyond this feature at the time; on 2026-10-08 `original-asset-pack` superseded that goal for the hosted beta.

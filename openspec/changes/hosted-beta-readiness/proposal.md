@@ -30,6 +30,6 @@ Implemented and covered by automated tests with a fake Claude client and real St
 
 - Hosting provider and region, domain, and when to point `app.<domain>` at the server.
 - Whether to keep Claude Opus 5.5 at low effort as the default model, plus a monthly spending limit and the per-account hourly limit.
-- How to handle the Chess.com-derived bot roster, portraits, piece artwork, design frames and parity wording before inviting outside testers.
+- How to handle the Chess.com-derived bot roster, portraits, piece artwork, design frames and parity wording before inviting outside testers. Resolved on 2026-10-08 by `original-asset-pack`, which replaces them with original or openly licensed material.
 - Whether to replace the Stockfish 19 opponent for hosting. No official Linux build was found.
 - Privacy notice and terms for testers, given that position evidence is sent to Anthropic.

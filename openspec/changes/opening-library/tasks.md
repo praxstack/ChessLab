@@ -9,4 +9,4 @@ Pinned CC0 source → legal catalogue and position index → failing API/history
 - [x] Verify native engine play, saved history and review recognition with video.
 - [x] Review, open PR and promote the verified local build.
 
-Full Chess.com parity remains active.
+Full Chess.com parity remained active at the time of this change; on 2026-10-08 `original-asset-pack` superseded that goal for the hosted beta.

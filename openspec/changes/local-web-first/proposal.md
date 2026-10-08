@@ -1,5 +1,7 @@
 # Local web platform and Pstack delivery
 
+> Superseded in part on 2026-10-08: the original-asset policy in `original-asset-pack` replaced the Chess.com reference-parity goal and Chess.com-derived assets for the hosted beta. The text below is kept as the record of the earlier direction.
+
 Authorized by the user on 13 September 2026. Move the previously hosted ChessLab experience to this Mac, polish the web application, keep source, assets, engines and data local, and pursue full Chess.com parity. Preserve the complete branching tutor objective, with bot and coach play before human multiplayer and billing last. Full parity remains the program goal, not a claim about this change.
 
 The user additionally requires autonomous Pstack setup and routing, an explicit engineering dependency graph, app-control verification, and a pull request with recorded video proof. Remote hosting updates are outside this change. A review PR is authorized.
