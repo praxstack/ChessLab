@@ -1,0 +1,166 @@
+# AskTheMove beta waitlist site
+
+The public website for AskTheMove: one landing page with a waitlist form, a privacy notice, beta terms and a 404 page. It runs on Cloudflare Pages. The form is handled by Pages Functions and stored in a Cloudflare D1 database.
+
+Nothing has been deployed yet. Follow the steps below when you are ready.
+
+## What is in this folder
+
+| Path | What it is |
+| --- | --- |
+| `public/` | The finished website. This is what Cloudflare serves. |
+| `pages/` | The page templates. Edit these, not `public/*.html`. |
+| `site.config.json` | Domain, contact address, Turnstile site key and legal date, in one place. |
+| `scripts/build.mjs` | Turns `pages/` and `site.config.json` into `public/`. |
+| `functions/api/` | The waitlist API: `POST /api/waitlist`, `GET /api/waitlist/export`, `GET /api/health`. |
+| `src/lib/` | Validation, hashing, rate limiting and CSV code used by the API. |
+| `migrations/` | The D1 database tables. |
+| `test/` | Tests for the API and for the chess shown on the page. |
+| `wrangler.toml` | Cloudflare settings: project name and database. |
+
+## Working on it locally
+
+You need Node.js 22 or newer.
+
+```sh
+cd site
+npm install
+cp .dev.vars.example .dev.vars      # then put two long random strings in it
+npm run db:migrate:local            # creates the local database
+npm run dev                         # http://localhost:8788
+npm test                            # API tests and chess checks
+```
+
+After changing anything in `pages/`, `site.config.json` or `public/assets/demo-data.js`, run `npm run build`. `npm run build:check` fails if `public/` is out of date, and `npm run deploy` runs that check first.
+
+The chessboard walkthrough on the home page lives in `public/assets/demo-data.js`. `npm test` replays every move with a chess rules library and checks each arrow and caption claim, so run it after any edit there.
+
+## 1. Put the site live on pages.dev (before buying anything)
+
+This gives you a working site and waitlist at `https://askthemove.pages.dev`. It costs nothing.
+
+1. Create a free account at [dash.cloudflare.com](https://dash.cloudflare.com/sign-up).
+2. In a terminal:
+
+   ```sh
+   cd site
+   npm install
+   npx wrangler login
+   ```
+
+3. Create the database:
+
+   ```sh
+   npx wrangler d1 create askthemove-waitlist
+   ```
+
+   It prints a `database_id`. Paste it into `wrangler.toml` in place of `00000000-0000-0000-0000-000000000000`.
+
+4. Create the tables:
+
+   ```sh
+   npm run db:migrate:remote
+   ```
+
+5. Create the Pages project:
+
+   ```sh
+   npx wrangler pages project create askthemove --production-branch main
+   ```
+
+   If the name `askthemove` is taken, pick another (for example `askthemove-beta`), change `name` in `wrangler.toml`, change `siteUrl` in `site.config.json` to match, and run `npm run build`.
+
+6. Set the two secrets. Each command asks you to paste a value. Use a long random string for each, for example the output of `openssl rand -hex 32`. Keep `ADMIN_TOKEN` somewhere safe: you need it to download the waitlist.
+
+   ```sh
+   npx wrangler pages secret put ADMIN_TOKEN --project-name askthemove
+   npx wrangler pages secret put IP_HASH_SALT --project-name askthemove
+   ```
+
+7. Deploy:
+
+   ```sh
+   npm run deploy
+   ```
+
+8. Open `https://askthemove.pages.dev`, join with your own email, then download the list (step 4 below) to check your row is there.
+
+## 2. After buying askthemove.com on Cloudflare
+
+1. In the Cloudflare dashboard, open **Workers & Pages**, then the **askthemove** project, then **Custom domains**.
+2. Choose **Set up a custom domain**, enter `askthemove.com` and confirm. Do the same for `www.askthemove.com`.
+3. Optional: send `www` to the main domain. Open the domain, then **Rules** > **Redirect Rules**, and use the "Redirect from WWW to root" template.
+4. In `site.config.json`, set `"siteUrl": "https://askthemove.com"`. Then:
+
+   ```sh
+   npm run build
+   npm run deploy
+   ```
+
+## 3. After setting up email with Zoho
+
+Zoho walks you through adding your domain. In Cloudflare, open the domain, then **DNS** > **Records**, and add the records Zoho asks for. **Use exactly what Zoho shows you.** For an India data centre account they usually look like this:
+
+| Type | Name | Value | Priority |
+| --- | --- | --- | --- |
+| TXT | `@` | the `zoho-verification=...` code Zoho gives you | |
+| MX | `@` | `mx.zoho.in` | 10 |
+| MX | `@` | `mx2.zoho.in` | 20 |
+| MX | `@` | `mx3.zoho.in` | 50 |
+| TXT | `@` | `v=spf1 include:zoho.in ~all` | |
+| TXT | the selector Zoho gives you, for example `zmail._domainkey` | the DKIM key Zoho generates | |
+| TXT | `_dmarc` | `v=DMARC1; p=none; rua=mailto:hello@askthemove.com` | |
+
+Then make sure the contact address is right. It is `contactEmail` in `site.config.json` and appears on every page. If you chose a different address than `hello@askthemove.com`, change it there and in the DMARC record, then:
+
+```sh
+npm run build
+npm run deploy
+```
+
+## 4. Download the waitlist as a CSV
+
+```sh
+curl -H "Authorization: Bearer YOUR_ADMIN_TOKEN" \
+  https://askthemove.pages.dev/api/waitlist/export -o waitlist.csv
+```
+
+Use your own domain once it is set up. The file has one row per person: email, when they joined, their rating answer, the form they used and any campaign tags.
+
+To delete someone who asks:
+
+```sh
+npx wrangler d1 execute askthemove-waitlist --remote \
+  --command "DELETE FROM waitlist WHERE email = 'person@example.com'"
+```
+
+## 5. Turn on Turnstile (only if bots become a problem)
+
+The form already has a hidden honeypot field and a limit of 5 sign-ups per connection every 10 minutes. If spam still gets through, add Cloudflare Turnstile:
+
+1. In the Cloudflare dashboard, open **Turnstile** and add a widget. Add your hostnames (`askthemove.pages.dev`, and `askthemove.com` once you have it). Choose **Managed**.
+2. Put the **site key** in `site.config.json` as `turnstileSiteKey`, then run `npm run build`. This adds the widget to the form and allows Cloudflare's script in the security headers.
+3. Set the **secret key**:
+
+   ```sh
+   npx wrangler pages secret put TURNSTILE_SECRET --project-name askthemove
+   ```
+
+4. Run `npm run deploy`.
+
+To turn it off again, empty `turnstileSiteKey`, rebuild, delete the `TURNSTILE_SECRET` secret in the dashboard and deploy.
+
+## Before you share the link
+
+- Read `pages/privacy.html` and `pages/terms.html`. Both are templates and say so at the top. Change anything that doesn't match what you do, remove the template note, update `legalUpdated` in `site.config.json`, and rebuild.
+- Everything on the page about the product is meant to be true today. If something changes (for example the tutor ships), update the Status section in `pages/index.html`.
+
+## Analytics
+
+There are no analytics, cookies or trackers. If you want visitor counts, Cloudflare Web Analytics is the only option the page is prepared for. The instructions are in a comment in `pages/partials/head.html`.
+
+## Credits and licences
+
+- Chess pieces: the cburnett set by Colin M. L. Burnett, used under GPLv2 or later. The licence is in `public/assets/pieces/LICENSE.txt`.
+- Typefaces: Young Serif, Commissioner and Atkinson Hyperlegible Mono, under the SIL Open Font License 1.1 (`public/assets/fonts/OFL.txt`).
+- The chessboard, the product panels in "How it works", the logo and the social image are drawn in HTML and CSS for this site.
