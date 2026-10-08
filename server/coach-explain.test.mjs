@@ -1,0 +1,263 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdtempSync, rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {Chess} from 'chess.js';
+import {createApp} from './app.mjs';
+import {createCoach, coachConfig, buildEvidence, verifyAnswer, parseAskedMove, SYSTEM_PROMPT, DEFAULT_MODEL} from './coach-explain.mjs';
+import {securityConfig} from './security.mjs';
+
+// 1. e4 e5 2. Bc4 Nc6 3. Qh5: Black to move. Nf6 allows Qxf7#.
+const BASE = ['e2e4', 'e7e5', 'f1c4', 'b8c6', 'd1h5'];
+const sanLine = (moves, line) => { const board = new Chess(); moves.forEach(m => board.move({from:m.slice(0, 2), to:m.slice(2, 4)})); return line.map(m => board.move({from:m.slice(0, 2), to:m.slice(2, 4)}).san); };
+function fakeAnalysis({moves = BASE, playedMove} = {}) {
+  const board = new Chess(); moves.forEach(m => board.move({from:m.slice(0, 2), to:m.slice(2, 4)}));
+  const line = (uci, value) => ({move:uci[0], moves:uci, san:sanLine(moves, uci), score:{type:'cp', value}, depth:18});
+  const analysis = {engine:'Stockfish 18', fen:board.fen(), turn:board.turn(), bestmove:'g7g6', lines:moves.join() === BASE.join() ? [line(['g7g6', 'h5f3', 'g8f6'], 30), line(['d8e7', 'b1c3'], 45)] : board.moves({verbose:true}).slice(0, 1).map(move => line([move.from + move.to], 0)), limits:{movetime:800, lines:3}, facts:{inCheck:false, material:{white:39, black:39}, legalMoves:board.moves().length}, explanation:'Black to move. g6. Sample line: g6 → Qf3 → Nf6. No material changes in this line. Estimate: 0.30 pawns from White\'s perspective.'};
+  if (playedMove) {
+    const mate = playedMove === 'g8f6';
+    const after = new Chess(board.fen()); after.move({from:playedMove.slice(0, 2), to:playedMove.slice(2, 4)});
+    const reply = mate ? ['h5f7'] : after.moves({verbose:true}).filter(move => move.from + move.to === 'b1c3').map(move => move.from + move.to);
+    const san = sanLine(moves, [playedMove])[0];
+    analysis.played = {move:playedMove, san, classification:mate ? 'Mate sequence' : 'Inaccuracy', lossCp:mate ? null : 60, afterScore:mate ? {type:'mate', value:1} : {type:'cp', value:90}, line:{moves:reply, san:sanLine([...moves, playedMove], reply), score:mate ? {type:'mate', value:1} : {type:'cp', value:90}, depth:16}, explanation:mate ? `${san}. Sample line: Qxf7#. Black is checkmated. Mate scores have no centipawn-loss estimate.` : `${san}. Sample line: Nc3. Estimated loss: 60 centipawns for Black.`};
+  }
+  return analysis;
+}
+const answer = text => ({model:DEFAULT_MODEL, stop_reason:'end_turn', content:[{type:'thinking', thinking:''}, {type:'text', text}]});
+function fakeClient(respond) {
+  const calls = [];
+  return {calls, beta:{messages:{create:async (body, options) => { calls.push({body, options}); return respond(body, options, calls.length); }}}};
+}
+const silentLogger = () => { const lines = []; return {lines, warn:line => lines.push(String(line))}; };
+const testConfig = overrides => ({...coachConfig({}), apiKey:'sk-ant-test-not-a-real-key', ...overrides});
+
+async function fixture({client, config = testConfig(), logger = silentLogger(), security = securityConfig({})} = {}) {
+  const temp = mkdtempSync(join(tmpdir(), 'chesslab-coach-'));
+  const engineCalls = [];
+  const engineApi = {engineStatus:async () => ({available:true, name:'test engine'}), analyze:async request => { engineCalls.push(request); return fakeAnalysis(request); }};
+  const coach = createCoach({client, config, logger});
+  const state = createApp({databasePath:join(temp, 'db.sqlite'), engineApi, coach, config:security});
+  const server = state.app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
+  const base = `http://127.0.0.1:${server.address().port}`;
+  const request = async (path, {body, cookie} = {}) => {
+    const response = await fetch(base + path, {method:body === undefined ? 'GET' : 'POST', headers:{...(body !== undefined ? {'Content-Type':'application/json'} : {}), ...(cookie ? {Cookie:cookie} : {})}, body:body === undefined ? undefined : JSON.stringify(body)});
+    return {status:response.status, body:await response.json(), cookie:response.headers.get('set-cookie')?.split(';')[0]};
+  };
+  const register = async username => (await request('/api/register', {body:{username, password:'test-password-123'}})).cookie;
+  return {request, register, engineCalls, logger, close:async () => { await new Promise(resolve => server.close(resolve)); state.close(); rmSync(temp, {recursive:true, force:true}); }};
+}
+
+test('evidence is replayed from the rules library and limits the vocabulary Claude may cite', () => {
+  const bundle = buildEvidence(fakeAnalysis({playedMove:'g8f6'}), {moves:BASE});
+  assert.equal(bundle.evidence.position.sideToMove, 'Black');
+  assert.deepEqual(bundle.evidence.candidateLines[0].moves.map(m => m.san), ['g6', 'Qf3', 'Nf6']);
+  assert.deepEqual(bundle.evidence.playedMove.engineReplyLine, [{san:'Qxf7#', side:'White', captures:'pawn', checkmate:true}]);
+  assert.equal(bundle.evidence.playedMove.classification, 'Mate sequence');
+  assert.deepEqual(bundle.evidence.engine, {name:'Stockfish 18', movetimeMs:800, candidateLines:3, depth:18});
+  assert.ok(!JSON.stringify(bundle.evidence).includes('fen'), 'No board string is offered for the model to analyse itself');
+  assert.deepEqual([...bundle.allowed.values()].sort(), ['Nf6', 'Qe7', 'Qf3', 'Qxf7#', 'Nc3', 'g6'].sort());
+  assert.deepEqual([...bundle.mateValues], [1]);
+  assert.throws(() => buildEvidence(fakeAnalysis(), {moves:BASE.slice(0, 4)}), {status:503}, 'Evidence for another position is refused');
+});
+
+test('answer check accepts cited evidence and rejects invented moves, unbracketed moves and mate claims', () => {
+  const bundle = buildEvidence(fakeAnalysis({playedMove:'g8f6'}), {moves:BASE});
+  const good = verifyAnswer('[[Nf6]] lets White play [[Qxf7#]] in the engine\'s line. The engine preferred [[g6]], keeping the f7 square covered and e5 intact.', bundle);
+  assert.equal(good.ok, true);
+  assert.equal(good.text, 'Nf6 lets White play Qxf7# in the engine\'s line. The engine preferred g6, keeping the f7 square covered and e5 intact.');
+  assert.deepEqual(good.cited, ['Nf6', 'Qxf7#', 'g6']);
+  assert.equal(verifyAnswer('[[Nf6+]] is not really check, but [[O-O]] would be safer.', bundle).ok, false);
+  assert.deepEqual(verifyAnswer('After [[Nf6]], Bxf7+ wins material.', bundle).problems, ['Bxf7+']);
+  assert.equal(verifyAnswer('After [[Nf6]], it is mate in 2.', bundle).ok, false);
+  assert.equal(verifyAnswer('After [[Nf6]], it is mate in 1.', bundle).ok, true);
+  assert.equal(verifyAnswer('[[Nf6 is unbalanced', bundle).ok, false);
+});
+
+test('a follow-up move is parsed and checked by the rules library, never by the model', () => {
+  const board = new Chess(); BASE.forEach(m => board.move({from:m.slice(0, 2), to:m.slice(2, 4)}));
+  assert.deepEqual(parseAskedMove(board, 'Why not Qe7?'), {uci:'d8e7', san:'Qe7'});
+  assert.deepEqual(parseAskedMove(board, 'g7g6'), {uci:'g7g6', san:'g6'});
+  for (const question of ['why not Ke2?', 'Nf3', 'castle', '', 'x'.repeat(61), 42]) assert.throws(() => parseAskedMove(board, question), {status:400}, String(question));
+});
+
+test('Claude explains supplied evidence with a cached static system prompt and no learner data', async () => {
+  const client = fakeClient(() => answer('[[Nf6]] walks into [[Qxf7#]] in the engine\'s line. [[g6]] was the engine\'s choice at this depth.'));
+  const f = await fixture({client});
+  try {
+    assert.equal((await f.request('/api/coach/explain', {body:{moves:BASE, playedMove:'g8f6'}})).status, 401, 'Sign-in required');
+    const cookie = await f.register('coach_alice');
+    const status = (await f.request('/api/status')).body.coachAi;
+    assert.deepEqual(status, {enabled:true, model:DEFAULT_MODEL});
+    const result = await f.request('/api/coach/explain', {cookie, body:{moves:BASE, playedMove:'g8f6'}});
+    assert.equal(result.status, 200);
+    assert.equal(result.body.source, 'claude');
+    assert.equal(result.body.text, 'Nf6 walks into Qxf7# in the engine\'s line. g6 was the engine\'s choice at this depth.');
+    assert.deepEqual(result.body.citedMoves, ['Nf6', 'Qxf7#', 'g6']);
+    assert.equal(result.body.subject, 'Nf6');
+    assert.equal(result.body.bestMove, 'g6');
+    assert.deepEqual(result.body.receipt, {engine:'Stockfish 18', movetimeMs:800, depth:18, lines:2});
+    const {body, options} = client.calls[0];
+    assert.equal(body.model, DEFAULT_MODEL);
+    assert.deepEqual(body.output_config, {effort:'low'});
+    assert.equal(body.thinking, undefined, 'Opus 5.5 thinking stays adaptive');
+    assert.equal(body.fallbacks, 'default');
+    assert.deepEqual(body.betas, ['server-side-fallback-2026-07-01']);
+    assert.deepEqual(body.system, [{type:'text', text:SYSTEM_PROMPT, cache_control:{type:'ephemeral'}}]);
+    assert.ok(SYSTEM_PROMPT.length > 2600, 'Static prompt is long enough to reach the 512-token cache minimum');
+    assert.equal(body.messages.length, 1);
+    const content = body.messages[0].content;
+    assert.match(content, /^<evidence>\n\{.*\}\n<\/evidence>\n\nTask: explain the played move \[\[Nf6\]\]/s);
+    assert.ok(!content.includes('coach_alice') && !content.includes('chesslab_session'), 'No account data reaches the model');
+    assert.ok(options.signal instanceof AbortSignal && options.timeout > 0 && options.maxRetries === 1);
+    assert.equal(f.engineCalls.length, 1);
+    assert.deepEqual(f.engineCalls[0], {moves:BASE, initialFen:null, variant:undefined, playedMove:'g8f6', movetime:800, lines:3});
+  } finally { await f.close(); }
+});
+
+test('an answer citing a move outside the evidence falls back to the deterministic coach', async () => {
+  const client = fakeClient(() => answer('[[Nf6]] is a blunder because [[Bxf7+]] wins the queen.'));
+  const f = await fixture({client});
+  try {
+    const cookie = await f.register('coach_bob');
+    const result = await f.request('/api/coach/explain', {cookie, body:{moves:BASE, playedMove:'g8f6'}});
+    assert.equal(result.body.source, 'engine');
+    assert.equal(result.body.fallbackReason, 'unverified_claims');
+    assert.equal(result.body.text, fakeAnalysis({playedMove:'g8f6'}).played.explanation);
+    assert.ok(!result.body.text.includes('Bxf7'));
+    assert.deepEqual(f.logger.lines, ['Coach AI fallback: unverified_claims (1 unverified claims)']);
+  } finally { await f.close(); }
+});
+
+test('without an API key the endpoint keeps the deterministic coach and never builds a client', async () => {
+  const f = await fixture({config:testConfig({apiKey:''})});
+  try {
+    assert.deepEqual((await f.request('/api/status')).body.coachAi, {enabled:false});
+    const cookie = await f.register('coach_carol');
+    const analysis = await f.request('/api/analyze', {cookie, body:{moves:BASE, playedMove:'g8f6'}});
+    assert.equal(analysis.body.evidenceId, undefined, 'No evidence is retained when Claude is off');
+    const result = await f.request('/api/coach/explain', {cookie, body:{moves:BASE, playedMove:'g8f6'}});
+    assert.deepEqual([result.body.source, result.body.fallbackReason], ['engine', 'not_configured']);
+    assert.equal(result.body.text, fakeAnalysis({playedMove:'g8f6'}).played.explanation);
+  } finally { await f.close(); }
+  assert.equal(createCoach({config:testConfig({apiKey:''})}).status().enabled, false);
+});
+
+test('a slow Claude call is abandoned at the deadline and the learner gets the engine summary', async () => {
+  const client = fakeClient((body, options) => new Promise((resolve, reject) => options.signal.addEventListener('abort', () => reject(Object.assign(new Error('aborted'), {name:'AbortError'})))));
+  const f = await fixture({client, config:testConfig({timeoutMs:60})});
+  try {
+    const cookie = await f.register('coach_dana');
+    const started = Date.now();
+    const result = await f.request('/api/coach/explain', {cookie, body:{moves:BASE, playedMove:'g8f6'}});
+    assert.ok(Date.now() - started < 2000);
+    assert.deepEqual([result.body.source, result.body.fallbackReason], ['engine', 'timeout']);
+  } finally { await f.close(); }
+});
+
+test('per-account Claude quota falls back without calling the API and other accounts keep theirs', async () => {
+  const client = fakeClient(() => answer('[[g6]] keeps the position balanced at this depth.'));
+  const f = await fixture({client, config:testConfig({maxPerHour:2})});
+  try {
+    const erin = await f.register('coach_erin'), finn = await f.register('coach_finn');
+    const ask = cookie => f.request('/api/coach/explain', {cookie, body:{moves:BASE}});
+    assert.equal((await ask(erin)).body.source, 'claude');
+    assert.equal((await ask(erin)).body.source, 'claude');
+    const limited = await ask(erin);
+    assert.deepEqual([limited.body.source, limited.body.fallbackReason], ['engine', 'rate_limited']);
+    assert.equal(limited.body.text, fakeAnalysis().explanation);
+    assert.equal(client.calls.length, 2);
+    assert.equal((await ask(finn)).body.source, 'claude');
+  } finally { await f.close(); }
+});
+
+test('why-not questions compute the asked move with the engine before Claude explains it', async () => {
+  const client = fakeClient(() => answer('[[Qe7]] is playable: the engine gives [[Nc3]] in reply and still prefers [[g6]] at this depth.'));
+  const f = await fixture({client});
+  try {
+    const cookie = await f.register('coach_gwen');
+    const illegal = await f.request('/api/coach/explain', {cookie, body:{moves:BASE, playedMove:'g8f6', question:'why not Ke2?'}});
+    assert.equal(illegal.status, 400);
+    assert.equal(f.engineCalls.length + client.calls.length, 0, 'Illegal questions never reach the engine or Claude');
+    const result = await f.request('/api/coach/explain', {cookie, body:{moves:BASE, playedMove:'g8f6', question:'Why not Qe7?'}});
+    assert.equal(result.status, 200);
+    assert.deepEqual(f.engineCalls[0], {moves:BASE, initialFen:null, variant:undefined, playedMove:'d8e7', movetime:800, lines:3});
+    assert.equal(result.body.question, 'Qe7');
+    assert.equal(result.body.source, 'claude');
+    const content = client.calls[0].body.messages[0].content;
+    assert.match(content, /Task: the learner asks "why not \[\[Qe7\]\]\?"/);
+    assert.ok(content.includes('"askedMove"') && !content.includes('"playedMove"') && !content.includes('Why not'), 'Only the engine-checked move reaches the model');
+    const again = await f.request('/api/coach/explain', {cookie, body:{moves:BASE, question:'Qe7'}});
+    assert.deepEqual([again.body.source, f.engineCalls.length], ['claude', 2], 'A question without a played move also gets its own search');
+  } finally { await f.close(); }
+});
+
+test('server evidence is reused only for the same account and position', async () => {
+  const client = fakeClient(() => answer('[[Nf6]] allows [[Qxf7#]] in the engine\'s line.'));
+  const f = await fixture({client});
+  try {
+    const owner = await f.register('coach_hana'), other = await f.register('coach_ivan');
+    const analysis = await f.request('/api/analyze', {cookie:owner, body:{moves:BASE, playedMove:'g8f6'}});
+    assert.match(analysis.body.evidenceId, /^[0-9a-f-]{36}$/);
+    assert.equal(f.engineCalls.length, 1);
+    await f.request('/api/coach/explain', {cookie:owner, body:{moves:BASE, playedMove:'g8f6', evidenceId:analysis.body.evidenceId}});
+    assert.equal(f.engineCalls.length, 1, 'The panel and the explanation share one search');
+    await f.request('/api/coach/explain', {cookie:other, body:{moves:BASE, playedMove:'g8f6', evidenceId:analysis.body.evidenceId}});
+    assert.equal(f.engineCalls.length, 2, 'Another account cannot reuse the evidence');
+    await f.request('/api/coach/explain', {cookie:owner, body:{moves:BASE, playedMove:'d8e7', evidenceId:analysis.body.evidenceId}});
+    assert.equal(f.engineCalls.length, 3, 'A different move gets fresh evidence');
+    assert.equal((await f.request('/api/coach/explain', {cookie:owner, body:{moves:BASE, playedMove:'e2e4'}})).status, 400, 'Illegal played moves are rejected');
+  } finally { await f.close(); }
+});
+
+test('API errors, refusals and truncation fall back without logging the key or the prompt', async () => {
+  const outcomes = [
+    () => { throw Object.assign(new Error('overloaded'), {status:529}); },
+    () => { throw Object.assign(new Error('rate limited'), {status:429}); },
+    () => ({model:DEFAULT_MODEL, stop_reason:'refusal', content:[]}),
+    () => ({model:DEFAULT_MODEL, stop_reason:'max_tokens', content:[{type:'text', text:'[[g6]] is'}]}),
+    () => answer('   '),
+  ];
+  const client = fakeClient((body, options, count) => outcomes[count - 1]());
+  const f = await fixture({client});
+  try {
+    const cookie = await f.register('coach_jade');
+    const reasons = [];
+    for (let i = 0; i < outcomes.length; i++) reasons.push((await f.request('/api/coach/explain', {cookie, body:{moves:BASE}})).body.fallbackReason);
+    assert.deepEqual(reasons, ['api_error', 'upstream_busy', 'refusal', 'incomplete', 'empty']);
+    const logged = f.logger.lines.join('\n');
+    assert.ok(!logged.includes('sk-ant') && !logged.includes('evidence') && !logged.includes('g6'), logged);
+  } finally { await f.close(); }
+});
+
+test('a saved whole-game review step is reused as evidence for its own move only', async () => {
+  const client = fakeClient(() => answer('[[Nf6]] allows [[Qxf7#]] in the engine\'s line.'));
+  const f = await fixture({client});
+  try {
+    const cookie = await f.register('coach_kira');
+    const game = (await f.request('/api/import', {cookie, body:{pgn:'1. e4 e5 2. Bc4 Nc6 3. Qh5 Nf6 4. Qxf7# 1-0'}})).body.game;
+    for (let after = 0; after < game.moves.length; after++) assert.equal((await f.request(`/api/games/${game.id}/review`, {cookie, body:{revision:game.revision, after, movetime:100, threads:1}})).status, 200);
+    const reviewCalls = f.engineCalls.length;
+    const result = await f.request('/api/coach/explain', {cookie, body:{gameId:game.id, moves:BASE, playedMove:'g8f6'}});
+    assert.equal(result.body.source, 'claude');
+    assert.equal(f.engineCalls.length, reviewCalls, 'The saved review step is the evidence');
+    await f.request('/api/coach/explain', {cookie, body:{gameId:game.id, moves:BASE, playedMove:'d8e7'}});
+    assert.equal(f.engineCalls.length, reviewCalls + 1, 'A move the game did not play is searched afresh');
+    const stranger = await f.register('coach_lena');
+    assert.equal((await f.request('/api/coach/explain', {cookie:stranger, body:{gameId:game.id, moves:BASE, playedMove:'g8f6'}})).status, 404);
+  } finally { await f.close(); }
+});
+
+test('evidence builds from a real Stockfish search, including the reply to the played move', async t => {
+  const {analyze, engineStatus, closeEngine} = await import('./engine.mjs');
+  try {
+    if (!(await engineStatus()).available) return t.skip('Stockfish is not installed on this machine.');
+    const analysis = await analyze({moves:BASE, playedMove:'g8f6', movetime:200, lines:3});
+    const bundle = buildEvidence(analysis, {moves:BASE});
+    assert.equal(bundle.evidence.playedMove.san, 'Nf6');
+    assert.deepEqual(bundle.evidence.playedMove.engineReplyLine[0], {san:'Qxf7#', side:'White', captures:'pawn', checkmate:true});
+    assert.ok(bundle.mateValues.has(1));
+    assert.ok(bundle.evidence.candidateLines.length >= 1 && bundle.best);
+    assert.equal(verifyAnswer(`[[Nf6]] allows [[Qxf7#]]. The engine preferred [[${bundle.best}]].`, bundle).ok, true);
+  } finally { closeEngine(); }
+});

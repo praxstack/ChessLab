@@ -4,12 +4,13 @@ import {mkdtempSync, rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createApp} from './app.mjs';
+import {createCoach} from './coach-explain.mjs';
 import {securityConfig, parseTrustProxy, parseInviteCodes, canonicalOrigin, inviteAccepted} from './security.mjs';
 
 async function fixture(env = {}) {
   const temp = mkdtempSync(join(tmpdir(), 'chesslab-security-'));
   const engineApi = {engineStatus:async () => ({available:true, name:'test engine'}), analyze:async () => ({bestmove:'e2e4'})};
-  const state = createApp({databasePath:join(temp, 'db.sqlite'), engineApi, config:securityConfig(env)});
+  const state = createApp({databasePath:join(temp, 'db.sqlite'), engineApi, config:securityConfig(env), coach:createCoach({config:{apiKey:''}})});
   const server = state.app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
   const base = `http://127.0.0.1:${server.address().port}`;
   const request = async (path, {body, headers = {}} = {}) => {
@@ -46,7 +47,7 @@ test('health check, security headers and secure session cookie for a hosted orig
     assert.match(health.headers.get('content-security-policy'), /default-src 'self'.*script-src 'self'.*frame-ancestors 'none'/);
     assert.equal(health.headers.get('x-powered-by'), null);
     const status = (await f.request('/api/status')).body;
-    assert.deepEqual([status.hosted, status.archives, status.inviteRequired], [true, false, false]);
+    assert.deepEqual([status.hosted, status.archives, status.inviteRequired, status.coachAi], [true, false, false, {enabled:false}]);
     assert.equal((await f.request('/api/register', {body:account('no_origin')})).status, 403, 'A hosted origin requires an Origin header on changes');
     assert.equal((await f.request('/api/register', {body:account('wrong_origin'), headers:{Origin:'https://evil.example'}})).status, 403);
     assert.equal((await f.request('/api/register', {body:account('cross_site'), headers:{Origin:'https://app.example.com', 'Sec-Fetch-Site':'cross-site'}})).status, 403);

@@ -23,6 +23,7 @@ import {hostingGuard} from './hosting.mjs';
 import {positionKey,reviewSignature,beginReview,appendReview} from './game-review.mjs';
 import {createExplorer} from './opening-explorer.mjs';
 import {installReviewPractice} from './review-practice.mjs';
+import {createCoach,parseAskedMove} from './coach-explain.mjs';
 import {securityConfig,securityHeaders,inviteAccepted} from './security.mjs';
 
 const derive = promisify(scrypt);
@@ -38,7 +39,7 @@ function moveOn(chess, value) {
 const replay = engine.replay;
 const gameResult = chess => chess.isCheckmate() ? (chess.turn() === 'w' ? '0-1' : '1-0') : chess.isDraw() ? '1/2-1/2' : null;
 
-export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('data/chesslab.sqlite'), engineApi = engine, opponentApi = opponents, nowMs = Date.now, explorerCataloguePath = process.env.CHESSLAB_EXPLORER || resolve('data/explorer/catalogue.sqlite'), puzzleCataloguePath = process.env.CHESSLAB_PUZZLES || resolve('data/puzzles/catalogue.sqlite'), config = securityConfig()} = {}) {
+export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('data/chesslab.sqlite'), engineApi = engine, opponentApi = opponents, nowMs = Date.now, explorerCataloguePath = process.env.CHESSLAB_EXPLORER || resolve('data/explorer/catalogue.sqlite'), puzzleCataloguePath = process.env.CHESSLAB_PUZZLES || resolve('data/puzzles/catalogue.sqlite'), config = securityConfig(), coach = createCoach()} = {}) {
  if (databasePath !== ':memory:') mkdirSync(dirname(databasePath), {recursive:true});
  const db = new DatabaseSync(databasePath);
  db.exec(`PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON; PRAGMA busy_timeout=5000;
@@ -105,7 +106,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   db.prepare('INSERT INTO sessions VALUES (?,?,?)').run(hash(token),userId,Date.now()+7*86400000);
   res.cookie('chesslab_session',token,{httpOnly:true,sameSite:'strict',secure:config.cookieSecure,maxAge:7*86400000,path:'/'});
  }
- app.get('/api/status',async(req,res)=>res.json({engine:await engineApi.engineStatus(),billingEnabled:false,inviteRequired:config.inviteCodes.length>0,hosted:config.hosted,archives:config.serveArchives}));
+ app.get('/api/status',async(req,res)=>res.json({engine:await engineApi.engineStatus(),billingEnabled:false,coachAi:coach.status(),inviteRequired:config.inviteCodes.length>0,hosted:config.hosted,archives:config.serveArchives}));
  app.get('/api/bots',async(req,res)=>res.json({bots:profiles,engines:await opponentApi.listOpponentEngines()}));
  app.get('/api/me',(req,res)=>res.json(me(req.user)));
  app.post('/api/register',async(req,res)=>{
@@ -362,8 +363,37 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   const controller=new AbortController();
   const cancel=()=>{if(!res.writableEnded)controller.abort();};
   res.once('close',cancel);
-  try {res.json(await engineApi.analyze(req.body,{signal:controller.signal}));}
+  try {
+   const analysis=await engineApi.analyze(req.body,{signal:controller.signal});
+   const evidenceId=coach.remember(req.user.id,req.body,analysis);
+   res.json(evidenceId?{...analysis,evidenceId}:analysis);
+  }
   finally {res.removeListener('close',cancel);}
+ });
+ // Saved whole-game review steps are server-produced evidence for the same position and move.
+ const reviewedEvidence=(req,{gameId,moves,initialFen,variant,playedMove})=>{
+  if(typeof gameId!=='string'||typeof playedMove!=='string')return null;
+  const game=owned({params:{id:gameId},user:req.user}),entry=savedReview(game)?.entries[moves.length];
+  const samePosition=(game.initialFen??null)===(initialFen??null)&&(game.variant||'standard')===(variant||'standard')&&moves.every((move,index)=>game.moves[index]===move);
+  return samePosition&&game.moves[moves.length]===playedMove&&entry?.analysis?.played?.move===playedMove?entry.analysis:null;
+ };
+ app.post('/api/coach/explain',async(req,res)=>{
+  limit(`analysis:${req.user.id}`,100);
+  const {gameId,moves=[],initialFen=null,variant,playedMove,evidenceId,question}=req.body;
+  if(gameId!==undefined)markReviewAccess(req,gameId);
+  if(playedMove!==undefined&&typeof playedMove!=='string')fail(400,'Choose a legal move in UCI notation.');
+  const board=replay(moves,initialFen,variant);
+  const asked=question===undefined?null:parseAskedMove(board,question);
+  if(!asked&&playedMove!==undefined)replay([...moves,playedMove],initialFen,variant);
+  const controller=new AbortController(),cancel=()=>{if(!res.writableEnded)controller.abort();};
+  res.once('close',cancel);
+  try{
+   const position={moves,initialFen,variant,playedMove:asked?asked.uci:playedMove};
+   const analysis=(!asked&&(coach.recall(req.user.id,evidenceId,position)||reviewedEvidence(req,{gameId,...position})))
+    ||await engineApi.analyze({...position,movetime:coach.engineMovetime,lines:3},{signal:controller.signal});
+   if((position.playedMove??null)!==(analysis.played?.move??null))fail(503,'The engine evidence does not match this move. Try again.');
+   res.json(await coach.explain({userId:req.user.id,analysis,moves,initialFen,variant,asked,signal:controller.signal}));
+  }finally{res.removeListener('close',cancel);}
  });
  app.post('/api/lessons/:id/answer',(req,res)=>{
   const lesson=lessons.find(x=>x.id===req.params.id);if(!lesson)fail(404,'Lesson not found.');
