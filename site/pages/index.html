@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- @include head -->
+</head>
+<body class="page-home">
+<!-- @include header -->
+<main id="main">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero__texture" aria-hidden="true"></div>
+    <div class="wrap hero__grid">
+      <div class="hero__copy">
+        <p class="eyebrow eyebrow--night">Chess coach for adult improvers <span class="sep" aria-hidden="true">·</span> Public beta waitlist</p>
+        <h1 id="hero-title" class="hero__title">Ask the move <em>why.</em></h1>
+        <p class="hero__lede">A chess coach for players rated about 800 to 1600. AskTheMove shows you why a move was a mistake, in plain words and arrows on the board, using evidence checked by Stockfish and the rules of chess. Then you can try your own idea and return to the game.</p>
+
+        <div id="join" class="join" tabindex="-1">
+          <form class="join__form" id="join-form" action="/api/waitlist" method="post">
+            <input type="hidden" name="source" value="hero">
+            <input type="hidden" name="utm_source" value="">
+            <input type="hidden" name="utm_medium" value="">
+            <input type="hidden" name="utm_campaign" value="">
+            <input type="hidden" name="referrer" value="">
+            <div class="join__row">
+              <div class="field field--email">
+                <label for="join-email">Email</label>
+                <input id="join-email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" autocapitalize="off" maxlength="254" placeholder="you@example.com" required aria-describedby="join-status">
+              </div>
+              <button class="btn btn--go join__submit" type="submit"><span class="btn__label">Join the waitlist</span></button>
+            </div>
+            <div class="field field--rating">
+              <label for="join-rating">Roughly what’s your rating? <span class="optional">Optional</span></label>
+              <select id="join-rating" name="rating">
+                <option value="">Choose one</option>
+                <option value="under-800">Under 800</option>
+                <option value="800-1200">800–1200</option>
+                <option value="1200-1600">1200–1600</option>
+                <option value="1600-plus">1600+</option>
+                <option value="not-sure">Not sure</option>
+              </select>
+            </div>
+            <div class="hp" aria-hidden="true">
+              <label for="join-website">Leave this empty</label>
+              <input id="join-website" name="website" type="text" tabindex="-1" autocomplete="off">
+            </div>
+            <div class="check">
+              <input id="join-consent" name="consent" type="checkbox" required>
+              <label for="join-consent">Email me about the beta. Unsubscribe any time.</label>
+            </div>
+            {{TURNSTILE_WIDGET}}
+            <p class="join__status" id="join-status" role="status" aria-live="polite"></p>
+            <p class="join__fine">Free during the beta. Your email is used only for beta news. <a href="/privacy/">Privacy notice</a>.</p>
+            <noscript><p class="join__fine">Without JavaScript the form still works: you’ll come back to this page after joining.</p></noscript>
+          </form>
+          <div class="join__done" id="join-done" hidden>
+            <p class="join__done-title" id="join-done-title" tabindex="-1">You’re on the list.</p>
+            <p class="join__done-body" id="join-done-body">We’ll email you when your beta invite is ready.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero__demo">
+<!-- @demo -->
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--paper problem" id="problem" aria-labelledby="problem-title">
+    <div class="wrap">
+      <p class="eyebrow">The problem</p>
+      <h2 id="problem-title" class="display-2 problem__title">The engine says <span class="nowrap">Nf5.</span> You still don’t know why.</h2>
+      <div class="problem__grid">
+        <div class="problem__text prose">
+          <p>A game review gives you a score, a best move and a line of moves six deep. All of it is correct, and all of it is written for an engine.</p>
+          <p>What you wanted to know is smaller and harder. What did I miss? What should I look at next time? What happens if I try my own idea?</p>
+          <p>Without those answers, the same mistake turns up again next week, in a different game.</p>
+        </div>
+        <div class="problem__questions">
+          <p class="problem__lead">AskTheMove is built to answer three questions:</p>
+          <ul class="questions">
+            <li class="question">
+              <span class="qbadge" aria-hidden="true">?</span>
+              <h3>What did I miss?</h3>
+              <p>The threat, the loose piece or the square you didn’t check, pointed out on the board.</p>
+            </li>
+            <li class="question">
+              <span class="qbadge" aria-hidden="true">?</span>
+              <h3>Why is the engine’s move better?</h3>
+              <p>The reason in a few sentences, taken from lines that were actually calculated.</p>
+            </li>
+            <li class="question">
+              <span class="qbadge" aria-hidden="true">?</span>
+              <h3>What if I play my move instead?</h3>
+              <p>Play it out as a branch, see the strongest reply, then come back to the game.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--paper how" id="how" aria-labelledby="how-title">
+    <div class="wrap">
+      <p class="eyebrow">How it works</p>
+      <h2 id="how-title" class="display-2 how__title">Evidence first. Then the explanation. Then your own question.</h2>
+      <p class="how__note">The panels below are drawn for this page, using the trap from the top of the page. The positions, lines and engine figures in them are real.</p>
+      <ol class="steps">
+        <li class="step">
+          <div class="step__node" aria-hidden="true">1.</div>
+          <div class="step__text">
+            <h3>Evidence</h3>
+            <p>Stockfish searches the position and a rules library replays every line. Material, checks and threats are settled as facts before anything is said about them, and each score shows how deep it was searched.</p>
+            <p class="tag tag--live">Works today</p>
+          </div>
+          <figure class="step__media">
+            <div class="mock">
+              <p class="mock__bar"><span>Evidence</span><b>5…<!-- @san Bxd1 --><span class="mock__flag">??</span></b></p>
+              <div class="mock__body evidence">
+<!-- @board why -->
+                <dl class="facts">
+                  <div class="fact fact--flag">
+                    <dt>Engine</dt>
+                    <dd><strong>Mate in 2 for White</strong><span>Stockfish 19, depth 20</span></dd>
+                  </div>
+                  <div class="fact">
+                    <dt>Line</dt>
+                    <dd><strong class="moves"><!-- @moves mate --></strong><span>Each move replayed by the rules library</span></dd>
+                  </div>
+                  <div class="fact">
+                    <dt>f7</dt>
+                    <dd><strong>2 attackers, 1 defender</strong><span>Bishop c4 and knight e5, against the king</span></dd>
+                  </div>
+                  <div class="fact">
+                    <dt>Material</dt>
+                    <dd><strong>Black is 8 points up</strong><span>A queen for a pawn, for one move</span></dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+            <figcaption>The facts behind one move: the engine’s verdict, the forced line, and the square it all happens on.</figcaption>
+          </figure>
+        </li>
+        <li class="step">
+          <div class="step__node" aria-hidden="true">2.</div>
+          <div class="step__text">
+            <h3>Explanation</h3>
+            <p>The tutor turns that evidence into a few plain sentences, tied to arrows on the board. It is given only checked moves and facts, so it explains what happened instead of guessing.</p>
+            <p class="tag tag--dev">In development</p>
+          </div>
+          <figure class="step__media">
+            <div class="mock">
+              <p class="mock__bar"><span>Tutor</span><b>5…<!-- @san Bxd1 --><span class="mock__flag">??</span></b><span class="mock__pill">Sample text</span></p>
+              <div class="mock__body">
+                <div class="tutor">
+                  <p class="tutor__title">The queen was bait.</p>
+                  <p>Taking the queen looked like winning, but f7 was already attacked twice, by the bishop on <span class="sq">c4</span> and the knight on <span class="sq">e5</span>. Only your king defended it.</p>
+                  <p>White checks with 6.Bxf7+. Your king has one square, <span class="sq">e7</span>, and 7.Nd5 is mate.</p>
+                  <p class="tutor__next"><b>Next time</b> When a piece is offered for free, look first at what your opponent’s last move attacks.</p>
+                  <p class="tutor__src">From the evidence for this move: Stockfish 19 at depth 20, and the rules check on f7.</p>
+                </div>
+              </div>
+            </div>
+            <figcaption>Sample text written for this page. The tutor that will write these is still in development.</figcaption>
+          </figure>
+        </li>
+        <li class="step step--branch">
+          <div class="step__node" aria-hidden="true">3.</div>
+          <div class="step__text">
+            <h3>Branch</h3>
+            <p>Ask “what if?” and play it. Your line is saved as a branch of the game, a branch can have branches of its own, and each note stays on the position where you wrote it.</p>
+            <p class="tag tag--live">Works today</p>
+          </div>
+          <figure class="step__media">
+            <div class="mock">
+              <p class="mock__bar"><span>Variations</span><b>Move 5</b></p>
+              <div class="mock__body">
+                <div class="tree">
+                  <p class="tree__row"><span class="tree__tag">Game</span><span class="moves"><!-- @moves main --></span></p>
+                  <p class="tree__row tree__row--branch"><span class="tree__tag">Your line</span><span class="moves"><!-- @moves branch --></span></p>
+                </div>
+                <div class="branchview">
+<!-- @board branch -->
+                  <div class="branchview__side">
+                    <p class="eval"><span class="eval__num">+2.3</span> <span class="eval__who">for White</span></p>
+                    <p class="eval__src">Stockfish 19, depth 20. An estimate.</p>
+                    <p class="pin"><span class="pin__head">Your note</span>Take the knight. It was the piece attacking f7. A pawn down, but still a game.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <figcaption>Your line sits next to the game, with your note on the position where you wrote it.</figcaption>
+          </figure>
+        </li>
+        <li class="step step--return">
+          <div class="step__node" aria-hidden="true">4.</div>
+          <div class="step__text">
+            <h3>Return</h3>
+            <p>Go back to the actual game whenever you like. The game report keeps your key moves in order, so you can move on to the next moment that mattered.</p>
+            <p class="tag tag--live">Works today</p>
+          </div>
+          <figure class="step__media">
+            <div class="mock">
+              <p class="mock__bar"><span>Your game</span><b>Back on move 5</b></p>
+              <div class="mock__body">
+                <p class="game moves"><!-- @moves game --></p>
+                <div class="keymove">
+                  <p class="keymove__head">Key moment</p>
+                  <p class="keymove__move"><strong>5…<!-- @san Bxd1 --><span class="mock__flag">??</span></strong> Missed the mate threat on f7</p>
+                  <p class="keymove__meta">1 saved line · 1 note</p>
+                </div>
+                <p class="mock__actions"><span class="mock__btn"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M6 4L2.5 7.5 6 11M3 7.5h7a3.5 3.5 0 0 1 0 7H8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Back to the game</span></p>
+              </div>
+            </div>
+            <figcaption>Back in the game, with the key moment marked and your line saved under it.</figcaption>
+          </figure>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--felt who" id="who" aria-labelledby="who-title">
+    <div class="wrap who__grid">
+      <div>
+        <p class="eyebrow eyebrow--felt">Who it’s for</p>
+        <h2 id="who-title" class="display-2">Adults rated about 800 to 1600 who already review their games.</h2>
+      </div>
+      <div class="who__lists">
+        <div>
+          <h3 class="who__head">It’s probably for you if</h3>
+          <ul class="ticks">
+            <li>You open the engine after a loss and the best move still doesn’t make sense.</li>
+            <li>You would rather understand one mistake properly than skim through ten.</li>
+            <li>You play online or over the board and train on your own time.</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="who__head">It isn’t built for</h3>
+          <ul class="crosses">
+            <li>Help during a live game. It analyses finished games, positions you set up, and practice games against its own computer opponents.</li>
+            <li>Memorising opening theory. Other tools do that well.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--paper status" id="status" aria-labelledby="status-title">
+    <div class="wrap status__grid">
+      <div class="status__copy">
+        <p class="eyebrow">Status</p>
+        <h2 id="status-title" class="display-2">What works today, and what doesn’t yet.</h2>
+        <p class="status__intro">AskTheMove runs today as a private build in the browser. The beta opens when the tutor is ready for real games.</p>
+      </div>
+      <ul class="ledger">
+        <li><span class="ledger__item">Play computer opponents at a strength you choose</span><span class="tag tag--live">Works today</span></li>
+        <li><span class="ledger__item">Full game review with Stockfish evidence and key moves</span><span class="tag tag--live">Works today</span></li>
+        <li><span class="ledger__item">Saved variations and notes, branching from any move</span><span class="tag tag--live">Works today</span></li>
+        <li><span class="ledger__item">Import a game as PGN, or set up any position</span><span class="tag tag--live">Works today</span></li>
+        <li><span class="ledger__item">The Claude tutor that explains the evidence in plain language</span><span class="tag tag--dev">In development</span></li>
+        <li><span class="ledger__item">Beta invites, in small groups, starting with this waitlist</span><span class="tag tag--next">Next</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--paper faq" id="faq" aria-labelledby="faq-title">
+    <div class="wrap faq__grid">
+      <div>
+        <p class="eyebrow">FAQ</p>
+        <h2 id="faq-title" class="display-2">Questions</h2>
+        <p class="faq__contact">Something else? Email <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>.</p>
+      </div>
+      <div class="faq__list">
+        <details>
+          <summary>How much does it cost?</summary>
+          <p>Nothing during the beta. Pricing after the beta isn’t decided yet. You’ll hear about it well before anything costs money, and nothing is charged unless you choose to pay.</p>
+        </details>
+        <details>
+          <summary>When does the beta start?</summary>
+          <p>Invites go out in small groups once the tutor is ready for real games. There’s no fixed date yet. The waitlist is how you’ll hear first.</p>
+        </details>
+        <details>
+          <summary>What devices does it work on?</summary>
+          <p>It runs in a web browser on a desktop, laptop or phone. There’s nothing to install.</p>
+        </details>
+        <details>
+          <summary>Where do the explanations come from?</summary>
+          <p>Stockfish, a free and open-source chess engine, searches the position. A chess rules library checks legality, material and every line that is shown. Claude, an AI model made by Anthropic, then writes the explanation from that evidence. The tutor is built to explain only what the evidence supports.</p>
+        </details>
+        <details>
+          <summary>Can I use it with games from other sites?</summary>
+          <p>Yes. Paste the PGN of any finished game. Most chess sites can export one.</p>
+        </details>
+        <details>
+          <summary>Can I use it during a game?</summary>
+          <p>No. It analyses finished games, positions you set up, and practice games against its own computer opponents. It won’t help you in a live game against another person.</p>
+        </details>
+        <details>
+          <summary>What happens to my email?</summary>
+          <p>It’s stored in a Cloudflare D1 database and used only to send beta news. It isn’t sold or shared. Ask for it to be deleted at any time. The <a href="/privacy/">privacy notice</a> has the details.</p>
+        </details>
+        <details>
+          <summary>Who is building it?</summary>
+          <p>Prax, an independent developer in India. Questions and ideas go straight to <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta" aria-labelledby="cta-title">
+    <div class="cta__edge" aria-hidden="true"></div>
+    <div class="wrap cta__inner">
+      <h2 id="cta-title" class="display-2 cta__title">Bring the game you still don’t understand.</h2>
+      <p class="cta__body">Join the waitlist and you’ll get an email when your beta invite is ready. Free during the beta.</p>
+      <a class="btn btn--go btn--large" href="#join" data-focus-join>Join the waitlist</a>
+    </div>
+  </section>
+</main>
+<!-- @include footer -->
+{{TURNSTILE_SCRIPT}}
+<script type="module" src="/assets/app.js"></script>
+</body>
+</html>
