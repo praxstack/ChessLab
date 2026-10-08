@@ -29,7 +29,7 @@ Rules:
 2. Do not say that a piece is defended, attacked, hanging or trapped, that material is won or lost, or that a threat exists, unless the captures, checks and material in the evidence show it. If the evidence does not show the reason, say that the engine evidence does not show it.
 3. Do not invent continuations, alternative moves or move orders. Describe lines in the order given.
 4. A line is a sample at the stated search limits, not a forced outcome. Never call a line forced. Say "the engine's line" or "at this search depth".
-5. Mention a mate in N only when the evidence contains a mate score with that N.
+5. Mention mate or checkmate only when the evidence contains a mate score or a checkmating move, and only for the side it shows mating. Mention a mate in N only when that side has a mate score with that N, for example "mate in 2 for White".
 6. Do not give numbers that are not in the evidence.
 
 Write for the learner, in the second person where natural. Use at most 110 words in at most two short paragraphs: first what happened, then the idea to remember. No headings, lists, tables or markdown other than the [[move]] brackets. When the learner asked about a move, answer that question in the first sentence.`;
@@ -38,8 +38,9 @@ const failure = (status, message) => Object.assign(new Error(message), {status})
 const sideName = color => color === 'w' ? 'White' : 'Black';
 const uciOf = move => move.from + move.to + (move.promotion || '');
 
+// Check and mate markers are facts about the board, so they must match the evidence; ! and ? are only annotations.
 export function normalizeSan(value) {
-  return String(value).trim().replace(/^0-0-0/, 'O-O-O').replace(/^0-0/, 'O-O').replace(/(?:e\.p\.)$/, '').replace(/[+#!?]+$/, '');
+  return String(value).trim().replace(/^0-0-0/, 'O-O-O').replace(/^0-0/, 'O-O').replace(/[!?]+$/, '').replace(/(?:e\.p\.)$/, '');
 }
 
 function material(board) {
@@ -110,18 +111,66 @@ export function buildEvidence(analysis, {moves = [], initialFen = null, variant,
   const allow = san => allowed.set(normalizeSan(san), san);
   for (const line of candidateLines) line.moves.forEach(move => allow(move.san));
   if (played) { allow(played.san); played.engineReplyLine?.forEach(move => allow(move.san)); }
-  const mateValues = new Set([...lines.map(line => line.score), analysis.played?.afterScore].filter(score => score?.type === 'mate').map(score => Math.abs(score.value)));
+  // Which side the evidence shows mating, and in how many moves when the engine gave a mate score.
+  const mates = {scores:new Set(), sides:new Set()};
+  for (const score of [...lines.map(line => line.score), analysis.played?.afterScore]) {
+    if (score?.type !== 'mate' || !Number.isFinite(score.value)) continue;
+    const side = score.value > 0 ? 'White' : 'Black';
+    mates.scores.add(`${side} ${Math.abs(score.value)}`); mates.sides.add(side);
+  }
+  for (const move of [...candidateLines.flatMap(line => line.moves), ...(played ? [played, ...(played.engineReplyLine ?? [])] : [])]) if (move.checkmate) mates.sides.add(move.side);
   const best = candidateLines[0]?.moves[0]?.san ?? null;
   let deterministic = evidence.verifiedSummary;
   if (asked && played && best) deterministic = `${deterministic} The engine preferred ${best} at these limits${candidateLines[0].score?.pawns ? ` (${candidateLines[0].score.pawns})` : ''}.`.trim();
-  return {evidence, allowed, mateValues, deterministic, best, subject:played?.san ?? best, explainable:Boolean(best || played)};
+  return {evidence, allowed, mates, deterministic, best, subject:played?.san ?? best, explainable:Boolean(best || played)};
 }
 
 const BRACKETED = /\[\[([^[\]\n]{1,16})\]\]/g;
 // Unambiguous SAN outside brackets. Bare squares such as "e4" read as squares and stay unchecked.
 const SAN_LIKE = /(?<![A-Za-z0-9])(?:O-O-O|O-O|0-0-0|0-0|[KQRBN][a-h]?[1-8]?x?[a-h][1-8](?:=[QRBN])?[+#]?|[a-h]x[a-h][1-8](?:=[QRBN])?[+#]?|[a-h][18]=[QRBN][+#]?|[a-h][1-8][+#])(?![A-Za-z0-9])/g;
 
-export function verifyAnswer(text, {allowed, mateValues}) {
+const NUMBER_WORDS = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
+const MATE_WORD = /\b(?:check)?mat(?:e|es|ed|ing)\b/gi;
+const MATE_COUNT = new RegExp(`^[\\s-]+in[\\s-]+(\\d+|${NUMBER_WORDS.join('|')})\\b`, 'i');
+// "mate in 2 for White", "checkmate delivered by Black", "mate against Black".
+const NAMED_AFTER = /^(?:\s+[\w'-]+){0,4}?\s+(for|by|against)\s+(white|black)\b/i;
+// Words between a side and a mate word that make that side the one being mated: "Black allows mate".
+const MATED_CUE = /\b(?:allow(?:s|ed|ing)?|permit(?:s|ted|ting)?|fac(?:e|es|ed|ing)|suffer(?:s|ed|ing)?|avoid(?:s|ed|ing)?|prevent(?:s|ed|ing)?|stop(?:s|ped|ping)?|block(?:s|ed|ing)?|escap(?:e|es|ed|ing)|defen(?:d|ds|ded|ding|ce|se)|los(?:e|es|ing)\s+to|threatened\s+with|into|against)\b/i;
+const sideOf = name => /^w/i.test(name) ? 'White' : 'Black';
+const opponent = side => side === 'White' ? 'Black' : 'White';
+
+// The side a mate word credits with mating, or null when the sentence does not say.
+function matingSide(sentence, match) {
+  const word = match[0], after = sentence.slice(match.index + word.length), before = sentence.slice(0, match.index);
+  const named = NAMED_AFTER.exec(after);
+  if (named) return named[1].toLowerCase() === 'against' ? opponent(sideOf(named[2])) : sideOf(named[2]);
+  const last = [...before.matchAll(/\b(white|black)\b/gi)].at(-1);
+  if (!last) return null;
+  const gap = before.slice(last.index + last[0].length);
+  // A side named several words earlier usually belongs to another clause.
+  if ((gap.match(/[a-z]+/gi)?.length ?? 0) > 4) return null;
+  const mated = /ed$/i.test(word) ? !/\b(?:has|have|had)\s*$/i.test(gap) : MATED_CUE.test(gap);
+  return mated ? opponent(sideOf(last[1])) : sideOf(last[1]);
+}
+
+// Every mention of mate must agree with the evidence. The side it credits, or else the only side the
+// evidence shows mating, needs mate evidence, and "mate in N" needs that side's engine mate score of N.
+// Mate wording that fits neither side is withheld; a misread harmless phrase only costs a fallback.
+function mateProblems(plain, mates) {
+  const problems = [];
+  for (const sentence of plain.split(/[.;:!?\n]+/)) {
+    for (const match of sentence.matchAll(MATE_WORD)) {
+      const count = MATE_COUNT.exec(sentence.slice(match.index + match[0].length))?.[1].toLowerCase();
+      const moves = count === undefined ? null : /^\d+$/.test(count) ? Number(count) : NUMBER_WORDS.indexOf(count) + 1;
+      const side = matingSide(sentence, match), candidates = side ? [side] : [...mates.sides];
+      const verified = candidates.length === 1 && mates.sides.has(candidates[0]) && (moves === null || mates.scores.has(`${candidates[0]} ${moves}`));
+      if (!verified) problems.push(`${match[0]}${moves === null ? '' : ` in ${moves}`}${side ? ` for ${side}` : ''}`);
+    }
+  }
+  return problems;
+}
+
+export function verifyAnswer(text, {allowed, mates}) {
   const problems = [], cited = [];
   for (const match of text.matchAll(BRACKETED)) {
     const key = normalizeSan(match[1]);
@@ -131,7 +180,7 @@ export function verifyAnswer(text, {allowed, mateValues}) {
   const plain = text.replace(BRACKETED, ' ');
   if (/\[\[|\]\]/.test(plain)) problems.push('unbalanced move brackets');
   for (const match of plain.matchAll(SAN_LIKE)) if (!allowed.has(normalizeSan(match[0]))) problems.push(match[0]);
-  for (const match of plain.matchAll(/\bmate in (\d+)/gi)) if (!mateValues.has(Number(match[1]))) problems.push(match[0]);
+  problems.push(...mateProblems(plain, mates));
   return {ok:problems.length === 0, problems, cited, text:text.replace(BRACKETED, '$1').trim()};
 }
 
@@ -250,8 +299,10 @@ export function createCoach({client, config = coachConfig(), nowMs = Date.now, l
       const engineAnswer = reason => ({...base, source:'engine', text:bundle.deterministic, citedMoves:[], fallbackReason:reason});
       if (!bundle.explainable) return engineAnswer('no_evidence');
       if (!claude) return engineAnswer('not_configured');
-      if (!takeQuota(userId)) return engineAnswer('rate_limited');
+      // Check capacity before quota so a busy fallback costs the learner nothing. Nothing awaits between
+      // this check and inFlight++, so concurrent requests cannot both pass it.
       if (inFlight >= maxConcurrent) return engineAnswer('busy');
+      if (!takeQuota(userId)) return engineAnswer('rate_limited');
       const task = asked ? `Task: the learner asks "why not [[${asked.san}]]?" Answer from the evidence, comparing it with the engine's first candidate line.`
         : bundle.evidence.playedMove ? `Task: explain the played move [[${bundle.evidence.playedMove.san}]] to the learner, comparing it with the engine's first candidate line.`
         : `Task: explain the engine's first candidate move [[${bundle.best}]] in this position to the learner.`;

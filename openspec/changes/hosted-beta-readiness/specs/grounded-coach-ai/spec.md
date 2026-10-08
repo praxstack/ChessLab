@@ -16,11 +16,15 @@ The server SHALL replay the submitted history, obtain bounded engine analysis an
 - **THEN** the explanation reuses that same account's evidence for that exact position rather than a fresh search with different lines
 
 ### Requirement: AI-002 Server verification of cited moves
-Every move the answer cites SHALL appear in the supplied evidence, and any "mate in N" claim SHALL match an engine mate score in it. Piece moves, captures, castling, promotions and checks written outside the required citation markers SHALL also count as citations. Bare square names are not checked. An answer that fails any check, is empty, too long, truncated or refused MUST be withheld and replaced by the deterministic engine summary.
+Every move the answer cites SHALL appear in the supplied evidence with the same check and mate markers; only `!` and `?` annotations are ignored. Any mention of mate SHALL credit a side that the evidence shows mating, through an engine mate score or a checkmating move, and a "mate in N" claim SHALL match that side's engine mate score. Mate wording that names no side SHALL pass only when the evidence shows exactly one side mating. Piece moves, captures, castling, promotions and checks written outside the required citation markers SHALL also count as citations. Bare square names are not checked. An answer that fails any check, is empty, too long, truncated or refused MUST be withheld and replaced by the deterministic engine summary.
 
 #### Scenario: Invented move
 - **WHEN** the model's answer cites a legal-looking move that is not in the evidence
 - **THEN** the learner receives the deterministic engine summary with an "unverified claims" reason, and the model text is not shown
+
+#### Scenario: Invented check or mate
+- **WHEN** the answer adds a check or mate marker to an evidenced move, or credits a mate to the side the engine shows being mated
+- **THEN** the answer is withheld and the deterministic engine summary is shown
 
 ### Requirement: AI-003 Why-not follow-up from computed evidence
 A follow-up SHALL name one move, in SAN or UCI, optionally after "why not". The server SHALL check that move is legal in the position before any model call. It SHALL then compute engine evidence for that move, its classification, loss and best reply line, and only then request an explanation. Illegal or unparseable moves MUST be rejected with an explicit error and no model call.

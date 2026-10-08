@@ -119,5 +119,5 @@ The marketing site can live at the apex domain or `www` independently. Both are 
 
 - No password reset, email verification or account deletion flow. Testers who forget a password need a manual reset.
 - Rate limits and the AI quota are in memory and reset on restart. Each account allows 10 sign-in attempts per 15 minutes. Someone who knows a username can use that limit to lock its owner out for 15 minutes.
-- The server checks that every move Claude cites appears in the evidence and that any "mate in N" matches the engine. It does not check move order or claims about squares and defenders; the prompt alone governs those.
+- The server checks that every move Claude cites appears in the evidence with the same check and mate markers, and that any mention of mate matches the side and distance the engine reported. It reads which side a mate sentence credits from simple wording patterns, so unusual phrasing can be misread. It does not check move order or claims about squares and defenders; the prompt alone governs those.
 - Nothing here has been load-tested. Analysis runs two Stockfish searches at once and bot moves run one at a time. Up to eight more requests queue; beyond that the server answers "busy".
