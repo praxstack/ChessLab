@@ -1,0 +1,12 @@
+# Cloudflare Pages project for the AskTheMove beta waitlist site.
+# See README.md for the step-by-step deploy guide.
+name = "askthemove"
+compatibility_date = "2025-09-01"
+pages_build_output_dir = "public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "askthemove-waitlist"
+# Replace with the id printed by: npx wrangler d1 create askthemove-waitlist
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"

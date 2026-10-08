@@ -1,0 +1,23 @@
+{
+  "name": "askthemove-site",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AskTheMove public beta waitlist site (Cloudflare Pages + Pages Functions + D1).",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:check": "node scripts/build.mjs --check",
+    "dev": "wrangler pages dev",
+    "test": "node --test --no-warnings=ExperimentalWarning \"test/*.test.js\"",
+    "db:migrate:local": "wrangler d1 migrations apply askthemove-waitlist --local",
+    "db:migrate:remote": "wrangler d1 migrations apply askthemove-waitlist --remote",
+    "deploy": "node scripts/build.mjs --check && wrangler pages deploy"
+  },
+  "devDependencies": {
+    "chess.js": "1.4.0",
+    "wrangler": "4.136.3"
+  }
+}
