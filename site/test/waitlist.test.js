@@ -28,13 +28,44 @@ test('valid signup returns ok and stores one normalised row', async () => {
   assert.ok(!JSON.stringify(row).includes('203.0.113.7'), 'raw IP must not be stored');
 });
 
-test('duplicate email returns already:true and does not add a row', async () => {
+test('duplicate email gets the same answer as a new one and adds no row', async () => {
   const env = makeEnv();
-  await call(postJson(good), env);
+  const first = await call(postJson(good), env);
   const res = await call(postJson({ ...good, email: '  LEARNER@gmail.com ' }), env);
-  assert.equal(res.status, 200);
-  assert.deepEqual(await res.json(), { ok: true, already: true });
+  assert.equal(res.status, first.status);
+  assert.deepEqual(await res.json(), await first.json());
   assert.equal(env.DB.rows('waitlist').length, 1);
+});
+
+test('without IP_HASH_SALT sign-ups are refused and nothing is stored', async () => {
+  const env = makeEnv({ IP_HASH_SALT: '' });
+  const res = await call(postJson(good), env);
+  assert.equal(res.status, 503);
+  assert.equal((await res.json()).ok, false);
+  assert.equal(env.DB.rows('waitlist').length, 0);
+  assert.equal(env.DB.rows('rate_limits').length, 0);
+
+  const form = await call(postForm({ email: 'form@gmail.com', consent: 'on' }), env);
+  assert.equal(form.headers.get('location'), '/?error=server#join-error');
+  assert.equal(env.DB.rows('waitlist').length, 0);
+});
+
+test('multipart posts keep their case-sensitive boundary', async () => {
+  const env = makeEnv();
+  const fd = new FormData();
+  fd.set('email', 'multi@gmail.com');
+  fd.set('consent', 'on');
+  const encoded = new Request('https://example.invalid/', { method: 'POST', body: fd });
+  const type = encoded.headers.get('content-type');
+  const boundary = type.split('boundary=')[1];
+  const upper = 'AaBb' + boundary;
+  const body = (await encoded.text()).split(boundary).join(upper);
+  const res = await call(postJson({}, { headers: { 'content-type': `multipart/form-data; boundary=${upper}` }, raw: body }), env);
+  assert.equal(res.status, 200);
+  assert.equal(env.DB.rows('waitlist')[0].email, 'multi@gmail.com');
+
+  const broken = await call(postJson({}, { headers: { 'content-type': 'multipart/form-data; boundary=missing' }, raw: 'not multipart' }), env);
+  assert.equal(broken.status, 400);
 });
 
 test('honeypot returns 200 and stores nothing at all', async () => {
@@ -129,15 +160,15 @@ test('plain HTML form posts are redirected back to the page', async () => {
   const env = makeEnv();
   const ok = await call(postForm({ email: 'form@gmail.com', consent: 'on', rating: 'not-sure' }), env);
   assert.equal(ok.status, 303);
-  assert.equal(ok.headers.get('location'), '/?joined=1#join');
+  assert.equal(ok.headers.get('location'), '/?joined=1#joined');
   assert.equal(env.DB.rows('waitlist')[0].email, 'form@gmail.com');
 
   const again = await call(postForm({ email: 'form@gmail.com', consent: 'on' }), env);
-  assert.equal(again.headers.get('location'), '/?joined=1#join');
+  assert.equal(again.headers.get('location'), '/?joined=1#joined');
 
   const bad = await call(postForm({ email: 'nope', consent: 'on' }), env);
   assert.equal(bad.status, 303);
-  assert.equal(bad.headers.get('location'), '/?error=email#join');
+  assert.equal(bad.headers.get('location'), '/?error=email#join-error');
 });
 
 test('unreadable and oversized bodies are rejected', async () => {

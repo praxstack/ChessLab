@@ -51,8 +51,10 @@
           </div>
           {{TURNSTILE_WIDGET}}
           <p class="slip__status join__status" id="join-status" role="status" aria-live="polite"></p>
+          <p class="slip__status slip__result" id="joined">You’re on the list. We’ll email you when your beta invite is ready.</p>
+          <p class="slip__status slip__result is-error" id="join-error">We couldn’t add you to the list. Check that your email address is complete and the box is ticked, then try again. If it still fails, wait ten minutes and try again.</p>
           <p class="slip__fine">Your email is used only for beta news. <a href="/privacy/">Privacy notice</a>.</p>
-          <noscript><p class="slip__fine">Without JavaScript the form still works: you’ll come back to this page after joining.</p></noscript>
+          <noscript><p class="slip__fine">Without JavaScript the form still works: you’ll come back to this page with the result.</p></noscript>
         </form>
         <div class="slip__done" id="join-done" hidden>
           <i class="glyph glyph--tick" data-mark="tick"></i>
@@ -271,7 +273,7 @@
       </details>
       <details>
         <summary><span>Where do the explanations come from?</span><i class="glyph glyph--plus" data-mark="plus"></i></summary>
-        <p>Stockfish, a free and open-source chess engine, searches the position. A chess rules library checks legality, material and every line that is shown. Claude, an AI model made by Anthropic, then writes the explanation from that evidence. The tutor is built to explain only what the evidence supports.</p>
+        <p>Stockfish, a free and open-source chess engine, searches the position. A chess rules library checks legality, material and every line that is shown. In the beta, Claude, an AI model made by Anthropic, writes the explanation from that evidence, and every move it mentions is checked against the evidence before you see it. The tutor is built to explain only what the evidence supports.</p>
       </details>
       <details>
         <summary><span>Can I use it with games from other sites?</span><i class="glyph glyph--plus" data-mark="plus"></i></summary>

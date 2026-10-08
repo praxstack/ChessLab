@@ -12,18 +12,13 @@ export async function sha256Hex(text) {
   return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-const FALLBACK_SALT = 'askthemove-unset-salt';
-let warnedAboutSalt = false;
-
-/** Salted SHA-256 of an IP address. The raw IP is never stored. */
+/**
+ * Salted SHA-256 of an IP address. The raw IP is never stored. There is no
+ * fallback salt: a known salt would let anyone reverse the hash by trying
+ * every IPv4 address, so callers must refuse to store anything without one.
+ */
 export async function hashIp(ip, salt) {
-  if (!salt) {
-    if (!warnedAboutSalt) {
-      console.warn('IP_HASH_SALT is not set; using a fixed fallback salt. Set it as a secret.');
-      warnedAboutSalt = true;
-    }
-    salt = FALLBACK_SALT;
-  }
+  if (!salt) throw new Error('IP_HASH_SALT is not set');
   return sha256Hex(`${salt}:${ip || 'unknown'}`);
 }
 

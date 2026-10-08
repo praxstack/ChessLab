@@ -83,6 +83,18 @@ test('index.html: the waitlist form works without JavaScript and every field is 
   assert.match(body, /<button class="[^"]*\bjoin__submit\b[^"]*" type="submit">/);
 });
 
+test('index.html: a plain form post lands on a result the page shows without JavaScript', async () => {
+  const { REDIRECTS } = await import('../src/lib/config.js');
+  const html = read('index.html');
+  const css = read('assets/app.css');
+  for (const location of [REDIRECTS.joined, REDIRECTS.error('email')]) {
+    const id = location.split('#')[1];
+    assert.match(html, new RegExp(`<p class="[^"]*\\bslip__result\\b[^"]*" id="${id}">[^<]+</p>`), `no result note #${id}`);
+  }
+  assert.match(css, /html:not\(\.has-js\) \.slip__result:target\s*\{\s*display: block;/);
+  assert.match(read('assets/app.js'), /html\.classList\.add\('has-js'\)/);
+});
+
 test('index.html: the walkthrough is pre-rendered with a board, a note and the score sheet', () => {
   const html = read('index.html');
   assert.match(html, /<div class="board" role="img" aria-label="Chessboard, viewed from Black's side\./);

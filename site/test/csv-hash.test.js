@@ -36,6 +36,11 @@ test('IP hashing is salted, stable and never returns the raw IP', async () => {
   assert.ok(!a.includes('198.51'));
 });
 
+test('IP hashing refuses to run without a salt', async () => {
+  await assert.rejects(() => hashIp('198.51.100.4', ''), /IP_HASH_SALT/);
+  await assert.rejects(() => hashIp('198.51.100.4', undefined), /IP_HASH_SALT/);
+});
+
 test('timing-safe compare', async () => {
   assert.equal(await timingSafeEqualText('secret-token', 'secret-token'), true);
   assert.equal(await timingSafeEqualText('secret-token', 'secret-tokeN'), false);

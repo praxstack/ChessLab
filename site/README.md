@@ -139,6 +139,8 @@ npx wrangler d1 execute askthemove-waitlist --remote \
   --command "DELETE FROM waitlist WHERE email = 'person@example.com'"
 ```
 
+Type the address in lower case, as it is stored. If it contains an apostrophe, write it twice inside the quotes: `o'connor@example.co` becomes `'o''connor@example.co'`.
+
 ## 5. Turn on Turnstile (only if bots become a problem)
 
 The form already has a hidden honeypot field and a limit of 5 sign-ups per connection every 10 minutes. If spam still gets through, add Cloudflare Turnstile:

@@ -9,7 +9,8 @@ export async function readBody(request, maxBytes) {
   const raw = await request.text();
   if (new TextEncoder().encode(raw).length > maxBytes) throw new BodyError('too-large');
 
-  const type = (request.headers.get('content-type') || '').toLowerCase();
+  const rawType = request.headers.get('content-type') || '';
+  const type = rawType.toLowerCase();
   if (type.includes('application/json')) {
     let parsed;
     try {
@@ -26,7 +27,13 @@ export async function readBody(request, maxBytes) {
     return Object.fromEntries(new URLSearchParams(raw));
   }
   if (type.includes('multipart/form-data')) {
-    const form = await new Response(raw, { headers: { 'content-type': type } }).formData();
+    // The boundary is case-sensitive, so pass the header through unchanged.
+    let form;
+    try {
+      form = await new Response(raw, { headers: { 'content-type': rawType } }).formData();
+    } catch {
+      throw new BodyError('unreadable');
+    }
     const out = {};
     for (const [key, value] of form) if (typeof value === 'string') out[key] = value;
     return out;

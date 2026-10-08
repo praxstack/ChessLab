@@ -21,8 +21,9 @@ export const LIMITS = Object.freeze({
   rateLimitRetentionMs: 24 * 60 * 60 * 1000,
 });
 
-// Where a plain (no-JavaScript) form post lands afterwards.
+// Where a plain (no-JavaScript) form post lands afterwards. The fragment targets
+// a result note the page shows with CSS alone; the query is for app.js.
 export const REDIRECTS = Object.freeze({
-  joined: '/?joined=1#join',
-  error: (code) => `/?error=${encodeURIComponent(code)}#join`,
+  joined: '/?joined=1#joined',
+  error: (code) => `/?error=${encodeURIComponent(code)}#join-error`,
 });

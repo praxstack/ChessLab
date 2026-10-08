@@ -75,7 +75,7 @@ export function makeEnv(overrides = {}) {
 
 const ORIGIN = 'https://askthemove.pages.dev';
 
-export function postJson(body, { ip = '203.0.113.7', origin = ORIGIN, headers = {} } = {}) {
+export function postJson(body, { ip = '203.0.113.7', origin = ORIGIN, headers = {}, raw } = {}) {
   return new Request(`${ORIGIN}/api/waitlist`, {
     method: 'POST',
     headers: {
@@ -85,7 +85,7 @@ export function postJson(body, { ip = '203.0.113.7', origin = ORIGIN, headers = 
       ...(origin ? { origin } : {}),
       ...headers,
     },
-    body: JSON.stringify(body),
+    body: raw ?? JSON.stringify(body),
   });
 }
 

@@ -31,8 +31,7 @@ export async function handleWaitlistPost(request, env, { now = Date.now(), fetch
   const asJson = wantsJson(request);
   const fail = (status, error, code, headers) =>
     asJson ? json(status, { ok: false, error }, headers) : redirect(REDIRECTS.error(code));
-  const succeed = (extra = {}) =>
-    asJson ? json(200, { ok: true, ...extra }) : redirect(REDIRECTS.joined);
+  const succeed = () => (asJson ? json(200, { ok: true }) : redirect(REDIRECTS.joined));
 
   try {
     if (!isAllowedOrigin(request)) return fail(403, ERRORS.origin, 'origin');
@@ -51,6 +50,11 @@ export async function handleWaitlistPost(request, env, { now = Date.now(), fetch
     // Bots fill the hidden "website" field. Pretend it worked and store nothing.
     if (isHoneypotFilled(body.website)) return succeed();
 
+    // Without the secret salt the stored hashes could be reversed, so store nothing.
+    if (!env.IP_HASH_SALT) {
+      console.error('IP_HASH_SALT is not set; refusing sign-ups until it is.');
+      return fail(503, ERRORS.server, 'server');
+    }
     const ip = clientIp(request);
     const ipHash = await hashIp(ip, env.IP_HASH_SALT);
     const attempts = await countSubmission(env.DB, ipHash, now);
@@ -84,7 +88,7 @@ export async function handleWaitlistPost(request, env, { now = Date.now(), fetch
     }
     const stamp = new Date(now).toISOString();
 
-    const result = await env.DB.prepare(
+    await env.DB.prepare(
       'INSERT INTO waitlist (email, product, fields, source, utm, consent_at, created_at, ip_hash) ' +
         'VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (email) DO NOTHING',
     )
@@ -100,8 +104,9 @@ export async function handleWaitlistPost(request, env, { now = Date.now(), fetch
       )
       .run();
 
-    const inserted = Number(result && result.meta ? result.meta.changes : 0) > 0;
-    return inserted ? succeed() : succeed({ already: true });
+    // A new and an existing address get the same answer, so the form can't be
+    // used to find out who has signed up.
+    return succeed();
   } catch (error) {
     console.error('waitlist signup failed', error);
     return fail(500, ERRORS.server, 'server');

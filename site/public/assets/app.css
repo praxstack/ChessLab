@@ -730,6 +730,15 @@ p {
   color: var(--red);
 }
 
+/* After a plain form post (no JavaScript) the redirect targets one of these. */
+.slip__result {
+  display: none;
+}
+
+html:not(.has-js) .slip__result:target {
+  display: block;
+}
+
 .slip__fine {
   font-size: var(--text-small);
   color: var(--ink-2);

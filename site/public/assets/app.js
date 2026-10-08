@@ -301,6 +301,7 @@ function initWaitlist() {
   const doneBody = document.getElementById('join-done-body');
 
   form.noValidate = true;
+  html.classList.add('has-js');
 
   // Where the visitor came from: campaign tags and referrer, both optional.
   const params = new URLSearchParams(window.location.search);
@@ -332,10 +333,10 @@ function initWaitlist() {
     status.classList.remove('is-error');
   };
 
-  const showDone = (already, address) => {
+  const showDone = (address) => {
     form.hidden = true;
     done.hidden = false;
-    doneTitle.textContent = already ? 'You’re already on the list.' : 'You’re on the list.';
+    doneTitle.textContent = 'You’re on the list.';
     doneBody.textContent = address
       ? `We’ll email ${address} when your beta invite is ready.`
       : 'We’ll email you when your beta invite is ready.';
@@ -347,7 +348,7 @@ function initWaitlist() {
 
   // After a plain (no-fetch) form post, the server redirects back here.
   if (params.get('joined') === '1') {
-    showDone(false, '');
+    showDone('');
     history.replaceState(null, '', window.location.pathname + '#join');
   } else if (params.get('error')) {
     const code = params.get('error');
@@ -398,7 +399,7 @@ function initWaitlist() {
         /* non-JSON error page */
       }
       if (res.ok && body.ok) {
-        showDone(Boolean(body.already), value.toLowerCase());
+        showDone(value.toLowerCase());
         return;
       }
       const message = body.error || ERROR_MESSAGES.server;
