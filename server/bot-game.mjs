@@ -24,6 +24,7 @@ export function setupOptions(body, profiles) {
  if(!['w','b','random'].includes(color)||!Number.isInteger(level)||level<1||level>5||typeof engineId!=='string'||(title!==undefined&&(typeof title!=='string'||title.length>100)))fail('Choose a color, an available engine and a valid strength.');
  const profile=botId===null?null:resolveProfile(botId,profiles,body.rating);
  const rating=body.rating??profile?.rating??[400,800,1200,1800,2600][level-1];
+ // The picker offers ladder levels only (strengthChoices). Any target in range stays valid here so rematches of saved games from earlier rosters, such as 925, still start.
  if(!Number.isInteger(rating)||rating<(profile&&profile.rating<250?100:250)||rating>3200)fail('Choose a target rating between 250 and 3200.');
  const timeControl=body.timeControl??{initialSeconds:0,incrementSeconds:0};
  if(!timeControl||Array.isArray(timeControl)||!Number.isInteger(timeControl.initialSeconds)||!(timeControl.initialSeconds===0||(timeControl.initialSeconds>=60&&timeControl.initialSeconds<=3600))||!Number.isInteger(timeControl.incrementSeconds)||timeControl.incrementSeconds<0||timeControl.incrementSeconds>60||(timeControl.initialSeconds===0&&timeControl.incrementSeconds!==0))fail('Choose no clock, or 1–60 minutes with an increment of 0–60 seconds.');

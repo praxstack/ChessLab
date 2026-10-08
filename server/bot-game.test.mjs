@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {setupOptions,resolveProfile,beginClock,settleClock,finishMoveClock,undoTurn,crownsFor,adaptiveRating,attackedPieces} from './bot-game.mjs';
-import {strengthLadder,ladderLevel,engineControls} from '../shared/strength-ladder.js';
+import {strengthLadder,ladderLevel,engineControls,strengthChoices} from '../shared/strength-ladder.js';
 import {avatarSvg,avatarPath} from '../scripts/generate_bot_avatars.mjs';
 const profile={id:'test',name:'Test',rating:900,style:'balanced',adaptive:true};
 const make=(body={})=>({source:'bot',moves:[],result:null,...setupOptions({botId:'test',...body},[profile])});
@@ -53,6 +53,14 @@ test('every ladder level is a distinct engine setting',()=>{
  assert.equal(new Set(controls.map(c=>JSON.stringify(c))).size,strengthLadder.length);
  for(let i=1;i<controls.length;i++){assert.ok(controls[i].skill>=controls[i-1].skill);assert.ok(controls[i].sampledShare<=controls[i-1].sampledShare);assert.ok(controls[i].movetime>controls[i-1].movetime);}
  assert.deepEqual(engineControls(250),{skill:0,movetime:83,sampledShare:0.85});assert.equal(engineControls(1150).sampledShare,0);assert.equal(engineControls(2800).skill,20);
+});
+
+test('the strength picker offers only ladder levels, plus first moves for first-moves bots',()=>{
+ const bots=JSON.parse(readFileSync(new URL('./bot-profiles.json',import.meta.url)));
+ assert.deepEqual(strengthChoices(),strengthLadder,'raw engines use the ladder');
+ assert.deepEqual(strengthChoices(1050),strengthLadder);assert.ok(!strengthChoices(250).includes(275));
+ assert.deepEqual(strengthChoices(100),[100,...strengthLadder]);
+ for(const bot of bots){const choices=strengthChoices(bot.rating);assert.ok(choices.includes(bot.rating),bot.id);for(const rating of choices)assert.equal(setupOptions({botId:bot.id,rating},bots).rating,rating);}
 });
 
 test('games that name a bot from an earlier roster still start',()=>{
