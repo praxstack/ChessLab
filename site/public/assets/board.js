@@ -1,9 +1,15 @@
 // Board rendering helpers shared by the browser (app.js) and the static build
-// (scripts/build.mjs pre-renders the first step so the board shows without JavaScript).
+// (scripts/build.mjs pre-renders every board, so each one shows without JavaScript).
 // Pure functions that return HTML/SVG strings; no DOM access here.
+//
+// The board is drawn crisply, like a book diagram. The coach's marks on it are
+// hand-drawn strokes from ink.js, in board units: one square is 10 units, so
+// the overlay's viewBox is 0 0 80 80.
+import { arrow, cross, loop, seedFrom } from './ink.js';
 
 export const PIECE_BASE = '/assets/pieces/';
 const FILES = 'abcdefgh';
+const SQ = 10;
 
 export function squareXY(sq, orientation) {
   const file = FILES.indexOf(sq[0]);
@@ -45,80 +51,104 @@ export function piecesHTML(placement, orientation) {
     .join('');
 }
 
-export function coordsHTML(orientation) {
-  const files = orientation === 'white' ? FILES : [...FILES].reverse().join('');
+/** Rank numbers for the left margin of the diagram, top to bottom. */
+export function ranksHTML(orientation) {
   const ranks = orientation === 'white' ? '87654321' : '12345678';
-  let html = '';
-  for (let i = 0; i < 8; i += 1) {
-    // Label colour contrasts with the square it sits on: (x + y) even = light square.
-    html += `<span class="coord coord--file ${(i + 7) % 2 === 0 ? 'on-light' : 'on-dark'}" data-x="${i}">${files[i]}</span>`;
-    html += `<span class="coord coord--rank ${i % 2 === 0 ? 'on-light' : 'on-dark'}" data-y="${i}">${ranks[i]}</span>`;
-  }
-  return html;
+  return [...ranks].map((n) => `<span>${n}</span>`).join('');
 }
 
-/** Last-move highlights, square marks and the annotation badge. */
-export function overlaysHTML(step, orientation) {
-  let html = '';
-  for (const sq of step.last || []) {
-    const [x, y] = squareXY(sq, orientation);
-    html += `<span class="hl hl--last" data-x="${x}" data-y="${y}"></span>`;
-  }
-  for (const mark of step.marks || []) {
-    const [x, y] = squareXY(mark.sq, orientation);
-    html += `<span class="hl mk mk--${esc(mark.tone)}" data-x="${x}" data-y="${y}"></span>`;
-  }
-  if (step.badge) {
-    const [x, y] = squareXY(step.badge.sq, orientation);
-    html += `<span class="badge badge--${esc(step.badge.tone)}" data-x="${x}" data-y="${y}"><b>${esc(step.badge.text)}</b></span>`;
-  }
-  return html;
+/** File letters for the bottom margin of the diagram, left to right. */
+export function filesHTML(orientation) {
+  const files = orientation === 'white' ? FILES : [...FILES].reverse().join('');
+  return [...files].map((f) => `<span>${f}</span>`).join('');
 }
 
-const round = (n) => Math.round(n * 1000) / 1000;
-
-/** Geometry for one arrow in board units (one square = 1). Knight moves get an L-shaped arrow. */
-export function arrowGeometry(from, to, orientation, tone) {
-  const [fx, fy] = squareXY(from, orientation);
-  const [tx, ty] = squareXY(to, orientation);
-  const start = [fx + 0.5, fy + 0.5];
-  const end = [tx + 0.5, ty + 0.5];
-  const dx = tx - fx;
-  const dy = ty - fy;
-  const knight = (Math.abs(dx) === 1 && Math.abs(dy) === 2) || (Math.abs(dx) === 2 && Math.abs(dy) === 1);
-  const points = [start];
-  if (knight) points.push(Math.abs(dy) > Math.abs(dx) ? [start[0], end[1]] : [end[0], start[1]]);
-  const prev = points[points.length - 1];
-  const len = Math.hypot(end[0] - prev[0], end[1] - prev[1]);
-  const ux = (end[0] - prev[0]) / len;
-  const uy = (end[1] - prev[1]) / len;
-  const thin = tone === 'cover';
-  const head = thin ? 0.3 : 0.42;
-  const width = thin ? 0.28 : 0.44;
-  const tip = [end[0] - ux * 0.12, end[1] - uy * 0.12];
-  const neck = [tip[0] - ux * head, tip[1] - uy * head];
-  const shaft = [...points, neck];
-  const d = shaft.map((p, i) => `${i ? 'L' : 'M'}${round(p[0])} ${round(p[1])}`).join(' ');
-  const px = -uy * (width / 2);
-  const py = ux * (width / 2);
-  const headPoints = [
-    [tip[0], tip[1]],
-    [neck[0] + px, neck[1] + py],
-    [neck[0] - px, neck[1] - py],
-  ]
-    .map((p) => `${round(p[0])},${round(p[1])}`)
-    .join(' ');
-  return { d, head: headPoints };
-}
-
-export function arrowsSVG(arrows, orientation) {
-  return (arrows || [])
-    .map((a, i) => {
-      const g = arrowGeometry(a.from, a.to, orientation, a.tone);
-      return `<g class="arrow arrow--${esc(a.tone)}" data-i="${i}"><path d="${g.d}" pathLength="1"/><polygon points="${g.head}"/></g>`;
+/** The last move, marked with a highlighter swipe on its two squares. */
+export function lastHTML(step, orientation) {
+  return (step.last || [])
+    .map((sq) => {
+      const [x, y] = squareXY(sq, orientation);
+      return `<span class="hl" data-x="${x}" data-y="${y}"></span>`;
     })
     .join('');
 }
+
+/** "??" or "#", written in red pen in the corner of a square. */
+export function badgesHTML(step, orientation) {
+  if (!step.badge) return '';
+  const [x, y] = squareXY(step.badge.sq, orientation);
+  return `<span class="badge badge--${esc(step.badge.tone)}" data-x="${x}" data-y="${y}" data-write>${esc(step.badge.text)}</span>`;
+}
+
+const centre = (sq, o) => {
+  const [x, y] = squareXY(sq, o);
+  return [x * SQ + SQ / 2, y * SQ + SQ / 2];
+};
+
+const TONE = { threat: 'red', idea: 'blue', cover: 'graphite', danger: 'red', mate: 'red', covered: 'graphite' };
+
+/** Points for an arrow between two squares; a knight's move gets an L. */
+export function arrowPoints(from, to, orientation) {
+  const a = centre(from, orientation);
+  const b = centre(to, orientation);
+  const dx = b[0] - a[0];
+  const dy = b[1] - a[1];
+  const knight = (Math.abs(dx) === SQ && Math.abs(dy) === 2 * SQ) || (Math.abs(dx) === 2 * SQ && Math.abs(dy) === SQ);
+  const pts = [a];
+  if (knight) pts.push(Math.abs(dy) > Math.abs(dx) ? [a[0], b[1]] : [b[0], a[1]]);
+  pts.push(b);
+  // Start just off the piece's centre and stop short of the target's, like a hand would.
+  const nudge = (p, q, d) => {
+    const len = Math.hypot(q[0] - p[0], q[1] - p[1]) || 1;
+    return [p[0] + ((q[0] - p[0]) / len) * d, p[1] + ((q[1] - p[1]) / len) * d];
+  };
+  pts[0] = nudge(pts[0], pts[1], 1.8);
+  pts[pts.length - 1] = nudge(pts[pts.length - 1], pts[pts.length - 2], 1.4);
+  return pts;
+}
+
+const group = (cls, paths) =>
+  `<g class="${cls}">${paths.map((d) => `<path class="stroke" pathLength="1" d="${d}"/>`).join('')}</g>`;
+
+/**
+ * The coach's marks for one step, in drawing order: arrows, then circled
+ * squares, then crossed-out escape squares.
+ */
+export function inkMarks(step, orientation) {
+  const marks = [];
+  (step.arrows || []).forEach((a) => {
+    const seed = seedFrom(`${step.id}:${a.from}${a.to}`);
+    const paths = arrow(arrowPoints(a.from, a.to, orientation), { seed, head: a.tone === 'cover' ? 1.9 : 2.5 });
+    marks.push({ kind: 'arrow', tone: TONE[a.tone] || 'blue', svg: group(`mk mk--arrow tone--${TONE[a.tone] || 'blue'}`, paths) });
+  });
+  (step.marks || []).forEach((m) => {
+    const [cx, cy] = centre(m.sq, orientation);
+    const seed = seedFrom(`${step.id}:${m.sq}:${m.tone}`);
+    const tone = TONE[m.tone] || 'blue';
+    let paths;
+    if (m.tone === 'covered') {
+      paths = cross(cx, cy, 3.4, { seed });
+    } else if (m.tone === 'mate') {
+      paths = [loop(cx, cy, 4.9, 4.6, { seed, turns: 1.1 }), loop(cx, cy, 4.1, 3.8, { seed: seed + 9, turns: 1.05 })];
+    } else {
+      paths = [loop(cx, cy, 4.8, 4.5, { seed, turns: 1.14, tilt: -0.15 })];
+    }
+    marks.push({ kind: m.tone === 'covered' ? 'cross' : 'loop', tone, svg: group(`mk mk--${m.tone === 'covered' ? 'cross' : 'loop'} tone--${tone}`, paths) });
+  });
+  return marks;
+}
+
+export function inkSVG(step, orientation) {
+  return inkMarks(step, orientation)
+    .map((m) => m.svg)
+    .join('');
+}
+
+/**
+ * The teacher's red-blue pencil. Its tip sits at (0, 0) so app.js can move it
+ * along a stroke with a single translate. Hidden until something is drawn.
+ */
+export const PENCIL_SVG = `<g class="pencil" transform="translate(-40 -40)"><g class="pencil__body" transform="rotate(-38)"><path class="pencil__wood" d="M0 0 L-1.25 -3.6 L1.25 -3.6 Z"/><path class="pencil__lead" d="M0 0 L-0.5 -1.45 L0.5 -1.45 Z"/><rect class="pencil__barrel" x="-1.25" y="-15.5" width="2.5" height="11.9" rx="0.35"/><rect class="pencil__shine" x="-0.35" y="-15" width="0.5" height="10.8"/></g></g>`;
 
 /** SAN with a figurine for the piece letter, e.g. "Nxe5" -> [knight]xe5. */
 export function sanHTML(san) {

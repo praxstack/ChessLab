@@ -1,31 +1,22 @@
-<footer class="site-footer">
-  <div class="wrap site-footer__grid">
-    <div class="site-footer__brand">
+<footer class="colophon">
+  <div class="colophon__inner">
+    <div class="colophon__brand">
       <a class="brand" href="/" aria-label="AskTheMove home">
         <!-- @include mark -->
         <span class="brand__word">AskTheMove</span>
       </a>
-      <p>A chess coach that explains why.<br>Made in India by an independent developer.</p>
+      <p>A chess coach that explains why. Made in India by an independent developer.</p>
     </div>
-    <div>
-      <h2 class="site-footer__head">Contact</h2>
-      <p><a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a></p>
-    </div>
-    <div>
-      <h2 class="site-footer__head">Site</h2>
-      <ul class="site-footer__links">
-        <li><a href="/#join">Join the beta</a></li>
-        <li><a href="/privacy/">Privacy</a></li>
-        <li><a href="/terms/">Terms</a></li>
-      </ul>
-    </div>
-    <div class="site-footer__credits">
-      <h2 class="site-footer__head">Credits</h2>
-      <p>Chess pieces: the cburnett set by Colin M. L. Burnett, <a href="/assets/pieces/LICENSE.txt">GPLv2+</a>. Typefaces: Young Serif, Commissioner and Atkinson Hyperlegible Mono, <a href="/assets/fonts/OFL.txt">SIL Open Font License</a>.</p>
-    </div>
-  </div>
-  <div class="site-footer__base">
-    <p>© {{YEAR}} AskTheMove</p>
-    <p>No cookies. No trackers.</p>
+    <nav class="colophon__links" aria-label="Footer">
+      <a href="/#join">Join the beta</a>
+      <a href="/#how">How it works</a>
+      <a href="/#status">Status</a>
+      <a href="/#faq">Questions</a>
+      <a href="/privacy/">Privacy</a>
+      <a href="/terms/">Terms</a>
+      <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>
+    </nav>
+    <p class="colophon__credits">Chess pieces: the cburnett set by Colin M. L. Burnett, <a href="/assets/pieces/LICENSE.txt">GPLv2+</a>. Typefaces: Vollkorn, Kalam by Indian Type Foundry, and Courier Prime, under the <a href="/assets/fonts/OFL.txt">SIL Open Font License</a>.</p>
+    <p class="colophon__base">© {{YEAR}} AskTheMove. No cookies. No trackers.</p>
   </div>
 </footer>

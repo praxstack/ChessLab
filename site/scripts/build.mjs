@@ -12,13 +12,17 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DEMO } from '../public/assets/demo-data.js';
 import {
-  arrowsSVG,
+  PENCIL_SVG,
+  badgesHTML,
   boardLabel,
-  coordsHTML,
-  overlaysHTML,
+  filesHTML,
+  inkSVG,
+  lastHTML,
   piecesHTML,
+  ranksHTML,
   sanHTML,
 } from '../public/assets/board.js';
+import { markSVG, seedFrom } from '../public/assets/ink.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const config = JSON.parse(readFileSync(join(root, 'site.config.json'), 'utf8'));
@@ -66,64 +70,97 @@ const PAGES = [
 
 const escAttr = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
-function demoHTML() {
-  const step = DEMO.main[0];
+// The board as a book diagram: rank numbers down the left, file letters along
+// the bottom, the crisp board, and the coach's marks drawn over it.
+function diagramHTML(step, { mini = false, pencil = false, label } = {}) {
   const o = DEMO.orientation;
-  const total = DEMO.main.length;
-  const stripMap = [0, 1, 3, 3, 4]; // strip move -> main step
-  const strip = DEMO.strip
-    .map((m, i) => {
-      const current = step.strip === i ? ' aria-current="step"' : '';
-      const note = m.note ? `<span class="strip__note">${m.note}</span>` : '';
-      return `<li><button type="button" class="strip__move" data-goto="${stripMap[i]}"${current} disabled><span class="strip__n">${m.n}</span>${sanHTML(m.san)}${note}</button></li>`;
-    })
-    .join('');
-  const branch = DEMO.branchStrip
-    .map((m) => `<li><span class="strip__move strip__move--static"><span class="strip__n">${m.n}</span>${sanHTML(m.san)}</span></li>`)
-    .join('');
-  const notePage = (st, key, count, current) => `<div class="note__page${current ? ' is-current' : ''}" data-key="${key}"${current ? '' : ' aria-hidden="true"'}>
-      <p class="note__label"><span class="note__count">${count}</span> <span class="note__label-text">${st.label}</span></p>
-      <p class="note__title">${st.title}</p>
-      <p class="note__body">${st.body}</p>
-      <p class="note__evidence"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>${st.evidence}</span></p>
-    </div>`;
-  const pages = [
-    ...DEMO.main.map((st, i) => notePage(st, `main-${i}`, `${i + 1} / ${total}`, i === 0)),
-    ...DEMO.branch.steps.map((st, i) => notePage(st, `branch-${i}`, 'Branch', false)),
-  ].join('');
-  const pips = DEMO.main.map((_, i) => `<span class="pip${i === 0 ? ' is-current' : ''}"><i></i></span>`).join('');
-  return `<figure class="demo" id="demo" aria-labelledby="demo-title">
-  <figcaption class="demo__head">
-    <span class="demo__kicker">Try it</span>
-    <span class="demo__title" id="demo-title">A classic trap, move by move</span>
-    <span class="demo__side">You are Black</span>
-  </figcaption>
-  <div class="board" role="img" aria-label="${escAttr(boardLabel(step))}">
-    <div class="board__layer board__hl">${overlaysHTML({ ...step, badge: null }, o)}</div>
-    <div class="board__layer board__coords" aria-hidden="true">${coordsHTML(o)}</div>
+  const coords = !mini;
+  return `<div class="diagram${mini ? ' diagram--mini' : ''}">
+${coords ? `  <div class="diagram__ranks" aria-hidden="true">${ranksHTML(o)}</div>\n` : ''}  <div class="board${mini ? ' board--mini' : ''}" role="img" aria-label="${escAttr(label || boardLabel(step))}">
+    <div class="board__layer board__hl">${lastHTML(step, o)}</div>
     <div class="board__layer board__pieces">${piecesHTML(step.fen, o)}</div>
-    <svg class="board__arrows" viewBox="0 0 8 8" aria-hidden="true" focusable="false">${arrowsSVG(step.arrows, o)}</svg>
-    <div class="board__layer board__badges">${overlaysHTML({ badge: step.badge }, o)}</div>
+    <svg class="board__ink" viewBox="0 0 80 80" aria-hidden="true" focusable="false"${mini ? ' data-draw' : ''}>${inkSVG(step, o)}${pencil ? PENCIL_SVG : ''}</svg>
+    <div class="board__layer board__badges">${badgesHTML(step, o)}</div>
   </div>
-  <div class="note" id="demo-note">
-    <div class="note__pips" aria-hidden="true">${pips}</div>
-    <div class="strip-wrap">
-      <ol class="strip" aria-label="Moves in the game">${strip}</ol>
-      <ol class="strip strip--branch" aria-label="Your branch" hidden><li class="strip__fork" aria-hidden="true"><svg viewBox="0 0 16 16" width="14" height="14"><path d="M4 2v12M4 9c0-3 8-2 8-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></li>${branch}</ol>
-    </div>
-    <div class="note__stack">${pages}</div>
-  </div>
-  <div class="demo__controls">
-    <button type="button" class="ctl" data-act="prev" disabled><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</button>
-    <button type="button" class="ctl ctl--next" data-act="next" disabled><span class="ctl__text">Next</span><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    <button type="button" class="ctl ctl--branch" data-act="branch" disabled><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 2v12M4 9c0-3 8-2 8-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="ctl__text">Try another line</span></button>
-  </div>
-  <p class="demo__fine">A scripted walkthrough of the idea, not the live tutor. Every move and claim in it was checked with a chess rules library and Stockfish 19.</p>
-</figure>`;
+${coords ? `  <div class="diagram__files" aria-hidden="true">${filesHTML(o)}</div>\n` : ''}</div>`;
 }
 
-// Small static boards and move lists for the "How it works" panels. They reuse the
-// verified walkthrough data, so test/demo-chess.test.js covers them too.
+// The whole game as a paper score sheet: numbered rows, White and Black
+// columns. The moves the walkthrough covers are buttons that jump to a step.
+function scoreSheetHTML() {
+  const plies = [...DEMO.opening, ...DEMO.main.flatMap((s) => s.play)];
+  const stepOfPly = new Map();
+  const stripMap = [0, 1, 3, 3, 4]; // strip move -> main step
+  DEMO.strip.forEach((_, i) => stepOfPly.set(DEMO.opening.length - 1 + i, stripMap[i]));
+  const firstStep = DEMO.main[0];
+  const cell = (san, ply) => {
+    if (san === undefined) return '<td></td>';
+    if (!stepOfPly.has(ply)) return `<td><span class="ss__mv">${san}</span></td>`;
+    const goto = stepOfPly.get(ply);
+    const stripIndex = ply - (DEMO.opening.length - 1);
+    const note = DEMO.strip[stripIndex].note ? `<span class="ss__ann">${DEMO.strip[stripIndex].note}</span>` : '';
+    const current = firstStep.strip === stripIndex ? ' aria-current="step"' : '';
+    const ring = markSVG('circle', 160, 100, seedFrom(`ss:${san}`), 'ss__ring');
+    return `<td><button type="button" class="ss__mv ss__btn" data-goto="${goto}" data-strip="${stripIndex}"${current} disabled><span class="ss__san">${san}</span>${note}${ring}</button></td>`;
+  };
+  let rows = '';
+  for (let i = 0; i < plies.length; i += 2) {
+    const n = i / 2 + 1;
+    rows += `<tr><th scope="row">${n}</th>${cell(plies[i], i)}${cell(plies[i + 1], i + 1)}</tr>`;
+    if (n === 5) {
+      const line = DEMO.branchStrip.map((m) => `${m.n}${m.san}`).join(' ');
+      const ring = markSVG('circle', 300, 100, seedFrom('ss:branch'), 'ss__ring');
+      rows += `<tr class="ss__var" hidden><td colspan="3"><span class="ss__var-line" aria-current="step">(${line})${ring}</span></td></tr>`;
+    }
+  }
+  return `<div class="demo__sheet">
+    <table class="ss" aria-label="Score sheet: the moves of the game">
+      <caption class="ss__cap">Score sheet</caption>
+      <thead><tr><th scope="col">No.</th><th scope="col">White</th><th scope="col">Black</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <p class="ss__result"><span class="ss__result-label">Result</span> 1–0</p>
+  </div>`;
+}
+
+function notePageHTML(st, key, count, current) {
+  return `<div class="note__page${current ? ' is-current' : ''}" data-key="${key}"${current ? '' : ' aria-hidden="true"'}>
+      <p class="note__label"><span class="note__count">${count}</span> <span class="note__label-text">${st.label}</span></p>
+      <p class="note__title" data-write>${st.title}</p>
+      <p class="note__body" data-write>${st.body}</p>
+      <p class="note__evidence">${markSVG('tick', 110, 100, seedFrom(`ev:${key}`), 'note__tick')}<span>${st.evidence}</span></p>
+    </div>`;
+}
+
+function demoHTML() {
+  const step = DEMO.main[0];
+  const total = DEMO.main.length;
+  const pages = [
+    ...DEMO.main.map((st, i) => notePageHTML(st, `main-${i}`, `${i + 1} / ${total}`, i === 0)),
+    ...DEMO.branch.steps.map((st, i) => notePageHTML(st, `branch-${i}`, 'Your branch', false)),
+  ].join('\n    ');
+  const chevron = (dir) =>
+    `<svg class="ctl__icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="${dir === 'l' ? 'M10.5 2.8 4.8 8.2l5.9 5' : 'M5.6 2.8l5.8 5.3-5.9 5'}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  return `<div class="demo" id="demo">
+  ${scoreSheetHTML()}
+  <figure class="demo__board" aria-labelledby="lesson-title">
+${diagramHTML(step, { pencil: true })}
+  </figure>
+  <div class="note" id="demo-note">
+    <div class="note__stack">
+    ${pages}
+    </div>
+  </div>
+  <div class="demo__controls">
+    <button type="button" class="ctl" data-act="prev" disabled>${chevron('l')}Back</button>
+    <button type="button" class="ctl ctl--next" data-act="next" disabled><span class="ctl__text">Next</span>${chevron('r')}</button>
+    <button type="button" class="ctl ctl--branch" data-act="branch" disabled><svg class="ctl__icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="M4.5 1.8v12.4M4.5 9.2c0-3.2 7.4-2.2 7.4-6.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="ctl__text">Try another line</span></button>
+  </div>
+</div>`;
+}
+
+// Small diagrams for the "How it works" figures. They reuse the verified
+// walkthrough data, so test/demo-chess.test.js covers them too.
 function stepById(id) {
   const step = [...DEMO.main, ...DEMO.branch.steps].find((s) => s.id === id);
   if (!step) throw new Error(`Unknown demo step ${id}`);
@@ -131,14 +168,7 @@ function stepById(id) {
 }
 
 function miniBoardHTML(id) {
-  const step = stepById(id);
-  const o = DEMO.orientation;
-  return `<div class="board board--mini" role="img" aria-label="${escAttr(boardLabel(step))}">
-  <div class="board__layer board__hl">${overlaysHTML({ ...step, badge: null }, o)}</div>
-  <div class="board__layer board__pieces">${piecesHTML(step.fen, o)}</div>
-  <svg class="board__arrows" viewBox="0 0 8 8" aria-hidden="true" focusable="false">${arrowsSVG(step.arrows, o)}</svg>
-  <div class="board__layer board__badges">${overlaysHTML({ badge: step.badge }, o)}</div>
-</div>`;
+  return diagramHTML(stepById(id), { mini: true });
 }
 
 function gameMoves() {
@@ -162,10 +192,50 @@ function movesHTML(name) {
   return MOVE_LISTS[name]()
     .map((m, i) => {
       const num = m.color === 'w' || i === 0 ? `<span class="mv__n">${m.n}</span>` : '';
-      const note = m.note ? `<span class="mock__flag">${m.note}</span>` : '';
+      const note = m.note ? `<span class="printout__flag">${m.note}</span>` : '';
       return `<span class="mv${m.note ? ' mv--key' : ''}">${num}${sanHTML(m.san)}${note}</span>`;
     })
     .join(' ');
+}
+
+// Hand-drawn marks. In the templates, an element with data-mark="kind [aspect]"
+// gets an inline SVG of that mark, drawn once at build time with a seeded hand,
+// so every mark is in the HTML before any script runs. app.js only animates it.
+const GLYPH_ASPECT = { tick: 1.1, cross: 1, plus: 1, circle: 1.15, arrow: 1.7, hook: 1.5, swoop: 1.7, return: 1.5, fork: 0.8 };
+const TEXT_BOX = {
+  // Approximate box the CSS gives each mark around its text, in em: [extra width, height].
+  circle: [0.52, 1.55],
+  highlight: [0.24, 1.05],
+  underline: [0.1, 0.5],
+  double: [0.1, 0.6],
+};
+
+function visibleLength(html) {
+  return html
+    .replace(/<[^>]+>/g, 'x')
+    .replace(/&[a-z]+;/g, 'x').length;
+}
+
+function renderMarks(html) {
+  return html.replace(
+    /<(span|i) class="([^"]*)" data-mark="([a-z]+)(?: ([0-9.]+))?">([\s\S]*?)<\/\1>/g,
+    (_, tag, cls, kind, aspectArg, inner) => {
+      let aspect = Number(aspectArg) || 0;
+      if (!aspect) {
+        if (tag === 'i') aspect = GLYPH_ASPECT[kind] || 1;
+        else {
+          const [extra, height] = TEXT_BOX[kind] || [0.2, 1.1];
+          aspect = (visibleLength(inner) * 0.52 + extra) / height;
+        }
+      }
+      const h = 100;
+      const w = Math.round(h * aspect);
+      const seed = seedFrom(`${kind}:${inner}:${cls}`);
+      const svg = markSVG(kind, w, h, seed, 'ink__svg');
+      const content = tag === 'i' ? svg : `${inner}${svg}`;
+      return `<${tag} class="${cls}" data-draw>${content}</${tag}>`;
+    },
+  );
 }
 
 function renderHome(html) {
@@ -221,7 +291,7 @@ function outputs() {
     YEAR: String(config.copyrightYear),
     UPDATED: config.legalUpdated,
     TURNSTILE_WIDGET: turnstileKey
-      ? `<div class="cf-turnstile" data-sitekey="${escAttr(turnstileKey)}" data-theme="dark" data-size="flexible"></div>`
+      ? `<div class="cf-turnstile" data-sitekey="${escAttr(turnstileKey)}" data-theme="light" data-size="flexible"></div>`
       : '',
     TURNSTILE_SCRIPT: turnstileKey ? `<script src="${TURNSTILE_HOST}/turnstile/v0/api.js" async defer></script>` : '',
   };
@@ -235,6 +305,7 @@ function outputs() {
       ROBOTS: page.robots || 'index, follow',
     });
     if (page.src === 'index.html') html = renderHome(html);
+    html = renderMarks(html);
     // Empty optional slots (such as the Turnstile widget) leave blank, indented lines.
     html = html.replace(/[ \t]+$/gm, '').replace(/\n{3,}/g, '\n\n');
     files.set(page.out, html);
@@ -279,8 +350,8 @@ function outputs() {
         description: 'The chess coach that explains why.',
         start_url: '/',
         display: 'browser',
-        background_color: '#141824',
-        theme_color: '#141824',
+        background_color: '#fbfaf4',
+        theme_color: '#fbfaf4',
         icons: [
           { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },

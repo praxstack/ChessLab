@@ -7,13 +7,14 @@
 <meta name="description" content="AskTheMove shows adult chess improvers why a move was a mistake, using evidence from Stockfish and the rules of chess, then lets you try your own idea. Join the free public beta waitlist.">
 <link rel="canonical" href="https://askthemove.pages.dev/">
 <meta name="robots" content="index, follow">
-<meta name="theme-color" content="#141824">
+<meta name="theme-color" content="#fbfaf4">
+<meta name="color-scheme" content="light">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
-<link rel="preload" href="/assets/fonts/young-serif-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/assets/fonts/commissioner-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/vollkorn-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/kalam-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/app.css">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AskTheMove">
@@ -23,7 +24,7 @@
 <meta property="og:image" content="https://askthemove.pages.dev/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="AskTheMove: a chessboard with arrows explaining why taking the queen was a blunder.">
+<meta property="og:image:alt" content="A page from a chess lesson notebook: a board with the coach's red arrows showing why taking the queen was a blunder, and the words Ask the move why.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AskTheMove: the chess coach that explains why">
 <meta name="twitter:description" content="AskTheMove shows adult chess improvers why a move was a mistake, using evidence from Stockfish and the rules of chess, then lets you try your own idea. Join the free public beta waitlist.">
@@ -38,43 +39,39 @@
 </head>
 <body class="page-home">
 <a class="skip" href="#main">Skip to content</a>
-<header class="site-header">
-  <div class="wrap site-header__inner">
+<header class="masthead">
+  <div class="masthead__inner">
     <a class="brand" href="/" aria-label="AskTheMove home">
-      <svg class="brand__mark" viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><path fill="#ebe4d2" d="M10 0h44a10 10 0 0 1 10 10v44a10 10 0 0 1-10 10H10A10 10 0 0 1 0 54V10A10 10 0 0 1 10 0z"/><path fill="#6b78a8" d="M32 0h22a10 10 0 0 1 10 10v22H32zM0 32h32v32H10A10 10 0 0 1 0 54z"/><path fill="#141824" d="M27.02 23.69L22.26 25.20Q21.64 25.42 21.33 25.31Q21.02 25.20 20.74 24.81L20.74 24.81Q20.07 23.91 19.60 22.65Q19.12 21.39 19.12 19.88L19.12 19.88Q19.12 16.80 20.74 14.53Q22.37 12.26 25.06 11.03Q27.74 9.80 30.99 9.80L30.99 9.80Q35.92 9.80 38.97 11.40Q42.02 12.99 43.45 15.34Q44.88 17.70 44.88 19.99L44.88 19.99Q44.88 23.02 43.90 25.06Q42.92 27.10 41.38 28.53Q39.84 29.96 38.13 30.94Q36.42 31.92 34.88 32.79Q33.34 33.66 32.36 34.61Q31.38 35.56 31.38 36.96L31.38 36.96Q31.38 38.02 31.38 38.61Q31.38 39.20 31.33 39.59L31.33 39.59Q31.27 40.26 30.60 40.26L30.60 40.26L27.07 40.26Q26.74 40.26 26.46 40.18Q26.18 40.10 26.12 39.76L26.12 39.76Q26.06 39.37 26.06 38.61Q26.06 37.86 26.06 36.96L26.06 36.96Q26.06 34.94 26.82 33.60Q27.58 32.26 28.78 31.25Q29.98 30.24 31.30 29.32Q32.62 28.39 33.82 27.27Q35.02 26.15 35.78 24.53Q36.54 22.90 36.54 20.50L36.54 20.50Q36.54 17.58 35.02 16.07Q33.51 14.56 31.22 14.56L31.22 14.56Q28.92 14.56 27.63 15.74Q26.34 16.91 26.34 18.87L26.34 18.87Q26.34 20.50 27.41 22.57L27.41 22.57Q27.58 22.90 27.58 23.18L27.58 23.18Q27.58 23.41 27.44 23.49Q27.30 23.58 27.02 23.69L27.02 23.69ZM24.44 46.65L26.68 44.46Q27.74 43.40 28.81 43.40L28.81 43.40Q29.93 43.40 30.99 44.46L30.99 44.46L33.18 46.65Q34.24 47.71 34.24 48.83L34.24 48.83Q34.24 49.95 33.18 51.02L33.18 51.02L30.99 53.20Q29.93 54.26 28.81 54.26L28.81 54.26Q27.74 54.26 26.68 53.20L26.68 53.20L24.44 51.02Q23.43 50.01 23.43 48.83L23.43 48.83Q23.43 47.66 24.44 46.65L24.44 46.65Z"/></svg>
+      <svg class="brand__mark" viewBox="0 0 64 64" width="36" height="36" aria-hidden="true" focusable="false"><rect class="brand__tile" x="1.5" y="1.5" width="61" height="61" rx="13"/><path class="brand__q" d="M23.6 25 C23.2 16.4 40.6 13.6 41.4 23.2 C42 30.4 32.6 30.2 32.6 39.6"/><circle class="brand__dot" cx="32.6" cy="49" r="4"/><path class="brand__loop" d="M16.5 15.48 C17.24 14.89 19.32 12.93 20.94 11.92 C22.57 10.91 24.39 9.92 26.25 9.43 C28.11 8.93 30.14 9.07 32.12 8.95 C34.1 8.82 36.22 8.33 38.14 8.67 C40.06 9.01 41.89 10.07 43.63 10.98 C45.37 11.89 47.09 12.89 48.57 14.13 C50.04 15.36 51.41 16.82 52.48 18.38 C53.54 19.93 54.41 21.71 54.97 23.47 C55.52 25.24 55.71 27.16 55.78 28.97 C55.86 30.79 55.61 32.58 55.42 34.36 C55.23 36.14 55.28 38.01 54.67 39.66 C54.06 41.3 52.8 42.78 51.76 44.23 C50.71 45.69 49.59 47.01 48.41 48.37 C47.22 49.73 46.1 51.27 44.65 52.39 C43.2 53.51 41.45 54.41 39.69 55.09 C37.94 55.78 36.02 56.27 34.14 56.49 C32.26 56.71 30.32 56.56 28.41 56.4 C26.5 56.24 24.51 56.07 22.68 55.5 C20.85 54.94 19 54.09 17.43 53.03 C15.85 51.97 14.35 50.62 13.23 49.14 C12.11 47.66 11.4 45.83 10.72 44.14 C10.04 42.44 9.44 40.73 9.15 38.99 C8.85 37.25 8.81 35.44 8.93 33.71 C9.05 31.98 9.42 30.26 9.88 28.61 C10.35 26.96 10.93 25.32 11.73 23.81 C12.53 22.31 13.58 20.9 14.68 19.57 C15.78 18.24 16.97 16.94 18.33 15.85 C19.68 14.75 21.22 13.8 22.81 13 C24.39 12.2 26.1 11.54 27.85 11.06 C29.6 10.58 32.4 10.26 33.31 10.1"/></svg>
       <span class="brand__word">AskTheMove</span>
     </a>
-    <nav class="site-nav" aria-label="Main">
-      <a href="/#how">How it works</a>
-      <a href="/#status">Status</a>
-      <a href="/#faq">FAQ</a>
-    </nav>
-    <a class="btn btn--small btn--go site-header__cta" href="/#join">Join the beta</a>
+    <a class="btn btn--pen btn--small masthead__cta" href="/#join">Join the beta</a>
   </div>
 </header>
-<main id="main">
-  <section class="hero" aria-labelledby="hero-title">
-    <div class="hero__texture" aria-hidden="true"></div>
-    <div class="wrap hero__grid">
-      <div class="hero__copy">
-        <p class="eyebrow eyebrow--night">Chess coach for adult improvers <span class="sep" aria-hidden="true">·</span> Public beta waitlist</p>
-        <h1 id="hero-title" class="hero__title">Ask the move <em>why.</em></h1>
-        <p class="hero__lede">A chess coach for players rated about 800 to 1600. AskTheMove shows you why a move was a mistake, in plain words and arrows on the board, using evidence checked by Stockfish and the rules of chess. Then you can try your own idea and return to the game.</p>
+<main id="main" class="sheet">
 
-        <div id="join" class="join" tabindex="-1">
-          <form class="join__form" id="join-form" action="/api/waitlist" method="post">
-            <input type="hidden" name="source" value="hero">
-            <input type="hidden" name="utm_source" value="">
-            <input type="hidden" name="utm_medium" value="">
-            <input type="hidden" name="utm_campaign" value="">
-            <input type="hidden" name="referrer" value="">
-            <div class="join__row">
-              <div class="field field--email">
-                <label for="join-email">Email</label>
-                <input id="join-email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" autocapitalize="off" maxlength="254" placeholder="you@example.com" required aria-describedby="join-status">
-              </div>
-              <button class="btn btn--go join__submit" type="submit"><span class="btn__label">Join the waitlist</span></button>
+  <section class="open rows" aria-labelledby="hero-title" data-ink-group="load">
+    <h1 id="hero-title" class="open__title">Ask the move <span class="ink ink--circle" data-draw>why<svg class="ink__svg" viewBox="0 0 134 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M11.65 25.97 C13.09 24.37 16.8 19.18 20.25 16.38 C23.71 13.57 28.07 11.25 32.37 9.13 C36.68 7.02 41.31 5.27 46.08 3.69 C50.86 2.1 55.86 0.38 61.01 -0.4 C66.17 -1.17 71.82 -1.47 77.02 -0.98 C82.22 -0.49 87.4 1 92.2 2.54 C97.01 4.08 101.67 6 105.87 8.25 C110.07 10.5 114.14 13.09 117.42 16.03 C120.69 18.96 123.55 22.37 125.53 25.86 C127.5 29.34 128.52 33.24 129.27 36.94 C130.01 40.64 130.14 44.39 130.01 48.08 C129.88 51.76 129.65 55.51 128.5 59.06 C127.35 62.6 125.32 66.08 123.1 69.35 C120.88 72.61 118.26 75.8 115.2 78.65 C112.14 81.5 108.53 84.1 104.74 86.43 C100.94 88.77 96.77 90.76 92.43 92.65 C88.1 94.54 83.56 96.7 78.73 97.79 C73.89 98.88 68.5 99.28 63.44 99.19 C58.37 99.1 53.26 98.21 48.35 97.24 C43.44 96.26 38.35 95.18 33.97 93.34 C29.6 91.5 25.67 88.86 22.12 86.21 C18.57 83.56 14.94 80.71 12.68 77.45 C10.41 74.19 9.72 70.22 8.53 66.67 C7.34 63.12 5.82 59.67 5.54 56.12 C5.27 52.58 5.99 48.9 6.86 45.41 C7.73 41.92 9.03 38.47 10.77 35.2 C12.51 31.93 14.7 28.72 17.32 25.8 C19.93 22.88 23.06 20.12 26.46 17.68 C29.86 15.24 33.75 13.19 37.71 11.16 C41.67 9.12 48.14 6.43 50.22 5.48"/></svg></span>.</h1>
+
+    <div class="open__main">
+      <p class="open__lede">AskTheMove is a chess coach that shows you why a move was a mistake, in plain words and arrows on the board.</p>
+
+      <div id="join" class="slip" tabindex="-1">
+        <form class="slip__form" id="join-form" action="/api/waitlist" method="post">
+          <p class="slip__title">Join the beta waitlist</p>
+          <input type="hidden" name="source" value="hero">
+          <input type="hidden" name="utm_source" value="">
+          <input type="hidden" name="utm_medium" value="">
+          <input type="hidden" name="utm_campaign" value="">
+          <input type="hidden" name="referrer" value="">
+          <div class="slip__row">
+            <div class="field field--email">
+              <label for="join-email">Email</label>
+              <input id="join-email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" autocapitalize="off" maxlength="254" placeholder="you@example.com" required aria-describedby="join-status">
             </div>
+            <button class="btn btn--pen slip__submit join__submit" type="submit"><span class="btn__label">Join the waitlist</span></button>
+          </div>
+          <div class="slip__more">
             <div class="field field--rating">
               <label for="join-rating">Roughly what’s your rating? <span class="optional">Optional</span></label>
               <select id="join-rating" name="rating">
@@ -86,378 +83,364 @@
                 <option value="not-sure">Not sure</option>
               </select>
             </div>
-            <div class="hp" aria-hidden="true">
-              <label for="join-website">Leave this empty</label>
-              <input id="join-website" name="website" type="text" tabindex="-1" autocomplete="off">
-            </div>
             <div class="check">
               <input id="join-consent" name="consent" type="checkbox" required>
               <label for="join-consent">Email me about the beta. Unsubscribe any time.</label>
             </div>
-
-            <p class="join__status" id="join-status" role="status" aria-live="polite"></p>
-            <p class="join__fine">Free during the beta. Your email is used only for beta news. <a href="/privacy/">Privacy notice</a>.</p>
-            <noscript><p class="join__fine">Without JavaScript the form still works: you’ll come back to this page after joining.</p></noscript>
-          </form>
-          <div class="join__done" id="join-done" hidden>
-            <p class="join__done-title" id="join-done-title" tabindex="-1">You’re on the list.</p>
-            <p class="join__done-body" id="join-done-body">We’ll email you when your beta invite is ready.</p>
           </div>
+          <div class="hp" aria-hidden="true">
+            <label for="join-website">Leave this empty</label>
+            <input id="join-website" name="website" type="text" tabindex="-1" autocomplete="off">
+          </div>
+
+          <p class="slip__status join__status" id="join-status" role="status" aria-live="polite"></p>
+          <p class="slip__fine">Your email is used only for beta news. <a href="/privacy/">Privacy notice</a>.</p>
+          <noscript><p class="slip__fine">Without JavaScript the form still works: you’ll come back to this page after joining.</p></noscript>
+        </form>
+        <div class="slip__done" id="join-done" hidden>
+          <i class="glyph glyph--tick" data-draw><svg class="ink__svg" viewBox="0 0 110 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M8.8 52.39 C10.13 54.09 14.13 59.19 16.8 62.59 C19.46 65.99 22.26 69.52 24.79 72.78 C27.31 76.04 29.49 78.95 31.96 82.15 C34.43 85.36 35.75 93.98 39.6 92 C43.45 90.02 49.45 77.04 55.07 70.25 C60.68 63.45 67.87 58.24 73.28 51.24 C78.7 44.25 82.17 35.32 87.56 28.3 C92.95 21.28 102.59 12.32 105.6 9.13"/></svg></i>
+          <p class="slip__done-title" id="join-done-title" tabindex="-1">You’re on the list.</p>
+          <p class="slip__done-body" id="join-done-body">We’ll email you when your beta invite is ready.</p>
         </div>
       </div>
+    </div>
 
-      <div class="hero__demo">
-<figure class="demo" id="demo" aria-labelledby="demo-title">
-  <figcaption class="demo__head">
-    <span class="demo__kicker">Try it</span>
-    <span class="demo__title" id="demo-title">A classic trap, move by move</span>
-    <span class="demo__side">You are Black</span>
-  </figcaption>
+    <aside class="open__side" aria-label="Notes">
+      <p class="note-hand note-hand--why"><i class="glyph glyph--back" data-draw><svg class="ink__svg" viewBox="0 0 150 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M138 92 C137.63 89.66 136.93 82.45 135.77 77.95 C134.62 73.45 132.78 68.86 131.07 64.99 C129.37 61.13 127.93 58.12 125.53 54.75 C123.13 51.38 120.15 48.02 116.68 44.76 C113.21 41.51 108.77 37.87 104.72 35.22 C100.67 32.57 97.15 31.04 92.39 28.87 C87.64 26.7 81.61 23.86 76.18 22.2 C70.75 20.55 65.95 20.11 59.82 18.94 C53.68 17.76 46.37 16 39.4 15.18 C32.43 14.36 21.57 14.2 18 14"/><path class="stroke" pathLength="1" d="M37.3 26.48 C36.16 25.78 32.71 23.7 30.46 22.28 C28.21 20.85 26.02 19.41 23.81 17.95 C21.6 16.48 18.32 14.25 17.23 13.51"/><path class="stroke" pathLength="1" d="M38.93 4.89 C37.66 5.31 33.78 6.49 31.3 7.4 C28.81 8.32 26.37 9.21 24.01 10.37 C21.66 11.53 18.31 13.69 17.17 14.36"/></svg></i><span data-write>The part a game review leaves out.</span></p>
+      <p class="note-hand note-hand--free"><span data-write>Free during the beta.</span><i class="glyph glyph--to-form" data-draw><svg class="ink__svg" viewBox="0 0 170 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M153 8 C152.27 10.47 150.65 18.33 148.65 22.79 C146.64 27.25 143.69 30.86 140.95 34.77 C138.21 38.68 135.62 42.83 132.2 46.24 C128.78 49.64 124.56 52.34 120.43 55.21 C116.31 58.08 112.04 60.91 107.43 63.48 C102.82 66.05 98.08 68.58 92.77 70.63 C87.46 72.67 81.4 74.06 75.56 75.75 C69.72 77.45 64.18 79.53 57.75 80.81 C51.31 82.09 44.31 82.88 36.95 83.42 C29.59 83.95 17.49 83.9 13.6 84"/><path class="stroke" pathLength="1" d="M31.65 92.36 C30.66 91.77 27.71 89.88 25.67 88.81 C23.63 87.74 21.54 86.8 19.41 85.94 C17.28 85.09 13.96 84.05 12.88 83.67"/><path class="stroke" pathLength="1" d="M30.6 72.82 C29.56 73.39 26.39 74.98 24.39 76.23 C22.39 77.47 20.53 78.91 18.62 80.29 C16.71 81.66 13.87 83.76 12.92 84.45"/></svg></i></p>
+      <p class="note-hand note-hand--who" data-write>Rated about 800 to 1600? This is written for you.</p>
+    </aside>
+  </section>
+
+  <section class="lesson" id="lesson" aria-labelledby="lesson-title">
+    <div class="lesson__head rows">
+      <h2 id="lesson-title" class="h2 lesson__title">A classic trap, move by move</h2>
+      <p class="lesson__intro">Légal’s trap, played from Black’s side. Step through it, or let the coach mark it up. Then try another line.</p>
+      <p class="note-hand note-hand--side lesson__you" data-ink-group><span data-write>You are Black.</span></p>
+    </div>
+<div class="demo" id="demo">
+  <div class="demo__sheet">
+    <table class="ss" aria-label="Score sheet: the moves of the game">
+      <caption class="ss__cap">Score sheet</caption>
+      <thead><tr><th scope="col">No.</th><th scope="col">White</th><th scope="col">Black</th></tr></thead>
+      <tbody><tr><th scope="row">1</th><td><span class="ss__mv">e4</span></td><td><span class="ss__mv">e5</span></td></tr><tr><th scope="row">2</th><td><span class="ss__mv">Nf3</span></td><td><span class="ss__mv">d6</span></td></tr><tr><th scope="row">3</th><td><span class="ss__mv">Bc4</span></td><td><span class="ss__mv">Bg4</span></td></tr><tr><th scope="row">4</th><td><span class="ss__mv">Nc3</span></td><td><span class="ss__mv">g6</span></td></tr><tr><th scope="row">5</th><td><button type="button" class="ss__mv ss__btn" data-goto="0" data-strip="0" aria-current="step" disabled><span class="ss__san">Nxe5</span><svg class="ss__ring" viewBox="0 0 160 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M21.52 20.4 C23.78 19.12 30.28 15.09 35.06 12.75 C39.83 10.42 44.81 8.1 50.2 6.41 C55.59 4.71 61.51 3.53 67.4 2.58 C73.3 1.63 79.51 0.8 85.58 0.72 C91.65 0.65 97.79 1.37 103.84 2.13 C109.9 2.88 116.44 3.53 121.91 5.25 C127.37 6.97 132.04 9.8 136.62 12.43 C141.2 15.05 146.13 17.74 149.4 21 C152.66 24.25 154.64 28.22 156.24 31.97 C157.83 35.72 158.93 39.66 158.98 43.5 C159.03 47.33 157.78 51.24 156.55 54.99 C155.33 58.74 154.25 62.62 151.63 65.98 C149 69.35 144.45 72.19 140.81 75.18 C137.16 78.17 134 81.37 129.75 83.93 C125.51 86.48 120.48 88.76 115.33 90.54 C110.17 92.32 104.46 93.53 98.84 94.6 C93.21 95.68 87.46 96.46 81.59 96.98 C75.73 97.49 69.46 98.12 63.63 97.67 C57.8 97.22 52.11 95.69 46.63 94.26 C41.14 92.84 35.62 91.23 30.74 89.12 C25.86 87 21.02 84.47 17.35 81.55 C13.68 78.63 10.88 75.09 8.71 71.61 C6.54 68.13 4.97 64.37 4.33 60.68 C3.7 56.99 4.04 53.12 4.9 49.48 C5.77 45.84 7.5 42.23 9.52 38.82 C11.54 35.41 13.88 32 17.03 29.02 C20.18 26.05 24.41 23.48 28.4 20.96 C32.39 18.44 36.46 16.01 40.97 13.89 C45.48 11.76 50.29 9.66 55.43 8.22 C60.57 6.77 69.08 5.72 71.81 5.22"/></svg></button></td><td><button type="button" class="ss__mv ss__btn" data-goto="1" data-strip="1" disabled><span class="ss__san">Bxd1</span><span class="ss__ann">??</span><svg class="ss__ring" viewBox="0 0 160 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M41.79 7.06 C44.64 6.16 52.89 2.93 58.85 1.64 C64.82 0.35 71.25 -0.21 77.59 -0.67 C83.92 -1.14 90.61 -1.69 96.84 -1.14 C103.08 -0.6 109.23 0.98 114.97 2.6 C120.72 4.21 126.62 6.05 131.3 8.56 C135.99 11.08 139.67 14.48 143.1 17.68 C146.52 20.88 149.58 24.25 151.84 27.76 C154.1 31.27 156 35.03 156.65 38.75 C157.31 42.48 156.48 46.4 155.78 50.12 C155.08 53.84 153.97 57.47 152.45 61.07 C150.93 64.67 149.38 68.41 146.65 71.73 C143.92 75.05 139.97 78.07 136.07 81 C132.18 83.93 128.02 86.82 123.29 89.3 C118.56 91.78 113.3 94.16 107.71 95.88 C102.12 97.59 95.86 99.01 89.76 99.6 C83.66 100.18 77.33 99.61 71.1 99.41 C64.88 99.2 58.15 99.54 52.42 98.34 C46.69 97.15 41.71 94.41 36.73 92.21 C31.75 90.02 26.53 87.93 22.55 85.18 C18.57 82.43 15.3 79.05 12.84 75.69 C10.37 72.32 8.82 68.61 7.77 65.01 C6.71 61.42 6.46 57.73 6.5 54.12 C6.55 50.52 6.94 46.9 8.02 43.38 C9.09 39.86 10.8 36.35 12.96 32.98 C15.11 29.62 17.61 26.17 20.96 23.18 C24.31 20.2 28.72 17.61 33.05 15.06 C37.39 12.51 41.87 9.84 46.97 7.88 C52.07 5.93 57.88 4.49 63.65 3.35 C69.42 2.2 75.58 1.24 81.6 1.02 C87.63 0.8 96.76 1.86 99.79 2.03"/></svg></button></td></tr><tr class="ss__var" hidden><td colspan="3"><span class="ss__var-line" aria-current="step">(5…dxe5 6.Qxg4)<svg class="ss__ring" viewBox="0 0 300 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M15.45 31.91 C18.42 30.09 25.85 24.28 33.24 20.95 C40.64 17.63 50.35 14.76 59.8 11.97 C69.24 9.17 79 6.09 89.94 4.19 C100.88 2.29 113.6 1.37 125.45 0.57 C137.3 -0.24 149.43 -0.72 161.02 -0.63 C172.61 -0.53 184.35 0.06 194.98 1.15 C205.62 2.23 215.37 4.1 224.83 5.88 C234.29 7.66 243.89 9.45 251.74 11.83 C259.6 14.21 266.3 17.16 271.95 20.17 C277.6 23.19 282.27 26.51 285.65 29.92 C289.04 33.34 290.86 36.98 292.28 40.64 C293.7 44.3 295 48.08 294.16 51.86 C293.32 55.65 290.84 59.59 287.26 63.36 C283.67 67.12 279.05 71.04 272.63 74.46 C266.21 77.87 257.33 80.91 248.74 83.86 C240.15 86.81 231.32 90 221.08 92.15 C210.85 94.3 198.69 95.41 187.32 96.73 C175.95 98.06 164.29 99.76 152.87 100.09 C141.44 100.42 129.84 99.38 118.78 98.72 C107.71 98.07 96.12 97.67 86.48 96.15 C76.84 94.62 68.63 91.97 60.94 89.58 C53.26 87.19 46.47 84.57 40.37 81.81 C34.27 79.05 28.91 76.13 24.35 73.05 C19.8 69.96 15.28 66.73 13.03 63.31 C10.78 59.89 10.68 56.17 10.85 52.53 C11.02 48.88 11.7 45.13 14.06 41.46 C16.42 37.78 20.25 34.06 25.02 30.49 C29.79 26.92 35.42 23.23 42.66 20.04 C49.9 16.86 58.97 13.88 68.46 11.39 C77.95 8.9 94.4 6.14 99.59 5.09"/></svg></span></td></tr><tr><th scope="row">6</th><td><button type="button" class="ss__mv ss__btn" data-goto="3" data-strip="2" disabled><span class="ss__san">Bxf7+</span><svg class="ss__ring" viewBox="0 0 160 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M53.26 2.99 C56.34 2.55 65.59 0.7 71.76 0.36 C77.94 0.02 84.34 0.29 90.33 0.93 C96.31 1.57 102.19 2.76 107.66 4.2 C113.13 5.63 118.41 7.44 123.14 9.56 C127.88 11.67 132.06 14.26 136.07 16.89 C140.08 19.52 143.93 22.29 147.2 25.34 C150.47 28.4 153.91 31.7 155.71 35.23 C157.5 38.77 157.46 42.72 157.95 46.55 C158.43 50.38 159.5 54.37 158.63 58.2 C157.76 62.02 155.42 65.94 152.72 69.5 C150.03 73.06 146.44 76.51 142.44 79.55 C138.45 82.59 133.78 85.48 128.73 87.75 C123.69 90.02 117.87 91.78 112.19 93.16 C106.51 94.54 100.53 95.38 94.67 96.05 C88.8 96.73 82.75 97.54 77.03 97.23 C71.31 96.93 65.67 95.43 60.34 94.24 C55.01 93.04 50 91.65 45.05 90.08 C40.1 88.5 34.81 87.03 30.64 84.81 C26.48 82.59 23.33 79.56 20.06 76.74 C16.79 73.91 13.44 71.04 11.02 67.85 C8.61 64.66 6.79 61.16 5.58 57.61 C4.38 54.07 3.42 50.24 3.81 46.56 C4.19 42.88 5.96 39.11 7.91 35.54 C9.86 31.97 12.16 28.28 15.49 25.15 C18.82 22.01 23.35 19.18 27.91 16.74 C32.46 14.29 37.62 12.2 42.82 10.46 C48.02 8.72 53.54 7.16 59.11 6.28 C64.67 5.39 70.62 5.07 76.21 5.16 C81.79 5.24 87.36 5.95 92.61 6.77 C97.87 7.59 105.22 9.53 107.74 10.08"/></svg></button></td><td><button type="button" class="ss__mv ss__btn" data-goto="3" data-strip="3" disabled><span class="ss__san">Ke7</span><svg class="ss__ring" viewBox="0 0 160 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M63.19 0.28 C66.37 0.11 76.01 -0.91 82.26 -0.74 C88.51 -0.57 94.84 0.18 100.69 1.31 C106.54 2.43 112.28 4.04 117.34 6.03 C122.39 8.01 126.88 10.61 131.01 13.21 C135.15 15.8 138.9 18.62 142.17 21.61 C145.43 24.6 148.06 27.83 150.59 31.14 C153.13 34.46 156.14 37.88 157.36 41.51 C158.58 45.15 158.25 49.11 157.92 52.95 C157.6 56.78 157.07 60.76 155.41 64.51 C153.75 68.27 151.04 71.99 147.94 75.48 C144.85 78.97 141.29 82.56 136.85 85.43 C132.41 88.31 126.81 90.68 121.31 92.75 C115.81 94.82 109.89 96.82 103.85 97.84 C97.8 98.85 91.21 98.76 85.04 98.84 C78.87 98.92 72.7 98.96 66.81 98.31 C60.92 97.66 55.01 96.52 49.71 94.96 C44.41 93.4 39.59 91.17 35 88.96 C30.4 86.75 25.83 84.43 22.14 81.7 C18.44 78.97 15.5 75.78 12.82 72.58 C10.13 69.38 7.34 66.04 6.02 62.53 C4.7 59.01 5.03 55.21 4.87 51.51 C4.72 47.8 4.06 43.96 5.1 40.29 C6.14 36.61 8.48 32.9 11.12 29.46 C13.76 26.02 17.25 22.77 20.95 19.65 C24.65 16.52 28.46 13.1 33.31 10.71 C38.16 8.31 44.29 6.7 50.05 5.28 C55.8 3.85 61.88 2.58 67.86 2.13 C73.83 1.69 80.06 2.12 85.91 2.59 C91.77 3.06 97.64 3.71 102.99 4.94 C108.35 6.17 115.56 9.14 118.07 9.98"/></svg></button></td></tr><tr><th scope="row">7</th><td><button type="button" class="ss__mv ss__btn" data-goto="4" data-strip="4" disabled><span class="ss__san">Nd5#</span><svg class="ss__ring" viewBox="0 0 160 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M43.55 6.65 C46.36 5.67 54.45 2.16 60.43 0.74 C66.41 -0.68 73.05 -1.57 79.43 -1.87 C85.82 -2.16 92.56 -1.9 98.74 -1.04 C104.91 -0.17 110.97 1.47 116.48 3.31 C121.99 5.16 127.25 7.45 131.77 10.04 C136.29 12.63 140.29 15.7 143.59 18.87 C146.88 22.05 149.48 25.56 151.53 29.08 C153.59 32.6 155.28 36.3 155.95 39.98 C156.61 43.67 156.09 47.5 155.51 51.2 C154.94 54.91 154.24 58.67 152.48 62.21 C150.72 65.74 147.84 69.12 144.96 72.42 C142.09 75.72 139.09 79.11 135.22 82.03 C131.36 84.94 126.61 87.5 121.75 89.9 C116.89 92.3 111.73 94.91 106.07 96.43 C100.41 97.96 93.95 98.54 87.82 99.05 C81.68 99.56 75.43 99.72 69.26 99.51 C63.09 99.3 56.53 99.04 50.81 97.78 C45.09 96.51 39.79 94.17 34.92 91.91 C30.06 89.64 25.42 87.08 21.62 84.21 C17.82 81.34 14.55 78.05 12.12 74.68 C9.69 71.32 8.1 67.63 7.03 64.04 C5.95 60.44 5.57 56.73 5.67 53.1 C5.77 49.47 6.38 45.81 7.61 42.26 C8.85 38.72 10.7 35.18 13.08 31.85 C15.47 28.52 18.37 25.19 21.91 22.27 C25.46 19.35 29.92 16.82 34.36 14.34 C38.8 11.87 43.43 9.38 48.57 7.41 C53.72 5.44 59.41 3.47 65.21 2.54 C71 1.61 77.33 1.77 83.34 1.81 C89.36 1.85 98.31 2.62 101.3 2.78"/></svg></button></td><td></td></tr></tbody>
+    </table>
+    <p class="ss__result"><span class="ss__result-label">Result</span> 1–0</p>
+  </div>
+  <figure class="demo__board" aria-labelledby="lesson-title">
+<div class="diagram">
+  <div class="diagram__ranks" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
   <div class="board" role="img" aria-label="Chessboard, viewed from Black's side. Move 5 · Black to play: White just took on e5.">
-    <div class="board__layer board__hl"><span class="hl hl--last" data-x="2" data-y="2"></span><span class="hl hl--last" data-x="3" data-y="4"></span><span class="hl mk mk--idea" data-x="4" data-y="0"></span></div>
-    <div class="board__layer board__coords" aria-hidden="true"><span class="coord coord--file on-dark" data-x="0">h</span><span class="coord coord--rank on-light" data-y="0">1</span><span class="coord coord--file on-light" data-x="1">g</span><span class="coord coord--rank on-dark" data-y="1">2</span><span class="coord coord--file on-dark" data-x="2">f</span><span class="coord coord--rank on-light" data-y="2">3</span><span class="coord coord--file on-light" data-x="3">e</span><span class="coord coord--rank on-dark" data-y="3">4</span><span class="coord coord--file on-dark" data-x="4">d</span><span class="coord coord--rank on-light" data-y="4">5</span><span class="coord coord--file on-light" data-x="5">c</span><span class="coord coord--rank on-dark" data-y="5">6</span><span class="coord coord--file on-dark" data-x="6">b</span><span class="coord coord--rank on-light" data-y="6">7</span><span class="coord coord--file on-light" data-x="7">a</span><span class="coord coord--rank on-dark" data-y="7">8</span></div>
+    <div class="board__layer board__hl"><span class="hl" data-x="2" data-y="2"></span><span class="hl" data-x="3" data-y="4"></span></div>
     <div class="board__layer board__pieces"><img class="pc" src="/assets/pieces/wR.svg" alt="" width="45" height="45" draggable="false" data-sq="a1" data-piece="wR" data-x="7" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="a2" data-piece="wP" data-x="7" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="a7" data-piece="bP" data-x="7" data-y="6"><img class="pc" src="/assets/pieces/bR.svg" alt="" width="45" height="45" draggable="false" data-sq="a8" data-piece="bR" data-x="7" data-y="7"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="b2" data-piece="wP" data-x="6" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="b7" data-piece="bP" data-x="6" data-y="6"><img class="pc" src="/assets/pieces/bN.svg" alt="" width="45" height="45" draggable="false" data-sq="b8" data-piece="bN" data-x="6" data-y="7"><img class="pc" src="/assets/pieces/wB.svg" alt="" width="45" height="45" draggable="false" data-sq="c1" data-piece="wB" data-x="5" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="c2" data-piece="wP" data-x="5" data-y="1"><img class="pc" src="/assets/pieces/wN.svg" alt="" width="45" height="45" draggable="false" data-sq="c3" data-piece="wN" data-x="5" data-y="2"><img class="pc" src="/assets/pieces/wB.svg" alt="" width="45" height="45" draggable="false" data-sq="c4" data-piece="wB" data-x="5" data-y="3"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="c7" data-piece="bP" data-x="5" data-y="6"><img class="pc" src="/assets/pieces/wQ.svg" alt="" width="45" height="45" draggable="false" data-sq="d1" data-piece="wQ" data-x="4" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="d2" data-piece="wP" data-x="4" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="d6" data-piece="bP" data-x="4" data-y="5"><img class="pc" src="/assets/pieces/bQ.svg" alt="" width="45" height="45" draggable="false" data-sq="d8" data-piece="bQ" data-x="4" data-y="7"><img class="pc" src="/assets/pieces/wK.svg" alt="" width="45" height="45" draggable="false" data-sq="e1" data-piece="wK" data-x="3" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="e4" data-piece="wP" data-x="3" data-y="3"><img class="pc" src="/assets/pieces/wN.svg" alt="" width="45" height="45" draggable="false" data-sq="e5" data-piece="wN" data-x="3" data-y="4"><img class="pc" src="/assets/pieces/bK.svg" alt="" width="45" height="45" draggable="false" data-sq="e8" data-piece="bK" data-x="3" data-y="7"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="f2" data-piece="wP" data-x="2" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="f7" data-piece="bP" data-x="2" data-y="6"><img class="pc" src="/assets/pieces/bB.svg" alt="" width="45" height="45" draggable="false" data-sq="f8" data-piece="bB" data-x="2" data-y="7"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="g2" data-piece="wP" data-x="1" data-y="1"><img class="pc" src="/assets/pieces/bB.svg" alt="" width="45" height="45" draggable="false" data-sq="g4" data-piece="bB" data-x="1" data-y="3"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="g6" data-piece="bP" data-x="1" data-y="5"><img class="pc" src="/assets/pieces/bN.svg" alt="" width="45" height="45" draggable="false" data-sq="g8" data-piece="bN" data-x="1" data-y="7"><img class="pc" src="/assets/pieces/wR.svg" alt="" width="45" height="45" draggable="false" data-sq="h1" data-piece="wR" data-x="0" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="h2" data-piece="wP" data-x="0" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="h7" data-piece="bP" data-x="0" data-y="6"><img class="pc" src="/assets/pieces/bR.svg" alt="" width="45" height="45" draggable="false" data-sq="h8" data-piece="bR" data-x="0" data-y="7"></div>
-    <svg class="board__arrows" viewBox="0 0 8 8" aria-hidden="true" focusable="false"><g class="arrow arrow--idea" data-i="0"><path d="M1.5 3.5 L4.118 0.882" pathLength="1"/><polygon points="4.415,0.585 4.274,1.037 3.963,0.726"/></g></svg>
+    <svg class="board__ink" viewBox="0 0 80 80" aria-hidden="true" focusable="false"><g class="mk mk--arrow tone--blue"><path class="stroke" pathLength="1" d="M16.24 33.36 C16.99 32.63 19.2 30.43 20.75 28.96 C22.29 27.48 24.03 26.07 25.53 24.49 C27.03 22.91 28.23 21.03 29.75 19.47 C31.28 17.91 33.12 16.67 34.68 15.15 C36.24 13.63 37.57 11.87 39.12 10.35 C40.68 8.82 43.2 6.72 44.01 5.99"/><path class="stroke" pathLength="1" d="M41.38 6.66 C41.53 6.64 41.99 6.56 42.3 6.51 C42.6 6.45 42.92 6.41 43.23 6.32 C43.53 6.23 43.97 6.02 44.12 5.96"/><path class="stroke" pathLength="1" d="M43.33 8.36 C43.38 8.22 43.53 7.82 43.62 7.55 C43.71 7.28 43.79 7.01 43.86 6.73 C43.93 6.46 44.01 6.03 44.04 5.9"/></g><g class="mk mk--loop tone--blue"><path class="stroke" pathLength="1" d="M40.73 2.72 C40.85 2.56 41.17 2.09 41.43 1.81 C41.69 1.52 41.96 1.21 42.3 1 C42.63 0.8 43.03 0.67 43.42 0.57 C43.8 0.47 44.21 0.42 44.59 0.43 C44.98 0.43 45.37 0.52 45.73 0.6 C46.09 0.69 46.46 0.79 46.78 0.95 C47.09 1.11 47.36 1.36 47.65 1.56 C47.93 1.76 48.27 1.92 48.49 2.17 C48.72 2.42 48.84 2.76 49.01 3.06 C49.18 3.36 49.39 3.64 49.51 3.96 C49.62 4.29 49.71 4.65 49.71 4.99 C49.71 5.34 49.59 5.68 49.53 6.03 C49.46 6.38 49.47 6.78 49.32 7.11 C49.16 7.44 48.88 7.73 48.61 8 C48.35 8.26 48.03 8.48 47.72 8.7 C47.41 8.92 47.09 9.16 46.73 9.3 C46.38 9.43 45.96 9.5 45.59 9.5 C45.21 9.51 44.82 9.39 44.46 9.32 C44.09 9.25 43.72 9.22 43.4 9.08 C43.08 8.94 42.81 8.67 42.53 8.47 C42.25 8.27 41.92 8.12 41.69 7.88 C41.47 7.64 41.34 7.31 41.18 7.02 C41.02 6.73 40.84 6.45 40.72 6.15 C40.6 5.84 40.51 5.51 40.46 5.17 C40.41 4.83 40.38 4.47 40.44 4.13 C40.5 3.79 40.66 3.46 40.81 3.14 C40.96 2.82 41.13 2.49 41.35 2.2 C41.57 1.92 41.85 1.63 42.15 1.43 C42.46 1.23 42.84 1.1 43.19 0.98 C43.54 0.85 44.08 0.72 44.26 0.67"/></g><g class="pencil" transform="translate(-40 -40)"><g class="pencil__body" transform="rotate(-38)"><path class="pencil__wood" d="M0 0 L-1.25 -3.6 L1.25 -3.6 Z"/><path class="pencil__lead" d="M0 0 L-0.5 -1.45 L0.5 -1.45 Z"/><rect class="pencil__barrel" x="-1.25" y="-15.5" width="2.5" height="11.9" rx="0.35"/><rect class="pencil__shine" x="-0.35" y="-15" width="0.5" height="10.8"/></g></g></svg>
     <div class="board__layer board__badges"></div>
   </div>
+  <div class="diagram__files" aria-hidden="true"><span>h</span><span>g</span><span>f</span><span>e</span><span>d</span><span>c</span><span>b</span><span>a</span></div>
+</div>
+  </figure>
   <div class="note" id="demo-note">
-    <div class="note__pips" aria-hidden="true"><span class="pip is-current"><i></i></span><span class="pip"><i></i></span><span class="pip"><i></i></span><span class="pip"><i></i></span><span class="pip"><i></i></span></div>
-    <div class="strip-wrap">
-      <ol class="strip" aria-label="Moves in the game"><li><button type="button" class="strip__move" data-goto="0" aria-current="step" disabled><span class="strip__n">5.</span><img class="fig" src="/assets/pieces/wN.svg" alt="N" title="Knight" width="45" height="45">xe5</button></li><li><button type="button" class="strip__move" data-goto="1" disabled><span class="strip__n">5…</span><img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">xd1<span class="strip__note">??</span></button></li><li><button type="button" class="strip__move" data-goto="3" disabled><span class="strip__n">6.</span><img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">xf7+</button></li><li><button type="button" class="strip__move" data-goto="3" disabled><span class="strip__n">6…</span><img class="fig" src="/assets/pieces/wK.svg" alt="K" title="King" width="45" height="45">e7</button></li><li><button type="button" class="strip__move" data-goto="4" disabled><span class="strip__n">7.</span><img class="fig" src="/assets/pieces/wN.svg" alt="N" title="Knight" width="45" height="45">d5#</button></li></ol>
-      <ol class="strip strip--branch" aria-label="Your branch" hidden><li class="strip__fork" aria-hidden="true"><svg viewBox="0 0 16 16" width="14" height="14"><path d="M4 2v12M4 9c0-3 8-2 8-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></li><li><span class="strip__move strip__move--static"><span class="strip__n">5…</span>dxe5</span></li><li><span class="strip__move strip__move--static"><span class="strip__n">6.</span><img class="fig" src="/assets/pieces/wQ.svg" alt="Q" title="Queen" width="45" height="45">xg4</span></li></ol>
-    </div>
-    <div class="note__stack"><div class="note__page is-current" data-key="main-0">
+    <div class="note__stack">
+    <div class="note__page is-current" data-key="main-0">
       <p class="note__label"><span class="note__count">1 / 5</span> <span class="note__label-text">Move 5 · Black to play</span></p>
-      <p class="note__title">White just took on e5.</p>
-      <p class="note__body">The knight left f3, so your bishop on g4 now attacks White’s queen. Winning a queen for a bishop looks like an easy decision.</p>
-      <p class="note__evidence"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Rules check: Bg4 attacks the queen on d1</span></p>
-    </div><div class="note__page" data-key="main-1" aria-hidden="true">
+      <p class="note__title" data-write>White just took on e5.</p>
+      <p class="note__body" data-write>The knight left f3, so your bishop on g4 now attacks White’s queen. Winning a queen for a bishop looks like an easy decision.</p>
+      <p class="note__evidence"><svg class="note__tick" viewBox="0 0 110 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M8.8 55.95 C10.2 57.57 14.56 62.59 17.21 65.67 C19.85 68.75 22.16 71.5 24.68 74.45 C27.2 77.41 29.84 80.49 32.33 83.41 C34.81 86.34 35.83 94.23 39.6 92 C43.37 89.77 49.42 76.93 54.95 70.02 C60.48 63.1 67 57.18 72.77 50.51 C78.54 43.84 84.1 36.95 89.57 29.98 C95.05 23.01 102.93 12.23 105.6 8.68"/></svg><span>Rules check: Bg4 attacks the queen on d1</span></p>
+    </div>
+    <div class="note__page" data-key="main-1" aria-hidden="true">
       <p class="note__label"><span class="note__count">2 / 5</span> <span class="note__label-text">5…Bxd1??</span></p>
-      <p class="note__title">You took the queen.</p>
-      <p class="note__body">A review marks this as a blunder: White mates in two. That is the verdict. It doesn’t tell you what you missed.</p>
-      <p class="note__evidence"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Stockfish 19, depth 20: mate in 2 for White</span></p>
-    </div><div class="note__page" data-key="main-2" aria-hidden="true">
+      <p class="note__title" data-write>You took the queen.</p>
+      <p class="note__body" data-write>A review marks this as a blunder: White mates in two. That is the verdict. It doesn’t tell you what you missed.</p>
+      <p class="note__evidence"><svg class="note__tick" viewBox="0 0 110 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M8.8 54.82 C10.18 56.46 14.44 61.52 17.08 64.7 C19.73 67.87 22.2 70.87 24.66 73.87 C27.13 76.87 29.38 79.65 31.87 82.67 C34.36 85.69 35.76 94.12 39.6 92 C43.44 89.88 49.39 76.88 54.91 69.95 C60.44 63.03 66.93 57.06 72.77 50.44 C78.61 43.83 84.46 37.23 89.93 30.24 C95.4 23.26 102.99 12.17 105.6 8.55"/></svg><span>Stockfish 19, depth 20: mate in 2 for White</span></p>
+    </div>
+    <div class="note__page" data-key="main-2" aria-hidden="true">
       <p class="note__label"><span class="note__count">3 / 5</span> <span class="note__label-text">Why it fails</span></p>
-      <p class="note__title">The queen was bait.</p>
-      <p class="note__body">Two White pieces already aim at f7, right next to your king, and only the king defends it. You spent your move on the queen while that attack was ready.</p>
-      <p class="note__evidence"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Rules check: f7 is attacked by Bc4 and Ne5, defended only by the king</span></p>
-    </div><div class="note__page" data-key="main-3" aria-hidden="true">
+      <p class="note__title" data-write>The queen was bait.</p>
+      <p class="note__body" data-write>Two White pieces already aim at f7, right next to your king, and only the king defends it. You spent your move on the queen while that attack was ready.</p>
+      <p class="note__evidence"><svg class="note__tick" viewBox="0 0 110 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M8.8 47.74 C10.03 49.53 13.68 54.86 16.2 58.5 C18.71 62.14 21.41 65.95 23.91 69.58 C26.41 73.2 28.58 76.49 31.2 80.23 C33.81 83.97 35.32 93.55 39.6 92 C43.88 90.45 51.58 78.41 56.89 70.93 C62.2 63.45 65.83 54.3 71.45 47.12 C77.06 39.95 84.89 34.99 90.58 27.9 C96.27 20.8 103.1 8.45 105.6 4.56"/></svg><span>Rules check: f7 is attacked by Bc4 and Ne5, defended only by the king</span></p>
+    </div>
+    <div class="note__page" data-key="main-3" aria-hidden="true">
       <p class="note__label"><span class="note__count">4 / 5</span> <span class="note__label-text">6.Bxf7+ Ke7</span></p>
-      <p class="note__title">Check, and only one way out.</p>
-      <p class="note__body">After 6.Bxf7+ your king has a single legal move, Ke7. The other squares are covered by White or blocked by your own pieces. Now look at d5.</p>
-      <p class="note__evidence"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Rules check: 6…Ke7 was the only legal reply</span></p>
-    </div><div class="note__page" data-key="main-4" aria-hidden="true">
+      <p class="note__title" data-write>Check, and only one way out.</p>
+      <p class="note__body" data-write>After 6.Bxf7+ your king has a single legal move, Ke7. The other squares are covered by White or blocked by your own pieces. Now look at d5.</p>
+      <p class="note__evidence"><svg class="note__tick" viewBox="0 0 110 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M8.8 55.06 C10.18 56.7 14.42 61.71 17.11 64.9 C19.79 68.1 22.56 71.37 24.92 74.25 C27.28 77.12 28.84 79.19 31.29 82.15 C33.73 85.11 35.53 93.84 39.6 92 C43.67 90.16 50.25 77.98 55.71 71.1 C61.16 64.23 66.82 57.55 72.34 50.74 C77.87 43.92 83.29 37.01 88.83 30.22 C94.38 23.43 102.81 13.36 105.6 9.98"/></svg><span>Rules check: 6…Ke7 was the only legal reply</span></p>
+    </div>
+    <div class="note__page" data-key="main-4" aria-hidden="true">
       <p class="note__label"><span class="note__count">5 / 5</span> <span class="note__label-text">7.Nd5#</span></p>
-      <p class="note__title">Checkmate.</p>
-      <p class="note__body">The knight checks from d5. The knights cover d7 and f6, the bishop covers e6 and e8, and the e5 knight protects the bishop. Your own pieces block the rest.</p>
-      <p class="note__evidence"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Rules check: checkmate, and every Black reply on the way was searched</span></p>
-    </div><div class="note__page" data-key="branch-0" aria-hidden="true">
-      <p class="note__label"><span class="note__count">Branch</span> <span class="note__label-text">Your branch · 5…dxe5 6.Qxg4</span></p>
-      <p class="note__title">What if you take the knight instead?</p>
-      <p class="note__body">5…dxe5 removes the knight that was attacking f7. White takes your bishop with 6.Qxg4, and you are a pawn down. Worse, but you are still playing a game instead of losing in two moves.</p>
-      <p class="note__evidence"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Stockfish 19, depth 20: about +2.3 for White (an estimate)</span></p>
-    </div></div>
+      <p class="note__title" data-write>Checkmate.</p>
+      <p class="note__body" data-write>The knight checks from d5. The knights cover d7 and f6, the bishop covers e6 and e8, and the e5 knight protects the bishop. Your own pieces block the rest.</p>
+      <p class="note__evidence"><svg class="note__tick" viewBox="0 0 110 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M8.8 54.94 C10.18 56.58 14.61 61.8 17.1 64.8 C19.58 67.8 21.12 69.87 23.69 72.96 C26.25 76.05 29.85 80.16 32.5 83.34 C35.15 86.51 35.54 94.13 39.6 92 C43.66 89.87 51.18 77.77 56.86 70.55 C62.54 63.33 68.27 56.15 73.69 48.67 C79.12 41.2 84.1 33.27 89.42 25.69 C94.73 18.1 102.9 6.91 105.6 3.16"/></svg><span>Rules check: checkmate, and every Black reply on the way was searched</span></p>
+    </div>
+    <div class="note__page" data-key="branch-0" aria-hidden="true">
+      <p class="note__label"><span class="note__count">Your branch</span> <span class="note__label-text">Your branch · 5…dxe5 6.Qxg4</span></p>
+      <p class="note__title" data-write>What if you take the knight instead?</p>
+      <p class="note__body" data-write>5…dxe5 removes the knight that was attacking f7. White takes your bishop with 6.Qxg4, and you are a pawn down. Worse, but you are still playing a game instead of losing in two moves.</p>
+      <p class="note__evidence"><svg class="note__tick" viewBox="0 0 110 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M8.8 49.71 C10.08 51.47 14.02 56.85 16.46 60.25 C18.91 63.65 20.86 66.56 23.46 70.11 C26.05 73.66 29.33 77.9 32.02 81.55 C34.71 85.2 35.71 94.12 39.6 92 C43.49 89.88 50.09 76.53 55.37 68.83 C60.66 61.13 65.5 52.99 71.28 45.79 C77.07 38.59 84.36 32.9 90.08 25.64 C95.8 18.38 103.01 6.12 105.6 2.21"/></svg><span>Stockfish 19, depth 20: about +2.3 for White (an estimate)</span></p>
+    </div>
+    </div>
   </div>
   <div class="demo__controls">
-    <button type="button" class="ctl" data-act="prev" disabled><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</button>
-    <button type="button" class="ctl ctl--next" data-act="next" disabled><span class="ctl__text">Next</span><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    <button type="button" class="ctl ctl--branch" data-act="branch" disabled><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 2v12M4 9c0-3 8-2 8-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="ctl__text">Try another line</span></button>
+    <button type="button" class="ctl" data-act="prev" disabled><svg class="ctl__icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="M10.5 2.8 4.8 8.2l5.9 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</button>
+    <button type="button" class="ctl ctl--next" data-act="next" disabled><span class="ctl__text">Next</span><svg class="ctl__icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="M5.6 2.8l5.8 5.3-5.9 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" class="ctl ctl--branch" data-act="branch" disabled><svg class="ctl__icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="M4.5 1.8v12.4M4.5 9.2c0-3.2 7.4-2.2 7.4-6.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="ctl__text">Try another line</span></button>
   </div>
-  <p class="demo__fine">A scripted walkthrough of the idea, not the live tutor. Every move and claim in it was checked with a chess rules library and Stockfish 19.</p>
-</figure>
-      </div>
-    </div>
+</div>
+    <p class="lesson__fine">A scripted walkthrough of the idea, not the live tutor. Every move and claim in it was checked with a chess rules library and Stockfish 19.</p>
   </section>
 
-  <section class="section section--paper problem" id="problem" aria-labelledby="problem-title">
-    <div class="wrap">
-      <p class="eyebrow">The problem</p>
-      <h2 id="problem-title" class="display-2 problem__title">The engine says <span class="nowrap">Nf5.</span> You still don’t know why.</h2>
-      <div class="problem__grid">
-        <div class="problem__text prose">
-          <p>A game review gives you a score, a best move and a line of moves six deep. All of it is correct, and all of it is written for an engine.</p>
-          <p>What you wanted to know is smaller and harder. What did I miss? What should I look at next time? What happens if I try my own idea?</p>
-          <p>Without those answers, the same mistake turns up again next week, in a different game.</p>
-        </div>
-        <div class="problem__questions">
-          <p class="problem__lead">AskTheMove is built to answer three questions:</p>
-          <ul class="questions">
-            <li class="question">
-              <span class="qbadge" aria-hidden="true">?</span>
-              <h3>What did I miss?</h3>
-              <p>The threat, the loose piece or the square you didn’t check, pointed out on the board.</p>
-            </li>
-            <li class="question">
-              <span class="qbadge" aria-hidden="true">?</span>
-              <h3>Why is the engine’s move better?</h3>
-              <p>The reason in a few sentences, taken from lines that were actually calculated.</p>
-            </li>
-            <li class="question">
-              <span class="qbadge" aria-hidden="true">?</span>
-              <h3>What if I play my move instead?</h3>
-              <p>Play it out as a branch, see the strongest reply, then come back to the game.</p>
-            </li>
-          </ul>
-        </div>
-      </div>
+  <section class="review rows" id="problem" aria-labelledby="problem-title" data-ink-group>
+    <h2 id="problem-title" class="h2 review__title">The engine says <span class="nowrap">Nf5.</span> You still <span class="ink ink--highlight" data-draw>don’t know why.<svg class="ink__svg" viewBox="0 0 766 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M7.87 62.94 C28.69 62.82 91.11 61.98 132.78 62.21 C174.46 62.44 216.21 64.28 257.92 64.32 C299.63 64.35 341.32 62.57 383.03 62.4 C424.73 62.24 466.45 63.93 508.16 63.33 C549.86 62.72 591.54 59.98 633.24 58.76 C674.94 57.54 737.49 56.46 758.34 56"/></svg></span></h2>
+    <div class="review__main prose">
+      <p>A game review gives you a score, a best move and a line of moves six deep. All of it is correct, and all of it is written for an engine.</p>
+      <p>What you wanted to know is smaller and harder. What did I miss? What should I look at next time? What happens if I try my own idea?</p>
+      <p>Without those answers, the same mistake turns up again next week, in a different game.</p>
     </div>
-  </section>
-
-  <section class="section section--paper how" id="how" aria-labelledby="how-title">
-    <div class="wrap">
-      <p class="eyebrow">How it works</p>
-      <h2 id="how-title" class="display-2 how__title">Evidence first. Then the explanation. Then your own question.</h2>
-      <p class="how__note">The panels below are drawn for this page, using the trap from the top of the page. The positions, lines and engine figures in them are real.</p>
-      <ol class="steps">
-        <li class="step">
-          <div class="step__node" aria-hidden="true">1.</div>
-          <div class="step__text">
-            <h3>Evidence</h3>
-            <p>Stockfish searches the position and a rules library replays every line. Material, checks and threats are settled as facts before anything is said about them, and each score shows how deep it was searched.</p>
-            <p class="tag tag--live">Works today</p>
-          </div>
-          <figure class="step__media">
-            <div class="mock">
-              <p class="mock__bar"><span>Evidence</span><b>5…<img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">xd1<span class="mock__flag">??</span></b></p>
-              <div class="mock__body evidence">
-<div class="board board--mini" role="img" aria-label="Chessboard, viewed from Black's side. Why it fails: The queen was bait.">
-  <div class="board__layer board__hl"><span class="hl hl--last" data-x="1" data-y="3"></span><span class="hl hl--last" data-x="4" data-y="0"></span><span class="hl mk mk--danger" data-x="2" data-y="6"></span></div>
-  <div class="board__layer board__pieces"><img class="pc" src="/assets/pieces/wR.svg" alt="" width="45" height="45" draggable="false" data-sq="a1" data-piece="wR" data-x="7" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="a2" data-piece="wP" data-x="7" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="a7" data-piece="bP" data-x="7" data-y="6"><img class="pc" src="/assets/pieces/bR.svg" alt="" width="45" height="45" draggable="false" data-sq="a8" data-piece="bR" data-x="7" data-y="7"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="b2" data-piece="wP" data-x="6" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="b7" data-piece="bP" data-x="6" data-y="6"><img class="pc" src="/assets/pieces/bN.svg" alt="" width="45" height="45" draggable="false" data-sq="b8" data-piece="bN" data-x="6" data-y="7"><img class="pc" src="/assets/pieces/wB.svg" alt="" width="45" height="45" draggable="false" data-sq="c1" data-piece="wB" data-x="5" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="c2" data-piece="wP" data-x="5" data-y="1"><img class="pc" src="/assets/pieces/wN.svg" alt="" width="45" height="45" draggable="false" data-sq="c3" data-piece="wN" data-x="5" data-y="2"><img class="pc" src="/assets/pieces/wB.svg" alt="" width="45" height="45" draggable="false" data-sq="c4" data-piece="wB" data-x="5" data-y="3"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="c7" data-piece="bP" data-x="5" data-y="6"><img class="pc" src="/assets/pieces/bB.svg" alt="" width="45" height="45" draggable="false" data-sq="d1" data-piece="bB" data-x="4" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="d2" data-piece="wP" data-x="4" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="d6" data-piece="bP" data-x="4" data-y="5"><img class="pc" src="/assets/pieces/bQ.svg" alt="" width="45" height="45" draggable="false" data-sq="d8" data-piece="bQ" data-x="4" data-y="7"><img class="pc" src="/assets/pieces/wK.svg" alt="" width="45" height="45" draggable="false" data-sq="e1" data-piece="wK" data-x="3" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="e4" data-piece="wP" data-x="3" data-y="3"><img class="pc" src="/assets/pieces/wN.svg" alt="" width="45" height="45" draggable="false" data-sq="e5" data-piece="wN" data-x="3" data-y="4"><img class="pc" src="/assets/pieces/bK.svg" alt="" width="45" height="45" draggable="false" data-sq="e8" data-piece="bK" data-x="3" data-y="7"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="f2" data-piece="wP" data-x="2" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="f7" data-piece="bP" data-x="2" data-y="6"><img class="pc" src="/assets/pieces/bB.svg" alt="" width="45" height="45" draggable="false" data-sq="f8" data-piece="bB" data-x="2" data-y="7"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="g2" data-piece="wP" data-x="1" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="g6" data-piece="bP" data-x="1" data-y="5"><img class="pc" src="/assets/pieces/bN.svg" alt="" width="45" height="45" draggable="false" data-sq="g8" data-piece="bN" data-x="1" data-y="7"><img class="pc" src="/assets/pieces/wR.svg" alt="" width="45" height="45" draggable="false" data-sq="h1" data-piece="wR" data-x="0" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="h2" data-piece="wP" data-x="0" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="h7" data-piece="bP" data-x="0" data-y="6"><img class="pc" src="/assets/pieces/bR.svg" alt="" width="45" height="45" draggable="false" data-sq="h8" data-piece="bR" data-x="0" data-y="7"></div>
-  <svg class="board__arrows" viewBox="0 0 8 8" aria-hidden="true" focusable="false"><g class="arrow arrow--threat" data-i="0"><path d="M5.5 3.5 L2.882 6.118" pathLength="1"/><polygon points="2.585,6.415 2.726,5.963 3.037,6.274"/></g><g class="arrow arrow--threat" data-i="1"><path d="M3.5 4.5 L3.5 6.5 L3.04 6.5" pathLength="1"/><polygon points="2.62,6.5 3.04,6.28 3.04,6.72"/></g></svg>
-  <div class="board__layer board__badges"><span class="badge badge--blunder" data-x="4" data-y="0"><b>??</b></span></div>
-</div>
-                <dl class="facts">
-                  <div class="fact fact--flag">
-                    <dt>Engine</dt>
-                    <dd><strong>Mate in 2 for White</strong><span>Stockfish 19, depth 20</span></dd>
-                  </div>
-                  <div class="fact">
-                    <dt>Line</dt>
-                    <dd><strong class="moves"><span class="mv"><span class="mv__n">6.</span><img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">xf7+</span> <span class="mv"><img class="fig" src="/assets/pieces/wK.svg" alt="K" title="King" width="45" height="45">e7</span> <span class="mv"><span class="mv__n">7.</span><img class="fig" src="/assets/pieces/wN.svg" alt="N" title="Knight" width="45" height="45">d5#</span></strong><span>Each move replayed by the rules library</span></dd>
-                  </div>
-                  <div class="fact">
-                    <dt>f7</dt>
-                    <dd><strong>2 attackers, 1 defender</strong><span>Bishop c4 and knight e5, against the king</span></dd>
-                  </div>
-                  <div class="fact">
-                    <dt>Material</dt>
-                    <dd><strong>Black is 8 points up</strong><span>A queen for a pawn, for one move</span></dd>
-                  </div>
-                </dl>
-              </div>
-            </div>
-            <figcaption>The facts behind one move: the engine’s verdict, the forced line, and the square it all happens on.</figcaption>
-          </figure>
+    <aside class="review__side" aria-label="What a review says about the trap">
+      <div class="printout">
+        <p class="printout__head">Review · move 5</p>
+        <p class="printout__line"><span class="printout__mv">5…<img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">xd1</span><span class="ink ink--circle" data-draw>Blunder<svg class="ink__svg" viewBox="0 0 268 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M96.57 4.9 C101.54 4.33 116.28 2.18 126.39 1.47 C136.49 0.75 147.08 0.38 157.18 0.59 C167.29 0.79 177.42 1.62 187.02 2.71 C196.62 3.8 205.99 5.31 214.8 7.13 C223.62 8.95 232.95 10.94 239.92 13.64 C246.89 16.33 252.38 19.83 256.62 23.3 C260.86 26.76 263.25 30.63 265.37 34.42 C267.49 38.2 270.23 42.14 269.36 45.99 C268.48 49.85 263.46 53.8 260.13 57.57 C256.79 61.33 254.44 65.21 249.36 68.58 C244.27 71.96 236.77 75.02 229.61 77.83 C222.46 80.64 214.56 83.17 206.42 85.45 C198.28 87.72 189.75 89.95 180.75 91.5 C171.75 93.05 161.97 93.78 152.41 94.75 C142.85 95.73 133.08 97.08 123.39 97.35 C113.7 97.62 103.64 97.12 94.26 96.36 C84.88 95.6 75.73 94.3 67.1 92.77 C58.47 91.24 49.86 89.44 42.49 87.17 C35.11 84.91 28.36 82.16 22.85 79.19 C17.34 76.23 12.42 72.88 9.44 69.39 C6.46 65.9 5.07 62 4.97 58.27 C4.88 54.53 6.78 50.67 8.89 46.99 C10.99 43.3 13.48 39.56 17.61 36.13 C21.74 32.71 27.27 29.31 33.66 26.43 C40.05 23.56 48.2 21.12 55.94 18.87 C63.68 16.62 71.89 14.77 80.13 12.92 C88.37 11.06 96.54 8.9 105.36 7.74 C114.18 6.57 123.71 6.47 133.06 5.95 C142.41 5.42 152.09 4.46 161.45 4.58 C170.8 4.69 184.55 6.28 189.17 6.62"/></svg></span></p>
+        <p class="printout__line printout__line--dim">Mate in 2 for White</p>
+        <p class="printout__line printout__line--dim">Stockfish 19, depth 20</p>
+      </div>
+      <p class="note-hand note-hand--red review__but"><i class="glyph glyph--up" data-draw><svg class="ink__svg" viewBox="0 0 150 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M138 92 C137.57 89.6 136.61 82.14 135.4 77.58 C134.19 73.03 132.48 68.56 130.75 64.67 C129.02 60.78 127.59 57.78 125 54.22 C122.41 50.66 118.67 46.54 115.21 43.29 C111.74 40.03 108.08 37.18 104.19 34.69 C100.3 32.2 96.39 30.28 91.87 28.35 C87.35 26.42 82.57 24.82 77.07 23.09 C71.57 21.37 65.16 19.32 58.88 18 C52.59 16.67 46.17 15.8 39.36 15.14 C32.55 14.47 21.56 14.19 18 14"/><path class="stroke" pathLength="1" d="M34.86 26.41 C33.95 25.6 31.25 23.11 29.38 21.56 C27.5 20.02 25.63 18.51 23.62 17.16 C21.61 15.82 18.37 14.12 17.32 13.51"/><path class="stroke" pathLength="1" d="M37.24 4.32 C36.08 4.75 32.59 5.91 30.31 6.9 C28.04 7.89 25.76 9.03 23.58 10.28 C21.4 11.52 18.28 13.7 17.22 14.39"/></svg></i><span data-write>True. But what did I miss?</span></p>
+    </aside>
+    <div class="review__questions">
+      <p class="review__lead">AskTheMove is built to answer three questions:</p>
+      <ol class="questions">
+        <li class="question">
+          <h3 class="question__q" data-write>What did I miss?</h3>
+          <p>The threat, the loose piece or the square you didn’t check, pointed out on the board.</p>
         </li>
-        <li class="step">
-          <div class="step__node" aria-hidden="true">2.</div>
-          <div class="step__text">
-            <h3>Explanation</h3>
-            <p>The tutor turns that evidence into a few plain sentences, tied to arrows on the board. It is given only checked moves and facts, so it explains what happened instead of guessing.</p>
-            <p class="tag tag--dev">In development</p>
-          </div>
-          <figure class="step__media">
-            <div class="mock">
-              <p class="mock__bar"><span>Tutor</span><b>5…<img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">xd1<span class="mock__flag">??</span></b><span class="mock__pill">Sample text</span></p>
-              <div class="mock__body">
-                <div class="tutor">
-                  <p class="tutor__title">The queen was bait.</p>
-                  <p>Taking the queen looked like winning, but f7 was already attacked twice, by the bishop on <span class="sq">c4</span> and the knight on <span class="sq">e5</span>. Only your king defended it.</p>
-                  <p>White checks with 6.Bxf7+. Your king has one square, <span class="sq">e7</span>, and 7.Nd5 is mate.</p>
-                  <p class="tutor__next"><b>Next time</b> When a piece is offered for free, look first at what your opponent’s last move attacks.</p>
-                  <p class="tutor__src">From the evidence for this move: Stockfish 19 at depth 20, and the rules check on f7.</p>
-                </div>
-              </div>
-            </div>
-            <figcaption>Sample text written for this page. The tutor that will write these is still in development.</figcaption>
-          </figure>
+        <li class="question">
+          <h3 class="question__q" data-write>Why is the engine’s move better?</h3>
+          <p>The reason in a few sentences, taken from lines that were actually calculated.</p>
         </li>
-        <li class="step step--branch">
-          <div class="step__node" aria-hidden="true">3.</div>
-          <div class="step__text">
-            <h3>Branch</h3>
-            <p>Ask “what if?” and play it. Your line is saved as a branch of the game, a branch can have branches of its own, and each note stays on the position where you wrote it.</p>
-            <p class="tag tag--live">Works today</p>
-          </div>
-          <figure class="step__media">
-            <div class="mock">
-              <p class="mock__bar"><span>Variations</span><b>Move 5</b></p>
-              <div class="mock__body">
-                <div class="tree">
-                  <p class="tree__row"><span class="tree__tag">Game</span><span class="moves"><span class="mv"><span class="mv__n">5.</span><img class="fig" src="/assets/pieces/wN.svg" alt="N" title="Knight" width="45" height="45">xe5</span> <span class="mv mv--key"><img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">xd1<span class="mock__flag">??</span></span> <span class="mv"><span class="mv__n">6.</span><img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">xf7+</span> <span class="mv"><img class="fig" src="/assets/pieces/wK.svg" alt="K" title="King" width="45" height="45">e7</span> <span class="mv"><span class="mv__n">7.</span><img class="fig" src="/assets/pieces/wN.svg" alt="N" title="Knight" width="45" height="45">d5#</span></span></p>
-                  <p class="tree__row tree__row--branch"><span class="tree__tag">Your line</span><span class="moves"><span class="mv"><span class="mv__n">5…</span>dxe5</span> <span class="mv"><span class="mv__n">6.</span><img class="fig" src="/assets/pieces/wQ.svg" alt="Q" title="Queen" width="45" height="45">xg4</span></span></p>
-                </div>
-                <div class="branchview">
-<div class="board board--mini" role="img" aria-label="Chessboard, viewed from Black's side. Your branch · 5…dxe5 6.Qxg4: What if you take the knight instead?">
-  <div class="board__layer board__hl"><span class="hl hl--last" data-x="4" data-y="0"></span><span class="hl hl--last" data-x="1" data-y="3"></span></div>
-  <div class="board__layer board__pieces"><img class="pc" src="/assets/pieces/wR.svg" alt="" width="45" height="45" draggable="false" data-sq="a1" data-piece="wR" data-x="7" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="a2" data-piece="wP" data-x="7" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="a7" data-piece="bP" data-x="7" data-y="6"><img class="pc" src="/assets/pieces/bR.svg" alt="" width="45" height="45" draggable="false" data-sq="a8" data-piece="bR" data-x="7" data-y="7"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="b2" data-piece="wP" data-x="6" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="b7" data-piece="bP" data-x="6" data-y="6"><img class="pc" src="/assets/pieces/bN.svg" alt="" width="45" height="45" draggable="false" data-sq="b8" data-piece="bN" data-x="6" data-y="7"><img class="pc" src="/assets/pieces/wB.svg" alt="" width="45" height="45" draggable="false" data-sq="c1" data-piece="wB" data-x="5" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="c2" data-piece="wP" data-x="5" data-y="1"><img class="pc" src="/assets/pieces/wN.svg" alt="" width="45" height="45" draggable="false" data-sq="c3" data-piece="wN" data-x="5" data-y="2"><img class="pc" src="/assets/pieces/wB.svg" alt="" width="45" height="45" draggable="false" data-sq="c4" data-piece="wB" data-x="5" data-y="3"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="c7" data-piece="bP" data-x="5" data-y="6"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="d2" data-piece="wP" data-x="4" data-y="1"><img class="pc" src="/assets/pieces/bQ.svg" alt="" width="45" height="45" draggable="false" data-sq="d8" data-piece="bQ" data-x="4" data-y="7"><img class="pc" src="/assets/pieces/wK.svg" alt="" width="45" height="45" draggable="false" data-sq="e1" data-piece="wK" data-x="3" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="e4" data-piece="wP" data-x="3" data-y="3"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="e5" data-piece="bP" data-x="3" data-y="4"><img class="pc" src="/assets/pieces/bK.svg" alt="" width="45" height="45" draggable="false" data-sq="e8" data-piece="bK" data-x="3" data-y="7"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="f2" data-piece="wP" data-x="2" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="f7" data-piece="bP" data-x="2" data-y="6"><img class="pc" src="/assets/pieces/bB.svg" alt="" width="45" height="45" draggable="false" data-sq="f8" data-piece="bB" data-x="2" data-y="7"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="g2" data-piece="wP" data-x="1" data-y="1"><img class="pc" src="/assets/pieces/wQ.svg" alt="" width="45" height="45" draggable="false" data-sq="g4" data-piece="wQ" data-x="1" data-y="3"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="g6" data-piece="bP" data-x="1" data-y="5"><img class="pc" src="/assets/pieces/bN.svg" alt="" width="45" height="45" draggable="false" data-sq="g8" data-piece="bN" data-x="1" data-y="7"><img class="pc" src="/assets/pieces/wR.svg" alt="" width="45" height="45" draggable="false" data-sq="h1" data-piece="wR" data-x="0" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="h2" data-piece="wP" data-x="0" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="h7" data-piece="bP" data-x="0" data-y="6"><img class="pc" src="/assets/pieces/bR.svg" alt="" width="45" height="45" draggable="false" data-sq="h8" data-piece="bR" data-x="0" data-y="7"></div>
-  <svg class="board__arrows" viewBox="0 0 8 8" aria-hidden="true" focusable="false"></svg>
-  <div class="board__layer board__badges"></div>
-</div>
-                  <div class="branchview__side">
-                    <p class="eval"><span class="eval__num">+2.3</span> <span class="eval__who">for White</span></p>
-                    <p class="eval__src">Stockfish 19, depth 20. An estimate.</p>
-                    <p class="pin"><span class="pin__head">Your note</span>Take the knight. It was the piece attacking f7. A pawn down, but still a game.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <figcaption>Your line sits next to the game, with your note on the position where you wrote it.</figcaption>
-          </figure>
-        </li>
-        <li class="step step--return">
-          <div class="step__node" aria-hidden="true">4.</div>
-          <div class="step__text">
-            <h3>Return</h3>
-            <p>Go back to the actual game whenever you like. The game report keeps your key moves in order, so you can move on to the next moment that mattered.</p>
-            <p class="tag tag--live">Works today</p>
-          </div>
-          <figure class="step__media">
-            <div class="mock">
-              <p class="mock__bar"><span>Your game</span><b>Back on move 5</b></p>
-              <div class="mock__body">
-                <p class="game moves"><span class="mv"><span class="mv__n">1.</span>e4</span> <span class="mv">e5</span> <span class="mv"><span class="mv__n">2.</span><img class="fig" src="/assets/pieces/wN.svg" alt="N" title="Knight" width="45" height="45">f3</span> <span class="mv">d6</span> <span class="mv"><span class="mv__n">3.</span><img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">c4</span> <span class="mv"><img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">g4</span> <span class="mv"><span class="mv__n">4.</span><img class="fig" src="/assets/pieces/wN.svg" alt="N" title="Knight" width="45" height="45">c3</span> <span class="mv">g6</span> <span class="mv"><span class="mv__n">5.</span><img class="fig" src="/assets/pieces/wN.svg" alt="N" title="Knight" width="45" height="45">xe5</span> <span class="mv mv--key"><img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">xd1<span class="mock__flag">??</span></span> <span class="mv"><span class="mv__n">6.</span><img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">xf7+</span> <span class="mv"><img class="fig" src="/assets/pieces/wK.svg" alt="K" title="King" width="45" height="45">e7</span> <span class="mv"><span class="mv__n">7.</span><img class="fig" src="/assets/pieces/wN.svg" alt="N" title="Knight" width="45" height="45">d5#</span></p>
-                <div class="keymove">
-                  <p class="keymove__head">Key moment</p>
-                  <p class="keymove__move"><strong>5…<img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">xd1<span class="mock__flag">??</span></strong> Missed the mate threat on f7</p>
-                  <p class="keymove__meta">1 saved line · 1 note</p>
-                </div>
-                <p class="mock__actions"><span class="mock__btn"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M6 4L2.5 7.5 6 11M3 7.5h7a3.5 3.5 0 0 1 0 7H8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Back to the game</span></p>
-              </div>
-            </div>
-            <figcaption>Back in the game, with the key moment marked and your line saved under it.</figcaption>
-          </figure>
+        <li class="question">
+          <h3 class="question__q" data-write>What if I play my move instead?</h3>
+          <p>Play it out as a branch, see the strongest reply, then come back to the game.</p>
         </li>
       </ol>
     </div>
   </section>
 
-  <section class="section section--felt who" id="who" aria-labelledby="who-title">
-    <div class="wrap who__grid">
-      <div>
-        <p class="eyebrow eyebrow--felt">Who it’s for</p>
-        <h2 id="who-title" class="display-2">Adults rated about 800 to 1600 who already review their games.</h2>
-      </div>
-      <div class="who__lists">
-        <div>
-          <h3 class="who__head">It’s probably for you if</h3>
-          <ul class="ticks">
-            <li>You open the engine after a loss and the best move still doesn’t make sense.</li>
-            <li>You would rather understand one mistake properly than skim through ten.</li>
-            <li>You play online or over the board and train on your own time.</li>
-          </ul>
-        </div>
-        <div>
-          <h3 class="who__head">It isn’t built for</h3>
-          <ul class="crosses">
-            <li>Help during a live game. It analyses finished games, positions you set up, and practice games against its own computer opponents.</li>
-            <li>Memorising opening theory. Other tools do that well.</li>
-          </ul>
-        </div>
-      </div>
+  <section class="how" id="how" aria-labelledby="how-title">
+    <div class="how__head rows" data-ink-group>
+      <h2 id="how-title" class="h2 how__title">Evidence first. Then the <span class="ink ink--underline" data-draw>explanation<svg class="ink__svg" viewBox="0 0 1164 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M25.3 84.26 C48.48 84.06 117.68 83.67 164.37 83.07 C211.06 82.47 258.41 81.4 305.43 80.65 C352.46 79.91 399.48 78.42 446.5 78.58 C493.53 78.73 540.57 81.68 587.6 81.56 C634.63 81.45 681.64 79.26 728.66 77.88 C775.68 76.51 822.69 73.9 869.72 73.31 C916.74 72.71 963.78 73.87 1010.8 74.31 C1057.83 74.75 1128.38 75.67 1151.89 75.94"/></svg></span>. Then your own question.</h2>
+      <p class="how__note">The figures below are drawn for this page, using the trap from the lesson above. The positions, lines and engine figures in them are real.</p>
     </div>
+    <ol class="steps">
+      <li class="step" data-ink-group>
+        <div class="step__text">
+          <h3 class="step__title"><span class="step__n" aria-hidden="true">1</span>Evidence</h3>
+          <p>Stockfish searches the position and a rules library replays every line. Material, checks and threats are settled as facts before anything is said about them, and each score shows how deep it was searched.</p>
+          <p class="status status--live"><i class="glyph glyph--tick" data-draw><svg class="ink__svg" viewBox="0 0 110 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M8.8 52.39 C10.13 54.09 14.13 59.19 16.8 62.59 C19.46 65.99 22.26 69.52 24.79 72.78 C27.31 76.04 29.49 78.95 31.96 82.15 C34.43 85.36 35.75 93.98 39.6 92 C43.45 90.02 49.45 77.04 55.07 70.25 C60.68 63.45 67.87 58.24 73.28 51.24 C78.7 44.25 82.17 35.32 87.56 28.3 C92.95 21.28 102.59 12.32 105.6 9.13"/></svg></i>Works today</p>
+        </div>
+        <figure class="step__fig fig-evidence">
+          <div class="fig-evidence__board">
+<div class="diagram diagram--mini">
+  <div class="board board--mini" role="img" aria-label="Chessboard, viewed from Black's side. Why it fails: The queen was bait.">
+    <div class="board__layer board__hl"><span class="hl" data-x="1" data-y="3"></span><span class="hl" data-x="4" data-y="0"></span></div>
+    <div class="board__layer board__pieces"><img class="pc" src="/assets/pieces/wR.svg" alt="" width="45" height="45" draggable="false" data-sq="a1" data-piece="wR" data-x="7" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="a2" data-piece="wP" data-x="7" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="a7" data-piece="bP" data-x="7" data-y="6"><img class="pc" src="/assets/pieces/bR.svg" alt="" width="45" height="45" draggable="false" data-sq="a8" data-piece="bR" data-x="7" data-y="7"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="b2" data-piece="wP" data-x="6" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="b7" data-piece="bP" data-x="6" data-y="6"><img class="pc" src="/assets/pieces/bN.svg" alt="" width="45" height="45" draggable="false" data-sq="b8" data-piece="bN" data-x="6" data-y="7"><img class="pc" src="/assets/pieces/wB.svg" alt="" width="45" height="45" draggable="false" data-sq="c1" data-piece="wB" data-x="5" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="c2" data-piece="wP" data-x="5" data-y="1"><img class="pc" src="/assets/pieces/wN.svg" alt="" width="45" height="45" draggable="false" data-sq="c3" data-piece="wN" data-x="5" data-y="2"><img class="pc" src="/assets/pieces/wB.svg" alt="" width="45" height="45" draggable="false" data-sq="c4" data-piece="wB" data-x="5" data-y="3"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="c7" data-piece="bP" data-x="5" data-y="6"><img class="pc" src="/assets/pieces/bB.svg" alt="" width="45" height="45" draggable="false" data-sq="d1" data-piece="bB" data-x="4" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="d2" data-piece="wP" data-x="4" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="d6" data-piece="bP" data-x="4" data-y="5"><img class="pc" src="/assets/pieces/bQ.svg" alt="" width="45" height="45" draggable="false" data-sq="d8" data-piece="bQ" data-x="4" data-y="7"><img class="pc" src="/assets/pieces/wK.svg" alt="" width="45" height="45" draggable="false" data-sq="e1" data-piece="wK" data-x="3" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="e4" data-piece="wP" data-x="3" data-y="3"><img class="pc" src="/assets/pieces/wN.svg" alt="" width="45" height="45" draggable="false" data-sq="e5" data-piece="wN" data-x="3" data-y="4"><img class="pc" src="/assets/pieces/bK.svg" alt="" width="45" height="45" draggable="false" data-sq="e8" data-piece="bK" data-x="3" data-y="7"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="f2" data-piece="wP" data-x="2" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="f7" data-piece="bP" data-x="2" data-y="6"><img class="pc" src="/assets/pieces/bB.svg" alt="" width="45" height="45" draggable="false" data-sq="f8" data-piece="bB" data-x="2" data-y="7"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="g2" data-piece="wP" data-x="1" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="g6" data-piece="bP" data-x="1" data-y="5"><img class="pc" src="/assets/pieces/bN.svg" alt="" width="45" height="45" draggable="false" data-sq="g8" data-piece="bN" data-x="1" data-y="7"><img class="pc" src="/assets/pieces/wR.svg" alt="" width="45" height="45" draggable="false" data-sq="h1" data-piece="wR" data-x="0" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="h2" data-piece="wP" data-x="0" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="h7" data-piece="bP" data-x="0" data-y="6"><img class="pc" src="/assets/pieces/bR.svg" alt="" width="45" height="45" draggable="false" data-sq="h8" data-piece="bR" data-x="0" data-y="7"></div>
+    <svg class="board__ink" viewBox="0 0 80 80" aria-hidden="true" focusable="false" data-draw><g class="mk mk--arrow tone--red"><path class="stroke" pathLength="1" d="M53.71 36.57 C52.97 37.32 50.67 39.43 49.26 41.05 C47.85 42.67 46.69 44.65 45.26 46.29 C43.82 47.94 42.18 49.38 40.63 50.91 C39.08 52.44 37.52 53.97 35.95 55.48 C34.37 56.98 32.83 58.52 31.17 59.94 C29.51 61.37 26.85 63.33 25.99 64.01"/><path class="stroke" pathLength="1" d="M28.35 63.15 C28.22 63.2 27.82 63.34 27.55 63.44 C27.28 63.54 27.01 63.67 26.73 63.77 C26.46 63.87 26.03 64 25.89 64.04"/><path class="stroke" pathLength="1" d="M26.74 61.56 C26.7 61.7 26.57 62.13 26.49 62.41 C26.4 62.69 26.3 62.97 26.21 63.26 C26.12 63.54 26 63.97 25.96 64.11"/></g><g class="mk mk--arrow tone--red"><path class="stroke" pathLength="1" d="M35 46.8 C35 47.56 35 49.83 35.01 51.36 C35.02 52.88 35.05 54.43 35.05 55.95 C35.06 57.48 35.05 58.99 35.04 60.49 C35.04 62 35.36 64.24 35 65 C34.64 65.76 33.6 65.04 32.88 65.03 C32.15 65.02 31.35 64.93 30.64 64.94 C29.93 64.95 29.32 65.06 28.62 65.07 C27.91 65.08 26.77 65.01 26.4 65"/><path class="stroke" pathLength="1" d="M28.43 66.22 C28.31 66.15 27.95 65.95 27.71 65.82 C27.47 65.68 27.23 65.55 27 65.41 C26.77 65.26 26.43 65.03 26.32 64.95"/><path class="stroke" pathLength="1" d="M28.45 63.92 C28.34 64 28.02 64.24 27.8 64.38 C27.57 64.53 27.34 64.68 27.1 64.79 C26.85 64.9 26.45 65 26.32 65.04"/></g><g class="mk mk--loop tone--red"><path class="stroke" pathLength="1" d="M22.53 60.97 C22.71 60.9 23.26 60.62 23.64 60.55 C24.02 60.49 24.43 60.54 24.81 60.57 C25.19 60.6 25.56 60.62 25.91 60.71 C26.27 60.79 26.61 60.92 26.93 61.07 C27.25 61.22 27.57 61.4 27.84 61.62 C28.1 61.84 28.31 62.12 28.53 62.38 C28.76 62.64 29.02 62.89 29.17 63.18 C29.33 63.48 29.37 63.83 29.46 64.16 C29.55 64.49 29.71 64.84 29.72 65.18 C29.74 65.53 29.61 65.88 29.52 66.23 C29.44 66.58 29.38 66.96 29.2 67.28 C29.02 67.59 28.72 67.86 28.44 68.12 C28.17 68.37 27.89 68.66 27.56 68.83 C27.23 69 26.82 69.05 26.45 69.13 C26.08 69.21 25.73 69.31 25.36 69.33 C25 69.35 24.62 69.32 24.27 69.24 C23.93 69.16 23.58 69.03 23.28 68.86 C22.98 68.7 22.74 68.45 22.47 68.25 C22.2 68.05 21.89 67.9 21.67 67.67 C21.44 67.43 21.28 67.14 21.12 66.85 C20.97 66.57 20.84 66.27 20.72 65.96 C20.6 65.65 20.44 65.32 20.41 64.99 C20.37 64.65 20.42 64.29 20.52 63.95 C20.61 63.62 20.8 63.31 20.97 63 C21.14 62.69 21.3 62.37 21.54 62.1 C21.77 61.83 22.05 61.55 22.36 61.38 C22.68 61.2 23.07 61.12 23.42 61.03 C23.78 60.93 24.13 60.84 24.48 60.82 C24.83 60.81 25.19 60.9 25.53 60.96 C25.87 61.03 26.34 61.18 26.51 61.22"/></g></svg>
+    <div class="board__layer board__badges"><span class="badge badge--blunder" data-x="4" data-y="0" data-write>??</span></div>
+  </div>
+</div>
+          </div>
+          <div class="printout printout--facts">
+            <p class="printout__head">Evidence · 5…<img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">xd1<span class="printout__flag">??</span></p>
+            <dl class="facts">
+              <div class="fact">
+                <dt>Engine</dt>
+                <dd><strong><span class="ink ink--circle" data-draw>Mate in 2<svg class="ink__svg" viewBox="0 0 335 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M87.29 8.18 C93.51 7.3 111.89 4.15 124.63 2.88 C137.37 1.62 150.89 0.85 163.72 0.59 C176.55 0.33 189.37 0.76 201.62 1.31 C213.86 1.87 226.28 2.53 237.21 3.91 C248.14 5.29 257.56 7.56 267.18 9.59 C276.79 11.61 286.76 13.56 294.92 16.08 C303.07 18.6 310.66 21.52 316.12 24.7 C321.57 27.88 324.58 31.54 327.67 35.14 C330.75 38.75 334.75 42.51 334.61 46.33 C334.47 50.14 330.12 54.14 326.84 58.04 C323.55 61.94 321.34 66.16 314.9 69.71 C308.45 73.26 297.59 76.34 288.15 79.34 C278.71 82.35 269.23 85.45 258.27 87.74 C247.32 90.02 234.57 91.69 222.44 93.05 C210.31 94.41 197.77 95.2 185.49 95.91 C173.21 96.63 160.55 97.56 148.74 97.35 C136.93 97.15 125.55 95.77 114.62 94.68 C103.68 93.6 93.11 92.41 83.11 90.86 C73.1 89.31 62.93 87.62 54.58 85.41 C46.23 83.19 39.38 80.38 32.98 77.55 C26.58 74.72 20.37 71.71 16.2 68.44 C12.04 65.17 9.14 61.54 7.98 57.9 C6.82 54.27 7.14 50.37 9.24 46.63 C11.35 42.89 15.73 39.1 20.61 35.46 C25.49 31.82 30.88 28.02 38.51 24.78 C46.14 21.54 56.19 18.55 66.4 16.03 C76.61 13.51 88.19 11.28 99.78 9.66 C111.37 8.03 123.97 7.17 135.95 6.27 C147.94 5.37 160 4.38 171.68 4.27 C183.37 4.16 200.33 5.38 206.06 5.61"/></svg></span> for White</strong><span>Stockfish 19, depth 20</span></dd>
+              </div>
+              <div class="fact">
+                <dt>Line</dt>
+                <dd><strong class="moves"><span class="mv"><span class="mv__n">6.</span><img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">xf7+</span> <span class="mv"><img class="fig" src="/assets/pieces/wK.svg" alt="K" title="King" width="45" height="45">e7</span> <span class="mv"><span class="mv__n">7.</span><img class="fig" src="/assets/pieces/wN.svg" alt="N" title="Knight" width="45" height="45">d5#</span></strong><span>Each move replayed by the rules library</span></dd>
+              </div>
+              <div class="fact">
+                <dt>f7</dt>
+                <dd><strong>2 attackers, 1 defender</strong><span>Bishop c4 and knight e5, against the king</span></dd>
+              </div>
+              <div class="fact">
+                <dt>Material</dt>
+                <dd><strong>Black is 8 points up</strong><span>A queen for a pawn, for one move</span></dd>
+              </div>
+            </dl>
+          </div>
+          <figcaption>The facts behind one move: the engine’s verdict, the forced line, and the square it all happens on.</figcaption>
+        </figure>
+      </li>
+      <li class="step" data-ink-group>
+        <div class="step__text">
+          <h3 class="step__title"><span class="step__n" aria-hidden="true">2</span>Explanation</h3>
+          <p>The tutor turns that evidence into a few plain sentences, tied to arrows on the board. It is given only checked moves and facts, so it explains what happened instead of guessing.</p>
+          <p class="status status--dev"><i class="glyph glyph--ring" data-draw><svg class="ink__svg" viewBox="0 0 115 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M36.43 6.01 C38.48 5.41 44.52 3.21 48.74 2.43 C52.96 1.66 57.44 1.19 61.75 1.36 C66.07 1.52 70.41 2.43 74.62 3.42 C78.84 4.42 83.14 5.59 87.04 7.34 C90.93 9.1 94.82 11.32 98.01 13.96 C101.2 16.6 103.6 19.98 106.17 23.19 C108.74 26.4 111.87 29.59 113.42 33.23 C114.97 36.87 115.28 41.09 115.47 45.02 C115.67 48.95 115.37 52.96 114.59 56.81 C113.82 60.66 112.73 64.62 110.82 68.1 C108.91 71.58 106.06 74.84 103.14 77.68 C100.22 80.52 96.68 82.85 93.3 85.17 C89.92 87.48 86.63 90.02 82.86 91.59 C79.09 93.16 74.75 93.71 70.66 94.58 C66.58 95.46 62.48 96.72 58.37 96.83 C54.26 96.95 50.06 96 45.98 95.26 C41.9 94.52 37.73 93.81 33.89 92.42 C30.06 91.03 26.44 89.02 22.98 86.9 C19.52 84.78 15.99 82.46 13.15 79.68 C10.31 76.9 7.8 73.61 5.93 70.22 C4.05 66.83 2.53 63.04 1.92 59.31 C1.32 55.59 1.87 51.65 2.3 47.89 C2.73 44.14 3.02 40.23 4.5 36.78 C5.98 33.32 8.7 30.13 11.17 27.15 C13.64 24.17 16.35 21.37 19.32 18.88 C22.3 16.4 25.49 13.96 29.01 12.24 C32.53 10.51 36.58 9.51 40.42 8.54 C44.26 7.58 48.12 6.94 52.05 6.43 C55.98 5.92 60.02 5.3 63.99 5.49 C67.95 5.68 73.85 7.23 75.83 7.57"/></svg></i>In development</p>
+        </div>
+        <figure class="step__fig fig-explain">
+          <p class="fig-explain__tag">Sample text · 5…<img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">xd1<span class="printout__flag">??</span></p>
+          <div class="fig-explain__hand">
+            <p class="fig-explain__title" data-write>The queen was bait.</p>
+            <p data-write>Taking the queen looked like winning, but f7 was already attacked twice, by the bishop on c4 and the knight on e5. Only your king defended it.</p>
+            <p data-write>White checks with 6.Bxf7+. Your king has one square, e7, and 7.Nd5 is mate.</p>
+            <p class="fig-explain__next"><span class="ink ink--underline" data-draw>Next time<svg class="ink__svg" viewBox="0 0 956 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M22.42 84.83 C41.17 83.65 96.9 79.06 134.96 77.76 C173.03 76.47 212.21 77.48 250.83 77.06 C289.45 76.64 328.07 76.27 366.69 75.25 C405.31 74.23 443.92 71.81 482.54 70.95 C521.15 70.09 559.77 69.35 598.4 70.06 C637.03 70.77 675.68 75.05 714.31 75.22 C752.93 75.4 791.53 71 830.15 71.12 C868.78 71.24 926.74 75.14 946.06 75.94"/></svg></span> <span data-write>When a piece is offered for free, look first at what your opponent’s last move attacks.</span></p>
+          </div>
+          <p class="fig-explain__src">From the evidence for this move: Stockfish 19 at depth 20, and the rules check on f7.</p>
+          <figcaption>Sample text written for this page. The tutor that will write these is still in development.</figcaption>
+        </figure>
+      </li>
+      <li class="step" data-ink-group>
+        <div class="step__text">
+          <h3 class="step__title"><span class="step__n" aria-hidden="true">3</span>Branch</h3>
+          <p>Ask “what if?” and play it. Your line is saved as a branch of the game, a branch can have branches of its own, and each note stays on the position where you wrote it.</p>
+          <p class="status status--live"><i class="glyph glyph--tick" data-draw><svg class="ink__svg" viewBox="0 0 110 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M8.8 52.39 C10.13 54.09 14.13 59.19 16.8 62.59 C19.46 65.99 22.26 69.52 24.79 72.78 C27.31 76.04 29.49 78.95 31.96 82.15 C34.43 85.36 35.75 93.98 39.6 92 C43.45 90.02 49.45 77.04 55.07 70.25 C60.68 63.45 67.87 58.24 73.28 51.24 C78.7 44.25 82.17 35.32 87.56 28.3 C92.95 21.28 102.59 12.32 105.6 9.13"/></svg></i>Works today</p>
+        </div>
+        <figure class="step__fig fig-branch">
+          <div class="tree">
+            <p class="tree__row"><span class="tree__tag">Game</span><span class="moves"><span class="mv"><span class="mv__n">5.</span><img class="fig" src="/assets/pieces/wN.svg" alt="N" title="Knight" width="45" height="45">xe5</span> <span class="mv mv--key"><img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">xd1<span class="printout__flag">??</span></span> <span class="mv"><span class="mv__n">6.</span><img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">xf7+</span> <span class="mv"><img class="fig" src="/assets/pieces/wK.svg" alt="K" title="King" width="45" height="45">e7</span> <span class="mv"><span class="mv__n">7.</span><img class="fig" src="/assets/pieces/wN.svg" alt="N" title="Knight" width="45" height="45">d5#</span></span></p>
+            <p class="tree__row tree__row--branch"><i class="glyph glyph--fork" data-draw><svg class="ink__svg" viewBox="0 0 80 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M24.41 2.21 C24.6 4.84 25.31 12.7 25.55 18 C25.78 23.3 25.92 28.67 25.82 34 C25.72 39.33 25 44.67 24.95 50 C24.9 55.33 25.47 60.67 25.52 66 C25.57 71.33 25.51 76.67 25.26 82 C25 87.33 24.21 95.33 24 98"/><path class="stroke" pathLength="1" d="M24 30 C24.13 31.33 24.31 35.4 24.77 37.97 C25.24 40.54 26.02 43.13 26.78 45.4 C27.54 47.68 28.4 49.76 29.34 51.62 C30.28 53.49 31.12 54.96 32.41 56.58 C33.7 58.21 35.36 59.91 37.06 61.36 C38.76 62.8 40.65 64.15 42.6 65.26 C44.56 66.37 46.51 67.19 48.8 68.04 C51.08 68.89 53.66 69.75 56.31 70.37 C58.95 70.99 61.76 71.49 64.65 71.76 C67.53 72.03 72.11 71.96 73.6 72"/></svg></i><span class="tree__tag">Your line</span><span class="moves"><span class="mv"><span class="mv__n">5…</span>dxe5</span> <span class="mv"><span class="mv__n">6.</span><img class="fig" src="/assets/pieces/wQ.svg" alt="Q" title="Queen" width="45" height="45">xg4</span></span></p>
+          </div>
+          <div class="fig-branch__body">
+            <div class="fig-branch__board">
+<div class="diagram diagram--mini">
+  <div class="board board--mini" role="img" aria-label="Chessboard, viewed from Black's side. Your branch · 5…dxe5 6.Qxg4: What if you take the knight instead?">
+    <div class="board__layer board__hl"><span class="hl" data-x="4" data-y="0"></span><span class="hl" data-x="1" data-y="3"></span></div>
+    <div class="board__layer board__pieces"><img class="pc" src="/assets/pieces/wR.svg" alt="" width="45" height="45" draggable="false" data-sq="a1" data-piece="wR" data-x="7" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="a2" data-piece="wP" data-x="7" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="a7" data-piece="bP" data-x="7" data-y="6"><img class="pc" src="/assets/pieces/bR.svg" alt="" width="45" height="45" draggable="false" data-sq="a8" data-piece="bR" data-x="7" data-y="7"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="b2" data-piece="wP" data-x="6" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="b7" data-piece="bP" data-x="6" data-y="6"><img class="pc" src="/assets/pieces/bN.svg" alt="" width="45" height="45" draggable="false" data-sq="b8" data-piece="bN" data-x="6" data-y="7"><img class="pc" src="/assets/pieces/wB.svg" alt="" width="45" height="45" draggable="false" data-sq="c1" data-piece="wB" data-x="5" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="c2" data-piece="wP" data-x="5" data-y="1"><img class="pc" src="/assets/pieces/wN.svg" alt="" width="45" height="45" draggable="false" data-sq="c3" data-piece="wN" data-x="5" data-y="2"><img class="pc" src="/assets/pieces/wB.svg" alt="" width="45" height="45" draggable="false" data-sq="c4" data-piece="wB" data-x="5" data-y="3"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="c7" data-piece="bP" data-x="5" data-y="6"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="d2" data-piece="wP" data-x="4" data-y="1"><img class="pc" src="/assets/pieces/bQ.svg" alt="" width="45" height="45" draggable="false" data-sq="d8" data-piece="bQ" data-x="4" data-y="7"><img class="pc" src="/assets/pieces/wK.svg" alt="" width="45" height="45" draggable="false" data-sq="e1" data-piece="wK" data-x="3" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="e4" data-piece="wP" data-x="3" data-y="3"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="e5" data-piece="bP" data-x="3" data-y="4"><img class="pc" src="/assets/pieces/bK.svg" alt="" width="45" height="45" draggable="false" data-sq="e8" data-piece="bK" data-x="3" data-y="7"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="f2" data-piece="wP" data-x="2" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="f7" data-piece="bP" data-x="2" data-y="6"><img class="pc" src="/assets/pieces/bB.svg" alt="" width="45" height="45" draggable="false" data-sq="f8" data-piece="bB" data-x="2" data-y="7"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="g2" data-piece="wP" data-x="1" data-y="1"><img class="pc" src="/assets/pieces/wQ.svg" alt="" width="45" height="45" draggable="false" data-sq="g4" data-piece="wQ" data-x="1" data-y="3"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="g6" data-piece="bP" data-x="1" data-y="5"><img class="pc" src="/assets/pieces/bN.svg" alt="" width="45" height="45" draggable="false" data-sq="g8" data-piece="bN" data-x="1" data-y="7"><img class="pc" src="/assets/pieces/wR.svg" alt="" width="45" height="45" draggable="false" data-sq="h1" data-piece="wR" data-x="0" data-y="0"><img class="pc" src="/assets/pieces/wP.svg" alt="" width="45" height="45" draggable="false" data-sq="h2" data-piece="wP" data-x="0" data-y="1"><img class="pc" src="/assets/pieces/bP.svg" alt="" width="45" height="45" draggable="false" data-sq="h7" data-piece="bP" data-x="0" data-y="6"><img class="pc" src="/assets/pieces/bR.svg" alt="" width="45" height="45" draggable="false" data-sq="h8" data-piece="bR" data-x="0" data-y="7"></div>
+    <svg class="board__ink" viewBox="0 0 80 80" aria-hidden="true" focusable="false" data-draw></svg>
+    <div class="board__layer board__badges"></div>
+  </div>
+</div>
+            </div>
+            <div class="fig-branch__side">
+              <p class="eval"><span class="eval__num">+2.3</span> for White</p>
+              <p class="eval__src">Stockfish 19, depth 20. An estimate.</p>
+              <p class="pin"><span class="pin__head">Your note</span><span data-write>Take the knight. It was the piece attacking f7. A pawn down, but still a game.</span></p>
+            </div>
+          </div>
+          <figcaption>Your line sits next to the game, with your note on the position where you wrote it.</figcaption>
+        </figure>
+      </li>
+      <li class="step" data-ink-group>
+        <div class="step__text">
+          <h3 class="step__title"><span class="step__n" aria-hidden="true">4</span>Return</h3>
+          <p>Go back to the actual game whenever you like. The game report keeps your key moves in order, so you can move on to the next moment that mattered.</p>
+          <p class="status status--live"><i class="glyph glyph--tick" data-draw><svg class="ink__svg" viewBox="0 0 110 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M8.8 52.39 C10.13 54.09 14.13 59.19 16.8 62.59 C19.46 65.99 22.26 69.52 24.79 72.78 C27.31 76.04 29.49 78.95 31.96 82.15 C34.43 85.36 35.75 93.98 39.6 92 C43.45 90.02 49.45 77.04 55.07 70.25 C60.68 63.45 67.87 58.24 73.28 51.24 C78.7 44.25 82.17 35.32 87.56 28.3 C92.95 21.28 102.59 12.32 105.6 9.13"/></svg></i>Works today</p>
+        </div>
+        <figure class="step__fig fig-return">
+          <p class="fig-return__label">Your game</p>
+          <p class="game moves"><span class="mv"><span class="mv__n">1.</span>e4</span> <span class="mv">e5</span> <span class="mv"><span class="mv__n">2.</span><img class="fig" src="/assets/pieces/wN.svg" alt="N" title="Knight" width="45" height="45">f3</span> <span class="mv">d6</span> <span class="mv"><span class="mv__n">3.</span><img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">c4</span> <span class="mv"><img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">g4</span> <span class="mv"><span class="mv__n">4.</span><img class="fig" src="/assets/pieces/wN.svg" alt="N" title="Knight" width="45" height="45">c3</span> <span class="mv">g6</span> <span class="mv"><span class="mv__n">5.</span><img class="fig" src="/assets/pieces/wN.svg" alt="N" title="Knight" width="45" height="45">xe5</span> <span class="mv mv--key"><img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">xd1<span class="printout__flag">??</span></span> <span class="mv"><span class="mv__n">6.</span><img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">xf7+</span> <span class="mv"><img class="fig" src="/assets/pieces/wK.svg" alt="K" title="King" width="45" height="45">e7</span> <span class="mv"><span class="mv__n">7.</span><img class="fig" src="/assets/pieces/wN.svg" alt="N" title="Knight" width="45" height="45">d5#</span></p>
+          <div class="keymove">
+            <p class="keymove__head">Key moment</p>
+            <p class="keymove__move"><strong><span class="ink ink--highlight" data-draw>5…<img class="fig" src="/assets/pieces/wB.svg" alt="B" title="Bishop" width="45" height="45">xd1<span class="printout__flag">??<svg class="ink__svg" viewBox="0 0 469 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M5.29 62.1 C17.95 61.55 55.83 59.44 81.26 58.76 C106.69 58.08 132.34 58.81 157.87 58.03 C183.4 57.26 208.91 54.76 234.44 54.08 C259.97 53.41 285.51 53.74 311.05 53.99 C336.59 54.25 362.15 55.28 387.69 55.61 C413.23 55.95 451.54 55.94 464.31 56"/></svg></span></span></strong> Missed the mate threat on f7</p>
+            <p class="keymove__meta">1 saved line, 1 note</p>
+          </div>
+          <p class="fig-return__back"><i class="glyph glyph--return" data-draw><svg class="ink__svg" viewBox="0 0 150 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M18 30 C22.01 29.26 34.37 26.59 42.08 25.55 C49.78 24.5 57.54 24.26 64.23 23.71 C70.93 23.17 76.75 22.5 82.24 22.27 C87.73 22.03 92.49 21.82 97.17 22.29 C101.86 22.76 106.62 24.07 110.35 25.1 C114.09 26.14 116.85 26.96 119.58 28.5 C122.3 30.04 125.01 32.31 126.7 34.33 C128.39 36.34 128.86 37.9 129.7 40.58 C130.55 43.27 131.89 47.21 131.77 50.44 C131.66 53.68 130.09 57.52 129 60 C127.91 62.48 126.53 63.5 125.23 65.35 C123.93 67.19 122.97 69.49 121.19 71.07 C119.42 72.66 117.05 73.76 114.59 74.87 C112.13 75.98 109.3 76.84 106.43 77.75 C103.56 78.67 100.78 79.78 97.37 80.37 C93.97 80.97 89.86 80.97 85.98 81.3 C82.11 81.64 78.51 82.37 74.11 82.39 C69.71 82.42 64.52 81.76 59.58 81.46 C54.64 81.16 49.91 81.18 44.48 80.6 C39.05 80.03 29.91 78.43 27 78"/><path class="stroke" pathLength="1" d="M53.43 101.01 C51.85 99.68 47.07 95.64 43.93 93.06 C40.79 90.47 37.58 88.15 34.58 85.49 C31.58 82.83 27.39 78.49 25.95 77.09"/><path class="stroke" pathLength="1" d="M58.04 66.21 C56.31 67.09 51.14 69.94 47.61 71.47 C44.08 73 40.49 74.22 36.84 75.39 C33.2 76.55 27.61 77.95 25.76 78.46"/></svg></i><span data-write>Back to the game, on move 5.</span></p>
+          <figcaption>Back in the game, with the key moment marked and your line saved under it.</figcaption>
+        </figure>
+      </li>
+    </ol>
   </section>
 
-  <section class="section section--paper status" id="status" aria-labelledby="status-title">
-    <div class="wrap status__grid">
-      <div class="status__copy">
-        <p class="eyebrow">Status</p>
-        <h2 id="status-title" class="display-2">What works today, and what doesn’t yet.</h2>
-        <p class="status__intro">AskTheMove runs today as a private build in the browser. The beta opens when the tutor is ready for real games.</p>
-      </div>
-      <ul class="ledger">
-        <li><span class="ledger__item">Play computer opponents at a strength you choose</span><span class="tag tag--live">Works today</span></li>
-        <li><span class="ledger__item">Full game review with Stockfish evidence and key moves</span><span class="tag tag--live">Works today</span></li>
-        <li><span class="ledger__item">Saved variations and notes, branching from any move</span><span class="tag tag--live">Works today</span></li>
-        <li><span class="ledger__item">Import a game as PGN, or set up any position</span><span class="tag tag--live">Works today</span></li>
-        <li><span class="ledger__item">The Claude tutor that explains the evidence in plain language</span><span class="tag tag--dev">In development</span></li>
-        <li><span class="ledger__item">Beta invites, in small groups, starting with this waitlist</span><span class="tag tag--next">Next</span></li>
+  <section class="who rows" id="who" aria-labelledby="who-title" data-ink-group>
+    <h2 id="who-title" class="h2 who__title">Adults rated about <span class="ink ink--underline" data-draw>800 to 1600<svg class="ink__svg" viewBox="0 0 1164 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M20.92 82.78 C44.83 82.57 116.94 81.18 164.36 81.49 C211.78 81.81 258.42 82.86 305.46 84.67 C352.49 86.49 399.55 91.52 446.58 92.36 C493.61 93.19 540.62 89.45 587.64 89.69 C634.67 89.92 681.72 94.02 728.75 93.76 C775.77 93.5 822.79 90.82 869.8 88.13 C916.81 85.45 963.81 79.69 1010.82 77.66 C1057.84 75.62 1128.38 76.23 1151.89 75.94"/></svg></span> who already review their games.</h2>
+    <div class="who__yes">
+      <h3 class="who__head">It’s probably for you if</h3>
+      <ul class="marked">
+        <li><i class="glyph glyph--tick" data-draw><svg class="ink__svg" viewBox="0 0 110 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M8.8 52.39 C10.13 54.09 14.13 59.19 16.8 62.59 C19.46 65.99 22.26 69.52 24.79 72.78 C27.31 76.04 29.49 78.95 31.96 82.15 C34.43 85.36 35.75 93.98 39.6 92 C43.45 90.02 49.45 77.04 55.07 70.25 C60.68 63.45 67.87 58.24 73.28 51.24 C78.7 44.25 82.17 35.32 87.56 28.3 C92.95 21.28 102.59 12.32 105.6 9.13"/></svg></i>You open the engine after a loss and the best move still doesn’t make sense.</li>
+        <li><i class="glyph glyph--tick" data-draw><svg class="ink__svg" viewBox="0 0 110 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M8.8 52.39 C10.13 54.09 14.13 59.19 16.8 62.59 C19.46 65.99 22.26 69.52 24.79 72.78 C27.31 76.04 29.49 78.95 31.96 82.15 C34.43 85.36 35.75 93.98 39.6 92 C43.45 90.02 49.45 77.04 55.07 70.25 C60.68 63.45 67.87 58.24 73.28 51.24 C78.7 44.25 82.17 35.32 87.56 28.3 C92.95 21.28 102.59 12.32 105.6 9.13"/></svg></i>You would rather understand one mistake properly than skim through ten.</li>
+        <li><i class="glyph glyph--tick" data-draw><svg class="ink__svg" viewBox="0 0 110 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M8.8 52.39 C10.13 54.09 14.13 59.19 16.8 62.59 C19.46 65.99 22.26 69.52 24.79 72.78 C27.31 76.04 29.49 78.95 31.96 82.15 C34.43 85.36 35.75 93.98 39.6 92 C43.45 90.02 49.45 77.04 55.07 70.25 C60.68 63.45 67.87 58.24 73.28 51.24 C78.7 44.25 82.17 35.32 87.56 28.3 C92.95 21.28 102.59 12.32 105.6 9.13"/></svg></i>You play online or over the board and train on your own time.</li>
+      </ul>
+    </div>
+    <div class="who__no">
+      <h3 class="who__head">It isn’t built for</h3>
+      <ul class="marked marked--no">
+        <li><i class="glyph glyph--cross" data-draw><svg class="ink__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M10.83 10.92 C15.88 15 31.43 26.55 41.16 35.38 C50.88 44.2 60.26 53.96 69.2 63.86 C78.15 73.77 90.53 89.64 94.8 94.8"/><path class="stroke" pathLength="1" d="M90.07 7.38 C85.75 12.59 73.11 28.61 64.16 38.61 C55.21 48.6 45.82 57.96 36.35 67.34 C26.88 76.73 12.16 90.32 7.32 94.92"/></svg></i>Help during a live game. It analyses finished games, positions you set up, and practice games against its own computer opponents.</li>
+        <li><i class="glyph glyph--cross" data-draw><svg class="ink__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M10.83 10.92 C15.88 15 31.43 26.55 41.16 35.38 C50.88 44.2 60.26 53.96 69.2 63.86 C78.15 73.77 90.53 89.64 94.8 94.8"/><path class="stroke" pathLength="1" d="M90.07 7.38 C85.75 12.59 73.11 28.61 64.16 38.61 C55.21 48.6 45.82 57.96 36.35 67.34 C26.88 76.73 12.16 90.32 7.32 94.92"/></svg></i>Memorising opening theory. Other tools do that well.</li>
       </ul>
     </div>
   </section>
 
-  <section class="section section--paper faq" id="faq" aria-labelledby="faq-title">
-    <div class="wrap faq__grid">
-      <div>
-        <p class="eyebrow">FAQ</p>
-        <h2 id="faq-title" class="display-2">Questions</h2>
-        <p class="faq__contact">Something else? Email <a href="mailto:hello@askthemove.com">hello@askthemove.com</a>.</p>
-      </div>
-      <div class="faq__list">
-        <details>
-          <summary>How much does it cost?</summary>
-          <p>Nothing during the beta. Pricing after the beta isn’t decided yet. You’ll hear about it well before anything costs money, and nothing is charged unless you choose to pay.</p>
-        </details>
-        <details>
-          <summary>When does the beta start?</summary>
-          <p>Invites go out in small groups once the tutor is ready for real games. There’s no fixed date yet. The waitlist is how you’ll hear first.</p>
-        </details>
-        <details>
-          <summary>What devices does it work on?</summary>
-          <p>It runs in a web browser on a desktop, laptop or phone. There’s nothing to install.</p>
-        </details>
-        <details>
-          <summary>Where do the explanations come from?</summary>
-          <p>Stockfish, a free and open-source chess engine, searches the position. A chess rules library checks legality, material and every line that is shown. Claude, an AI model made by Anthropic, then writes the explanation from that evidence. The tutor is built to explain only what the evidence supports.</p>
-        </details>
-        <details>
-          <summary>Can I use it with games from other sites?</summary>
-          <p>Yes. Paste the PGN of any finished game. Most chess sites can export one.</p>
-        </details>
-        <details>
-          <summary>Can I use it during a game?</summary>
-          <p>No. It analyses finished games, positions you set up, and practice games against its own computer opponents. It won’t help you in a live game against another person.</p>
-        </details>
-        <details>
-          <summary>What happens to my email?</summary>
-          <p>It’s stored in a Cloudflare D1 database and used only to send beta news. It isn’t sold or shared. Ask for it to be deleted at any time. The <a href="/privacy/">privacy notice</a> has the details.</p>
-        </details>
-        <details>
-          <summary>Who is building it?</summary>
-          <p>Prax, an independent developer in India. Questions and ideas go straight to <a href="mailto:hello@askthemove.com">hello@askthemove.com</a>.</p>
-        </details>
-      </div>
+  <section class="status-sec rows" id="status" aria-labelledby="status-title" data-ink-group>
+    <div class="status-sec__head">
+      <h2 id="status-title" class="h2">What works today, and what doesn’t yet.</h2>
+      <p class="status-sec__intro">AskTheMove runs today as a private build in the browser. The beta opens when the tutor is ready for real games.</p>
+    </div>
+    <ul class="checklist">
+      <li class="checklist__item is-live"><i class="glyph glyph--tick" data-draw><svg class="ink__svg" viewBox="0 0 110 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M8.8 52.39 C10.13 54.09 14.13 59.19 16.8 62.59 C19.46 65.99 22.26 69.52 24.79 72.78 C27.31 76.04 29.49 78.95 31.96 82.15 C34.43 85.36 35.75 93.98 39.6 92 C43.45 90.02 49.45 77.04 55.07 70.25 C60.68 63.45 67.87 58.24 73.28 51.24 C78.7 44.25 82.17 35.32 87.56 28.3 C92.95 21.28 102.59 12.32 105.6 9.13"/></svg></i><span class="checklist__text">Play computer opponents at a strength you choose</span><span class="checklist__state">Works today</span></li>
+      <li class="checklist__item is-live"><i class="glyph glyph--tick" data-draw><svg class="ink__svg" viewBox="0 0 110 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M8.8 52.39 C10.13 54.09 14.13 59.19 16.8 62.59 C19.46 65.99 22.26 69.52 24.79 72.78 C27.31 76.04 29.49 78.95 31.96 82.15 C34.43 85.36 35.75 93.98 39.6 92 C43.45 90.02 49.45 77.04 55.07 70.25 C60.68 63.45 67.87 58.24 73.28 51.24 C78.7 44.25 82.17 35.32 87.56 28.3 C92.95 21.28 102.59 12.32 105.6 9.13"/></svg></i><span class="checklist__text">Full game review with Stockfish evidence and key moves</span><span class="checklist__state">Works today</span></li>
+      <li class="checklist__item is-live"><i class="glyph glyph--tick" data-draw><svg class="ink__svg" viewBox="0 0 110 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M8.8 52.39 C10.13 54.09 14.13 59.19 16.8 62.59 C19.46 65.99 22.26 69.52 24.79 72.78 C27.31 76.04 29.49 78.95 31.96 82.15 C34.43 85.36 35.75 93.98 39.6 92 C43.45 90.02 49.45 77.04 55.07 70.25 C60.68 63.45 67.87 58.24 73.28 51.24 C78.7 44.25 82.17 35.32 87.56 28.3 C92.95 21.28 102.59 12.32 105.6 9.13"/></svg></i><span class="checklist__text">Saved variations and notes, branching from any move</span><span class="checklist__state">Works today</span></li>
+      <li class="checklist__item is-live"><i class="glyph glyph--tick" data-draw><svg class="ink__svg" viewBox="0 0 110 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M8.8 52.39 C10.13 54.09 14.13 59.19 16.8 62.59 C19.46 65.99 22.26 69.52 24.79 72.78 C27.31 76.04 29.49 78.95 31.96 82.15 C34.43 85.36 35.75 93.98 39.6 92 C43.45 90.02 49.45 77.04 55.07 70.25 C60.68 63.45 67.87 58.24 73.28 51.24 C78.7 44.25 82.17 35.32 87.56 28.3 C92.95 21.28 102.59 12.32 105.6 9.13"/></svg></i><span class="checklist__text">Import a game as PGN, or set up any position</span><span class="checklist__state">Works today</span></li>
+      <li class="checklist__item is-dev"><i class="glyph glyph--ring" data-draw><svg class="ink__svg" viewBox="0 0 115 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M36.43 6.01 C38.48 5.41 44.52 3.21 48.74 2.43 C52.96 1.66 57.44 1.19 61.75 1.36 C66.07 1.52 70.41 2.43 74.62 3.42 C78.84 4.42 83.14 5.59 87.04 7.34 C90.93 9.1 94.82 11.32 98.01 13.96 C101.2 16.6 103.6 19.98 106.17 23.19 C108.74 26.4 111.87 29.59 113.42 33.23 C114.97 36.87 115.28 41.09 115.47 45.02 C115.67 48.95 115.37 52.96 114.59 56.81 C113.82 60.66 112.73 64.62 110.82 68.1 C108.91 71.58 106.06 74.84 103.14 77.68 C100.22 80.52 96.68 82.85 93.3 85.17 C89.92 87.48 86.63 90.02 82.86 91.59 C79.09 93.16 74.75 93.71 70.66 94.58 C66.58 95.46 62.48 96.72 58.37 96.83 C54.26 96.95 50.06 96 45.98 95.26 C41.9 94.52 37.73 93.81 33.89 92.42 C30.06 91.03 26.44 89.02 22.98 86.9 C19.52 84.78 15.99 82.46 13.15 79.68 C10.31 76.9 7.8 73.61 5.93 70.22 C4.05 66.83 2.53 63.04 1.92 59.31 C1.32 55.59 1.87 51.65 2.3 47.89 C2.73 44.14 3.02 40.23 4.5 36.78 C5.98 33.32 8.7 30.13 11.17 27.15 C13.64 24.17 16.35 21.37 19.32 18.88 C22.3 16.4 25.49 13.96 29.01 12.24 C32.53 10.51 36.58 9.51 40.42 8.54 C44.26 7.58 48.12 6.94 52.05 6.43 C55.98 5.92 60.02 5.3 63.99 5.49 C67.95 5.68 73.85 7.23 75.83 7.57"/></svg></i><span class="checklist__text">The Claude tutor that explains the evidence in plain language</span><span class="checklist__state">In development</span></li>
+      <li class="checklist__item is-next"><i class="glyph glyph--next" data-draw><svg class="ink__svg" viewBox="0 0 170 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M9.85 54.71 C13.89 54.96 26.07 55.95 34.09 56.23 C42.11 56.51 50.03 56.75 57.97 56.38 C65.91 56.02 73.8 54.74 81.71 54.04 C89.63 53.34 97.56 52.78 105.49 52.19 C113.41 51.61 121.35 51.24 129.27 50.54 C137.19 49.84 149.04 48.42 153 48"/><path class="stroke" pathLength="1" d="M127.17 33.54 C128.64 34.45 133.03 37.23 135.97 38.99 C138.92 40.75 141.82 42.5 144.83 44.09 C147.84 45.69 152.5 47.83 154.03 48.57"/><path class="stroke" pathLength="1" d="M127.77 62.82 C129.11 61.75 132.96 58.26 135.78 56.39 C138.6 54.52 141.67 53.07 144.71 51.58 C147.75 50.08 152.46 48.11 154.01 47.41"/></svg></i><span class="checklist__text">Beta invites, in small groups, starting with this waitlist</span><span class="checklist__state">Next</span></li>
+    </ul>
+  </section>
+
+  <section class="faq rows" id="faq" aria-labelledby="faq-title">
+    <div class="faq__head">
+      <h2 id="faq-title" class="h2">Questions</h2>
+      <p class="note-hand faq__contact">Something else? Email <a href="mailto:hello@askthemove.com">hello@askthemove.com</a>.</p>
+    </div>
+    <div class="faq__list">
+      <details>
+        <summary><span>How much does it cost?</span><i class="glyph glyph--plus" data-draw><svg class="ink__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M11.24 51.4 C15.72 51.26 29.27 50.91 38.09 50.56 C46.91 50.21 55.49 49.74 64.19 49.29 C72.89 48.85 85.93 48.12 90.28 47.88"/><path class="stroke" pathLength="1" d="M52.72 9.4 C52.16 14.07 50.05 28.15 49.34 37.4 C48.63 46.65 48.7 55.73 48.45 64.89 C48.21 74.06 47.98 87.82 47.88 92.4"/></svg></i></summary>
+        <p>Nothing during the beta. Pricing after the beta isn’t decided yet. You’ll hear about it well before anything costs money, and nothing is charged unless you choose to pay.</p>
+      </details>
+      <details>
+        <summary><span>When does the beta start?</span><i class="glyph glyph--plus" data-draw><svg class="ink__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M11.24 51.4 C15.72 51.26 29.27 50.91 38.09 50.56 C46.91 50.21 55.49 49.74 64.19 49.29 C72.89 48.85 85.93 48.12 90.28 47.88"/><path class="stroke" pathLength="1" d="M52.72 9.4 C52.16 14.07 50.05 28.15 49.34 37.4 C48.63 46.65 48.7 55.73 48.45 64.89 C48.21 74.06 47.98 87.82 47.88 92.4"/></svg></i></summary>
+        <p>Invites go out in small groups once the tutor is ready for real games. There’s no fixed date yet. The waitlist is how you’ll hear first.</p>
+      </details>
+      <details>
+        <summary><span>What devices does it work on?</span><i class="glyph glyph--plus" data-draw><svg class="ink__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M11.24 51.4 C15.72 51.26 29.27 50.91 38.09 50.56 C46.91 50.21 55.49 49.74 64.19 49.29 C72.89 48.85 85.93 48.12 90.28 47.88"/><path class="stroke" pathLength="1" d="M52.72 9.4 C52.16 14.07 50.05 28.15 49.34 37.4 C48.63 46.65 48.7 55.73 48.45 64.89 C48.21 74.06 47.98 87.82 47.88 92.4"/></svg></i></summary>
+        <p>It runs in a web browser on a desktop, laptop or phone. There’s nothing to install.</p>
+      </details>
+      <details>
+        <summary><span>Where do the explanations come from?</span><i class="glyph glyph--plus" data-draw><svg class="ink__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M11.24 51.4 C15.72 51.26 29.27 50.91 38.09 50.56 C46.91 50.21 55.49 49.74 64.19 49.29 C72.89 48.85 85.93 48.12 90.28 47.88"/><path class="stroke" pathLength="1" d="M52.72 9.4 C52.16 14.07 50.05 28.15 49.34 37.4 C48.63 46.65 48.7 55.73 48.45 64.89 C48.21 74.06 47.98 87.82 47.88 92.4"/></svg></i></summary>
+        <p>Stockfish, a free and open-source chess engine, searches the position. A chess rules library checks legality, material and every line that is shown. Claude, an AI model made by Anthropic, then writes the explanation from that evidence. The tutor is built to explain only what the evidence supports.</p>
+      </details>
+      <details>
+        <summary><span>Can I use it with games from other sites?</span><i class="glyph glyph--plus" data-draw><svg class="ink__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M11.24 51.4 C15.72 51.26 29.27 50.91 38.09 50.56 C46.91 50.21 55.49 49.74 64.19 49.29 C72.89 48.85 85.93 48.12 90.28 47.88"/><path class="stroke" pathLength="1" d="M52.72 9.4 C52.16 14.07 50.05 28.15 49.34 37.4 C48.63 46.65 48.7 55.73 48.45 64.89 C48.21 74.06 47.98 87.82 47.88 92.4"/></svg></i></summary>
+        <p>Yes. Paste the PGN of any finished game. Most chess sites can export one.</p>
+      </details>
+      <details>
+        <summary><span>Can I use it during a game?</span><i class="glyph glyph--plus" data-draw><svg class="ink__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M11.24 51.4 C15.72 51.26 29.27 50.91 38.09 50.56 C46.91 50.21 55.49 49.74 64.19 49.29 C72.89 48.85 85.93 48.12 90.28 47.88"/><path class="stroke" pathLength="1" d="M52.72 9.4 C52.16 14.07 50.05 28.15 49.34 37.4 C48.63 46.65 48.7 55.73 48.45 64.89 C48.21 74.06 47.98 87.82 47.88 92.4"/></svg></i></summary>
+        <p>No. It analyses finished games, positions you set up, and practice games against its own computer opponents. It won’t help you in a live game against another person.</p>
+      </details>
+      <details>
+        <summary><span>What happens to my email?</span><i class="glyph glyph--plus" data-draw><svg class="ink__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M11.24 51.4 C15.72 51.26 29.27 50.91 38.09 50.56 C46.91 50.21 55.49 49.74 64.19 49.29 C72.89 48.85 85.93 48.12 90.28 47.88"/><path class="stroke" pathLength="1" d="M52.72 9.4 C52.16 14.07 50.05 28.15 49.34 37.4 C48.63 46.65 48.7 55.73 48.45 64.89 C48.21 74.06 47.98 87.82 47.88 92.4"/></svg></i></summary>
+        <p>It’s stored in a Cloudflare D1 database and used only to send beta news. It isn’t sold or shared. Ask for it to be deleted at any time. The <a href="/privacy/">privacy notice</a> has the details.</p>
+      </details>
+      <details>
+        <summary><span>Who is building it?</span><i class="glyph glyph--plus" data-draw><svg class="ink__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M11.24 51.4 C15.72 51.26 29.27 50.91 38.09 50.56 C46.91 50.21 55.49 49.74 64.19 49.29 C72.89 48.85 85.93 48.12 90.28 47.88"/><path class="stroke" pathLength="1" d="M52.72 9.4 C52.16 14.07 50.05 28.15 49.34 37.4 C48.63 46.65 48.7 55.73 48.45 64.89 C48.21 74.06 47.98 87.82 47.88 92.4"/></svg></i></summary>
+        <p>Prax, an independent developer in India. Questions and ideas go straight to <a href="mailto:hello@askthemove.com">hello@askthemove.com</a>.</p>
+      </details>
     </div>
   </section>
 
-  <section class="cta" aria-labelledby="cta-title">
-    <div class="cta__edge" aria-hidden="true"></div>
-    <div class="wrap cta__inner">
-      <h2 id="cta-title" class="display-2 cta__title">Bring the game you still don’t understand.</h2>
-      <p class="cta__body">Join the waitlist and you’ll get an email when your beta invite is ready. Free during the beta.</p>
-      <a class="btn btn--go btn--large" href="#join" data-focus-join>Join the waitlist</a>
-    </div>
+  <section class="homework rows" aria-labelledby="cta-title" data-ink-group>
+    <h2 id="cta-title" class="homework__title"><span class="homework__label">Homework:</span> bring the game you still don’t <span class="ink ink--double" data-draw>understand<svg class="ink__svg" viewBox="0 0 883 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M16.27 83.86 C34.34 83.85 88.79 83.74 124.7 83.82 C160.61 83.89 196.05 84.83 231.73 84.31 C267.4 83.78 303.05 81.29 338.73 80.69 C374.4 80.08 410.08 80.84 445.75 80.67 C481.42 80.49 517.1 80.01 552.77 79.63 C588.44 79.25 624.11 78.59 659.78 78.41 C695.46 78.23 731.14 78.96 766.81 78.55 C802.48 78.14 855.98 76.38 873.82 75.94"/><path class="stroke" pathLength="1" d="M87 94.89 C102.61 95.07 149.63 95.97 180.62 95.98 C211.61 95.99 242.16 94.77 272.94 94.96 C303.71 95.16 334.49 96.82 365.27 97.16 C396.04 97.5 426.81 97.48 457.59 96.98 C488.36 96.47 519.12 94.52 549.89 94.13 C580.66 93.74 611.44 95.01 642.21 94.63 C672.99 94.26 703.75 92.33 734.52 91.88 C765.29 91.43 811.45 91.93 826.84 91.94"/></svg></span>.</h2>
+    <p class="homework__body">Join the waitlist and you’ll get an email when your beta invite is ready. Free during the beta.</p>
+    <p class="homework__act"><a class="btn btn--pen btn--large" href="#join" data-focus-join>Join the waitlist</a></p>
   </section>
 </main>
-<footer class="site-footer">
-  <div class="wrap site-footer__grid">
-    <div class="site-footer__brand">
+<footer class="colophon">
+  <div class="colophon__inner">
+    <div class="colophon__brand">
       <a class="brand" href="/" aria-label="AskTheMove home">
-        <svg class="brand__mark" viewBox="0 0 64 64" width="32" height="32" aria-hidden="true" focusable="false"><path fill="#ebe4d2" d="M10 0h44a10 10 0 0 1 10 10v44a10 10 0 0 1-10 10H10A10 10 0 0 1 0 54V10A10 10 0 0 1 10 0z"/><path fill="#6b78a8" d="M32 0h22a10 10 0 0 1 10 10v22H32zM0 32h32v32H10A10 10 0 0 1 0 54z"/><path fill="#141824" d="M27.02 23.69L22.26 25.20Q21.64 25.42 21.33 25.31Q21.02 25.20 20.74 24.81L20.74 24.81Q20.07 23.91 19.60 22.65Q19.12 21.39 19.12 19.88L19.12 19.88Q19.12 16.80 20.74 14.53Q22.37 12.26 25.06 11.03Q27.74 9.80 30.99 9.80L30.99 9.80Q35.92 9.80 38.97 11.40Q42.02 12.99 43.45 15.34Q44.88 17.70 44.88 19.99L44.88 19.99Q44.88 23.02 43.90 25.06Q42.92 27.10 41.38 28.53Q39.84 29.96 38.13 30.94Q36.42 31.92 34.88 32.79Q33.34 33.66 32.36 34.61Q31.38 35.56 31.38 36.96L31.38 36.96Q31.38 38.02 31.38 38.61Q31.38 39.20 31.33 39.59L31.33 39.59Q31.27 40.26 30.60 40.26L30.60 40.26L27.07 40.26Q26.74 40.26 26.46 40.18Q26.18 40.10 26.12 39.76L26.12 39.76Q26.06 39.37 26.06 38.61Q26.06 37.86 26.06 36.96L26.06 36.96Q26.06 34.94 26.82 33.60Q27.58 32.26 28.78 31.25Q29.98 30.24 31.30 29.32Q32.62 28.39 33.82 27.27Q35.02 26.15 35.78 24.53Q36.54 22.90 36.54 20.50L36.54 20.50Q36.54 17.58 35.02 16.07Q33.51 14.56 31.22 14.56L31.22 14.56Q28.92 14.56 27.63 15.74Q26.34 16.91 26.34 18.87L26.34 18.87Q26.34 20.50 27.41 22.57L27.41 22.57Q27.58 22.90 27.58 23.18L27.58 23.18Q27.58 23.41 27.44 23.49Q27.30 23.58 27.02 23.69L27.02 23.69ZM24.44 46.65L26.68 44.46Q27.74 43.40 28.81 43.40L28.81 43.40Q29.93 43.40 30.99 44.46L30.99 44.46L33.18 46.65Q34.24 47.71 34.24 48.83L34.24 48.83Q34.24 49.95 33.18 51.02L33.18 51.02L30.99 53.20Q29.93 54.26 28.81 54.26L28.81 54.26Q27.74 54.26 26.68 53.20L26.68 53.20L24.44 51.02Q23.43 50.01 23.43 48.83L23.43 48.83Q23.43 47.66 24.44 46.65L24.44 46.65Z"/></svg>
+        <svg class="brand__mark" viewBox="0 0 64 64" width="36" height="36" aria-hidden="true" focusable="false"><rect class="brand__tile" x="1.5" y="1.5" width="61" height="61" rx="13"/><path class="brand__q" d="M23.6 25 C23.2 16.4 40.6 13.6 41.4 23.2 C42 30.4 32.6 30.2 32.6 39.6"/><circle class="brand__dot" cx="32.6" cy="49" r="4"/><path class="brand__loop" d="M16.5 15.48 C17.24 14.89 19.32 12.93 20.94 11.92 C22.57 10.91 24.39 9.92 26.25 9.43 C28.11 8.93 30.14 9.07 32.12 8.95 C34.1 8.82 36.22 8.33 38.14 8.67 C40.06 9.01 41.89 10.07 43.63 10.98 C45.37 11.89 47.09 12.89 48.57 14.13 C50.04 15.36 51.41 16.82 52.48 18.38 C53.54 19.93 54.41 21.71 54.97 23.47 C55.52 25.24 55.71 27.16 55.78 28.97 C55.86 30.79 55.61 32.58 55.42 34.36 C55.23 36.14 55.28 38.01 54.67 39.66 C54.06 41.3 52.8 42.78 51.76 44.23 C50.71 45.69 49.59 47.01 48.41 48.37 C47.22 49.73 46.1 51.27 44.65 52.39 C43.2 53.51 41.45 54.41 39.69 55.09 C37.94 55.78 36.02 56.27 34.14 56.49 C32.26 56.71 30.32 56.56 28.41 56.4 C26.5 56.24 24.51 56.07 22.68 55.5 C20.85 54.94 19 54.09 17.43 53.03 C15.85 51.97 14.35 50.62 13.23 49.14 C12.11 47.66 11.4 45.83 10.72 44.14 C10.04 42.44 9.44 40.73 9.15 38.99 C8.85 37.25 8.81 35.44 8.93 33.71 C9.05 31.98 9.42 30.26 9.88 28.61 C10.35 26.96 10.93 25.32 11.73 23.81 C12.53 22.31 13.58 20.9 14.68 19.57 C15.78 18.24 16.97 16.94 18.33 15.85 C19.68 14.75 21.22 13.8 22.81 13 C24.39 12.2 26.1 11.54 27.85 11.06 C29.6 10.58 32.4 10.26 33.31 10.1"/></svg>
         <span class="brand__word">AskTheMove</span>
       </a>
-      <p>A chess coach that explains why.<br>Made in India by an independent developer.</p>
+      <p>A chess coach that explains why. Made in India by an independent developer.</p>
     </div>
-    <div>
-      <h2 class="site-footer__head">Contact</h2>
-      <p><a href="mailto:hello@askthemove.com">hello@askthemove.com</a></p>
-    </div>
-    <div>
-      <h2 class="site-footer__head">Site</h2>
-      <ul class="site-footer__links">
-        <li><a href="/#join">Join the beta</a></li>
-        <li><a href="/privacy/">Privacy</a></li>
-        <li><a href="/terms/">Terms</a></li>
-      </ul>
-    </div>
-    <div class="site-footer__credits">
-      <h2 class="site-footer__head">Credits</h2>
-      <p>Chess pieces: the cburnett set by Colin M. L. Burnett, <a href="/assets/pieces/LICENSE.txt">GPLv2+</a>. Typefaces: Young Serif, Commissioner and Atkinson Hyperlegible Mono, <a href="/assets/fonts/OFL.txt">SIL Open Font License</a>.</p>
-    </div>
-  </div>
-  <div class="site-footer__base">
-    <p>© 2026 AskTheMove</p>
-    <p>No cookies. No trackers.</p>
+    <nav class="colophon__links" aria-label="Footer">
+      <a href="/#join">Join the beta</a>
+      <a href="/#how">How it works</a>
+      <a href="/#status">Status</a>
+      <a href="/#faq">Questions</a>
+      <a href="/privacy/">Privacy</a>
+      <a href="/terms/">Terms</a>
+      <a href="mailto:hello@askthemove.com">hello@askthemove.com</a>
+    </nav>
+    <p class="colophon__credits">Chess pieces: the cburnett set by Colin M. L. Burnett, <a href="/assets/pieces/LICENSE.txt">GPLv2+</a>. Typefaces: Vollkorn, Kalam by Indian Type Foundry, and Courier Prime, under the <a href="/assets/fonts/OFL.txt">SIL Open Font License</a>.</p>
+    <p class="colophon__base">© 2026 AskTheMove. No cookies. No trackers.</p>
   </div>
 </footer>
 
