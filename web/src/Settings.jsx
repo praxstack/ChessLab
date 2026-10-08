@@ -18,7 +18,7 @@ export default function Settings({settings,tab,onTab,onChange,engines}) {
   {select('notation','Piece Notation',[['figurine','Figurine'],['text','Text']])}
   {select('animation','Piece Animations',[[0,'None'],[100,'Fast'],[200,'Medium (default)'],[400,'Slow']],true)}
   {toggle('lastMove','Highlight Last Move')}{toggle('sound','Play Sounds')}{toggle('legalMoves','Show Legal Moves')}
-  <h3>Credits</h3><ul className="credits" aria-label="Artwork and software credits"><li>Pieces: cburnett by Colin M.L. Burnett · GPLv2+ · <a href="/licenses/cburnett/README.txt" target="_blank" rel="noreferrer">licence</a></li></ul>
+  <h3>Credits</h3><ul className="credits" aria-label="Artwork and software credits"><li>Pieces: cburnett by Colin M.L. Burnett · GPLv2+ · <a href="/licenses/cburnett/README.txt" target="_blank" rel="noreferrer">licence</a></li><li>Navigation icons: Lucide · ISC · <a href="/licenses/lucide/LICENSE.txt" target="_blank" rel="noreferrer">licence</a></li><li>Move rules: chessops · GPL-3.0 · <a href="/licenses/chessops/LICENSE.txt" target="_blank" rel="noreferrer">licence</a></li></ul>
  </>:tab==='review'?<>
   <h3>Review</h3>{toggle('arrows',"Coach’s Arrows")}{toggle('classification','Show Move Classification On Board')}{toggle('autoplay','Autoplay Show Moves')}
   {select('pace','Delay Between Moves',[[500,'0.5 seconds'],[1000,'1 second'],[2000,'2 seconds'],[3000,'3 seconds']],true)}

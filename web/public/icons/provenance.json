@@ -1,78 +1,20 @@
 {
-  "page": "https://www.chess.com/play/computer",
-  "observed": "2026-09-07",
-  "assets": [
-    {
-      "contentType": "image/svg+xml",
-      "id": "af8f3e387e0b8fc2",
-      "kind": "image",
-      "name": "play-white.svg",
-      "path": "/icons/play-white.svg",
-      "url": "https://assets-ds.chess.com/color-icons/play-white.svg",
-      "sha256": "284058b7a3c0379352d9d4bf410dfd23b9a361ef8a2f91cb9a1d1f7e0d29c7a8"
-    },
-    {
-      "contentType": "image/svg+xml",
-      "id": "e094161c484dceb6",
-      "kind": "image",
-      "name": "puzzle-piece.svg",
-      "path": "/icons/puzzle-piece.svg",
-      "url": "https://assets-ds.chess.com/color-icons/puzzle-piece.svg",
-      "sha256": "351e27c7be896b7bf7acc4ed1354a9f18d67ad50d21e02a3f808f7893a07bd1a"
-    },
-    {
-      "contentType": "image/svg+xml",
-      "id": "edae727450a256f2",
-      "kind": "image",
-      "name": "lessons.svg",
-      "path": "/icons/lessons.svg",
-      "url": "https://assets-ds.chess.com/color-icons/lessons.svg",
-      "sha256": "2b3cb07468df7f0d58a8cd1d98b3cad523444f41a20f85075d1d0fb8e5212666"
-    },
-    {
-      "contentType": "image/svg+xml",
-      "id": "9d3354c019233d24",
-      "kind": "image",
-      "name": "binoculars.svg",
-      "path": "/icons/binoculars.svg",
-      "url": "https://assets-ds.chess.com/color-icons/binoculars.svg",
-      "sha256": "7ab5f03602faeb31263e16d4ee9e2952dedac05a0ff5d1ce39642cdad4a328f5"
-    },
-    {
-      "contentType": "image/svg+xml",
-      "id": "58a8c851e53390b1",
-      "kind": "image",
-      "name": "training.svg",
-      "path": "/icons/training.svg",
-      "url": "https://assets-ds.chess.com/color-icons/training.svg",
-      "sha256": "22b02e8dd15e5b1e4a40d32b62e31e6d0aa7a96a0cbf89400048aa9e9c22f7ad"
-    },
-    {
-      "contentType": "image/svg+xml",
-      "id": "e30d855c1781e703",
-      "kind": "image",
-      "name": "friends.svg",
-      "path": "/icons/friends.svg",
-      "url": "https://assets-ds.chess.com/color-icons/friends.svg",
-      "sha256": "1f980388e543aec8174ae6763468770b0f7851bb0601421887f1841098cbe013"
-    },
-    {
-      "contentType": "image/svg+xml",
-      "id": "c26dc0e73d662be8",
-      "kind": "image",
-      "name": "ellipsis.svg",
-      "path": "/icons/ellipsis.svg",
-      "url": "https://assets-ds.chess.com/color-icons/ellipsis.svg",
-      "sha256": "859b89f15b09774fc3636700b5a45124b8182c09c020a3fa922731ccf56e58c9"
-    },
-    {
-      "contentType": "image/svg+xml",
-      "id": "ae06088dc8e5091d",
-      "kind": "image",
-      "name": "device-bot.svg",
-      "path": "/icons/device-bot.svg",
-      "url": "https://assets-ds.chess.com/color-icons/device-bot.svg",
-      "sha256": "38b5d8d559a6e017fa72af8bcb0ae38ae60c96a4c163e0e10909e62d7d0c65d1"
-    }
-  ]
+  "package": "lucide-static",
+  "version": "1.47.0",
+  "tarball": "https://registry.npmjs.org/lucide-static/-/lucide-static-1.47.0.tgz",
+  "integrity": "sha512-yWIrkdXc688Feq5VjOktsKmV5Ikc7y5Nu3rrdtbr8nWjkJWk8QlnZfVtIak22Af+fNhZ7k4cTJpZo1zmj7X5sA==",
+  "license": "ISC",
+  "licenseText": "/licenses/lucide/LICENSE.txt",
+  "retrieved": "2026-10-08",
+  "modified": false,
+  "note": "Copied unmodified from the package's icons/ directory. None of these icons is in the Feather-derived MIT list.",
+  "files": {
+    "book-open.svg": "1b15812e2e8f5227c3d979d0b809836fb09393c1f4abc7a93d4698934359fa54",
+    "bot.svg": "fbecdc0c9d72d18f32a67b167ecbe3bb396a9b0b1cb2cce2c1dfe05eb98c55b5",
+    "eye.svg": "366bdcc3384d96d4df0fe331a14fccf7c2b2f2732f8ae700917a35a69cb9e93e",
+    "graduation-cap.svg": "0b42c53efe172cad6b931cebab0f399cd4f8706622af7c72ce851c61553c7683",
+    "hourglass.svg": "a554343dadd78c2d62771375da7717fe75353e1e1d2f6409138b8c96d72dd95c",
+    "library.svg": "1b65600093ab8db43fcbf4800fd35b2c7f2f0b3f489cdcb880b5e2316bff1518",
+    "puzzle.svg": "0347fbbc8656a808c5d66a1ca07f1141158c95e6a1b4a968d5e34f86abf4e99e"
+  }
 }

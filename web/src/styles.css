@@ -34,6 +34,7 @@ input::placeholder, textarea::placeholder { color: #aaa69e; }
 .nav-item.active { background: #3b4330; color: #e1efce; }
 .nav-item.active:before { content: ''; position: absolute; left: -14px; top: 13px; bottom: 13px; width: 3px; background: var(--action); border-radius: 0 3px 3px 0; }
 .nav-item svg, .nav-asset { width: 25px; height: 25px; flex: none; }
+.nav-asset { display: block; width: 22px; height: 22px; margin: 0 1.5px; background: currentColor; -webkit-mask: var(--icon) center / contain no-repeat; mask: var(--icon) center / contain no-repeat; }
 .nav-dot { display: none; }
 .rail-bottom { margin-top: auto; }
 .local-workspace { display: flex; align-items: flex-start; gap: 9px; font-size: 12px; padding: 16px 12px; color: #d1d7c6; }
