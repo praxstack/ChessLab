@@ -6,6 +6,8 @@ ChessLab now has a web application with the observed board layout,166 bot profil
 
 The current build follows the user's platform-first direction: bot and coach play first. Human multiplayer and billing are deferred. It does not reproduce Chess.com's full platform, content library or scoring system. The full branching conversational tutor remains the longer-term objective.
 
+An optional "Explain why" asks Claude to explain the engine evidence for one position when the server has an Anthropic API key. The server checks each move it cites and otherwise shows the engine summary. [Deploying the private beta](docs/deploy-beta.md) covers the Docker image, invite codes, HTTPS settings and backups for a small hosted beta.
+
 Development and delivery now target the local server. The prior hosted build remains historical. The [local migration and proof guide](docs/local-workspace.md) covers preserved account data, archive routes, the engineering graph, and recorded verification.
 
 ## Run the application

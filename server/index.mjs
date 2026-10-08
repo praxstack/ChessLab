@@ -5,9 +5,13 @@ import express from 'express';
 import { closeEngine } from './engine.mjs';
 import { closeOpponentEngines } from './opponent-engines.mjs';
 
-const { app, close } = createApp();
-app.use('/research', express.static(resolve('report'), {dotfiles:'deny'}));
-app.use('/design', express.static(resolve('design'), {dotfiles:'deny'}));
+const { app, close, config } = createApp();
+// The research and design archives are local reference material, not part of a hosted beta.
+if (config.serveArchives) {
+ app.use('/research', express.static(resolve('report'), {dotfiles:'deny'}));
+ app.use('/design', express.static(resolve('design'), {dotfiles:'deny'}));
+}
+if (config.hosted && !config.trustProxy) console.warn('APP_ORIGIN is set without TRUST_PROXY. Behind a reverse proxy, every visitor shares one rate-limit address; set TRUST_PROXY to the number of proxy hops.');
 let vite;
 if (process.env.NODE_ENV === 'production') {
  const folder=resolve('web/dist');
