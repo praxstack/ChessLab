@@ -48,11 +48,15 @@ Bot ratings and raw engine levels SHALL be levels of one ladder defined by the e
 - **THEN** the game result and the bot card show a silver medal
 
 ### Requirement: OA-006 Games that name retired bots
-A saved game or account result that names a bot id no longer in the roster SHALL open without error and show its stored bot name. A rematch or new game requested with a well-formed retired id SHALL play the current non-adaptive bot nearest the requested rating, using first-moves bots below 250. A malformed id MUST be refused with 400.
+A saved game that names a bot id no longer in the roster SHALL open without error and show its stored bot name. Results an account recorded against a retired bot id SHALL stay stored and SHALL NOT be shown on any card in the current bot picker, which shows results only for the current roster (founder decision, 8 October 2026). A rematch or new game requested with a well-formed retired id SHALL play the current non-adaptive bot nearest the requested rating, using first-moves bots below 250. A malformed id MUST be refused with 400.
 
 #### Scenario: Rematch against a retired bot
 - **WHEN** a learner requests a rematch of a saved game against a bot id from the earlier roster at 250
 - **THEN** the new game is created against the current 250 bot
+
+#### Scenario: Results against a retired bot
+- **WHEN** an account holds a medal recorded against a bot id from the earlier roster and the learner opens the bot picker
+- **THEN** the result stays stored, no card in the picker shows it, and a saved game against that bot still opens with its stored bot name
 
 #### Scenario: Malformed bot id
 - **WHEN** a request names a bot id containing a path or a non-string value
