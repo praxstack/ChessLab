@@ -1,0 +1,2659 @@
+/* Hallmark · route: custom (bespoke) · structure: lesson notebook (margin rule, main column, marginalia) · idea: "a coach marks up your game in pencil and pen"
+ * paper: oklch(98.4% 0.008 95) · accent: oklch(54% 0.2 27) red pen + oklch(44% 0.17 264) blue ink · display + body: Vollkorn · hand: Kalam · print: Courier Prime
+ * axes: light / roman-serif + handwritten / warm red + cool blue · gates: audited · studied: no
+ *
+ * AskTheMove site styles. No framework, no build step for CSS. See DESIGN.md.
+ * Colour and type come only from the tokens in :root.
+ */
+
+@font-face {
+  font-family: 'Vollkorn';
+  src: url('/assets/fonts/vollkorn-var.woff2') format('woff2');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Kalam';
+  src: url('/assets/fonts/kalam-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Kalam';
+  src: url('/assets/fonts/kalam-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Courier Prime';
+  src: url('/assets/fonts/courier-prime-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light;
+
+  /* Paper and ruling */
+  --paper: oklch(98.4% 0.008 95);
+  --paper-2: oklch(96.5% 0.014 88);
+  --card: oklch(99.3% 0.004 95);
+  --grid: oklch(86% 0.045 235 / 0.4);
+  --margin: oklch(70% 0.12 15);
+  --margin-soft: oklch(70% 0.12 15 / 0.45);
+
+  /* Printed matter */
+  --ink: oklch(23% 0.025 265);
+  --ink-2: oklch(40% 0.02 265);
+  --rule: oklch(80% 0.012 260);
+  --rule-soft: oklch(88% 0.01 260);
+
+  /* The coach's hand */
+  --graphite: oklch(46% 0.006 270);
+  --graphite-2: oklch(62% 0.006 270);
+  --red: oklch(54% 0.2 27);
+  --blue: oklch(44% 0.17 264);
+  --blue-deep: oklch(36% 0.15 264);
+  --highlight: oklch(91% 0.15 102);
+  --wood: oklch(84% 0.06 75);
+
+  /* The board: book-diagram hatching on a pale tint */
+  --sq-tint: oklch(94% 0.016 245);
+  --hatch: oklch(62% 0.03 255);
+
+  --shadow: oklch(23% 0.025 265 / 0.22);
+  --focus: oklch(48% 0.2 264);
+
+  --font-book: 'Vollkorn', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-hand: 'Kalam', 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive;
+  --font-print: 'Courier Prime', 'Courier New', ui-monospace, monospace;
+
+  --text-hero: clamp(3rem, 1.4rem + 5.4vw, 6rem);
+  --text-h2: clamp(2rem, 1.3rem + 2.5vw, 3.4rem);
+  --text-h3: 1.375rem;
+  --text-body: 1.125rem;
+  --text-small: 0.9375rem;
+  --text-hand: 1.375rem;
+
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 96px;
+  --s-10: 128px;
+
+  --radius: 4px;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-stroke: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* The notebook grid: where the content starts, and the margin rule just left of it. */
+  --content-x: max(128px, calc(50% - 544px));
+  --pad-r: 40px;
+  --rule-x: calc(var(--content-x) - 40px);
+  --measure: 1112px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--s-5);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: clip;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  overflow-x: clip;
+  color: var(--ink);
+  font-family: var(--font-book);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  background-color: var(--paper);
+  /* Quad ruling, like a maths exercise book. */
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 26px 26px;
+  background-position: -1px -1px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-kerning: normal;
+}
+
+/* The red double margin rule, the full height of the page. */
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--rule-x);
+  width: 5px;
+  border-left: 1.5px solid var(--margin);
+  border-right: 1px solid var(--margin-soft);
+  pointer-events: none;
+  z-index: 0;
+}
+
+::selection {
+  background: var(--highlight);
+  color: var(--ink);
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a:hover {
+    text-decoration-color: var(--red);
+    text-decoration-thickness: 2px;
+  }
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+input,
+select,
+button,
+textarea {
+  caret-color: var(--blue);
+  accent-color: var(--blue);
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute;
+  left: var(--s-4);
+  top: -100px;
+  z-index: 20;
+  padding: var(--s-2) var(--s-4);
+  background: var(--ink);
+  color: var(--card);
+  font-weight: 600;
+}
+
+.skip:focus {
+  top: var(--s-4);
+}
+
+/* ---------- The page grid ---------- */
+
+main,
+.masthead,
+.colophon {
+  position: relative;
+  z-index: 1;
+}
+
+/* Everything aligns to the margin rule: content starts 40px right of it. */
+.rows,
+.wrap,
+.masthead__inner,
+.colophon__inner {
+  margin-left: var(--content-x);
+  margin-right: var(--pad-r);
+  max-width: var(--measure);
+}
+
+.rows {
+  display: grid;
+  grid-template-columns: [main] minmax(0, 46fr) [gap] minmax(var(--s-6), 3.5rem) [side] minmax(15rem, 20fr) [end];
+  align-items: start;
+}
+
+.rows > * {
+  grid-column: main;
+  min-width: 0;
+}
+
+/* ---------- Type ---------- */
+
+h1,
+h2,
+h3 {
+  font-style: normal;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.h2 {
+  margin: 0;
+  font-family: var(--font-book);
+  font-size: var(--text-h2);
+  font-weight: 750;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+}
+
+p {
+  margin: 0;
+}
+
+.prose p + p {
+  margin-top: var(--s-4);
+}
+
+.prose,
+.open__lede,
+.lesson__intro,
+.how__note,
+.status-sec__intro {
+  max-width: 62ch;
+  text-wrap: pretty;
+}
+
+/* Notation: lining figures so d1 and 1600 read clearly. Labels that can
+   hold notation are never uppercased: Qxg4 is not QXG4, and f7 is not F7. */
+.moves,
+.ss,
+.printout,
+.eval,
+.keymove,
+.note__label {
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.fig {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin: 0 0.04em 0 0.02em;
+  vertical-align: -0.14em;
+}
+
+/* The coach's voice. */
+.note-hand {
+  font-family: var(--font-hand);
+  font-size: var(--text-hand);
+  line-height: 1.3;
+  color: var(--blue);
+}
+
+.note-hand--red {
+  color: var(--red);
+}
+
+/* ---------- Ink: marks drawn by the coach ---------- */
+
+.stroke {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 0;
+}
+
+.ink {
+  /* Where the baseline sits below the top of the text's box, per typeface,
+     so marks land on the letters and not on the line below. */
+  --base: 0.95em;
+  position: relative;
+  z-index: 0;
+  white-space: nowrap;
+}
+
+.printout .ink {
+  --base: 0.78em;
+}
+
+.note-hand .ink,
+.fig-explain__next .ink {
+  --base: 1.06em;
+}
+
+.ink__svg {
+  position: absolute;
+  max-width: none;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.ink--circle .ink__svg {
+  top: calc(var(--base) - 1.055em);
+  left: -0.26em;
+  width: calc(100% + 0.52em);
+  height: 1.55em;
+}
+
+.ink--circle .stroke {
+  stroke: var(--red);
+  stroke-width: 3.4;
+}
+
+.ink--underline .ink__svg {
+  left: -0.06em;
+  top: calc(var(--base) - 0.265em);
+  width: calc(100% + 0.12em);
+  height: 0.5em;
+}
+
+.ink--double .ink__svg {
+  left: -0.06em;
+  top: calc(var(--base) - 0.374em);
+  width: calc(100% + 0.12em);
+  height: 0.6em;
+}
+
+.ink--underline .stroke,
+.ink--double .stroke {
+  stroke: var(--red);
+  stroke-width: 11;
+}
+
+.ink--highlight .ink__svg {
+  z-index: -1;
+  left: -0.14em;
+  top: 0.06em;
+  width: calc(100% + 0.28em);
+  height: 1.08em;
+  mix-blend-mode: multiply;
+}
+
+.ink--highlight .stroke {
+  stroke: var(--highlight);
+  stroke-width: 62;
+  stroke-linecap: butt;
+}
+
+.glyph {
+  display: inline-block;
+  flex: none;
+  font-style: normal;
+}
+
+.glyph .ink__svg {
+  position: static;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.glyph .stroke {
+  stroke: currentColor;
+  stroke-width: 7;
+}
+
+/* ---------- Buttons and fields ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-height: 48px;
+  padding: 0 var(--s-5);
+  border: 1.5px solid var(--blue-deep);
+  border-radius: var(--radius);
+  font-family: var(--font-book);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 160ms var(--ease-out), transform 160ms var(--ease-out);
+}
+
+.btn--pen {
+  background: var(--blue);
+  color: var(--card);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn--pen:hover {
+    background: var(--blue-deep);
+    text-decoration: none;
+  }
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn:disabled,
+.btn[aria-busy='true'] {
+  cursor: progress;
+  opacity: 0.75;
+}
+
+.btn--small {
+  min-height: 40px;
+  padding: 0 var(--s-4);
+  font-size: 0.9375rem;
+}
+
+.btn--large {
+  min-height: 56px;
+  padding: 0 var(--s-6);
+  font-size: 1.1875rem;
+}
+
+.field label,
+.check label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.field label {
+  display: block;
+  margin-bottom: var(--s-2);
+}
+
+.optional {
+  font-weight: 400;
+  color: var(--ink-2);
+}
+
+.field--rating label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--s-2);
+}
+
+.field input,
+.field select {
+  display: block;
+  width: 100%;
+  height: 54px;
+  padding: 0 var(--s-4);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background-color: var(--card);
+  color: var(--ink);
+  font-family: var(--font-book);
+  font-size: 1.125rem;
+}
+
+.field input::placeholder {
+  color: var(--graphite);
+  opacity: 1;
+}
+
+.field select {
+  appearance: none;
+  padding-right: 44px;
+  background-image: url('/assets/select-arrow.svg');
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 14px 14px;
+  cursor: pointer;
+}
+
+.field input[aria-invalid='true'] {
+  border-color: var(--red);
+  box-shadow: 0 0 0 1.5px var(--red);
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 44px;
+}
+
+.check input {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.check input[aria-invalid='true'] {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
+.check label {
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.hp {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* ---------- Masthead ---------- */
+
+.masthead {
+  padding-top: var(--s-5);
+}
+
+.masthead__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--s-6);
+  padding-bottom: var(--s-4);
+  border-bottom: 2px solid var(--ink);
+  box-shadow: 0 3px 0 -2px var(--ink);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  text-decoration: none;
+}
+
+.brand__mark {
+  flex: none;
+  width: 36px;
+  height: 36px;
+}
+
+.brand__tile {
+  fill: var(--card);
+  stroke: var(--ink);
+  stroke-width: 3;
+}
+
+.brand__q {
+  fill: none;
+  stroke: var(--blue);
+  stroke-width: 6.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.brand__dot {
+  fill: var(--blue);
+}
+
+.brand__loop {
+  fill: none;
+  stroke: var(--red);
+  stroke-width: 3.4;
+  stroke-linecap: round;
+}
+
+.brand__word {
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+/* The masthead is the wordmark and one action, nothing between: the page is a
+   single lesson, and the footer carries the section links. */
+.masthead__cta {
+  margin-left: auto;
+}
+
+/* ---------- Opening ---------- */
+
+.open {
+  padding-top: var(--s-8);
+  padding-bottom: var(--s-9);
+  row-gap: var(--s-6);
+}
+
+.open__title {
+  grid-column: main / end;
+  margin: 0;
+  font-size: var(--text-hero);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+
+.open__title .ink--circle .stroke {
+  stroke-width: 2.6;
+}
+
+.open__lede {
+  font-size: 1.375rem;
+  line-height: 1.5;
+  max-width: 50ch;
+}
+
+.open__side {
+  grid-column: side;
+  display: grid;
+  gap: var(--s-7);
+  padding-top: var(--s-2);
+}
+
+.note-hand--why {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: start;
+  gap: var(--s-2);
+  margin-top: calc(-1 * var(--s-6));
+  transform: rotate(-2deg);
+}
+
+.glyph--back {
+  width: 64px;
+  height: 44px;
+  color: var(--blue);
+  transform: translateY(-14px);
+}
+
+.note-hand--who {
+  max-width: 15em;
+  transform: rotate(1deg);
+}
+
+.note-hand--free {
+  position: relative;
+  transform: rotate(-1.5deg);
+}
+
+.glyph--to-form {
+  display: block;
+  width: 176px;
+  height: 80px;
+  margin: var(--s-2) 0 0 calc(-1 * var(--s-8));
+  color: var(--blue);
+}
+
+/* The sign-up slip */
+
+.slip {
+  margin-top: var(--s-6);
+  max-width: 40rem;
+  outline: none;
+}
+
+.slip__title {
+  margin-bottom: var(--s-4);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.slip__row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--s-3);
+}
+
+.field--email {
+  flex: 1;
+  min-width: 0;
+}
+
+.slip__submit {
+  min-height: 54px;
+}
+
+.slip__more {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--s-4) var(--s-6);
+  margin-top: var(--s-4);
+}
+
+.field--rating {
+  width: min(100%, 19rem);
+}
+
+.slip__status {
+  min-height: 1.6em;
+  margin-top: var(--s-3);
+  font-weight: 600;
+}
+
+.slip__status.is-error {
+  color: var(--red);
+}
+
+/* After a plain form post (no JavaScript) the redirect targets one of these. */
+.slip__result {
+  display: none;
+}
+
+html:not(.has-js) .slip__result:target {
+  display: block;
+}
+
+.slip__fine {
+  font-size: var(--text-small);
+  color: var(--ink-2);
+}
+
+.slip__done {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  column-gap: var(--s-4);
+  align-items: center;
+  padding: var(--s-5) 0;
+}
+
+.slip__done[hidden] {
+  display: none;
+}
+
+.slip__done .glyph--tick {
+  grid-row: span 2;
+  width: 56px;
+  height: 50px;
+  color: var(--red);
+}
+
+.slip__done .glyph--tick .stroke {
+  stroke-width: 9;
+}
+
+.slip__done-title {
+  font-family: var(--font-hand);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--blue);
+  outline: none;
+}
+
+.slip__done-body {
+  font-size: 1.125rem;
+}
+
+/* ---------- The lesson ---------- */
+
+.lesson {
+  padding-bottom: var(--s-9);
+}
+
+.lesson__head {
+  row-gap: var(--s-3);
+  margin-bottom: var(--s-6);
+}
+
+.lesson__intro {
+  font-size: 1.1875rem;
+  color: var(--ink-2);
+}
+
+.lesson__you {
+  grid-column: side;
+  grid-row: 1 / span 2;
+  align-self: end;
+  transform: rotate(-2deg);
+}
+
+.note-hand--side {
+  font-size: 1.625rem;
+}
+
+.lesson__fine {
+  margin-left: var(--content-x);
+  margin-right: var(--pad-r);
+  max-width: 62ch;
+  margin-top: var(--s-6);
+  font-size: var(--text-small);
+  color: var(--ink-2);
+}
+
+.demo {
+  display: grid;
+  grid-template-columns: minmax(150px, 190px) minmax(0, 560px) minmax(15rem, 1fr);
+  grid-template-areas:
+    'sheet board note'
+    'sheet ctrl note';
+  column-gap: var(--s-6);
+  row-gap: var(--s-5);
+  align-items: start;
+  margin-left: calc(var(--content-x) - 8px);
+  margin-right: var(--pad-r);
+  max-width: calc(var(--measure) + 8px);
+}
+
+.demo__sheet {
+  grid-area: sheet;
+}
+
+.demo__board {
+  grid-area: board;
+  margin: 0;
+  min-width: 0;
+}
+
+.note {
+  grid-area: note;
+  min-width: 0;
+}
+
+.demo__controls {
+  grid-area: ctrl;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  padding-left: 1.4rem;
+}
+
+/* Score sheet */
+
+.ss {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border: 1.5px solid var(--ink);
+  font-family: var(--font-print);
+  font-size: 0.875rem;
+}
+
+.ss__cap {
+  caption-side: top;
+  padding-bottom: var(--s-2);
+  text-align: left;
+  font-family: var(--font-print);
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.ss thead th {
+  padding: var(--s-1) var(--s-2);
+  border-bottom: 1.5px solid var(--ink);
+  font-weight: 400;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--ink-2);
+}
+
+.ss tbody th {
+  width: 2.4em;
+  padding: 0 var(--s-2) 0 0;
+  border-right: 1px solid var(--rule);
+  font-weight: 400;
+  text-align: right;
+  color: var(--graphite);
+}
+
+.ss td {
+  height: 2.4rem;
+  padding: 0 var(--s-2);
+  border-bottom: 1px solid var(--rule-soft);
+  border-left: 1px solid var(--rule-soft);
+  white-space: nowrap;
+}
+
+.ss tbody tr:last-child td,
+.ss tbody tr:last-child th {
+  border-bottom: 0;
+}
+
+.ss__mv {
+  font-family: var(--font-hand);
+  font-size: 1.1875rem;
+  line-height: 1;
+  color: var(--graphite);
+}
+
+.ss__btn {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  min-height: 36px;
+  padding: var(--s-1) var(--s-1);
+  margin: 0 calc(-1 * var(--s-1));
+  border: 0;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.ss__btn:disabled {
+  cursor: default;
+  color: var(--ink);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ss__btn:not(:disabled):hover .ss__san {
+    text-decoration: underline;
+    text-decoration-color: var(--blue);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.18em;
+  }
+}
+
+.ss__ann {
+  margin-left: 2px;
+  font-weight: 700;
+  color: var(--red);
+}
+
+.ss__ring {
+  position: absolute;
+  max-width: none;
+  top: -2px;
+  left: -10px;
+  width: calc(100% + 20px);
+  height: calc(100% + 4px);
+  overflow: visible;
+  pointer-events: none;
+}
+
+.ss__ring .stroke {
+  stroke: var(--red);
+  stroke-width: 4;
+  stroke-dashoffset: 1.01;
+  transition: stroke-dashoffset 280ms var(--ease-stroke);
+}
+
+[aria-current='step'] > .ss__ring .stroke {
+  stroke-dashoffset: 0;
+}
+
+.ss__var td {
+  height: auto;
+  padding: var(--s-2) var(--s-3);
+  border-left: 0;
+}
+
+.ss__var-line {
+  position: relative;
+  display: inline-block;
+  font-family: var(--font-hand);
+  font-size: 1.0625rem;
+  color: var(--blue);
+}
+
+.ss__var-line .ss__ring .stroke {
+  stroke: var(--blue);
+  stroke-width: 3;
+}
+
+.ss__result {
+  margin-top: var(--s-2);
+  font-family: var(--font-hand);
+  font-size: 1.25rem;
+  color: var(--graphite);
+}
+
+.ss__result-label {
+  font-family: var(--font-print);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+/* The diagram: coordinates outside a crisp, double-ruled board */
+
+.diagram {
+  display: grid;
+  grid-template-columns: 1.4rem minmax(0, 1fr);
+  grid-template-rows: auto 1.6rem;
+}
+
+.diagram__ranks {
+  display: grid;
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+  align-items: center;
+  font-family: var(--font-hand);
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--graphite);
+}
+
+.diagram__files {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  align-items: end;
+  text-align: center;
+  font-family: var(--font-hand);
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--graphite);
+}
+
+.diagram--mini {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto;
+}
+
+.board {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  container-type: inline-size;
+  background: var(--card);
+  border: 1px solid var(--ink);
+  box-shadow: 0 0 0 3px var(--card), 0 0 0 5px var(--ink);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.board--mini {
+  box-shadow: 0 0 0 2px var(--card), 0 0 0 3.5px var(--ink);
+}
+
+/* Dark squares: diagonal hatching, the way chess books print them. */
+.board::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(-45deg, var(--hatch) 0 1px, transparent 1px 4.5px), var(--sq-tint);
+  -webkit-mask: repeating-conic-gradient(var(--ink) 0 25%, transparent 0 50%) 0 0 / 25% 25%;
+  mask: repeating-conic-gradient(var(--ink) 0 25%, transparent 0 50%) 0 0 / 25% 25%;
+}
+
+.board__layer {
+  position: absolute;
+  inset: 0;
+}
+
+.board .pc,
+.board .hl,
+.board .badge {
+  --x: 0;
+  --y: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 12.5%;
+  height: 12.5%;
+  transform: translate(calc(var(--x) * 100%), calc(var(--y) * 100%));
+}
+
+.board [data-x='1'] { --x: 1; }
+.board [data-x='2'] { --x: 2; }
+.board [data-x='3'] { --x: 3; }
+.board [data-x='4'] { --x: 4; }
+.board [data-x='5'] { --x: 5; }
+.board [data-x='6'] { --x: 6; }
+.board [data-x='7'] { --x: 7; }
+.board [data-y='1'] { --y: 1; }
+.board [data-y='2'] { --y: 2; }
+.board [data-y='3'] { --y: 3; }
+.board [data-y='4'] { --y: 4; }
+.board [data-y='5'] { --y: 5; }
+.board [data-y='6'] { --y: 6; }
+.board [data-y='7'] { --y: 7; }
+
+.board .pc {
+  z-index: 2;
+  max-width: none;
+  padding: 2%;
+  transition: transform 420ms var(--ease-out), opacity 240ms var(--ease-out);
+  pointer-events: none;
+}
+
+.board .pc.is-moving {
+  z-index: 3;
+}
+
+.board .pc.is-out,
+.board .pc.is-in {
+  opacity: 0;
+}
+
+/* The last move: a highlighter swipe on both squares. */
+.board .hl {
+  background: var(--highlight);
+  mix-blend-mode: multiply;
+  opacity: 0.7;
+}
+
+.board__ink {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.board__ink .stroke {
+  stroke-width: 0.78;
+}
+
+.board--mini .board__ink .stroke {
+  stroke-width: 1.05;
+}
+
+.board__ink .tone--red .stroke {
+  stroke: var(--red);
+}
+
+.board__ink .tone--blue .stroke {
+  stroke: var(--blue);
+}
+
+.board__ink .tone--graphite .stroke {
+  stroke: var(--graphite);
+  stroke-width: 0.6;
+}
+
+.board__ink .mk--cross .stroke {
+  stroke-width: 0.62;
+}
+
+.board__badges {
+  z-index: 5;
+  pointer-events: none;
+}
+
+.badge {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 0 1.2% 0 0;
+  font-family: var(--font-hand);
+  font-weight: 700;
+  font-size: 5.6cqi;
+  line-height: 0.9;
+  color: var(--red);
+}
+
+.badge {
+  margin: -2.6cqi 0 0 2.4cqi;
+}
+
+.badge--mate {
+  font-size: 6.4cqi;
+}
+
+/* The red-blue pencil that follows a stroke while it is drawn. */
+.pencil {
+  opacity: 0;
+  transition: opacity 180ms var(--ease-out);
+}
+
+.board.is-drawing .pencil {
+  opacity: 1;
+}
+
+.pencil__wood {
+  fill: var(--wood);
+}
+
+.pencil__lead,
+.pencil__barrel {
+  fill: var(--red);
+}
+
+.pencil.tone--blue .pencil__lead,
+.pencil.tone--blue .pencil__barrel {
+  fill: var(--blue);
+}
+
+.pencil.tone--graphite .pencil__lead,
+.pencil.tone--graphite .pencil__barrel {
+  fill: var(--graphite);
+}
+
+.pencil__shine {
+  fill: var(--card);
+  opacity: 0.35;
+}
+
+/* The coach's note beside the board */
+
+.note__stack {
+  display: grid;
+}
+
+.note__page {
+  grid-area: 1 / 1;
+  visibility: hidden;
+}
+
+.note__page.is-current {
+  visibility: visible;
+}
+
+.note__label {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1) var(--s-3);
+  margin-bottom: var(--s-3);
+  font-family: var(--font-print);
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+  color: var(--ink-2);
+}
+
+.note__count {
+  color: var(--graphite);
+}
+
+.note__title {
+  margin-bottom: var(--s-3);
+  font-family: var(--font-hand);
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.12;
+  color: var(--blue);
+}
+
+.note__body {
+  font-family: var(--font-hand);
+  font-size: 1.3125rem;
+  line-height: 1.38;
+  color: var(--blue);
+}
+
+.note__evidence {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: var(--s-2);
+  align-items: start;
+  margin-top: var(--s-5);
+  padding-top: var(--s-3);
+  border-top: 1px dashed var(--graphite-2);
+  font-family: var(--font-print);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--graphite);
+}
+
+.note__tick {
+  width: 22px;
+  height: 20px;
+  margin-top: 1px;
+  overflow: visible;
+}
+
+.note__tick .stroke {
+  stroke: var(--red);
+  stroke-width: 10;
+}
+
+.note.is-branch .note__title,
+.note.is-branch .note__body {
+  color: var(--blue);
+}
+
+/* Walkthrough controls */
+
+.ctl {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 44px;
+  padding: 0 var(--s-4);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--ink);
+  font-family: var(--font-book);
+  font-size: 1rem;
+  font-weight: 650;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 160ms var(--ease-out), transform 160ms var(--ease-out);
+}
+
+.ctl:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.ctl:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.ctl__icon {
+  flex: none;
+}
+
+.ctl--branch {
+  margin-left: auto;
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.ctl--branch.is-active {
+  background: var(--blue);
+  color: var(--card);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ctl:not(:disabled):hover {
+    background: var(--paper-2);
+  }
+
+  .ctl--branch.is-active:not(:disabled):hover {
+    background: var(--blue-deep);
+  }
+}
+
+/* ---------- What a review leaves out ---------- */
+
+.review {
+  padding-top: var(--s-8);
+  padding-bottom: var(--s-9);
+  row-gap: var(--s-7);
+}
+
+.review__title {
+  grid-column: main / end;
+  max-width: 20ch;
+}
+
+.review__main {
+  font-size: 1.1875rem;
+}
+
+.review__side {
+  grid-column: side;
+  grid-row: 2 / span 2;
+  display: grid;
+  gap: var(--s-4);
+  padding-top: var(--s-2);
+}
+
+/* Engine printouts */
+
+.printout {
+  position: relative;
+  padding: var(--s-5) var(--s-5) var(--s-4);
+  background: var(--paper-2);
+  color: var(--ink);
+  font-family: var(--font-print);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  box-shadow: 0 1px 1px var(--shadow), 0 12px 22px -14px var(--shadow);
+  transform: rotate(-0.7deg);
+}
+
+/* A perforated top edge, torn off a roll. */
+.printout::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -4px;
+  height: 8px;
+  background: radial-gradient(circle at 4px 4px, var(--paper) 2.2px, transparent 2.6px) 0 0 / 10px 8px repeat-x;
+}
+
+.printout__head {
+  margin-bottom: var(--s-3);
+  padding-bottom: var(--s-2);
+  border-bottom: 1px dashed var(--graphite-2);
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+  color: var(--ink-2);
+}
+
+.printout__head .fig,
+.printout__mv .fig {
+  vertical-align: -0.16em;
+}
+
+.printout__line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1) var(--s-5);
+  align-items: baseline;
+}
+
+.printout__line + .printout__line {
+  margin-top: var(--s-1);
+}
+
+.printout__line--dim {
+  color: var(--graphite);
+}
+
+.printout__mv {
+  font-size: 1.0625rem;
+}
+
+.printout .ink--circle .stroke {
+  stroke-width: 7;
+}
+
+.printout__flag {
+  margin-left: 1px;
+  color: var(--red);
+  font-weight: 700;
+}
+
+.review__but {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: var(--s-2);
+  align-items: start;
+  font-size: 1.5rem;
+  transform: rotate(-1.5deg);
+}
+
+.glyph--up {
+  width: 52px;
+  height: 40px;
+  color: var(--red);
+  transform: translate(8px, -6px) scaleX(-1) rotate(180deg) scaleY(-1);
+}
+
+.review__questions {
+  grid-column: main;
+}
+
+.review__lead {
+  margin-bottom: var(--s-5);
+  font-weight: 650;
+  font-size: 1.1875rem;
+}
+
+.questions {
+  display: grid;
+  gap: var(--s-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.question__q {
+  margin: 0 0 var(--s-1);
+  font-family: var(--font-hand);
+  font-size: clamp(1.625rem, 1.3rem + 1vw, 2.125rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--blue);
+}
+
+.question p {
+  max-width: 52ch;
+  color: var(--ink-2);
+}
+
+/* ---------- How it works ---------- */
+
+.how {
+  padding-top: var(--s-8);
+  padding-bottom: var(--s-7);
+  border-top: 2px solid var(--ink);
+  box-shadow: inset 0 3px 0 -2px var(--ink);
+}
+
+.how__head {
+  row-gap: var(--s-4);
+  padding-top: var(--s-6);
+  margin-bottom: var(--s-6);
+}
+
+.how__title {
+  grid-column: main / end;
+  max-width: 22ch;
+}
+
+.how__note {
+  color: var(--ink-2);
+}
+
+.steps {
+  margin: 0 var(--pad-r) 0 var(--content-x);
+  padding: 0;
+  max-width: var(--measure);
+  list-style: none;
+}
+
+.step {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: var(--s-7);
+  padding: var(--s-7) 0;
+  border-top: 1px solid var(--rule);
+}
+
+.step__text p + p {
+  margin-top: var(--s-4);
+}
+
+.step__title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+  margin: 0 0 var(--s-3);
+  font-size: 1.75rem;
+  font-weight: 750;
+  line-height: 1.1;
+}
+
+/* Step numbers hang in the notebook margin, written in red. */
+.step__n {
+  position: absolute;
+  left: -92px;
+  top: calc(var(--s-7) - 2px);
+  width: 40px;
+  text-align: center;
+  font-family: var(--font-hand);
+  font-size: 2.125rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--red);
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-family: var(--font-hand);
+  font-size: 1.3125rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.status .glyph {
+  width: 30px;
+  height: 27px;
+}
+
+.status--live {
+  color: var(--red);
+}
+
+.status--dev {
+  color: var(--graphite);
+}
+
+.status--dev .glyph {
+  width: 30px;
+  height: 26px;
+}
+
+.step__fig {
+  margin: 0;
+  min-width: 0;
+}
+
+.step__fig figcaption {
+  margin-top: var(--s-4);
+  padding-top: var(--s-2);
+  border-top: 1px solid var(--rule);
+  font-size: var(--text-small);
+  color: var(--ink-2);
+  max-width: 56ch;
+}
+
+/* Figure 1: evidence */
+
+.fig-evidence {
+  display: grid;
+  grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+  gap: var(--s-5);
+  align-items: start;
+}
+
+.fig-evidence figcaption {
+  grid-column: 1 / -1;
+}
+
+.fig-evidence__board {
+  padding: 4px;
+}
+
+.facts {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0;
+}
+
+.fact {
+  display: grid;
+  grid-template-columns: 6.5em minmax(0, 1fr);
+  gap: var(--s-2);
+}
+
+.fact dt {
+  font-size: 0.75rem;
+  letter-spacing: 0.01em;
+  color: var(--ink-2);
+  padding-top: 0.2em;
+}
+
+.fact dd {
+  margin: 0;
+}
+
+.fact dd strong {
+  display: block;
+  font-weight: 400;
+}
+
+.fact dd > span {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--graphite);
+}
+
+.printout--facts {
+  transform: rotate(0.5deg);
+}
+
+/* Figure 2: the explanation, in the coach's hand */
+
+.fig-explain {
+  padding: var(--s-5) var(--s-5) var(--s-4);
+  background: var(--card);
+  border: 1px solid var(--rule);
+  box-shadow: 0 12px 22px -16px var(--shadow);
+  /* Lined paper: this page is ruled, not squared. */
+  background-image: linear-gradient(transparent calc(2.1rem - 1px), var(--grid) calc(2.1rem - 1px), var(--grid) 2.1rem, transparent 2.1rem);
+  background-size: 100% 2.1rem;
+  background-position: 0 1.2rem;
+}
+
+.fig-explain__tag {
+  margin-bottom: var(--s-3);
+  font-family: var(--font-print);
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+  color: var(--ink-2);
+}
+
+.fig-explain__hand {
+  font-family: var(--font-hand);
+  font-size: 1.25rem;
+  line-height: 2.1rem;
+  color: var(--blue);
+}
+
+.fig-explain__hand p + p {
+  margin-top: 0;
+}
+
+.fig-explain__title {
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.fig-explain__next {
+  margin-top: var(--s-2);
+}
+
+.fig-explain__next .ink--underline {
+  font-weight: 700;
+  color: var(--red);
+  margin-right: var(--s-1);
+}
+
+.fig-explain__next .ink--underline .stroke {
+  stroke-width: 22;
+}
+
+.fig-explain__src {
+  margin-top: var(--s-3);
+  font-family: var(--font-print);
+  font-size: 0.8125rem;
+  color: var(--graphite);
+}
+
+.fig-explain figcaption {
+  border-top-color: var(--rule-soft);
+}
+
+/* Figure 3: branch */
+
+.tree {
+  display: grid;
+  gap: var(--s-2);
+  margin-bottom: var(--s-4);
+}
+
+.tree__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s-1) var(--s-3);
+}
+
+.tree__row--branch {
+  position: relative;
+  padding-left: var(--s-6);
+  color: var(--blue);
+}
+
+.glyph--fork {
+  position: absolute;
+  left: 4px;
+  top: -14px;
+  width: 26px;
+  height: 34px;
+  color: var(--blue);
+}
+
+.tree__tag {
+  min-width: 5.5em;
+  font-family: var(--font-print);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.moves {
+  font-size: 1.0625rem;
+}
+
+.mv {
+  white-space: nowrap;
+}
+
+.mv__n {
+  margin-right: 0.12em;
+  color: var(--graphite);
+}
+
+.mv--key {
+  font-weight: 700;
+}
+
+.fig-branch__body {
+  display: grid;
+  grid-template-columns: minmax(0, 180px) minmax(0, 1fr);
+  gap: var(--s-5);
+  align-items: start;
+}
+
+.fig-branch__board {
+  padding: 4px;
+}
+
+.eval {
+  font-size: 1.125rem;
+}
+
+.eval__num {
+  font-family: var(--font-print);
+  font-size: 1.5rem;
+  letter-spacing: -0.1em;
+}
+
+.eval__src {
+  margin-bottom: var(--s-4);
+  font-family: var(--font-print);
+  font-size: 0.8125rem;
+  color: var(--graphite);
+}
+
+.pin {
+  max-width: 18em;
+  padding: var(--s-3) var(--s-4) var(--s-4);
+  background: var(--highlight);
+  font-family: var(--font-hand);
+  font-size: 1.1875rem;
+  line-height: 1.3;
+  color: var(--ink);
+  box-shadow: 0 10px 18px -12px var(--shadow);
+  transform: rotate(1.2deg);
+}
+
+.pin__head {
+  display: block;
+  margin-bottom: var(--s-1);
+  font-family: var(--font-print);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Figure 4: return */
+
+.fig-return__label {
+  margin-bottom: var(--s-2);
+  font-family: var(--font-print);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.game {
+  line-height: 1.9;
+  max-width: 34em;
+}
+
+.keymove {
+  margin-top: var(--s-4);
+  padding: var(--s-3) 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.keymove__head {
+  font-family: var(--font-print);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.keymove__move {
+  font-size: 1.125rem;
+}
+
+.keymove__meta {
+  font-size: var(--text-small);
+  color: var(--graphite);
+}
+
+.fig-return__back {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-4);
+  font-family: var(--font-hand);
+  font-size: 1.3125rem;
+  color: var(--blue);
+}
+
+.glyph--return {
+  width: 46px;
+  height: 32px;
+}
+
+/* ---------- Who it's for ---------- */
+
+.who {
+  padding-top: var(--s-8);
+  padding-bottom: var(--s-8);
+  row-gap: var(--s-6);
+}
+
+.who__title {
+  grid-column: main / end;
+  max-width: 22ch;
+}
+
+.who__yes {
+  grid-column: main;
+}
+
+.who__no {
+  grid-column: side;
+}
+
+.who__head {
+  margin: 0 0 var(--s-4);
+  font-size: var(--text-h3);
+  font-weight: 700;
+}
+
+.marked {
+  display: grid;
+  gap: var(--s-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.marked li {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: var(--s-3);
+  align-items: start;
+  max-width: 48ch;
+}
+
+.marked .glyph {
+  width: 32px;
+  height: 28px;
+  color: var(--red);
+}
+
+.marked--no .glyph {
+  width: 24px;
+  height: 24px;
+  margin: 2px 0 0 4px;
+  color: var(--graphite);
+}
+
+.marked--no li {
+  color: var(--ink-2);
+}
+
+/* ---------- Status: a checklist the coach ticks off ---------- */
+
+.status-sec {
+  padding-top: var(--s-8);
+  padding-bottom: var(--s-9);
+  row-gap: var(--s-6);
+}
+
+.status-sec__head {
+  display: grid;
+  gap: var(--s-4);
+}
+
+.status-sec__head .h2 {
+  max-width: 18ch;
+}
+
+.status-sec__intro {
+  color: var(--ink-2);
+}
+
+.checklist {
+  grid-column: main / end;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 2px solid var(--ink);
+}
+
+.checklist__item {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) minmax(8rem, 12rem);
+  gap: var(--s-4);
+  align-items: center;
+  padding: var(--s-4) 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.checklist__item .glyph {
+  width: 36px;
+  height: 32px;
+}
+
+.checklist__text {
+  font-size: 1.25rem;
+  line-height: 1.35;
+}
+
+.checklist__state {
+  font-family: var(--font-hand);
+  font-size: 1.3125rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: right;
+}
+
+.is-live .glyph,
+.is-live .checklist__state {
+  color: var(--red);
+}
+
+.is-dev .glyph,
+.is-dev .checklist__state {
+  color: var(--graphite);
+}
+
+.is-dev .checklist__text {
+  color: var(--ink-2);
+}
+
+.is-next .glyph,
+.is-next .checklist__state {
+  color: var(--blue);
+}
+
+/* ---------- FAQ ---------- */
+
+.faq {
+  padding-top: var(--s-8);
+  padding-bottom: var(--s-8);
+  row-gap: var(--s-5);
+}
+
+.faq__head {
+  grid-column: main / end;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3) var(--s-6);
+}
+
+.faq__contact {
+  transform: rotate(-1deg);
+}
+
+.faq__list {
+  grid-column: main / end;
+  border-top: 2px solid var(--ink);
+}
+
+.faq details {
+  border-bottom: 1px solid var(--rule);
+}
+
+.faq summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  min-height: 60px;
+  padding: var(--s-3) 0;
+  font-size: 1.25rem;
+  font-weight: 650;
+  line-height: 1.3;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .faq summary:hover span {
+    text-decoration: underline;
+    text-decoration-color: var(--red);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.2em;
+  }
+}
+
+.glyph--plus {
+  width: 22px;
+  height: 22px;
+  color: var(--red);
+  transition: transform 200ms var(--ease-out);
+}
+
+details[open] .glyph--plus {
+  transform: rotate(45deg);
+}
+
+.faq details p {
+  max-width: 64ch;
+  padding-bottom: var(--s-5);
+  color: var(--ink-2);
+}
+
+/* ---------- Homework ---------- */
+
+.homework {
+  padding-top: var(--s-9);
+  padding-bottom: var(--s-10);
+  row-gap: var(--s-5);
+}
+
+.homework__title {
+  grid-column: main / end;
+  max-width: 18ch;
+  margin: 0;
+  font-size: clamp(2.4rem, 1.4rem + 3.6vw, 4.75rem);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+}
+
+.homework__label {
+  display: inline-block;
+  margin-right: 0.15em;
+  font-family: var(--font-hand);
+  font-size: 0.66em;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--red);
+  transform: rotate(-4deg) translateY(-0.06em);
+}
+
+.homework__title .ink--double .stroke {
+  stroke-width: 7;
+}
+
+.homework__body {
+  max-width: 44ch;
+  font-size: 1.25rem;
+}
+
+.homework__act {
+  margin-top: var(--s-2);
+}
+
+/* ---------- Colophon ---------- */
+
+.colophon {
+  padding-bottom: var(--s-7);
+}
+
+.colophon__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--s-5) var(--s-7);
+  padding-top: var(--s-6);
+  border-top: 2px solid var(--ink);
+  box-shadow: inset 0 3px 0 -2px var(--ink);
+  font-size: var(--text-small);
+}
+
+.colophon__brand p {
+  margin-top: var(--s-2);
+  color: var(--ink-2);
+  max-width: 36ch;
+}
+
+.colophon__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: var(--s-2) var(--s-5);
+}
+
+.colophon__links a {
+  display: inline-block;
+  padding: var(--s-1) 0;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.colophon__credits,
+.colophon__base {
+  grid-column: 1 / -1;
+  max-width: 80ch;
+  color: var(--ink-2);
+}
+
+.colophon__base {
+  font-family: var(--font-print);
+  font-size: 0.8125rem;
+}
+
+/* ---------- Privacy, terms and 404 ---------- */
+
+.doc {
+  padding-top: var(--s-8);
+  padding-bottom: var(--s-9);
+}
+
+.doc__template {
+  max-width: 62ch;
+  margin-bottom: var(--s-6);
+  padding: var(--s-4) var(--s-5);
+  background: var(--paper-2);
+  font-family: var(--font-print);
+  font-size: 0.9375rem;
+  box-shadow: 0 1px 1px var(--shadow), 0 10px 18px -14px var(--shadow);
+}
+
+.doc__kind {
+  margin-bottom: var(--s-2);
+  font-family: var(--font-hand);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--red);
+  transform: rotate(-2deg);
+  transform-origin: left center;
+}
+
+.doc h1 {
+  margin: 0;
+  font-size: var(--text-h2);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+}
+
+.doc__meta {
+  margin-top: var(--s-3);
+  font-family: var(--font-print);
+  font-size: 0.875rem;
+  color: var(--graphite);
+}
+
+.doc__body {
+  margin-top: var(--s-6);
+}
+
+.doc__body h2 {
+  margin: var(--s-7) 0 var(--s-3);
+  font-size: 1.5rem;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.doc__body ul {
+  padding-left: 1.2em;
+}
+
+.doc__body li + li {
+  margin-top: var(--s-2);
+}
+
+.lost {
+  padding-top: var(--s-9);
+  padding-bottom: var(--s-10);
+}
+
+.lost__glyph {
+  margin: 0 0 var(--s-4);
+  font-family: var(--font-hand);
+  font-size: clamp(4rem, 2rem + 8vw, 8rem);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--red);
+}
+
+.lost h1 {
+  margin: 0 0 var(--s-4);
+  font-size: var(--text-h2);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  max-width: 18ch;
+}
+
+.lost__body {
+  max-width: 48ch;
+  margin-bottom: var(--s-6);
+}
+
+.lost__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+}
+
+.btn--plain {
+  background: var(--card);
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn--plain:hover {
+    background: var(--paper-2);
+  }
+}
+
+/* ---------- Drawing states (app.js) ----------
+ * Every mark is in the HTML. With scripting on and motion allowed, marks start
+ * hidden so the coach can draw them; app.js takes over by adding .ink-ready.
+ * If the script never runs, the marks appear after 2.5s anyway.
+ */
+
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  html:not(.ink-ready) [data-draw] .stroke,
+  html:not(.ink-ready) .demo .board__ink .stroke {
+    stroke-dashoffset: 1.01;
+    animation: ink-safety 0s linear 2.5s forwards;
+  }
+
+  html:not(.ink-ready) [data-ink-group] [data-write],
+  html:not(.ink-ready) .demo [data-write] {
+    visibility: hidden;
+    animation: write-safety 0s linear 2.5s forwards;
+  }
+
+  html:not(.ink-ready) .demo .hl {
+    clip-path: inset(0 100% 0 0);
+    animation: swipe-safety 0s linear 2.5s forwards;
+  }
+}
+
+@keyframes swipe-safety {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes ink-safety {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes write-safety {
+  to {
+    visibility: visible;
+  }
+}
+
+.is-pending .stroke {
+  stroke-dashoffset: 1.01;
+}
+
+.is-pending[data-write],
+.is-pending [data-write] {
+  visibility: hidden;
+}
+
+.demo.is-pending .hl {
+  clip-path: inset(0 100% 0 0);
+}
+
+.w {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .board .pc,
+  .ss__ring .stroke,
+  .glyph--plus,
+  .btn,
+  .ctl,
+  .pencil {
+    transition: none;
+  }
+
+  .pencil {
+    display: none;
+  }
+}
+
+@media print {
+  [data-draw] .stroke,
+  .board__ink .stroke {
+    stroke-dashoffset: 0 !important;
+  }
+
+  [data-write] {
+    visibility: visible !important;
+  }
+
+  .masthead__cta,
+  .demo__controls {
+    display: none;
+  }
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1240px) {
+  .demo {
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.62fr);
+    grid-template-areas:
+      'board note'
+      'ctrl note'
+      'sheet note';
+    max-width: 920px;
+  }
+
+  .demo__sheet {
+    max-width: 26rem;
+  }
+
+  .step__n {
+    left: -84px;
+  }
+}
+
+@media (max-width: 1079px) {
+  :root {
+    --content-x: 76px;
+    --pad-r: 32px;
+    --rule-x: 44px;
+  }
+
+  .rows {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rows > *,
+  .open__title,
+  .open__side,
+  .lesson__you,
+  .review__title,
+  .review__side,
+  .review__questions,
+  .how__title,
+  .who__title,
+  .who__yes,
+  .who__no,
+  .checklist,
+  .faq__head,
+  .faq__list,
+  .homework__title {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .open__side {
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--s-5) var(--s-6);
+    margin-top: var(--s-2);
+    padding-left: var(--s-4);
+  }
+
+  .note-hand--why {
+    margin-top: 0;
+  }
+
+  .glyph--to-form {
+    display: none;
+  }
+
+  .lesson__you {
+    align-self: start;
+    justify-self: start;
+  }
+
+  .review__side {
+    max-width: 30rem;
+  }
+
+  .step {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-5);
+  }
+
+  .step__n {
+    left: -60px;
+    width: 32px;
+  }
+
+  .who__no {
+    margin-top: var(--s-3);
+  }
+}
+
+@media (max-width: 860px) {
+  /* Board and note stay side by side, so the pencil and the writing are seen together. */
+  .demo {
+    grid-template-columns: minmax(0, 1fr) minmax(12.5rem, 0.66fr);
+    grid-template-areas:
+      'board note'
+      'ctrl ctrl'
+      'sheet sheet';
+    column-gap: var(--s-5);
+  }
+
+  .note__title {
+    font-size: 1.5rem;
+  }
+
+  .note__body {
+    font-size: 1.125rem;
+  }
+
+}
+
+@media (max-width: 699px) {
+  :root {
+    --content-x: 30px;
+    --pad-r: 16px;
+    --rule-x: 12px;
+    --text-hand: 1.25rem;
+  }
+
+  body {
+    font-size: 1.0625rem;
+    background-size: 22px 22px;
+  }
+
+  .masthead {
+    padding-top: var(--s-4);
+  }
+
+  .masthead__inner {
+    gap: var(--s-3);
+    padding-bottom: var(--s-3);
+  }
+
+  .brand__word {
+    font-size: 1.1875rem;
+  }
+
+  .brand__mark {
+    width: 30px;
+    height: 30px;
+  }
+
+  .open {
+    padding-top: var(--s-6);
+    padding-bottom: var(--s-8);
+    row-gap: var(--s-5);
+  }
+
+  .open__lede {
+    font-size: 1.1875rem;
+  }
+
+  .open__side {
+    padding-left: 0;
+  }
+
+  .slip {
+    margin-top: var(--s-5);
+  }
+
+  .slip__row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .slip__submit {
+    width: 100%;
+  }
+
+  .demo {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'board'
+      'note'
+      'ctrl'
+      'sheet';
+    max-width: 640px;
+    margin-left: calc(var(--content-x) - 4px);
+  }
+
+  .demo__controls {
+    padding-left: 0;
+  }
+
+  .fact {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .diagram:not(.diagram--mini) {
+    grid-template-columns: 1.1rem minmax(0, 1fr);
+  }
+
+  .diagram__ranks,
+  .diagram__files {
+    font-size: 0.875rem;
+  }
+
+  .note__title {
+    font-size: 1.625rem;
+  }
+
+  .note__body {
+    font-size: 1.1875rem;
+  }
+
+  .demo__controls .ctl {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: 0 var(--s-3);
+  }
+
+  .ctl--branch {
+    flex-basis: 100%;
+    margin-left: 0;
+  }
+
+  .ss td {
+    height: 2.75rem;
+  }
+
+  .review,
+  .who,
+  .status-sec,
+  .homework {
+    padding-top: var(--s-8);
+  }
+
+  .review__but {
+    font-size: 1.3125rem;
+  }
+
+  .step__n {
+    position: static;
+    width: auto;
+    font-size: 1.75rem;
+  }
+
+  .fig-evidence,
+  .fig-branch__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .fig-evidence__board,
+  .fig-branch__board {
+    width: 100%;
+    max-width: 240px;
+  }
+
+  .fig-explain {
+    padding: var(--s-4);
+  }
+
+  .checklist__item {
+    grid-template-columns: 36px minmax(0, 1fr);
+    row-gap: var(--s-1);
+  }
+
+  .checklist__state {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .checklist__text {
+    font-size: 1.125rem;
+  }
+
+  .faq summary {
+    font-size: 1.125rem;
+  }
+
+  .colophon__inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (pointer: coarse) {
+  .ss__btn {
+    min-height: 44px;
+  }
+}

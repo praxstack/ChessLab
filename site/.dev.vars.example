@@ -1,0 +1,6 @@
+# Copy to .dev.vars for `npm run dev`. Never commit .dev.vars.
+# In production set these with `npx wrangler pages secret put NAME`.
+ADMIN_TOKEN=change-me-to-a-long-random-string
+IP_HASH_SALT=change-me-to-another-long-random-string
+# Optional: Cloudflare Turnstile secret. Leave unset to skip the human check.
+# TURNSTILE_SECRET=

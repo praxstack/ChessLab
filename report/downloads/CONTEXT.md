@@ -10,7 +10,7 @@ The board and explanation must agree. Arrows, highlighted pieces, capture sequen
 
 ## Hosted private beta — updated 8 October 2026
 
-The founder now directs preparation for a hosted private beta under the AskTheMove name, plus the first Claude API feature: grounded "Explain why" explanations of engine evidence. `openspec/changes/hosted-beta-readiness/` governs this work. Local operation remains supported and is the default. Nothing has been deployed; hosting provider, domain and launch timing are open decisions.
+The founder now directs preparation for a hosted private beta under the AskTheMove name, plus the first Claude API feature: grounded "Explain why" explanations of engine evidence. `openspec/changes/hosted-beta-readiness/` governs this work. The public landing page and beta waitlist in `site/` are governed by `openspec/changes/beta-waitlist-site/`. Local operation remains supported and is the default. Nothing has been deployed; hosting provider, domain and launch timing are open decisions.
 
 On 8 October 2026 the founder approved showing the AskTheMove name in the interface. The repository, package, database file, cookie, environment variables, browser storage keys and the `.chesslab.json` study format keep the ChessLab working name. `openspec/changes/rename-askthemove/` records this.
 
