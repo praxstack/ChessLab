@@ -34,7 +34,7 @@ Use a new evidence folder per run. Existing fixtures cover desktop and mobile. E
 
 The output folder contains `local-user-flow.webm`, screenshots of the picker, game, review, nested study, puzzle, library and mobile controls, and `receipt.json`. A passing process alone does not establish visual quality. Inspect the screenshots and video, then read the receipt.
 
-Only synthetic test accounts belong in PR evidence. Hash source/build and proof files together in a separate manifest after the last change. A changed build invalidates previous proof for that build. This proves local behavior, not full Chess.com equivalence or hosted delivery.
+Only synthetic test accounts belong in PR evidence. Hash source/build and proof files together in a separate manifest after the last change. A changed build invalidates previous proof for that build. This proves local behavior, not equivalence with another product or hosted delivery.
 
 ## Cleanup
 

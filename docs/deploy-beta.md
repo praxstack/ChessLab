@@ -25,7 +25,7 @@ Set these in the host's secret store or a `chmod 600` env file. Never commit the
 | `COACH_AI_TIMEOUT_MS` | `15000` | Limit per explanation, 2000–60000. On timeout the app shows the engine summary instead. |
 | `COACH_AI_MAX_PER_HOUR` | `30` | Explanations per account per hour, 1–1000. |
 | `COACH_ENGINE_MOVETIME_MS` | `800` | Stockfish time when an explanation needs fresh analysis, 100–2000. |
-| `SERVE_ARCHIVES` | unset | `1` serves the research and design archives even when hosted. Keep it unset: the design archive holds frames captured from Chess.com. |
+| `SERVE_ARCHIVES` | unset | `1` serves the research and design archives even when hosted. Keep it unset: the archives are internal founder research, not part of the beta. |
 | `COOKIE_SECURE` | unset | Set automatically by an HTTPS `APP_ORIGIN`. |
 
 The image already sets `NODE_ENV=production`, `HOST=0.0.0.0`, `PORT=8770`, `CHESSLAB_DB=/data/chesslab.sqlite`, `STOCKFISH_PATH`, `CHESSLAB_ENGINES_DIR`, and catalogue paths under `/data`. Do not set `PUBLIC_ORIGIN` or `CHESSLAB_BACKEND_SECRET`. Those belong to the earlier owner-private Sites tunnel. They make every request require that tunnel's secret header.

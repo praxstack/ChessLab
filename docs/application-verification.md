@@ -2,7 +2,7 @@
 
 The first sections record the earlier baseline. The bot-platform expansion receipt at the end records the current additions.
 
-This is evidence for the first bot/coach stage, not a claim of complete Chess.com parity or deployment. The controlling change is `build-coach-web-platform`. The earlier research archive commit is `993a24e`.
+This is a dated log of evidence for the first bot/coach stage, not a claim of deployment. Entries describe the build as it was then; the original-asset policy of 8 October 2026 later replaced the piece set, icons, palette and bot roster described in some entries. The controlling change is `build-coach-web-platform`. The earlier research archive commit is `993a24e`.
 
 ## Automated results
 
@@ -47,7 +47,7 @@ The private repository at [praxstack/ChessLab](https://github.com/praxstack/Ches
 
 ## Piece correction follow-up
 
-The browser's rendered Chess.com analysis-board backgrounds supplied the exact twelve source URLs. Download checks confirmed twelve 150 × 150 PNG files, totalling 93,344 bytes, with source hashes saved in `references/chesscom-piece-assets.json`. The custom SVG drawing paths and their color/shadow styles were removed. The shared piece renderer now uses those local files everywhere, including promotion choices. The bot difficulty label is explicit.
+The browser's rendered Chess.com analysis-board backgrounds supplied the exact twelve source URLs. Download checks confirmed twelve 150 × 150 PNG files, totalling 93,344 bytes, with source hashes saved in a reference record. (Superseded on 8 October 2026: those pieces and their record were removed and replaced by the GPL-licensed cburnett set.) The custom SVG drawing paths and their color/shadow styles were removed. The shared piece renderer now uses those local files everywhere, including promotion choices. The bot difficulty label is explicit.
 
 The production build passed after this change. The running app showed all 32 occupied-board images loading at their original 150 px width, covering all twelve unique color/type assets, and no desktop horizontal overflow. The existing automated browser smoke now checks those images and uses the current difficulty label instead of an obsolete selector. That standalone browser script still has not been executed; the image check was observed through CUA.
 
@@ -78,7 +78,7 @@ The subsequent isolated Stockfish recheck passed all 11 tests, zero failures/ski
 
 The later combined confirmation of the preceding expansion passed 41/41 tests in 54.38 seconds (`data/final-tests-confirmation.log`). This supersedes its latest test status above without erasing the recorded host-load failures.
 
-The current build integrates 166 observed public bot profiles across twelve categories, their original portraits/greetings, the exact 25 reference engine-level ratings, original navigation icons and the existing original twelve piece images. Stockfish 18 Lite is a real tenth installed runtime configuration, verified by release hashes and UCI identity. Its adjacent CommonJS package marker fixes a startup failure caused by the repository’s ES-module setting.
+The build at that point integrated 166 observed public bot profiles across twelve categories, their original portraits/greetings, the exact 25 reference engine-level ratings, original navigation icons and the existing original twelve piece images. Stockfish 18 Lite is a real tenth installed runtime configuration, verified by release hashes and UCI identity. Its adjacent CommonJS package marker fixes a startup failure caused by the repository’s ES-module setting.
 
 `just test` passed 46/46 checks, zero failures or skips, in 20.35 seconds on the final logic. This includes every installed engine returning a legal move, all166 profile setups, beginner targets 100/125/150/175/200/225, five-line Lite analysis, original overload/deadline assertions and active/queued cancellation. Review cancellation now propagates from the HTTP disconnect into queued requests and active native processes. Alternate installation directories are honored by Analysis; advanced thread counts require explicit engine selection.
 
@@ -106,7 +106,7 @@ The old 800px breakpoint stacked a 620px board above the bot roster in the user�
 
 ## 8 September 2026 — reference recording and authentication continuation
 
-The actual Chrome reference session covered Coach, bot play, two solved puzzles and Game Review. Original screenshots, eleven accepted speech transcripts, sound-effect rejections and the exact gaps are indexed in [the capture atlas](../references/chrome-session-2026-09-08/index.html) and [session report](../references/chrome-session-2026-09-08/session-report.md). An unrated online match auto-aborted after automatic approval review blocked the first coordinate move.
+The actual Chrome reference session covered Coach, bot play, two solved puzzles and Game Review. Original screenshots, eleven accepted speech transcripts, sound-effect rejections and the exact gaps were indexed in a capture atlas and session report under `references/chrome-session-2026-09-08/`. That folder was removed from the current tree on 8 October 2026 and remains in earlier commits. An unrated online match auto-aborted after automatic approval review blocked the first coordinate move.
 
 A reproduced guest puzzle move was discarded by sign-in. Commit cde3d74 preserves explicit pending bot/puzzle/lesson/import actions, cancels them when dismissed, and guards late account/exercise/game-list responses. Puzzles now have Solve puzzles and Next puzzle controls. Actual Chrome checks passed for all four sign-in continuations, a legal Martin bot reply, hint, undo, resignation and engine review. `just app-check` passed all 55 tests and built the app; all four OpenSpec changes validated. `just check` still reports external drift of the globally installed unslop skill hash; its baseline was preserved.
 

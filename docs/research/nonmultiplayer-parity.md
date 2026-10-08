@@ -2,6 +2,8 @@
 
 Audience: Prax, building the requested web platform. This is an evidence ledger for implementation, not a change to the user's objective.
 
+> Historical record. On 8 October 2026 the original-asset policy (`openspec/changes/original-asset-pack/`) superseded this reference-parity mapping for the hosted beta. The observed roster, portraits, pieces and captures it describes are no longer stored in the current tree.
+
 The new ChatGPT conversation describes static atlases and prototypes. Its author explicitly could not navigate the live reference; its 208-row status totals do not prove engine behavior or visual parity. The complete retrieved conversation is archived in sources/chesslab-chatgpt-2026-09-08.json. The referenced master ZIP was initially missing. The user subsequently supplied it in this run; its SHA-256 matches both receipts and its575-file ZIP passes a freshCRC check. Forty chess-specific sources are archived as inert documents in sources/supplied-master. The complete original is retained in ignored data/source-archives; references/supplied-master-archive.json records its inventory.
 
 This run accessed the real public Play Bots screen and observed 166 named bots in twelve expanded groups. Names, ratings, greetings and original portrait URLs were read from the rendered selection state. No locked game was unlocked and no subscription transaction was performed. The user's sign-in handoff is pending for authenticated settings and coach inspection.

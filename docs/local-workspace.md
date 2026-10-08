@@ -32,7 +32,7 @@ The [delivery proof](verification/local-web/README.md) describes the accepted re
 
 ## Continue the program
 
-The [OpenSpec graph](../openspec/changes/local-web-first/tasks.md) orders the current work and preserves full platform parity as an unfinished goal. [The design decision](verification/local-web/design.md) explains the stack choice. [The decision trail](verification/local-web/decisions.tsv) records evidence and blockers.
+The [OpenSpec graph](../openspec/changes/local-web-first/tasks.md) orders the local web work. Its reference-parity goal was superseded for the hosted beta by the original-asset policy of 8 October 2026 (`openspec/changes/original-asset-pack/`). [The design decision](verification/local-web/design.md) explains the stack choice. [The decision trail](verification/local-web/decisions.tsv) records evidence and blockers.
 
 Pstack's installed setup skill configured confirmed Codex models in the user's model map and preserved the earlier Cursor mapping in a backup. There is no `peestack` shell executable. The installed Astra Team validator accepts only runtime 0.153.4 and rejects the current runtime. It also blocks native subagent spawns. Team acceptance and independent review remain unavailable; no validator was modified or bypassed.
 
@@ -70,7 +70,7 @@ The importer requires the existing `zstd` executable and Python's standard libra
 
 ## Rated and daily puzzles
 
-Puzzles offers Rated, Daily and Custom practice. Rated selects unseen puzzles around your local puzzle rating. Choose Standard, Hard or Extra Hard. A clean complete solution wins; the first mistake, hint, reveal or skip scores one loss. Continuing afterward or replaying the puzzle does not score it again. Rating receipts, best rating and attempt count stay in the account database. This local Elo rating starts at 1500 with K=32; it is separate from Chess.com ratings and chess playing strength.
+Puzzles offers Rated, Daily and Custom practice. Rated selects unseen puzzles around your local puzzle rating. Choose Standard, Hard or Extra Hard. A clean complete solution wins; the first mistake, hint, reveal or skip scores one loss. Continuing afterward or replaying the puzzle does not score it again. Rating receipts, best rating and attempt count stay in the account database. This local Elo rating starts at 1500 with K=32; it is separate from ratings on other sites and from chess playing strength.
 
 Daily pins one position for the server’s local calendar date, shared across accounts. Return to Puzzles after reload to resume the saved date and position. Completion history and consecutive-day streaks persist. Reopening the same day returns the same attempt; Try again creates custom practice. A saved attempt spanning midnight keeps and credits its original date when solved. Rated scores do not change during daily or custom play. The last seven days appear in the daily calendar. Full rated calibration, rush, battle and richer daily archives remain work. [Mode proof](verification/rated-daily-puzzles/README.md) covers the current behavior.
 
@@ -106,7 +106,7 @@ Completed Game Review reports offer Practice key moves. Choose White, Black or b
 
 Open Openings → Game explorer, or select Explore this position from a named line. Move-count rows, result bars and example games come from the downloaded Lichess Elite November 2025 archive. The first 60 half-moves are indexed; every accepted game is legally parsed in full and retained for replay. Repeated positions contribute only their first encounter per game. Example games are a sample, not a ranking. My Games uses only your completed standard games, including local bot games; custom starting positions and unfinished games are excluded.
 
-Replay an example, explore from its selected position, or Study this example to save a separate owned copy. Existing study drafts are saved through the normal import flow. Full platform parity remains unfinished; this selected online corpus is not Chess.com's master database.
+Replay an example, explore from its selected position, or Study this example to save a separate owned copy. Existing study drafts are saved through the normal import flow. This selected online corpus is not any other site's master database.
 
 The archive and database live in `data/explorer/`; `CHESSLAB_EXPLORER` can select another imported database. The server opens it read-only. To reproduce the import, use the pinned project-local environment and a new destination:
 
@@ -125,7 +125,7 @@ Game options → Game type → Chess960 starts one of 960 numbered positions. Le
 
 Castle by clicking or dragging your king onto its rook, or type O-O / O-O-O. The king finishes on g/c and the rook on f/d, including positions where either piece stays put. PGN imports/exports use `Variant "Chess960"` and the starting FEN; study JSON preserves the variant and exact tree. Position practice retains the source variant. The position editor offers Chess960 with rook-file castling rights.
 
-The four installed Stockfish versions and Leela support the required protocol. Maia models are Standard only and unavailable for Chess960 selection. Named openings, public game frequencies and puzzle corpora remain Standard chess. These are local bot simulations, not proprietary Chess.com behavior.
+The four installed Stockfish versions and Leela support the required protocol. Maia models are Standard only and unavailable for Chess960 selection. Named openings, public game frequencies and puzzle corpora remain Standard chess. These are local bot simulations, not reproductions of another product's bots.
 
 Chess960 rules use pinned [chessops 0.15.1](https://github.com/niklasf/chessops), GPL-3.0-or-later. Its [license](../web/public/licenses/chessops/LICENSE.txt) and [source archive](../web/public/licenses/chessops/chessops-0.15.1-source.tar.gz) ship locally under `/licenses/chessops/`. Existing chess.js rules still govern Standard. Differential checks use the already-installed python-chess 1.11.2 at `data/explorer/.venv/bin/python`; override `CHESSLAB_ORACLE_PYTHON` for an equivalent local installation. No rules, engines or weights require a remote service at runtime.
 
@@ -139,4 +139,4 @@ The local server keeps the deadline and score through reloads and restarts. Sign
 
 The local endgame library uses all 290 standard Syzygy WDL/DTZ files for 3–5 pieces (983,957,920 bytes). `python3 scripts/download_tablebases.py` downloads the pinned official Lichess distribution, checks each published SHA-256 and atomically installs each verified file under `data/tablebases/standard/`. It reuses files only after checking both size and hash. A failed download retains a `.part` file and does not replace its destination; rerun to retry. No certificate validation bypass is used.
 
-`data/explorer/.venv/bin/python scripts/check_endgame_tables.py` checks every table and all initial catalogue outcomes plus legal continuations, using the already installed python-chess package. `CHESSLAB_TABLEBASES` may point native UCI engines to another local directory. Only engines advertising SyzygyPath receive the option; browser/WASM Lite remains on ordinary search. Native Stockfish search receipts expose tablebaseHits, distinct from a configured path. The installation is local; no tablebase API service is used at runtime. Full six-piece tables exceed this increment's selected storage scope; complete Chess.com parity remains unfinished.
+`data/explorer/.venv/bin/python scripts/check_endgame_tables.py` checks every table and all initial catalogue outcomes plus legal continuations, using the already installed python-chess package. `CHESSLAB_TABLEBASES` may point native UCI engines to another local directory. Only engines advertising SyzygyPath receive the option; browser/WASM Lite remains on ordinary search. Native Stockfish search receipts expose tablebaseHits, distinct from a configured path. The installation is local; no tablebase API service is used at runtime. Full six-piece tables exceed this increment's selected storage scope.
