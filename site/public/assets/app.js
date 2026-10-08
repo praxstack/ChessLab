@@ -333,6 +333,11 @@ function initWaitlist() {
     status.classList.remove('is-error');
   };
 
+  // Turnstile tokens work once, so every failed attempt needs a fresh challenge.
+  const resetTurnstile = () => {
+    if (window.turnstile && typeof window.turnstile.reset === 'function') window.turnstile.reset();
+  };
+
   const showDone = (address) => {
     form.hidden = true;
     done.hidden = false;
@@ -404,9 +409,11 @@ function initWaitlist() {
       }
       const message = body.error || ERROR_MESSAGES.server;
       setError(message, res.status === 400 && /email/i.test(message) ? email : null);
-      if (window.turnstile && typeof window.turnstile.reset === 'function') window.turnstile.reset();
+      resetTurnstile();
     } catch {
       setError('We couldn’t reach the server. Check your connection and try again.');
+      // The server may have used the token before the response was lost, and a token works once.
+      resetTurnstile();
     } finally {
       button.disabled = false;
       button.removeAttribute('aria-busy');

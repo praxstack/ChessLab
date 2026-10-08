@@ -14,6 +14,7 @@
     "test": "node --test --no-warnings=ExperimentalWarning \"test/*.test.js\"",
     "db:migrate:local": "wrangler d1 migrations apply askthemove-waitlist --local",
     "db:migrate:remote": "wrangler d1 migrations apply askthemove-waitlist --remote",
+    "delete-signup": "node scripts/delete-signup.mjs",
     "deploy": "node scripts/build.mjs --check && wrangler pages deploy --branch main"
   },
   "devDependencies": {

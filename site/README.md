@@ -135,11 +135,10 @@ Use your own domain once it is set up. The file has one row per person: email, w
 To delete someone who asks:
 
 ```sh
-npx wrangler d1 execute askthemove-waitlist --remote \
-  --command "DELETE FROM waitlist WHERE email = 'person@example.com'"
+npm run delete-signup
 ```
 
-Type the address in lower case, as it is stored. If it contains an apostrophe, write it twice inside the quotes: `o'connor@example.co` becomes `'o''connor@example.co'`.
+It asks for the address, shows it back and asks you to confirm, then deletes it from the live database. Paste the address at the prompt, never into a shell command of your own: a valid address can contain characters such as backticks and `$` that a shell would run. Add `-- --local` to delete from the local development database instead.
 
 ## 5. Turn on Turnstile (only if bots become a problem)
 

@@ -16,7 +16,7 @@ The waitlist form SHALL post to `/api/waitlist` and work without JavaScript. A J
 - **THEN** nothing is stored and the page they return to says the sign-up failed and what to check
 
 ### Requirement: WL-002 Consent and minimal data
-A sign-up SHALL require an explicit consent tick. The service SHALL store only the normalised email, the consent time, an optional rating band, the form name and campaign tags. It SHALL never store the raw IP address.
+A sign-up SHALL require an explicit consent tick. The service SHALL store only the normalised email, the consent time, an optional rating band, the form name, campaign tags and the fixed product name the row belongs to. It SHALL never store the raw IP address.
 
 #### Scenario: Missing consent
 - **WHEN** a sign-up arrives without consent

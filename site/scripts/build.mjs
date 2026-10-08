@@ -7,8 +7,8 @@
 //
 // Change the domain, contact address or Turnstile site key in site.config.json,
 // then run `npm run build`. public/ is committed so it can be deployed as-is.
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, unlinkSync } from 'node:fs';
+import { dirname, join, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DEMO } from '../public/assets/demo-data.js';
 import {
@@ -382,6 +382,20 @@ for (const [rel, content] of files) {
     mkdirSync(dirname(target), { recursive: true });
     writeFileSync(target, content);
     console.log(`wrote public/${rel}`);
+  }
+}
+// public/ is what gets deployed, so a page dropped from PAGES must not stay there.
+const generatedPages = new Set([...files.keys()].filter((rel) => rel.endsWith('.html')));
+const builtPages = readdirSync(join(root, 'public'), { recursive: true })
+  .map((rel) => String(rel).split(sep).join('/'))
+  .filter((rel) => rel.endsWith('.html') && !rel.startsWith('assets/'));
+for (const rel of builtPages) {
+  if (generatedPages.has(rel)) continue;
+  if (check) {
+    stale.push(`${rel} (no longer generated)`);
+  } else {
+    unlinkSync(join(root, 'public', rel));
+    console.log(`removed public/${rel}`);
   }
 }
 if (check) {
