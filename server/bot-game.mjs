@@ -1,6 +1,7 @@
 import { randomInt } from 'node:crypto';
 import {createChess,chess960Fen,gameVariant} from '../shared/chess.js';
 import { replay } from './engine.mjs';
+import {shiftOnLadder} from '../shared/strength-ladder.js';
 
 const fail = message => { throw Object.assign(new Error(message), {status:400}); };
 export const assistanceDefaults = {chat:true,evaluation:false,threats:false,suggestions:false,feedback:false,engine:false};
@@ -82,7 +83,8 @@ export function adaptiveRating(game) {
  if(!game.adaptive)return game.rating;
  const values={p:1,n:3,b:3,r:5,q:9,k:0};let advantage=0;
  for(const p of replay(game.moves,game.initialFen,game.variant).board().flat())if(p)advantage+=(p.color===game.color?1:-1)*values[p.type];
- return Math.max(250,Math.min(3200,game.rating+Math.max(-350,Math.min(350,advantage*80))));
+ // About 80 points per pawn, capped at 350, landing on a ladder level (OA-005).
+ return shiftOnLadder(game.rating,Math.max(-350,Math.min(350,advantage*80)));
 }
 export function addBotChat(game,move) {
  if(!game.assistance?.chat)return;

@@ -20,6 +20,18 @@ export function strengthChoices(profileRating) {
   return profileRating < 250 ? [firstMovesRating, ...strengthLadder] : strengthLadder;
 }
 
+// Moves a rating along the ladder by about `points`, for adaptive bots during play. It lands on the
+// level nearest the shifted target, and at least one level in the direction of a non-zero shift
+// while the ladder has one, so every change in the material balance still changes the opponent.
+export function shiftOnLadder(rating, points) {
+  if (!points) return rating;
+  const nearest = target => strengthLadder.reduce((best, level) => Math.abs(level - target) < Math.abs(best - target) ? level : best);
+  const from = strengthLadder.indexOf(nearest(rating));
+  let to = strengthLadder.indexOf(nearest(rating + points));
+  if (to === from) to = Math.max(0, Math.min(strengthLadder.length - 1, from + Math.sign(points)));
+  return strengthLadder[to];
+}
+
 export function ladderLevel(rating) {
   if (rating === firstMovesRating) return 0;
   const index = strengthLadder.indexOf(rating);

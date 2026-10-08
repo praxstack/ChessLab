@@ -37,11 +37,15 @@ Every bot SHALL have an invented name, an original description and a category of
 - **THEN** ids are unique, no entry contains another site's name, a URL or a country field, and every avatar equals the generator's output
 
 ### Requirement: OA-005 Engine-defined strength ladder
-Bot ratings and raw engine levels SHALL be levels of one ladder defined by the engine controls the server applies: below 1100 a share of moves is sampled from the legal moves, and higher levels add Stockfish skill and thinking time. Each level SHALL map to distinct controls. The interface MUST NOT describe ladder ratings as calibrated human ratings. Wins SHALL earn gold, silver or bronze medals under the existing assistance rule.
+Bot ratings and raw engine levels SHALL be levels of one ladder defined by the engine controls the server applies: below 1100 a share of moves is sampled from the legal moves, and higher levels add Stockfish skill and thinking time. Each level SHALL map to distinct controls. An adaptive bot's target during play SHALL also be a ladder level: each pawn of material the learner leads or trails by shifts it by about 80 points, capped at 350, and the result lands on the nearest level, at least one level in the direction of the shift. The interface MUST NOT describe ladder ratings as calibrated human ratings. Wins SHALL earn gold, silver or bronze medals under the existing assistance rule.
 
 #### Scenario: Distinct levels
 - **WHEN** the controls for every ladder level are computed
 - **THEN** no two levels have identical skill, think time and sampled share
+
+#### Scenario: Adaptive bot after a capture
+- **WHEN** the learner leads the 650 Adaptive bot by one pawn
+- **THEN** its target becomes 850, the next ladder level, and its moves use that level's controls
 
 #### Scenario: Medal after a win
 - **WHEN** a learner beats a bot after one hint

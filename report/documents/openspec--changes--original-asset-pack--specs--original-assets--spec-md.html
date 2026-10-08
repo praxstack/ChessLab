@@ -20,7 +20,7 @@
 <header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
 <main id="main" tabindex="-1">
 <header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/original-asset-pack/specs/original-assets/spec.md</p></header>
-<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/original-asset-pack/specs/original-assets/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/original-asset-pack/specs/original-assets/spec.md<br>SHA-256: f23bd19f3e41ab405981d2fd8087cf16c5ba12844117a8960f8015a5e267fe36</p><h3 id="purpose">Purpose</h3>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/original-asset-pack/specs/original-assets/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/original-asset-pack/specs/original-assets/spec.md<br>SHA-256: f1251a8e523990617e8349d60bbcbff6dd3e3286d7c0683cab10328462c71e10</p><h3 id="purpose">Purpose</h3>
 <p>Ship only original or openly licensed artwork, bots and wording, so the app can be shown to outside testers and the repository distributes no other product's assets or captures.</p>
 <h3 id="added-requirements">ADDED Requirements</h3>
 <h4 id="requirement-oa-001-openly-licensed-piece-set">Requirement: OA-001 Openly licensed piece set</h4>
@@ -57,11 +57,16 @@
 <li><strong>THEN</strong> ids are unique, no entry contains another site's name, a URL or a country field, and every avatar equals the generator's output</li>
 </ul>
 <h4 id="requirement-oa-005-engine-defined-strength-ladder">Requirement: OA-005 Engine-defined strength ladder</h4>
-<p>Bot ratings and raw engine levels SHALL be levels of one ladder defined by the engine controls the server applies: below 1100 a share of moves is sampled from the legal moves, and higher levels add Stockfish skill and thinking time. Each level SHALL map to distinct controls. The interface MUST NOT describe ladder ratings as calibrated human ratings. Wins SHALL earn gold, silver or bronze medals under the existing assistance rule.</p>
+<p>Bot ratings and raw engine levels SHALL be levels of one ladder defined by the engine controls the server applies: below 1100 a share of moves is sampled from the legal moves, and higher levels add Stockfish skill and thinking time. Each level SHALL map to distinct controls. An adaptive bot's target during play SHALL also be a ladder level: each pawn of material the learner leads or trails by shifts it by about 80 points, capped at 350, and the result lands on the nearest level, at least one level in the direction of the shift. The interface MUST NOT describe ladder ratings as calibrated human ratings. Wins SHALL earn gold, silver or bronze medals under the existing assistance rule.</p>
 <h5 id="scenario-distinct-levels">Scenario: Distinct levels</h5>
 <ul>
 <li><strong>WHEN</strong> the controls for every ladder level are computed</li>
 <li><strong>THEN</strong> no two levels have identical skill, think time and sampled share</li>
+</ul>
+<h5 id="scenario-adaptive-bot-after-a-capture">Scenario: Adaptive bot after a capture</h5>
+<ul>
+<li><strong>WHEN</strong> the learner leads the 650 Adaptive bot by one pawn</li>
+<li><strong>THEN</strong> its target becomes 850, the next ladder level, and its moves use that level's controls</li>
 </ul>
 <h5 id="scenario-medal-after-a-win">Scenario: Medal after a win</h5>
 <ul>
