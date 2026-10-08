@@ -14,6 +14,12 @@ export function engineControls(rating) {
   };
 }
 
+// The strengths a learner can pick for an opponent: ladder levels only, plus first moves for a
+// first-moves bot. Pass nothing for a raw engine.
+export function strengthChoices(profileRating) {
+  return profileRating < 250 ? [firstMovesRating, ...strengthLadder] : strengthLadder;
+}
+
 export function ladderLevel(rating) {
   if (rating === firstMovesRating) return 0;
   const index = strengthLadder.indexOf(rating);
