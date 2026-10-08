@@ -19,8 +19,8 @@ The board SHALL render one piece set, cburnett, from unmodified files whose sour
 Navigation icons SHALL come from a pinned `lucide-static` release whose integrity hash and file hashes are recorded, with the ISC licence served beside them. No icon file from another chess site MAY remain.
 
 #### Scenario: Icon audit
-- **WHEN** the icon folder is compared with its provenance record
-- **THEN** every icon matches a recorded Lucide file and hash
+- **WHEN** the test suite compares the icon folder with its provenance record
+- **THEN** the folder holds exactly the recorded Lucide files, and each matches its recorded hash
 
 ### Requirement: OA-003 Original palette with readable contrast
 The interface and default board SHALL use the project's own palette. Body text, muted text, primary-button text and board coordinates SHALL each have a contrast ratio of at least 4.5:1 against their backgrounds. Stored board theme ids from earlier builds MUST map to a current theme, and unknown ids MUST fall back to the default.

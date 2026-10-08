@@ -20,7 +20,7 @@
 <header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
 <main id="main" tabindex="-1">
 <header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/original-asset-pack/specs/original-assets/spec.md</p></header>
-<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/original-asset-pack/specs/original-assets/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/original-asset-pack/specs/original-assets/spec.md<br>SHA-256: f1251a8e523990617e8349d60bbcbff6dd3e3286d7c0683cab10328462c71e10</p><h3 id="purpose">Purpose</h3>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/original-asset-pack/specs/original-assets/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/original-asset-pack/specs/original-assets/spec.md<br>SHA-256: 18a829f9280b6faf751de1704dea4bfd1de9855b87a364848c45203c826ddc9c</p><h3 id="purpose">Purpose</h3>
 <p>Ship only original or openly licensed artwork, bots and wording, so the app can be shown to outside testers and the repository distributes no other product's assets or captures.</p>
 <h3 id="added-requirements">ADDED Requirements</h3>
 <h4 id="requirement-oa-001-openly-licensed-piece-set">Requirement: OA-001 Openly licensed piece set</h4>
@@ -39,8 +39,8 @@
 <p>Navigation icons SHALL come from a pinned <code>lucide-static</code> release whose integrity hash and file hashes are recorded, with the ISC licence served beside them. No icon file from another chess site MAY remain.</p>
 <h5 id="scenario-icon-audit">Scenario: Icon audit</h5>
 <ul>
-<li><strong>WHEN</strong> the icon folder is compared with its provenance record</li>
-<li><strong>THEN</strong> every icon matches a recorded Lucide file and hash</li>
+<li><strong>WHEN</strong> the test suite compares the icon folder with its provenance record</li>
+<li><strong>THEN</strong> the folder holds exactly the recorded Lucide files, and each matches its recorded hash</li>
 </ul>
 <h4 id="requirement-oa-003-original-palette-with-readable-contrast">Requirement: OA-003 Original palette with readable contrast</h4>
 <p>The interface and default board SHALL use the project's own palette. Body text, muted text, primary-button text and board coordinates SHALL each have a contrast ratio of at least 4.5:1 against their backgrounds. Stored board theme ids from earlier builds MUST map to a current theme, and unknown ids MUST fall back to the default.</p>
