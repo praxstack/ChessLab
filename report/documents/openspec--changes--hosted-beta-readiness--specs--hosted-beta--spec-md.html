@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Spec · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/hosted-beta-readiness/specs/hosted-beta/spec.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/hosted-beta-readiness/specs/hosted-beta/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/hosted-beta-readiness/specs/hosted-beta/spec.md<br>SHA-256: d15a4029b0aeedfe3c5880d0b4efc38c6bd4da7c15e91b824ddc795c26f98078</p><h3 id="purpose">Purpose</h3>
+<p>Allow one server instance to run safely behind an HTTPS reverse proxy for a small invited group, while local use keeps its current defaults.</p>
+<h3 id="added-requirements">ADDED Requirements</h3>
+<h4 id="requirement-hb-001-canonical-origin-and-trusted-proxy-hops">Requirement: HB-001 Canonical origin and trusted proxy hops</h4>
+<p><code>APP_ORIGIN</code> SHALL accept only a canonical HTTPS origin, or HTTP on loopback, with no path. When set, every state-changing request MUST carry a matching <code>Origin</code> header. <code>TRUST_PROXY</code> SHALL accept a hop count or explicit proxy addresses and MUST reject <code>true</code>. Without it, forwarded-address headers MUST be ignored.</p>
+<h5 id="scenario-forged-forwarding-header">Scenario: Forged forwarding header</h5>
+<ul>
+<li><strong>WHEN</strong> no proxy is trusted and a client varies <code>X-Forwarded-For</code> across sign-in attempts</li>
+<li><strong>THEN</strong> the attempts share one rate limit</li>
+</ul>
+<h5 id="scenario-cross-site-request">Scenario: Cross-site request</h5>
+<ul>
+<li><strong>WHEN</strong> a hosted server receives a state change without an <code>Origin</code>, from another origin, or marked cross-site</li>
+<li><strong>THEN</strong> it is refused with 403 and nothing changes</li>
+</ul>
+<h4 id="requirement-hb-002-session-and-response-security">Requirement: HB-002 Session and response security</h4>
+<p>With an HTTPS origin the session cookie SHALL be HttpOnly, Secure, SameSite=Strict and host-only. Responses SHALL send HSTS, a content security policy restricted to the app's own origin, frame denial, <code>nosniff</code>, a same-origin referrer policy and a restrictive permissions policy. JSON bodies SHALL remain limited in size, and mutations SHALL remain JSON-only.</p>
+<h5 id="scenario-hosted-sign-up">Scenario: Hosted sign-up</h5>
+<ul>
+<li><strong>WHEN</strong> an account is created on a hosted origin</li>
+<li><strong>THEN</strong> the session cookie carries the Secure, HttpOnly and SameSite=Strict attributes and the response carries the security headers</li>
+</ul>
+<h4 id="requirement-hb-003-sign-in-throttling">Requirement: HB-003 Sign-in throttling</h4>
+<p>Sign-in and sign-up SHALL be throttled per client address. Sign-in SHALL also be throttled per account name across all addresses.</p>
+<h5 id="scenario-distributed-guessing">Scenario: Distributed guessing</h5>
+<ul>
+<li><strong>WHEN</strong> one account receives more than ten sign-in attempts from different addresses within fifteen minutes</li>
+<li><strong>THEN</strong> further attempts for that account are refused for the window while other accounts still sign in</li>
+</ul>
+<h4 id="requirement-hb-004-invite-gated-sign-up">Requirement: HB-004 Invite-gated sign-up</h4>
+<p>When <code>BETA_INVITE_CODES</code> is set, new accounts SHALL require one of the configured codes, compared in constant time. Existing accounts SHALL sign in without a code. When unset, sign-up SHALL behave as before.</p>
+<h5 id="scenario-uninvited-sign-up">Scenario: Uninvited sign-up</h5>
+<ul>
+<li><strong>WHEN</strong> a visitor registers without a valid code on a gated server</li>
+<li><strong>THEN</strong> registration is refused with an explanation and no account is created</li>
+</ul>
+<h4 id="requirement-hb-005-health-check-and-container">Requirement: HB-005 Health check and container</h4>
+<p><code>/healthz</code> SHALL report healthy only when the database answers, without authentication or caching. The production image SHALL run as a non-root user and store SQLite data on a mounted volume. It SHALL include a verified native Stockfish binary and declare a container health check.</p>
+<h5 id="scenario-restart-with-a-volume">Scenario: Restart with a volume</h5>
+<ul>
+<li><strong>WHEN</strong> the container is restarted with the same data volume</li>
+<li><strong>THEN</strong> accounts and sessions persist and the health check returns healthy</li>
+</ul>
+<h4 id="requirement-hb-006-reference-archives-stay-local">Requirement: HB-006 Reference archives stay local</h4>
+<p>The research and design archives SHALL not be served when <code>APP_ORIGIN</code> is set, unless explicitly re-enabled. The interface SHALL hide links to them when they are not served.</p>
+<h5 id="scenario-hosted-archive-request">Scenario: Hosted archive request</h5>
+<ul>
+<li><strong>WHEN</strong> a hosted visitor requests <code>/design/</code></li>
+<li><strong>THEN</strong> no archive content is served</li>
+</ul>
+<h4 id="requirement-hb-007-deployment-guide-and-honest-status">Requirement: HB-007 Deployment guide and honest status</h4>
+<p>The repository SHALL document settings, single-instance operation, backup and restore, proxy setup and later domain cut-over for the beta. It SHALL state which steps were verified and which were not. It MUST NOT claim a deployment, live model call or measured capacity that has not occurred.</p>
+<h5 id="scenario-operator-follows-the-guide">Scenario: Operator follows the guide</h5>
+<ul>
+<li><strong>WHEN</strong> an operator prepares a host from <code>docs/deploy-beta.md</code></li>
+<li><strong>THEN</strong> the guide identifies required settings, backup steps and the unverified parts before testers are invited</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

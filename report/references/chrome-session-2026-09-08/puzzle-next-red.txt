@@ -1,1 +1,0 @@
-Solved puzzle must offer a direct next puzzle action

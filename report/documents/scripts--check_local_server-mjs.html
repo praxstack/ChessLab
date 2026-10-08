@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Check Local Server · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Check Local Server</h1><p class="lede">scripts/check_local_server.mjs</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Check Local Server"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/check_local_server.mjs" download>Download original file ↗</a></div><p class="source-meta">scripts/check_local_server.mjs<br>SHA-256: d5edde6a963340e178bf9534a6bb07e0bdae4f3413e03dc8cd3a56512b99930d</p><pre><code>import assert from &#x27;node:assert/strict&#x27;;
+import {spawn} from &#x27;node:child_process&#x27;;
+import {mkdtemp, rm} from &#x27;node:fs/promises&#x27;;
+import {tmpdir} from &#x27;node:os&#x27;;
+import {join} from &#x27;node:path&#x27;;
+import {once} from &#x27;node:events&#x27;;
+
+const folder=await mkdtemp(join(tmpdir(),&#x27;chesslab-local-&#x27;));
+const env={...process.env,NODE_ENV:&#x27;production&#x27;,HOST:&#x27;127.0.0.1&#x27;,PORT:&#x27;0&#x27;,CHESSLAB_DB:join(folder,&#x27;test.sqlite&#x27;),COOKIE_SECURE:&#x27;0&#x27;};
+delete env.PUBLIC_ORIGIN;
+delete env.CHESSLAB_BACKEND_SECRET;
+const child=spawn(process.execPath,[&#x27;server/index.mjs&#x27;],{env,stdio:[&#x27;ignore&#x27;,&#x27;pipe&#x27;,&#x27;pipe&#x27;]});
+let diagnostics=&#x27;&#x27;;
+child.stderr.on(&#x27;data&#x27;,chunk=&gt;diagnostics+=chunk);
+const exited=once(child,&#x27;exit&#x27;);
+try {
+  const base=await new Promise((resolve,reject)=&gt;{
+    const timeout=setTimeout(()=&gt;reject(new Error(`Startup timed out: ${diagnostics}`)),15000);
+    child.once(&#x27;error&#x27;,error=&gt;{clearTimeout(timeout);reject(error);});
+    child.once(&#x27;exit&#x27;,()=&gt;{clearTimeout(timeout);reject(new Error(`Server exited: ${diagnostics}`));});
+    child.stdout.on(&#x27;data&#x27;,chunk=&gt;{const match=String(chunk).match(/ChessLab ready at (http:\/\/[^\s]+)/);if(match){clearTimeout(timeout);resolve(match[1]);}});
+  });
+  for(const path of [&#x27;/&#x27;,&#x27;/research/&#x27;,&#x27;/design/&#x27;,&#x27;/pieces/cburnett/wN.svg&#x27;]){
+    const response=await fetch(base+path);
+    assert.equal(response.status,200,path);
+    assert.ok((await response.arrayBuffer()).byteLength&gt;100,path);
+  }
+  const status=await (await fetch(base+&#x27;/api/status&#x27;)).json();
+  assert.equal(status.engine.available,true);
+  for(const path of [&#x27;/data/chesslab.sqlite&#x27;,&#x27;/.env&#x27;,&#x27;/.git/config&#x27;]){
+    const response=await fetch(base+path,{headers:{Accept:&#x27;application/octet-stream&#x27;}});
+    assert.equal(response.status,404,`${path} stays private`);
+  }
+  console.log(JSON.stringify({status:&#x27;pass&#x27;,checks:[&#x27;loopback startup&#x27;,&#x27;web app&#x27;,&#x27;research archive&#x27;,&#x27;design archive&#x27;,&#x27;local piece asset&#x27;,&#x27;native engine ready&#x27;,&#x27;private data paths unavailable&#x27;]}));
+} finally {
+  child.kill(&#x27;SIGTERM&#x27;);
+  const force=setTimeout(()=&gt;child.kill(&#x27;SIGKILL&#x27;),5000);
+  await exited;
+  clearTimeout(force);
+  await rm(folder,{recursive:true,force:true});
+}
+</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

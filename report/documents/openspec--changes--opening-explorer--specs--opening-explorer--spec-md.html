@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Spec · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/opening-explorer/specs/opening-explorer/spec.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/opening-explorer/specs/opening-explorer/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/opening-explorer/specs/opening-explorer/spec.md<br>SHA-256: ece45ac19dd2b6abf7e2672ac11f8be88a6a3f9202cc45441a2e4d48653a57b7</p><h3 id="added-requirements">ADDED Requirements</h3>
+<h4 id="requirement-local-position-statistics">Requirement: Local position statistics</h4>
+<p>The explorer SHALL show legal next moves, game counts and White/draw/Black result counts for the current position, independent of move order. Position identity SHALL include board, side, castling and legally available en passant, excluding clocks. Each corpus game SHALL contribute only its first encounter with a position, avoiding repetition inflation. The corpus SHALL index the first 60 half-moves and retain full validated game moves for replay. The UI SHALL state the archive date, selection, game count and indexing ceiling; no counts or ratings SHALL be invented.</p>
+<h5 id="scenario-transposition">Scenario: Transposition</h5>
+<ul>
+<li><strong>WHEN</strong> two legal histories reach the same position</li>
+<li><strong>THEN</strong> the explorer returns the same corpus statistics</li>
+</ul>
+<h4 id="requirement-safe-reproducible-import">Requirement: Safe reproducible import</h4>
+<p>Import SHALL retain the original local archive and its SHA-256, pin its parser version, reject malformed/illegal/unfinished/nonstandard games and record counts. Import SHALL stream bounded archive members, validate the entire accepted main line, preserve source headers and publish a complete integrity-checked SQLite database atomically without overwriting existing data. Failed imports SHALL not expose a partial corpus. Repeated positions SHALL not inflate totals.</p>
+<h5 id="scenario-illegal-later-move">Scenario: Illegal later move</h5>
+<ul>
+<li><strong>WHEN</strong> a game's later main-line move is invalid</li>
+<li><strong>THEN</strong> none of that game's opening positions enter the database</li>
+</ul>
+<h4 id="requirement-interactive-exploration-and-example-games">Requirement: Interactive exploration and example games</h4>
+<p>The opening library SHALL retain its existing named-line flow and add an explorer. Board clicks, dragging, typed moves, promotions, move-list selection, back/start and flip SHALL update the position and its statistics. Results SHALL include replayable example games with source metadata and full moves. Opening an example for study SHALL create a new owned copy through existing persistence, preserving current drafts. A private My Games source SHALL include only the signed-in user's completed standard games and never another account's data. Guests SHALL be able to explore the public corpus; missing data SHALL show an actionable empty state.</p>
+<h5 id="scenario-study-an-example">Scenario: Study an example</h5>
+<ul>
+<li><strong>WHEN</strong> a signed-in learner chooses an example game for study</li>
+<li><strong>THEN</strong> a new saved study opens and the corpus game remains unchanged</li>
+</ul>
+<h4 id="requirement-verified-local-delivery">Requirement: Verified local delivery</h4>
+<p>Protected checks and new importer/API/UI flows SHALL pass. Production desktop and touch proof SHALL include video. The PR and installed local app SHALL share verified hashes and existing user data SHALL be backed up and preserved. This increment SHALL not establish full platform parity.</p>
+<h5 id="scenario-private-source">Scenario: Private source</h5>
+<ul>
+<li><strong>WHEN</strong> an unauthenticated request asks for My Games</li>
+<li><strong>THEN</strong> the request is rejected without game data</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

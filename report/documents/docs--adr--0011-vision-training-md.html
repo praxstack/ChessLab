@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>0011 Vision Training · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>0011 Vision Training</h1><p class="lede">docs/adr/0011-vision-training.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="0011 Vision Training"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/docs/adr/0011-vision-training.md" download>Download original file ↗</a></div><p class="source-meta">docs/adr/0011-vision-training.md<br>SHA-256: 741fd251baed878d6d53e31b2ab20237e843a7f4563503fc3afdbe8f8ffb122c</p><h2 id="vision-rounds-on-the-local-server">Vision rounds on the local server</h2>
+<h3 id="grounding">Grounding</h3>
+<p>This is timed recognition, not engine analysis. main.jsx owns navigation/auth. Board.jsx maps flipped squares and click/drag/touch with existing assets and accessible square names. Its editing flag permits an exercise board without claiming full-game legality. app.mjs authenticates and rejects cross-origin writes before protected routes; its SQLite connection and injected nowMs support persistent exercises. course-progress.mjs uses revisioned JSON sessions. Reuse these boundaries; preserve actual game state.</p>
+<h3 id="usage-and-shape">Usage and shape</h3>
+<p>installVision(app, db, nowMs) mounts owned list/restore, start/resume, and revisioned answer/quit routes. The view consumes round, history, bests and serverNow. A round owns id, mode, color, coordinates, orientation, startsAt, endsAt, revision, prompt, score, mistakes and state. Answers identify round, revision, square and moved-piece origin. One indexed table stores rounds. chess.js supplies lone-piece movement, separate from game replay. A monotonic display clock projects the server deadline and resynchronizes after responses.</p>
+<h3 id="synthesis">Synthesis</h3>
+<p>Pstack how/architect/arena applied sequentially by root: the installed team runtime gate prevents delegation; no independent design or review claimed. Candidate A: server rounds, one JSON table, component owns only selection/display. Scores 5/5 on timing, ownership, restart, reuse and small interface. Candidate B: browser reducer generates prompts and uploads final event log. Scores 2/5: validating client timestamps requires a second server authority, duplicates timing knowledge and exposes log internals. Choose A; graft B's monotonic display clock. Reject client timestamps and final-only uploads. Both screened for shallow modules, leakage, temporal decomposition and pass-through layers. Three routes hide transitions rather than expose a storage/replay pipeline.</p>
+<h3 id="limits">Limits</h3>
+<p>One loopback request per answer is accepted for authoritative scoring. A local account is required for saved practice. Bests are private scores, not ratings. Five non-pawn piece types have ordinary movement prompts; pawn/promotion distribution and vendor weighting remain unverified. No engine/model installation is needed.</p>
+<h3 id="protected-baseline-and-stop-rule">Protected baseline and stop rule</h3>
+<p>Baseline/current accepted version: f11e5fc0b3503e33503f9e15edcbf82773aa0fe4. Preserve all 100 tests and 96 browser flows, account data, other features, policies and verification gates. This run changes the candidate, not existing acceptance thresholds. Only feature paths and necessary shared fixes are mutable. Existing evidence is immutable. Keep failed proof separate. Stop after two no-gain candidates; never weaken checks. Rollback: baseline checkout and consistent pre-install SQLite snapshot. Receipts remain outside their attested content set.</p>
+<h3 id="next-step">Next step</h3>
+<p>Build the server transition boundary, then the board view and additive browser flows. Revisit the design only if actual friction invalidates it.</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav><a href="#vision-rounds-on-the-local-server">Vision rounds on the local server</a></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

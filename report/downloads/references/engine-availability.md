@@ -6,6 +6,6 @@ Nine configurations are installed and selectable: Stockfish 19, 18 and 16; Maia3
 
 The [Komodo website](https://www.komodochess.com/) retained a notice ending sales on 31 May 2026 and scheduling the site through 31 July 2026. A Dragon 1 Free link was found, but direct HTTPS downloads from its endpoint failed because the certificate had expired. Certificate validation was not bypassed; no Dragon binary or third-party substitute was installed. No current Dragon 3.3 license or download was acquired.
 
-The downloaded binaries and neural weights stay in ignored server storage. Upstream license identities are recorded with sources; no proprietary license or permission to redistribute Chess.com art is asserted. This record distinguishes current local availability from vendor offerings and historical research.
+The downloaded binaries and neural weights stay in ignored server storage. Upstream license identities are recorded with sources; the app ships no proprietary art; since 8 October 2026 its pieces and icons are openly licensed (see `web/public/licenses/`). This record distinguishes current local availability from vendor offerings and historical research.
 
 Stockfish Lite in the recorded menu was not separately reproduced. The server uses the named full native releases above, not Chess.com's browser-packaged engine builds.

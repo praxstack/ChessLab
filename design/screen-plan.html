@@ -6,7 +6,7 @@
 <h2 id="one-workspace-several-focused-states">One workspace, several focused states</h2>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>Screen or state</th>
 <th>Evidence from the recording</th>
 <th>Recommendation for ChessLab</th>
@@ -14,73 +14,73 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>Play with contextual coaching</td>
 <td>00:20–09:40: board, move history and changing coach card</td>
 <td>Add a persistent question composer and a visible pause/explore state. Keep the actual game safe.</td>
 <td><a href="05-play.html">Play and pause</a></td>
 </tr>
-<tr>
+<tr class="even">
 <td>Learning preferences</td>
 <td>04:11 coach picker; 10:20 interface preferences</td>
 <td>Separate explanation detail, tone and appearance from opponent difficulty. A sample explanation is more useful than an avatar grid in the first version.</td>
 <td><a href="03-game-setup.html">Choose opponent</a>, <a href="16-accessibility.html">Settings</a></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Game finished</td>
 <td>09:50 result modal</td>
 <td>Add an explicit completion state with Review this game, Pick a confusing move and New game. This needs its own state specification even if it reuses the play screen.</td>
 <td><a href="06-review.html">Review</a></td>
 </tr>
-<tr>
+<tr class="even">
 <td>Review preparation</td>
 <td>09:52–09:54 blank/loading transition</td>
 <td>Preserve a recognizable game context, explain what is loading, allow cancellation and keep previous results identified as previous.</td>
 <td><a href="15-recovery.html">Recovery</a></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Review overview</td>
 <td>10:00 accuracy, classifications, graph, Start Review</td>
 <td>Lead with a small number of turning points. Keep whole-game metrics secondary and avoid implying learning from accuracy alone.</td>
 <td><a href="06-review.html">Find turning point</a></td>
 </tr>
-<tr>
+<tr class="even">
 <td>Focused move review</td>
 <td>11:24 onward: coach card, selected move, navigation</td>
 <td>Pair the chosen move with the learner's expectation and a replayable explanation. Make the current side to move explicit.</td>
 <td><a href="01-conversation.html">Question coach</a></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Alternative for either side</td>
 <td>12:49–13:26: indented line and Resume</td>
 <td>Give the branch a name, an origin and questions of its own. Support another question inside the branch.</td>
 <td><a href="07-your-idea.html">Your idea</a>, <a href="08-opponent-reply.html">Opponent reply</a></td>
 </tr>
-<tr>
+<tr class="even">
 <td>Explanation updating</td>
 <td>13:06 and 13:14: placeholder coach card while exploring</td>
 <td>Label the position being analyzed; cancel or ignore stale results when moving elsewhere. Keep legal exploration usable during the wait.</td>
 <td><a href="15-recovery.html">Recovery</a></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Return to actual review</td>
 <td>13:26: original card and preserved alternative</td>
 <td>Name the exact destination, restore it reliably and retain explored branches. This is a central acceptance condition.</td>
 <td><a href="10-return.html">Return</a></td>
 </tr>
-<tr>
+<tr class="even">
 <td>Compare two outcomes</td>
 <td>No side-by-side comparison shown in the sampled recording</td>
 <td>Keep this as our own proposal: same origin, synchronized stepping, material and threats explained for both lines.</td>
 <td><a href="09-compare.html">Compare</a></td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Skill evidence drawer</td>
 <td>14:27–15:00: skill categories and board-linked skill label</td>
 <td>Attach each insight to an actual position and a related retry; distinguish an observed event from learned understanding.</td>
 <td><a href="11-notebook.html">Notebook</a>, <a href="12-practice.html">Practice</a>, <a href="13-progress.html">Progress</a></td>
 </tr>
-<tr>
+<tr class="even">
 <td>Board and analysis preferences</td>
 <td>10:14–10:51 settings</td>
 <td>Split Board, Learning and Advanced analysis. Keep changes reversible and preserve the current study.</td>

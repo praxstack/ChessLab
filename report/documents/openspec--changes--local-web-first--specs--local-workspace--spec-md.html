@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Spec · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/local-web-first/specs/local-workspace/spec.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/local-web-first/specs/local-workspace/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/local-web-first/specs/local-workspace/spec.md<br>SHA-256: fa91d215e60406aa400019929c72273a8954f060e8af377a9ae7a4a22247b374</p><h3 id="added-requirements">ADDED Requirements</h3>
+<h4 id="requirement-local-runtime-and-retained-data">Requirement: Local runtime and retained data</h4>
+<p>ChessLab SHALL run its web app, API, persistent data and chess engines on the user's Mac without a hosted proxy or runtime third-party resource dependency. Existing hosted and development data SHALL be preserved. Local archives SHALL be available from the local server without serving account databases or secrets.</p>
+<h5 id="scenario-opening-the-local-workspace">Scenario: Opening the local workspace</h5>
+<ul>
+<li><strong>WHEN</strong> the user starts the built app and opens its loopback address</li>
+<li><strong>THEN</strong> play, review, learning and saved games use the same local API and local assets</li>
+<li><strong>AND</strong> research and design archives are reachable locally</li>
+</ul>
+<h5 id="scenario-moving-hosted-data">Scenario: Moving hosted data</h5>
+<ul>
+<li><strong>WHEN</strong> hosted data is copied for local use</li>
+<li><strong>THEN</strong> a consistent SQLite snapshot preserves all source accounts and games without replacing another database</li>
+</ul>
+<h4 id="requirement-readable-responsive-chess-experience">Requirement: Readable responsive chess experience</h4>
+<p>The interface SHALL make the selected opponent, available actions, game state and move history legible on desktop and mobile. Bot search SHALL match names and categories while preserving selection, settings and real engine behavior. Nested study branches and saved games SHALL keep their existing semantics.</p>
+<h5 id="scenario-finding-an-opponent">Scenario: Finding an opponent</h5>
+<ul>
+<li><strong>WHEN</strong> the user searches for a bot name</li>
+<li><strong>THEN</strong> matching named profiles appear with visible ratings and an explicit selected state</li>
+<li><strong>AND</strong> clearing the search restores the roster</li>
+</ul>
+<h4 id="requirement-pstack-governed-proof-and-review">Requirement: Pstack governed proof and review</h4>
+<p>The delivery SHALL retain an explicit dependency graph and decision trail, use installed Pstack setup and routing, and provide reproducible app-control instructions and a feature map. The PR SHALL link real recorded video and test results from the changed build. Unavailable delegation or proprietary equivalence SHALL remain explicit evidence gaps.</p>
+<h5 id="scenario-reviewing-the-change">Scenario: Reviewing the change</h5>
+<ul>
+<li><strong>WHEN</strong> a reviewer opens the PR</li>
+<li><strong>THEN</strong> the reviewer can replay the documented verification command and inspect video showing real local user actions and outcomes</li>
+<li><strong>AND</strong> partial platform parity is not reported as 100 percent completion</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

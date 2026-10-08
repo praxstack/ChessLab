@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { analyze, engineStatus, replay, localTablebasePath } from './engine.mjs';
+import { engineControls } from '../shared/strength-ladder.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const data = resolve(process.env.CHESSLAB_ENGINES_DIR || resolve(root, 'data/engines'));
@@ -73,7 +74,7 @@ function command(id) {
 }
 
 function stockfishPolicy(result, board, rating, skill, style) {
-  const probability = Math.max(0, (1100 - rating) / 1000);
+  const probability = engineControls(rating).sampledShare;
   const applied = probability > 0 && randomInt(1_000_000) < probability * 1_000_000;
   const baseMove = result.move;
   if (applied) {

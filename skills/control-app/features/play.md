@@ -6,11 +6,11 @@ Search, visible bot identity, account creation, real legal replies, engine hint.
 
 ## How to get to it (user POV)
 
-Open Play bots, search for Martin, choose Play Martin, and create a local account when prompted.
+Open Play bots, search for Marlo, choose Play Marlo, and create a local account when prompted.
 
 ## Driving it with Playwright
 
-Fill Search bots. Click Play Martin, 250, then Play Martin. Enter e4 with Play entered move. Click Hint. Assert both persisted plies replay legally and the hint returns engine evidence.
+Fill Search bots. Click Play Marlo, 250, then Play Marlo. Enter e4 with Play entered move. Click Hint. Assert both persisted plies replay legally and the hint returns engine evidence.
 
 ## Gotchas
 

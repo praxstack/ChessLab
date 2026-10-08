@@ -1,10 +1,10 @@
 ## The platform comes first
 
-The user changed the sequence: build a usable Chess.com-style web platform, starting with bot and coach play, then add ChessLab's conversational differentiation. Actual human multiplayer follows the first bot/coach stage. Billing is last. This build follows that direction; it does not claim complete Chess.com parity.
+In September 2026 the user changed the sequence: build a usable web platform modelled on Chess.com, starting with bot and coach play, then add ChessLab's conversational differentiation. Actual human multiplayer follows the first bot/coach stage. Billing is last. On 8 October 2026 an original-asset policy replaced the reference-parity goal for the hosted beta: the app now uses its own artwork, bot characters and palette. The bot/coach-first sequence is unchanged.
 
 ## What can be used
 
-- Play White, Black or random against 166 observed bot profiles or ten installed engine configurations through the reference board layout, using clicks, dragging or typed moves.
+- Play White, Black or random against 43 original bot characters or ten installed engine configurations on a board-first layout, using clicks, dragging or typed moves.
 - Review individual moves with engine estimates, legal candidate lines, capture explanations and material consequences. Compare before the selected move to see its candidate arrows.
 - Explore both sides of a separate line, nest another variation, save a question with its branch, and return to the original game.
 - Save accounts, games, variations, lesson completions and puzzle completions on the same server. Import a legal PGN and export the actual game.
@@ -30,11 +30,11 @@ The source repository is [ChessLab on GitHub](https://github.com/praxstack/Chess
 
 The user challenged the gap between a one-to-one bot clone and the smaller implementation. At that point, only Stockfish 19 was installed and all five levels were presets of it. The expansion below supersedes that inventory. The [application guide](../application.md#engine-inventory-and-difficulty) now gives the exact difficulty mapping and move flow, and lists the missing bot-platform behaviors.
 
-The user also rejected the custom piece drawings. All twelve pieces now use the original images from Chess.com's standard analysis board, served from local files. Green is the default board; Blue remains selectable. This asset correction does not close the bot-personality or platform-parity gaps.
+The user also rejected the custom piece drawings. All twelve pieces now use the original images from Chess.com's standard analysis board, served from local files. Green is the default board; Blue remains selectable. This asset correction did not close the bot-personality or platform-parity gaps. It was itself superseded on 8 October 2026: the pieces are now the GPL-licensed cburnett set, the default board is Slate & sand, and the earlier images were removed.
 
 ## Expanded bot platform
 
-The current server has Stockfish 19/18/18 Lite/16, Lc0 with its network, Maia3 5M/23M/79M, and Maia2 rapid/blitz weights. Runtime choices are checked for actual readiness. The grouped roster uses166 observed public bot portraits and ratings with locally implemented behavior. Games now save engine selection, target strength, assistance and clocks. Hints, safe takebacks, contextual scripted chat, adaptive material-based target changes, local crowns and rematches extend the original play/review flow.
+The current server has Stockfish 19/18/18 Lite/16, Lc0 with its network, Maia3 5M/23M/79M, and Maia2 rapid/blitz weights. Runtime choices are checked for actual readiness. The grouped roster then used 166 observed public bot portraits and ratings with locally implemented behavior; on 8 October 2026 it was replaced by 43 original characters with generated portraits and ratings from the app's own strength ladder. Games now save engine selection, target strength, assistance and clocks. Hints, safe takebacks, contextual scripted chat, adaptive material-based target changes, local crowns and rematches extend the original play/review flow.
 
 The [current application guide](../application.md) explains these controls and the exact limits. Downloaded models stay on the server. The [installation receipt](../../references/engine-installation.json) records sources and hashes. This is product progress over the earlier five-preset baseline, not evidence of full vendor parity, human-rating calibration or learning effectiveness.
 

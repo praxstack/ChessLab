@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Spec · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/add-endgame-practice/specs/endgame-practice/spec.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/add-endgame-practice/specs/endgame-practice/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/add-endgame-practice/specs/endgame-practice/spec.md<br>SHA-256: 05b3e9d13079a11282065c34bdea850c181504559e9cccec9282aff95537b68c</p><h3 id="added-requirements">ADDED Requirements</h3>
+<h4 id="requirement-endgame-curriculum-and-practice">Requirement: Endgame curriculum and practice</h4>
+<p>The platform SHALL offer original endgame positions grouped by material, searchable by theme, with a board preview, side to move, objective and teaching notes. The learner SHALL be able to study a position or practice either color against a chosen available opponent and strength. Each attempt SHALL be a separate saved game with a preserved source and complete legal history. Restart SHALL preserve the original drill position and other attempts. Existing studies SHALL survive navigation and authentication continuation.</p>
+<h5 id="scenario-a-learner-practices-the-weaker-side">Scenario: A learner practices the weaker side</h5>
+<ul>
+<li><strong>WHEN</strong> the learner selects an endgame and Black in the practice setup</li>
+<li><strong>THEN</strong> the saved game uses that drill's starting position and selected color</li>
+<li><strong>AND</strong> the native opponent replies when it is its turn</li>
+</ul>
+<h4 id="requirement-local-solved-position-evidence">Requirement: Local solved-position evidence</h4>
+<p>All standard three-, four- and five-piece WDL and DTZ tables SHALL be locally present and match the source's published SHA-256 checksums before installation is certified. Catalogue positions SHALL be legal and checked against local tablebases. Native engines advertising SyzygyPath SHALL receive the configured local table directory. Unsupported engines SHALL remain usable without an unsupported option. DTZ SHALL not be presented as distance to mate, and zero-counter outcomes SHALL not be generalized over fifty-move or repetition state.</p>
+<h5 id="scenario-a-promotion-changes-the-material">Scenario: A promotion changes the material</h5>
+<ul>
+<li><strong>WHEN</strong> a catalogue pawn promotes or a piece is captured within five-piece coverage</li>
+<li><strong>THEN</strong> the local set includes the dependent material tables</li>
+<li><strong>AND</strong> runtime engine play does not require an external service</li>
+</ul>
+<h4 id="requirement-owned-attempt-history-and-usable-controls">Requirement: Owned attempt history and usable controls</h4>
+<p>The catalogue SHALL show owned attempts and recorded game results, with resume/review actions and assistance counts. Progress SHALL derive from saved server games, not browser declarations or vendor ratings. Guest browsing SHALL expose no private results. The interface SHALL support labeled keyboard and touch controls and mobile layout. Existing game, study, engine, clock, review, puzzle, lesson and Vision behavior SHALL be preserved.</p>
+<h5 id="scenario-a-learner-returns-after-a-restart">Scenario: A learner returns after a restart</h5>
+<ul>
+<li><strong>WHEN</strong> the server restarts and the learner signs in locally</li>
+<li><strong>THEN</strong> prior endgame attempts remain available under that account</li>
+<li><strong>AND</strong> another account cannot access them</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

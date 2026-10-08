@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Spec · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/position-editor/specs/position-editor/spec.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/position-editor/specs/position-editor/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/position-editor/specs/position-editor/spec.md<br>SHA-256: 535d40e72c12bd4307452e4ccd71923f69abf57e63a0f39d72742a6f3e59dd0d</p><h3 id="added-requirements">ADDED Requirements</h3>
+<h4 id="requirement-editable-board-setup">Requirement: Editable board setup</h4>
+<p>The learner SHALL place, move and remove pieces with click or drag controls; clear, reset and flip the board; choose side to move and castling rights; and load FEN. En-passant target and move counters SHALL remain explicit. Invalid drafts SHALL remain editable and SHALL not start an engine search.</p>
+<h5 id="scenario-create-a-custom-study">Scenario: Create a custom study</h5>
+<ul>
+<li><strong>WHEN</strong> the learner builds a valid board and saves it</li>
+<li><strong>THEN</strong> an owned independent study opens for native analysis and branch exploration without changing prior games</li>
+</ul>
+<h4 id="requirement-validated-position-state">Requirement: Validated position state</h4>
+<p>The server SHALL reject invalid FEN fields, missing or adjacent kings, an attacked king of the side that just moved, impossible castling rights, and inconsistent en-passant state. Legal positions with the side to move in check and terminal positions SHALL remain valid studies. FEN creation SHALL begin a new history, explicitly distinct from copying a saved history prefix. The same structural validation SHALL protect custom FEN supplied through PGN import.</p>
+<h5 id="scenario-reject-invalid-setup">Scenario: Reject invalid setup</h5>
+<ul>
+<li><strong>WHEN</strong> an invalid position is submitted</li>
+<li><strong>THEN</strong> no study is created and the draft and prior saved games remain available</li>
+</ul>
+<h4 id="requirement-analysis-and-practice-continuity">Requirement: Analysis and practice continuity</h4>
+<p>Saved custom positions SHALL survive reload and export with their initial FEN, side and counters. Legal variation moves and practice SHALL use that position. Timed practice SHALL charge and display the correct active side even when the initial position starts with Black.</p>
+<h5 id="scenario-practice-a-black-first-setup">Scenario: Practice a Black-first setup</h5>
+<ul>
+<li><strong>WHEN</strong> a Black-to-move study starts timed practice</li>
+<li><strong>THEN</strong> Black moves first and the Black clock runs, and source history remains separate</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

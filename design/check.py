@@ -42,9 +42,15 @@ items=json.loads((root/'scenarios.json').read_text())
 sampling=json.loads((root/'video/study/sampling.json').read_text())
 frame_times={x['seconds'] for x in sampling['frames']}|set(sampling['targeted_seconds'])
 assert len(frame_times)==150 and min(frame_times)==0 and max(frame_times)==919
-assert all((root/f'video/study/frames/{t:04d}.jpg').read_bytes().startswith(b'\xff\xd8') for t in frame_times)
-assert len(list((root/'video/study/sheets').glob('*.jpg')))==19
 receipts=json.loads((root/'imagine-provenance.json').read_text())['images']
+# The session recording and its frames were removed under the 2026-10-08 original-asset policy.
+# Only the generated mockups named in the provenance receipts may remain.
+generated={(root/x['local_path']).resolve() for x in receipts}
+media={'.png','.jpg','.jpeg','.jfif','.gif','.webp','.avif','.apng','.bmp','.tif','.tiff','.heic','.heif','.svg','.ico',
+       '.mp4','.m4v','.mov','.webm','.mkv','.avi','.wmv','.flv','.mpg','.mpeg','.3gp','.ogv',
+       '.mp3','.m4a','.aac','.wav','.ogg','.oga','.opus','.flac','.weba'}
+captures=[p for p in root.rglob('*') if p.is_file() and p.suffix.lower() in media and p.resolve() not in generated]
+assert not captures, f'Capture media must not be stored here: {captures[:3]}'
 assert len(items)==len(receipts)==17
 cards=pages[(root/'index.html').resolve()].cards
 assert len(cards)==17 and set(cards)=={x['id']+'.html' for x in items}, 'Each scenario needs exactly one gallery card'
@@ -53,7 +59,4 @@ for item in receipts:
     data=(root/item['local_path']).read_bytes()
     assert data.startswith(b'\xff\xd8') and hashlib.sha256(data).hexdigest()==item['sha256']
     assert item['tool_receipt'], 'Missing actual Imagine tool output'
-probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration:stream=codec_type','-of','json',str(root/'video/chess-session-review.mp4')]))
-assert abs(float(probe['format']['duration'])-919.599375)<0.1
-assert {'audio','video'}<={x['codec_type'] for x in probe['streams']}
-print(f'PASS: {len(pages)} HTML pages, {links} local links, 17 image receipts, hashes, full-duration video and audio')
+print(f'PASS: {len(pages)} HTML pages, {links} local links, 17 image receipts, hashes, no capture media')

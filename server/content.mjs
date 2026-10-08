@@ -1,4 +1,4 @@
-// Original introductory exercises. These are not copied Chess.com lessons.
+// Original introductory exercises written for this app.
 const start = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 export const lessons = [
  {id:'safe-king',title:'Your king comes first',category:'Fundamentals',description:'Recognize check and choose a legal escape.',fen:'4k3/8/8/8/8/8/4r3/4K3 w - - 0 1',body:['Check means an opposing piece attacks your king. Your next move must remove that attack.','You can move the king, capture the checking piece if it is safe, or block a line attack. A king cannot remain in check.','Here, the black rook checks the white king along the e-file. The unprotected rook on e2 can be captured by the king.'],question:'Which move removes the check in this position?',choices:['Kxe2, capturing the rook','Stay on e1 and pass','Move a pawn that is not on the board'],answer:0,explanation:'Kxe2 captures the checking rook. The black king on e8 does not attack e2.'},

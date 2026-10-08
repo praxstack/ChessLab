@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Proposal · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Proposal</h1><p class="lede">openspec/changes/puzzle-rush/proposal.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Proposal"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/puzzle-rush/proposal.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/puzzle-rush/proposal.md<br>SHA-256: a04a3f393f738431931b77b7b1a61e0d1b29ccf72729c0cdf238532440e797d5</p><h2 id="local-puzzle-rush">Local Puzzle Rush</h2>
+<blockquote>
+<p>Superseded in part on 2026-10-08: the original-asset policy in <code>original-asset-pack</code> replaced the Chess.com reference-parity goal and Chess.com-derived assets for the hosted beta. The text below is kept as the record of the earlier direction.</p>
+</blockquote>
+<p>Add the missing non-multiplayer Rush workflow toward the unchanged full Chess.com parity goal. Baseline c8f2db7 protects all 74 application tests, the catalogue, rated/daily/custom behavior, native engines, accounts and studies. Existing source/build/proof manifests are rollback evidence. No governing gate changes.</p>
+<p>The official puzzle guide describes three-minute, five-minute and untimed Survival runs, ending after three failed puzzles, with saved scores and post-run puzzle review. Use the existing legal source replay, board, account SQLite and custom-practice/analysis path. The server owns elapsed time, attempts and scores. Progressively harder source puzzles must not repeat within a run. This local progression is not a claim of proprietary sequencing equivalence. Battle remains in the later human-multiplayer phase; billing is last.</p>
+<p>Engineering graph: reference behavior -&gt; fixed clock/score/ownership requirements -&gt; failing deterministic checks -&gt; atomic persisted runs -&gt; responsive board and results -&gt; protected app-control recording -&gt; root review and PR -&gt; exact local promotion. Bound this candidate to one implementation and one evidence-driven repair cycle; stop if two candidates fail to improve. Keep full platform and branching tutor work active.</p>
+<p>Reference: <a href="https://support.chess.com/en/articles/8608686-how-do-puzzles-work-on-chess-com" rel="noreferrer noopener">https://support.chess.com/en/articles/8608686-how-do-puzzles-work-on-chess-com</a> (read 2026-09-13).</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav><a href="#local-puzzle-rush">Local Puzzle Rush</a></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

@@ -1,0 +1,39 @@
+// The opponent strength ladder. Every level is defined by the controls the server applies to the
+// selected engine, not by an outside rating table. Below 1100 a share of Stockfish's moves is
+// replaced by a sampled legal move (server/opponent-engines.mjs); from 1150 each level adds one
+// Stockfish skill step, and the top level keeps full skill with the longest think.
+// Ratings are targets on this ladder, not calibrated human ratings.
+export const firstMovesRating = 100;
+export const strengthLadder = [250, 450, 650, 850, 1050, 1150, 1260, 1370, 1480, 1590, 1700, 1810, 1920, 2030, 2140, 2250, 2360, 2470, 2580, 2690, 2800, 3200];
+
+export function engineControls(rating) {
+  return {
+    skill: Math.max(0, Math.min(20, Math.round((rating - 600) / 110))),
+    movetime: Math.max(80, Math.min(1200, Math.round(rating / 3))),
+    sampledShare: Math.max(0, (1100 - rating) / 1000),
+  };
+}
+
+// The strengths a learner can pick for an opponent: ladder levels only, plus first moves for a
+// first-moves bot. Pass nothing for a raw engine.
+export function strengthChoices(profileRating) {
+  return profileRating < 250 ? [firstMovesRating, ...strengthLadder] : strengthLadder;
+}
+
+// Moves a rating along the ladder by about `points`, for adaptive bots during play. It lands on the
+// level nearest the shifted target, and at least one level in the direction of a non-zero shift
+// while the ladder has one, so every change in the material balance still changes the opponent.
+export function shiftOnLadder(rating, points) {
+  if (!points) return rating;
+  const nearest = target => strengthLadder.reduce((best, level) => Math.abs(level - target) < Math.abs(best - target) ? level : best);
+  const from = strengthLadder.indexOf(nearest(rating));
+  let to = strengthLadder.indexOf(nearest(rating + points));
+  if (to === from) to = Math.max(0, Math.min(strengthLadder.length - 1, from + Math.sign(points)));
+  return strengthLadder[to];
+}
+
+export function ladderLevel(rating) {
+  if (rating === firstMovesRating) return 0;
+  const index = strengthLadder.indexOf(rating);
+  return index === -1 ? null : index + 1;
+}

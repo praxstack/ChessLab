@@ -2,7 +2,7 @@
 .env
 .env.*
 !.env.example
-node_modules/
+/node_modules
 dist/
 coverage/
 __pycache__/
@@ -20,5 +20,5 @@ __pycache__/
 design/**/*.stderr.txt
 
 # Local application accounts, sessions and saved games.
-data/
+/data
 web/dist/

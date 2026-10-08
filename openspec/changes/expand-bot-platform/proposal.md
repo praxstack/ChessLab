@@ -1,3 +1,5 @@
+> Superseded in part on 2026-10-08: the original-asset policy in `original-asset-pack` replaced the Chess.com reference-parity goal and Chess.com-derived assets for the hosted beta. The text below is kept as the record of the earlier direction.
+
 ## Why
 
 The user rejected five generic Stockfish presets as insufficient for the requested Chess.com-style bot platform and explicitly instructed installing the referenced engines and building the bot experience. This extends the first working application, commit e2f5a2d, while preserving saved studies and legal game behavior.

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Import Puzzles Test · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Import Puzzles Test</h1><p class="lede">scripts/import_puzzles_test.py</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Import Puzzles Test"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/import_puzzles_test.py" download>Download original file ↗</a></div><p class="source-meta">scripts/import_puzzles_test.py<br>SHA-256: c4c63abf6750ebb4a40655271132939ed28dec96526f317881ce76cdb67731e2</p><pre><code>import importlib.util, json, sqlite3, subprocess, tempfile
+from pathlib import Path
+
+spec = importlib.util.spec_from_file_location(&#x27;import_puzzles&#x27;, Path(__file__).with_name(&#x27;import_puzzles.py&#x27;))
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+with tempfile.TemporaryDirectory() as directory:
+    root = Path(directory)
+    row = json.loads(Path(&#x27;references/puzzles/test-lines.json&#x27;).read_text())[0]
+    csv = &#x27;PuzzleId,FEN,Moves,Rating,RatingDeviation,Popularity,NbPlays,Themes,GameUrl,OpeningTags,DailyDate\n&#x27;
+    csv += &#x27;,&#x27;.join([row[&#x27;id&#x27;],row[&#x27;fen&#x27;],row[&#x27;moves&#x27;],str(row[&#x27;rating&#x27;]),&#x27;80&#x27;,&#x27;90&#x27;,&#x27;100&#x27;,row[&#x27;themes&#x27;],row[&#x27;game_url&#x27;],row[&#x27;opening_tags&#x27;],&#x27;&#x27;])+&#x27;\n&#x27;
+    archive = root/&#x27;source.zst&#x27;
+    archive.write_bytes(subprocess.run([&#x27;zstd&#x27;,&#x27;-q&#x27;,&#x27;-c&#x27;],input=csv.encode(),check=True,capture_output=True).stdout)
+    result = module.import_archive(archive,root/&#x27;catalogue.sqlite&#x27;)
+    assert result[&#x27;count&#x27;]==1
+    db=sqlite3.connect(root/&#x27;catalogue.sqlite&#x27;)
+    assert db.execute(&#x27;SELECT id FROM puzzles&#x27;).fetchone()[0]==row[&#x27;id&#x27;]
+    assert db.execute(&quot;SELECT COUNT(*) FROM pool WHERE theme=&#x27;&#x27; &quot;).fetchone()[0]==1
+    db.close()
+    try: module.import_archive(archive,root/&#x27;catalogue.sqlite&#x27;)
+    except FileExistsError: pass
+    else: raise AssertionError(&#x27;Existing catalogue was overwritten&#x27;)
+    archive.write_bytes(b&#x27;not zstandard&#x27;)
+    try: module.import_archive(archive,root/&#x27;bad.sqlite&#x27;)
+    except ValueError: pass
+    else: raise AssertionError(&#x27;Corrupt archive accepted&#x27;)
+    assert not (root/&#x27;bad.sqlite&#x27;).exists()
+print(&#x27;Puzzle import integrity, complete row, source hash and overwrite protection passed&#x27;)
+</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

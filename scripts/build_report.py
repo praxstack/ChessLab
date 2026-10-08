@@ -36,8 +36,6 @@ TITLES = {
  'docs/research/sources/startup-research.pdf':'Original startup research PDF',
  'docs/research/sources/original-conversation.md':'Original ChatGPT conversation, full available text',
  'docs/research/sources/original-conversation.json':'Original conversation retrieval record',
- 'docs/research/sources/IMG_0860.png':'Original lesson: starting position',
- 'docs/research/sources/IMG_0859.png':'Original lesson: incorrect rook move',
  'docs/research/assessment.md':'Previous run: research assessment',
  'skills.local.json':'Complete skill-source manifest',
  'scripts/setup_skills.py':'Repeatable skill-link setup helper',
@@ -60,17 +58,18 @@ def category(path):
     return 'Project & tooling'
 
 
+# Since the 2026-10-08 original-asset policy the dossier neither copies nor displays screenshots of
+# another product's interface. The founder's two lesson screenshots stay in docs/research/sources as
+# research; docs/verification holds browser evidence of earlier builds, not reading material.
+WITHHELD = {'docs/research/sources/IMG_0859.png','docs/research/sources/IMG_0860.png'}
+
+
 def source_files():
-    files = {ROOT/p for p in ['README.md','CONTEXT.md','AGENTS.md','CLAUDE.md','skills.local.json','justfile','.gitignore','.gitattributes','references/engine-installation.json','references/engine-games-verification.json','references/engine-availability.md','references/chesscom-piece-assets.json','web/public/bots/provenance.json']}
+    files = {ROOT/p for p in ['README.md','CONTEXT.md','AGENTS.md','CLAUDE.md','skills.local.json','justfile','.gitignore','.gitattributes','references/engine-installation.json','references/engine-games-verification.json','references/engine-availability.md']}
     files.update(p for p in (ROOT/'references').iterdir() if p.is_file() and p.suffix in ['.json','.md'])
-    files.update((ROOT/'references').glob('chrome-session-*/session-report.md'))
     for folder in ['docs','openspec','scripts']:
-        files.update(p for p in (ROOT/folder).rglob('*') if p.is_file() and not p.is_symlink() and '__pycache__' not in p.parts and p.name != '.gitkeep')
+        files.update(p for p in (ROOT/folder).rglob('*') if p.is_file() and not p.is_symlink() and '__pycache__' not in p.parts and p.name != '.gitkeep' and 'verification' not in p.relative_to(ROOT/folder).parts[:1] and p.relative_to(ROOT).as_posix() not in WITHHELD)
     return sorted(files)
-
-
-def capture_files():
-    return sorted(p for folder in (ROOT/'references').glob('chrome-session-*') for p in folder.rglob('*') if p.is_file())
 
 
 def doc_name(path):
@@ -86,6 +85,11 @@ class Fragment(HTMLParser):
         self.heading = None
     def handle_starttag(self, tag, attrs):
         data = dict(attrs)
+        if tag == 'img' and data.get('src') and not urlsplit(data['src']).scheme:
+            target = (self.source.parent / unquote(urlsplit(data['src']).path)).resolve()
+            if target.is_relative_to(ROOT) and target.relative_to(ROOT).as_posix() in WITHHELD:
+                self.result.append('<em>[Screenshot kept with the research sources, not reproduced here: '+html.escape(data.get('alt') or 'image')+']</em>')
+                return
         for key in ['href','src']:
             value = data.get(key)
             if not value: continue
@@ -100,12 +104,12 @@ class Fragment(HTMLParser):
                     else:
                         data[key] = self.base+'/documents/'+doc_name(target)
                     if parsed.fragment: data[key] += '#'+parsed.fragment
-                elif target.is_relative_to(ROOT/'references') and any(part.startswith('chrome-session-') for part in target.parts):
-                    data[key] = self.base+'/'+target.relative_to(ROOT).as_posix()
-                    if parsed.fragment: data[key] += '#'+parsed.fragment
                 elif target.is_relative_to(OUT):
                     data[key] = self.base+'/'+target.relative_to(OUT).as_posix()
                     if parsed.fragment: data[key] += '#'+parsed.fragment
+                elif key == 'href' and target.is_relative_to(ROOT):
+                    # Project files the dossier does not copy (app source, licences, evidence) are named, not linked.
+                    del data[key]
             if key == 'href' and parsed.scheme in ['https','http']:
                 data['rel'] = 'noreferrer noopener'
         if tag == 'h2' and data.get('id'):
@@ -159,8 +163,8 @@ def components(files):
         cards.append(f'<a class="document-card" href="documents/{doc_name(p)}" data-category="{cat}" data-search="{html.escape((title+" "+rel+" "+cat).lower(),quote=True)}"><span class="doc-type">{cat}</span><strong>{html.escape(title)}</strong><small>{html.escape(rel)}</small><span class="doc-arrow">Read full document →</span></a>')
     cats=sorted({category(p.relative_to(ROOT)) for p in files})
     library='<div class="library-controls"><label for="document-search">Search the full inventory<input id="document-search" type="search" placeholder="Try pricing, proposal, skills…"></label><label for="document-category">Document type<select id="document-category"><option value="">All types</option>'+''.join(f'<option>{c}</option>' for c in cats)+'</select></label></div><div id="document-count" class="result-count" aria-live="polite">'+str(len(files))+' documents</div><div class="document-grid">'+''.join(cards)+'</div><p id="no-documents" class="empty-state" hidden>No documents match. Try a different title or choose all types.</p>'
-    images='<div class="image-pair">'+''.join(f'<figure><a href="downloads/docs/research/sources/{name}"><img src="downloads/docs/research/sources/{name}" alt="{caption}" loading="lazy"></a><figcaption>{caption}</figcaption></figure>' for name,caption in [('IMG_0860.png','Original lesson: the bishop attacks the knight and rook.'),('IMG_0859.png','Original lesson: saving the rook is marked incorrect.')])+'</div>'
-    evidence='<div class="evidence-grid">'+''.join('<div class="evidence-card"><span class="chip '+state+'">'+label+'</span><strong>'+title+'</strong><p>'+body+'</p></div>' for state,label,title,body in [('good','LOCAL APPLICATION','Bot games and review','Installed engines, bot profiles, clocks, assistance and saved studies. See the application chapter for current evidence.'),('proposed','REMAINING WORK','Full platform parity','Proprietary personalities, full curriculum and conversational tutoring remain incomplete.'),('good','PRIVATE REPOSITORY','Source delivery','The GitHub repository is private. Exact pushes and verification boundaries are recorded in the application receipt.'),('','NOT DEMONSTRATED','Learning and demand','No measured learning results, paying-user retention or public deployment established.')])+'</div>'
+    images='<p>The founder photographed this lesson on an iPad: in the starting position a bishop attacks a knight and a rook, and saving the rook is marked incorrect. The two screenshots stay with the research sources in the repository; this dossier describes them rather than displaying another product’s interface.</p>'
+    evidence='<div class="evidence-grid">'+''.join('<div class="evidence-card"><span class="chip '+state+'">'+label+'</span><strong>'+title+'</strong><p>'+body+'</p></div>' for state,label,title,body in [('good','LOCAL APPLICATION','Bot games and review','Installed engines, bot profiles, clocks, assistance and saved studies. See the application chapter for current evidence.'),('proposed','REMAINING WORK','A complete learning product','A larger curriculum, more bot personalities and conversational tutoring remain incomplete.'),('good','PRIVATE REPOSITORY','Source delivery','The GitHub repository is private. Exact pushes and verification boundaries are recorded in the application receipt.'),('','NOT DEMONSTRATED','Learning and demand','No measured learning results, paying-user retention or public deployment established.')])+'</div>'
     receipt='<p><a href="verification.json">Open the report verification receipt</a>. This records static and browser checks for the generated dossier, including their limits.</p>'
     return {'ORIGIN':original,'PRODUCT_DEMO':concept,'ECONOMICS':economics,'ARCHITECTURE':architecture,'LIBRARY':library,'ORIGINAL_IMAGES':images,'EVIDENCE':evidence,'REPORT_RECEIPT':receipt}
 
@@ -214,11 +218,8 @@ def build():
             content='<pre><code>'+html.escape(text)+'</code></pre>'
         output=OUT/'documents'/doc_name(path); output.write_text(render_page(title,'Document library',notice+content,toc,'library','..',str(rel),doc=True)); outputs.append(output)
     outputs += [p for p in (OUT/'assets').iterdir() if p.is_file()]
-    for path in capture_files():
-        output=OUT/path.relative_to(ROOT); output.parent.mkdir(parents=True,exist_ok=True); shutil.copyfile(path,output); outputs.append(output)
     inputs={p.relative_to(ROOT).as_posix():digest(p.read_bytes()) for p in files}
     manifest={'edition':'2026-09-08','generator':'scripts/build_report.py','document_count':len(files),'chapter_count':len(CHAPTERS),'source_hashes':inputs,'output_hashes':{p.relative_to(OUT).as_posix():digest(p.read_bytes()) for p in sorted(outputs)}}
-    manifest['capture_source_hashes']={p.relative_to(ROOT).as_posix():digest(p.read_bytes()) for p in capture_files()}
     (OUT/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     print(f'Built {len(CHAPTERS)} chapters and {len(files)} full document pages in {OUT}')
 
@@ -239,8 +240,6 @@ def check():
         if not (ROOT/name).is_file() or digest((ROOT/name).read_bytes())!=expected: raise RuntimeError('Changed source; rebuild: '+name)
     current={p.relative_to(ROOT).as_posix() for p in source_files()}
     if current != set(manifest['source_hashes']): raise RuntimeError('Source inventory changed; rebuild')
-    captures={p.relative_to(ROOT).as_posix():digest(p.read_bytes()) for p in capture_files()}
-    if captures != manifest.get('capture_source_hashes',{}): raise RuntimeError('Capture evidence changed; rebuild')
     for name,expected in manifest['output_hashes'].items():
         if not (OUT/name).is_file() or digest((OUT/name).read_bytes())!=expected: raise RuntimeError('Stale or edited output: '+name)
     pages={p:Links() for p in OUT.rglob('*.html') if 'downloads' not in p.parts}
