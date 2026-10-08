@@ -1,5 +1,5 @@
 import React from 'react';
-import {pieceSet} from './settings-state.js';
+import {pieceSet, boardThemes} from './settings-state.js';
 
 export {settingDefaults} from './settings-state.js';
 export function SettingSelect({label,value,onChange,options}) {const id=React.useId();return <div className="setting-row"><label htmlFor={id}>{label}</label><select id={id} value={value} onChange={e=>onChange(e.target.value)}>{options.map(option=><option key={option.value} value={option.value} disabled={option.disabled}>{option.label}</option>)}</select></div>;}
@@ -12,7 +12,7 @@ export default function Settings({settings,tab,onTab,onChange,engines}) {
  <div className="settings-body">{tab==='board'?<>
   <h3>Board</h3>
   <div className="setting-row"><span>Pieces</span><span className="setting-value">{pieceSet.label}</span></div>
-  {select('boardTheme','Board',[['green','Green'],['blue','Blue'],['brown','Brown'],['gray','Gray']])}
+  {select('boardTheme','Board',boardThemes)}
   {select('orientation','Orientation',[['auto','Your playing color'],['w','White at bottom'],['b','Black at bottom']])}
   {select('coordinates','Coordinates',[[true,'Inside'],[false,'None']])}
   {select('notation','Piece Notation',[['figurine','Figurine'],['text','Text']])}

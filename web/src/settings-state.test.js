@@ -8,3 +8,11 @@ test('stored preferences from older builds load with the shipped piece set',()=>
  assert.equal(normalizeSettings({coordinates:false}).coordinates,false);
  for(const bad of [null,[],'text',7])assert.deepEqual(normalizeSettings(bad),settingDefaults);
 });
+
+test('board themes from older builds map onto the original themes',()=>{
+ assert.equal(settingDefaults.boardTheme,'slate');
+ assert.equal(normalizeSettings({boardTheme:'green'}).boardTheme,'slate');
+ assert.equal(normalizeSettings({boardTheme:'brown'}).boardTheme,'walnut');
+ assert.equal(normalizeSettings({boardTheme:'blue'}).boardTheme,'blue');
+ assert.equal(normalizeSettings({boardTheme:'neon'}).boardTheme,'slate');
+});
