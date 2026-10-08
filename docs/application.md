@@ -35,6 +35,9 @@ Production mode serves `web/dist`. This is a local run command, not a public dep
 | `PORT` | `8770` | HTTP port |
 | `CHESSLAB_DB` | `./data/chesslab.sqlite` | SQLite file, resolved from the working directory |
 | `COOKIE_SECURE` | `0` | Local HTTP cookie setting; HTTPS deployment needs `1` |
+| `ANTHROPIC_API_KEY` | unset | Optional. Turns on "Explain why", which asks Claude to explain the engine evidence |
+
+The hosted private beta adds `APP_ORIGIN`, `TRUST_PROXY`, `BETA_INVITE_CODES` and the `COACH_AI_*` limits. See [deploying the private beta](deploy-beta.md).
 
 Run commands from the repository root. Keep `.env` and `data/` out of Git. The repository ignores both.
 
@@ -120,8 +123,8 @@ If the engine is unavailable, verify `STOCKFISH_PATH` and run the executable dir
 
 ## Current limits
 
-Human multiplayer and billing remain deferred. Owner-private Sites hosting uses a protected HTTPS connection to this Mac; continued remote availability requires the native service and tunnel to remain running. The hosted account database is separate from local development data. Target strengths and reference bot ratings are uncalibrated, not measured human Elo ratings. The coach uses deterministic evidence wording and engine estimates. It does not provide unrestricted language-model conversation. Questions are saved learner notes.
+Human multiplayer and billing remain deferred. Owner-private Sites hosting uses a protected HTTPS connection to this Mac; continued remote availability requires the native service and tunnel to remain running. The hosted account database is separate from local development data. Target strengths and reference bot ratings are uncalibrated, not measured human Elo ratings. The coach uses deterministic evidence wording and engine estimates. When the server has an Anthropic API key, "Explain why" adds a Claude explanation limited to that position's engine evidence. The server checks every move it cites and falls back to the engine summary otherwise. It does not provide unrestricted language-model conversation. Questions are saved learner notes.
 
 A candidate continuation demonstrates a legal line at a bounded search. It does not prove that every reply is forced, and additional search can change a score or move classification. The app does not copy Chess.com's classification algorithm or claim its accuracy metrics. The current labels use estimated mover loss: 50 centipawns for inaccuracy, 150 for mistake and 300 for blunder. Short searches and mate scores require separate interpretation. The interface sends position histories to the local server; it downloads no engine binary, neural weights or model to the browser.
 
-This server supports a local baseline, with bounded engine work and SQLite persistence. Public use requires separate decisions and work for HTTPS, backups, password recovery, abuse handling and capacity. No learning effectiveness, demand, scale or public availability has been established by local application tests.
+This server supports a local baseline, with bounded engine work and SQLite persistence. Public use requires separate decisions and work for HTTPS, backups, password recovery, abuse handling and capacity. [Deploying the private beta](deploy-beta.md) covers HTTPS, invites and backups for a small invited group; password recovery and capacity remain open. No learning effectiveness, demand, scale or public availability has been established by local application tests.
