@@ -17,6 +17,9 @@ test:
     npm test
     python3 scripts/local_snapshot_test.py
     python3 scripts/import_puzzles_test.py
+    [ -d site/node_modules ] || npm --prefix site ci --no-audit --no-fund
+    npm --prefix site test
+    npm --prefix site run build:check
 
 app:
     npm run dev

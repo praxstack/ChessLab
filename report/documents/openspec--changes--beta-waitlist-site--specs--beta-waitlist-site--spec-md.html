@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Spec · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/beta-waitlist-site/specs/beta-waitlist-site/spec.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/beta-waitlist-site/specs/beta-waitlist-site/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/beta-waitlist-site/specs/beta-waitlist-site/spec.md<br>SHA-256: e53fc63af91cbca2da7e6a6c1e479b219b8304da29141462636be55c8a44f4b0</p><h3 id="purpose">Purpose</h3>
+<p>Let visitors join the AskTheMove beta waitlist from a public page, keeping only what the founder needs to send invites.</p>
+<h3 id="added-requirements">ADDED Requirements</h3>
+<h4 id="requirement-wl-001-sign-up-with-and-without-javascript">Requirement: WL-001 Sign-up with and without JavaScript</h4>
+<p>The waitlist form SHALL post to <code>/api/waitlist</code> and work without JavaScript. A JSON caller SHALL receive <code>{ ok: true }</code> on success or <code>{ ok: false, error }</code> with a sentence the page can show. A plain form post SHALL be redirected back to the page with a fragment that names a result note the page shows without JavaScript. Optional Turnstile runs in the browser, so while it is on the form SHALL tell visitors without JavaScript to email the contact address instead.</p>
+<h5 id="scenario-plain-form-post">Scenario: Plain form post</h5>
+<ul>
+<li><strong>WHEN</strong> a visitor without JavaScript submits a valid email with consent ticked</li>
+<li><strong>THEN</strong> the address is stored and the page they return to says they are on the list</li>
+</ul>
+<h5 id="scenario-plain-form-post-with-a-mistake">Scenario: Plain form post with a mistake</h5>
+<ul>
+<li><strong>WHEN</strong> a visitor without JavaScript submits an incomplete email address</li>
+<li><strong>THEN</strong> nothing is stored and the page they return to says the sign-up failed and what to check</li>
+</ul>
+<h4 id="requirement-wl-002-consent-and-minimal-data">Requirement: WL-002 Consent and minimal data</h4>
+<p>A sign-up SHALL require an explicit consent tick. The service SHALL store only the normalised email, the consent time, an optional rating band, the form name, campaign tags and the fixed product name the row belongs to. It SHALL never store the raw IP address.</p>
+<h5 id="scenario-missing-consent">Scenario: Missing consent</h5>
+<ul>
+<li><strong>WHEN</strong> a sign-up arrives without consent</li>
+<li><strong>THEN</strong> it is refused with 400 and nothing is stored</li>
+</ul>
+<h4 id="requirement-wl-003-salted-ip-hashes-fail-closed">Requirement: WL-003 Salted IP hashes fail closed</h4>
+<p>The service SHALL hash the client address with the <code>IP_HASH_SALT</code> secret for rate limiting. When the secret is missing it SHALL refuse sign-ups with 503 and store nothing, because a known salt would let anyone reverse the hash.</p>
+<h5 id="scenario-secret-not-configured">Scenario: Secret not configured</h5>
+<ul>
+<li><strong>WHEN</strong> a sign-up arrives and <code>IP_HASH_SALT</code> is unset</li>
+<li><strong>THEN</strong> the response is 503 and neither the waitlist nor the rate-limit table changes</li>
+</ul>
+<h4 id="requirement-wl-004-no-membership-disclosure">Requirement: WL-004 No membership disclosure</h4>
+<p>A new address and one already on the list SHALL receive the same response, so the form cannot reveal who has signed up.</p>
+<h5 id="scenario-duplicate-address">Scenario: Duplicate address</h5>
+<ul>
+<li><strong>WHEN</strong> an address already on the list is submitted again, in any letter case</li>
+<li><strong>THEN</strong> the response matches a first sign-up and no row is added</li>
+</ul>
+<h4 id="requirement-wl-005-abuse-limits">Requirement: WL-005 Abuse limits</h4>
+<p>The service SHALL refuse requests from other origins, bodies over 16 KB and unreadable bodies, and SHALL allow at most five submissions per hashed address in ten minutes. A filled honeypot SHALL get a success response and store nothing.</p>
+<h5 id="scenario-too-many-attempts">Scenario: Too many attempts</h5>
+<ul>
+<li><strong>WHEN</strong> one connection submits a sixth time within ten minutes</li>
+<li><strong>THEN</strong> it receives 429 with a Retry-After header</li>
+</ul>
+<h4 id="requirement-wl-006-admin-export">Requirement: WL-006 Admin export</h4>
+<p><code>GET /api/waitlist/export</code> SHALL return the list as CSV only to a request bearing <code>ADMIN_TOKEN</code>, compared in constant time. Cells that a spreadsheet would run as a formula SHALL be neutralised.</p>
+<h5 id="scenario-no-token">Scenario: No token</h5>
+<ul>
+<li><strong>WHEN</strong> the export is requested without a valid token</li>
+<li><strong>THEN</strong> the response is 401 and contains no addresses</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

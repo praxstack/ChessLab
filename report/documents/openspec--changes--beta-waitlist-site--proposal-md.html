@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Proposal · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Proposal</h1><p class="lede">openspec/changes/beta-waitlist-site/proposal.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Proposal"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/beta-waitlist-site/proposal.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/beta-waitlist-site/proposal.md<br>SHA-256: 6836807b527593307209cf9ed6a7da2e6eb53c036bafa0121e605ac63469311d</p><h2 id="askthemove-landing-page-and-beta-waitlist">AskTheMove landing page and beta waitlist</h2>
+<h3 id="why">Why</h3>
+<p>On 8 October 2026 the founder directed a public landing page and beta waitlist for AskTheMove, to collect interest before the hosted private beta and to support an application to Anthropic's startup program. <code>hosted-beta-readiness</code> already supersedes the 13 September local-only direction for hosting. This change covers the one public piece that stores visitor data: the waitlist. The coach app itself stays local by default and is unaffected.</p>
+<h3 id="what-changes">What changes</h3>
+<ul>
+<li>A static site in <code>site/</code>, built from <code>site/pages/</code> into <code>site/public/</code> by <code>site/scripts/build.mjs</code>, deployed to Cloudflare Pages. It holds the landing page, a privacy notice and terms, all on the site's own origin with a strict content security policy.</li>
+<li><code>POST /api/waitlist</code> (a Pages Function) stores an email, consent time, an optional rating band, the form it came from and campaign tags in a Cloudflare D1 database. It accepts JSON from the page script and plain form posts without JavaScript.</li>
+<li>Abuse limits: a honeypot field, an allowed-origin check, a body size limit, five submissions per connection every ten minutes, and optional Cloudflare Turnstile.</li>
+<li>Privacy: the raw IP is never stored, only a hash salted with a secret. The service refuses sign-ups when that secret is missing. A new and an existing address get the same answer.</li>
+<li><code>GET /api/waitlist/export</code> returns the list as CSV to a bearer of <code>ADMIN_TOKEN</code>.</li>
+<li><code>just test</code> runs the site's tests and its generated-page check.</li>
+</ul>
+<h3 id="non-goals">Non-goals</h3>
+<ul>
+<li>Deploying, buying a domain or creating Cloudflare accounts. The founder does these.</li>
+<li>Sending any email. Invites are sent by hand from the export.</li>
+<li>Accounts, analytics, cookies or third-party scripts beyond optional Turnstile.</li>
+<li>Changing the coach app, its hosting or its data.</li>
+</ul>
+<h3 id="status">Status</h3>
+<p>Implemented with automated tests against a fake D1 database. Run locally with <code>wrangler pages dev</code>. Not deployed. The privacy notice and terms carry a "not yet reviewed" banner until the founder has read them.</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav><a href="#askthemove-landing-page-and-beta-waitlist">AskTheMove landing page and beta waitlist</a></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

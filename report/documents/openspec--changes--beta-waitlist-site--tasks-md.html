@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
-<meta name="color-scheme" content="light"><title>Canonical project commands · ChessLab dossier</title>
+<meta name="color-scheme" content="light"><title>Tasks · ChessLab dossier</title>
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../assets/site.css">
 <script src="../assets/site.js" defer></script>
@@ -19,61 +19,27 @@
 <div class="workspace">
 <header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
 <main id="main" tabindex="-1">
-<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Canonical project commands</h1><p class="lede">justfile</p></header>
-<div class="reading-layout"><article class="prose" aria-label="Canonical project commands"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/justfile" download>Download original file ↗</a></div><p class="source-meta">justfile<br>SHA-256: 2068eca42250b07167590746dba1833ce66644b4505a950a47f960d4eb546257</p><pre><code>set shell := [&quot;bash&quot;, &quot;-euc&quot;]
-export OPENSPEC_TELEMETRY := &quot;0&quot;
-
-default:
-    @just --list
-
-setup:
-    python3 scripts/setup_skills.py
-
-check:
-    python3 scripts/setup_skills.py --check
-    openspec validate --all --strict --no-interactive
-    git diff --check
-
-test:
-    python3 scripts/setup_skills.py --self-test
-    npm test
-    python3 scripts/local_snapshot_test.py
-    python3 scripts/import_puzzles_test.py
-    [ -d site/node_modules ] || npm --prefix site ci --no-audit --no-fund
-    npm --prefix site test
-    npm --prefix site run build:check
-
-app:
-    npm run dev
-
-app-check:
-    npm test
-    npm run build
-
-e2e:
-    npm run build
-    node scripts/check_app_browser.cjs
-
-report:
-    python3 scripts/build_report.py
-
-report-check:
-    python3 scripts/build_report.py --check
-
-report-test:
-    node scripts/check_report_browser.cjs
-
-report-zip:
-    python3 scripts/build_report.py --zip
-
-proof:
-    npm run build
-    CHESSLAB_EVIDENCE_DIR=&quot;data/proof-$(date +%Y%m%d-%H%M%S)&quot; node scripts/check_app_browser.cjs
-
-local-check:
-    npm run build
-    node scripts/check_local_server.mjs
-</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Tasks</h1><p class="lede">openspec/changes/beta-waitlist-site/tasks.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Tasks"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/beta-waitlist-site/tasks.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/beta-waitlist-site/tasks.md<br>SHA-256: 8333ccc23e7dee9d9d0a35914f66e26f83e2e64e25d84103e35f47d05bae24af</p><h3 id="1-site">1. Site</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked=""></input>1.1 Build the landing page, privacy notice and terms from <code>site/pages/</code> into <code>site/public/</code>, with <code>--check</code> to catch stale output.</label></li>
+<li><label><input type="checkbox" checked=""></input>1.2 WL-001 Waitlist form that works with and without JavaScript, including the no-JavaScript result notes.</label></li>
+</ul>
+<h3 id="2-waitlist-service">2. Waitlist service</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked=""></input>2.1 WL-002 Store only the listed fields, never the raw IP.</label></li>
+<li><label><input type="checkbox" checked=""></input>2.2 WL-003 Refuse sign-ups when <code>IP_HASH_SALT</code> is missing.</label></li>
+<li><label><input type="checkbox" checked=""></input>2.3 WL-004 Same response for new and existing addresses.</label></li>
+<li><label><input type="checkbox" checked=""></input>2.4 WL-005 Origin, size, honeypot and rate limits, with optional Turnstile.</label></li>
+<li><label><input type="checkbox" checked=""></input>2.5 WL-006 Token-protected CSV export with formula neutralising.</label></li>
+<li><label><input type="checkbox" checked=""></input>2.6 Run the site tests and the generated-page check from <code>just test</code>.</label></li>
+</ul>
+<h3 id="3-launch-founder">3. Launch (founder)</h3>
+<ul class="task-list">
+<li><label><input type="checkbox"></input>3.1 Create the D1 database and Pages project, set <code>ADMIN_TOKEN</code> and <code>IP_HASH_SALT</code>, deploy, and connect the domain.</label></li>
+<li><label><input type="checkbox"></input>3.2 Read the privacy notice and terms and remove their "not yet reviewed" banners.</label></li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
 
 </main>
 <footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
