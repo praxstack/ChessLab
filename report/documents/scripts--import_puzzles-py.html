@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Import Puzzles · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Import Puzzles</h1><p class="lede">scripts/import_puzzles.py</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Import Puzzles"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/import_puzzles.py" download>Download original file ↗</a></div><p class="source-meta">scripts/import_puzzles.py<br>SHA-256: 827a0526344aefa97568e7ea76b0092bbb519c9599003e8b815df92b9f04a1a5</p><pre><code>&quot;&quot;&quot;Import an official local Lichess CSV.zst into a new SQLite catalogue.&quot;&quot;&quot;
+import csv, hashlib, io, json, os, re, sqlite3, subprocess, sys, tempfile
+from collections import Counter
+from datetime import datetime, timezone
+from pathlib import Path
+
+
+def import_archive(source, destination):
+    source, destination = Path(source), Path(destination)
+    if destination.exists():
+        raise FileExistsError(&#x27;Refusing to replace an existing puzzle catalogue.&#x27;)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with source.open(&#x27;rb&#x27;) as archive:
+        digest = hashlib.file_digest(archive, &#x27;sha256&#x27;).hexdigest()
+    handle, temporary = tempfile.mkstemp(prefix=&#x27;.puzzles-&#x27;, suffix=&#x27;.sqlite&#x27;, dir=destination.parent)
+    os.close(handle)
+    process = None
+    db = None
+    try:
+        db = sqlite3.connect(temporary)
+        db.executescript(&#x27;&#x27;&#x27;PRAGMA journal_mode=OFF; PRAGMA synchronous=OFF; PRAGMA cache_size=-64000;
+        CREATE TABLE puzzles (seq INTEGER PRIMARY KEY, id TEXT NOT NULL, fen TEXT NOT NULL, moves TEXT NOT NULL, rating INTEGER NOT NULL, themes TEXT NOT NULL, game_url TEXT NOT NULL, opening_tags TEXT NOT NULL);
+        CREATE TABLE pool (theme TEXT NOT NULL, rating INTEGER NOT NULL, seq INTEGER NOT NULL);
+        CREATE TABLE metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL);&#x27;&#x27;&#x27;)
+        process = subprocess.Popen([&#x27;zstd&#x27;, &#x27;-dc&#x27;, str(source)], stdout=subprocess.PIPE)
+        reader = csv.DictReader(io.TextIOWrapper(process.stdout, encoding=&#x27;utf-8&#x27;, newline=&#x27;&#x27;))
+        required = [&#x27;PuzzleId&#x27;,&#x27;FEN&#x27;,&#x27;Moves&#x27;,&#x27;Rating&#x27;,&#x27;RatingDeviation&#x27;,&#x27;Popularity&#x27;,&#x27;NbPlays&#x27;,&#x27;Themes&#x27;,&#x27;GameUrl&#x27;,&#x27;OpeningTags&#x27;]
+        if reader.fieldnames not in [required, required+[&#x27;DailyDate&#x27;]]:
+            raise ValueError(&#x27;Unexpected source columns.&#x27;)
+        rows, pools, themes, count = [], [], Counter(), 0
+        for row in reader:
+            count += 1
+            moves, tags = row[&#x27;Moves&#x27;].split(), row[&#x27;Themes&#x27;].split()
+            rating = int(row[&#x27;Rating&#x27;])
+            if not re.fullmatch(r&#x27;[A-Za-z0-9]{5,12}&#x27;,row[&#x27;PuzzleId&#x27;]) or not 0 &lt;= rating &lt;= 5000 or len(row[&#x27;FEN&#x27;]) &gt; 150 or len(row[&#x27;FEN&#x27;].split()) != 6 or not 2 &lt;= len(moves) &lt;= 100 or len(moves)%2 or any(not re.fullmatch(r&#x27;[a-h][1-8][a-h][1-8][qrbn]?&#x27;,m) for m in moves) or any(not re.fullmatch(r&#x27;[A-Za-z][A-Za-z0-9]{0,40}&#x27;,t) for t in tags) or len(tags)&gt;30:
+                raise ValueError(f&#x27;Invalid puzzle row {count}&#x27;)
+            url = row[&#x27;GameUrl&#x27;]
+            if not re.fullmatch(r&#x27;https://lichess\.org/[A-Za-z0-9]{8}(?:/(?:white|black))?(?:#[0-9]+)?&#x27;,url):
+                raise ValueError(f&#x27;Invalid source URL at row {count}&#x27;)
+            rows.append((count,row[&#x27;PuzzleId&#x27;],row[&#x27;FEN&#x27;],row[&#x27;Moves&#x27;],rating,&#x27; &#x27;.join(tags),url,row[&#x27;OpeningTags&#x27;]))
+            pools.extend((theme,rating,count) for theme in [&#x27;&#x27;,*set(tags)])
+            themes.update(set(tags))
+            if count%10000==0:
+                db.executemany(&#x27;INSERT INTO puzzles VALUES (?,?,?,?,?,?,?,?)&#x27;,rows)
+                db.executemany(&#x27;INSERT INTO pool VALUES (?,?,?)&#x27;,pools)
+                db.commit();rows.clear();pools.clear()
+                if count%500000==0: print(json.dumps({&#x27;imported&#x27;:count}),flush=True)
+        db.executemany(&#x27;INSERT INTO puzzles VALUES (?,?,?,?,?,?,?,?)&#x27;,rows)
+        db.executemany(&#x27;INSERT INTO pool VALUES (?,?,?)&#x27;,pools)
+        if process.wait() != 0: raise ValueError(&#x27;Archive decompression failed.&#x27;)
+        print(&#x27;Building catalogue indexes&#x27;,flush=True)
+        db.executescript(&#x27;CREATE UNIQUE INDEX puzzle_id ON puzzles(id); CREATE INDEX puzzle_pool ON pool(theme,rating,seq);&#x27;)
+        metadata = {&#x27;source&#x27;:&#x27;https://database.lichess.org/#puzzles&#x27;,&#x27;download&#x27;:&#x27;https://database.lichess.org/lichess_db_puzzle.csv.zst&#x27;,&#x27;license&#x27;:&#x27;CC0-1.0&#x27;,&#x27;archiveSha256&#x27;:digest,&#x27;archiveBytes&#x27;:source.stat().st_size,&#x27;importedAt&#x27;:datetime.now(timezone.utc).isoformat(),&#x27;count&#x27;:count,&#x27;themes&#x27;:dict(sorted(themes.items())),&#x27;validation&#x27;:&#x27;Every source row structurally validated; each selected solution legally replayed before serving.&#x27;}
+        db.execute(&#x27;INSERT INTO metadata VALUES (?,?)&#x27;,(&#x27;catalogue&#x27;,json.dumps(metadata)))
+        db.commit()
+        assert db.execute(&#x27;PRAGMA integrity_check&#x27;).fetchone()[0]==&#x27;ok&#x27;
+        db.close();db=None
+        os.link(temporary,destination)
+        print(json.dumps(metadata),flush=True)
+        return metadata
+    finally:
+        if process and process.poll() is None: process.terminate();process.wait()
+        if db: db.close()
+        Path(temporary).unlink(missing_ok=True)
+
+if __name__ == &#x27;__main__&#x27;:
+    import_archive(*sys.argv[1:])
+</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

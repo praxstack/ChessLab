@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Chess960 Oracle · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Chess960 Oracle</h1><p class="lede">scripts/chess960_oracle.py</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Chess960 Oracle"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/chess960_oracle.py" download>Download original file ↗</a></div><p class="source-meta">scripts/chess960_oracle.py<br>SHA-256: 6a36a51182af0864fba233d335c9cc86df5c329a1fc5ae393c232cc338a2f85b</p><pre><code>&quot;&quot;&quot;Independent python-chess oracle for numbered starts and castling transitions.&quot;&quot;&quot;
+import json
+import random
+import chess
+
+assert chess.__version__ == &#x27;1.11.2&#x27;
+rng = random.Random(960)
+cases = []
+
+def record(board, label):
+    assert board.is_valid(), (label, board.status(), board.fen())
+    moves = []
+    for move in board.legal_moves:
+        san = board.san(move)
+        board.push(move)
+        moves.append([move.uci(), san, board.shredder_fen()])
+        board.pop()
+    cases.append({&#x27;label&#x27;: label, &#x27;fen&#x27;: board.shredder_fen(), &#x27;moves&#x27;: moves})
+
+for number in range(960):
+    board = chess.Board.from_chess960_pos(number)
+    record(board, f&#x27;start:{number}&#x27;)
+    for square, piece in list(board.piece_map().items()):
+        if piece.color == chess.WHITE and piece.piece_type not in (chess.KING, chess.ROOK):
+            board.remove_piece_at(square)
+    record(board, f&#x27;castle:white:{number}&#x27;)
+    record(board.mirror(), f&#x27;castle:black:{number}&#x27;)
+
+for number in (0, 42, 314, 518, 959):
+    board = chess.Board.from_chess960_pos(number)
+    for ply in range(80):
+        record(board, f&#x27;game:{number}:{ply}&#x27;)
+        if board.is_game_over():
+            break
+        board.push(rng.choice(list(board.legal_moves)))
+
+for fen in (
+    &#x27;4k3/8/8/8/8/8/8/R1K4R w HA - 0 1&#x27;,
+    &#x27;4k3/8/8/8/8/8/8/R4KR1 w GA - 0 1&#x27;,
+    &#x27;4k3/8/8/8/8/8/8/R3KR2 w FA - 0 1&#x27;,
+    &#x27;4k3/8/8/8/8/8/8/R5KR w HA - 0 1&#x27;,
+    &#x27;4k3/8/8/8/8/8/8/1R1K3R w HB - 0 1&#x27;,
+    &#x27;4k3/8/8/8/8/8/8/2RK3R w HC - 0 1&#x27;,
+    &#x27;4kr2/8/8/8/8/8/8/R3K2R w HA - 0 1&#x27;,
+    &#x27;4k3/8/8/8/8/8/8/rR2K2R w HB - 0 1&#x27;,
+    &#x27;4k3/8/8/3pP3/8/8/8/R4KR1 w GA d6 0 1&#x27;,
+    &#x27;4k3/P7/8/8/8/8/8/R4KR1 w GA - 0 1&#x27;,
+):
+    record(chess.Board(fen, chess960=True), fen)
+
+print(json.dumps(cases, separators=(&#x27;,&#x27;, &#x27;:&#x27;)))
+</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

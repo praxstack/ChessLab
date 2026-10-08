@@ -1,5 +1,7 @@
 # Match the observed non-multiplayer platform
 
+> Superseded in part on 2026-10-08: the original-asset policy in `original-asset-pack` replaced the Chess.com reference-parity goal and Chess.com-derived assets for the hosted beta. The text below is kept as the record of the earlier direction.
+
 User authorization: 8 September 2026, reproduce Chess.com's web experience, engines, settings and assets; exclude human multiplayer. Preserve the branching tutor objective and existing saved games. Billing remains the user's last priority.
 
 This is an additive change, not a revision of the existing engine or game integrity gates. Baseline: the uncommitted expand-bot-platform implementation, 41 passing tests recorded in data/final-tests-confirmation.log. The previous committed rollback point is e2f5a2d810b46f1a091bbb5cd2cb476b0d006666.

@@ -113,12 +113,12 @@ test('selected engine, authoritative timeout, crowns and account isolation survi
   const {cookie}=await f.register('timedplayer');const second=await f.register('otherplayer');
   const create=body=>f.request('/api/games',{method:'POST',cookie,body});
   assert.equal((await create({engineId:'missing'})).status,503);assert.equal((await create({engineId:'invented'})).status,400);
-  const created=await create({botId:'martin',engineId:'maia3',rating:250,color:'w',timeControl:{initialSeconds:60,incrementSeconds:2}});assert.equal(created.status,201);let game=created.body.game;const route='/api/games/'+game.id;
+  const created=await create({botId:'marlo',engineId:'maia3',rating:250,color:'w',timeControl:{initialSeconds:60,incrementSeconds:2}});assert.equal(created.status,201);let game=created.body.game;const route='/api/games/'+game.id;
   stamp=5000;game=(await f.request(route+'/move',{method:'POST',cookie,body:{revision:0,move:'e2e4'}})).body.game;assert.equal(game.clock.whiteMs,58000);assert.equal(game.clock.blackMs,60000);
   const pending=f.request(route+'/bot',{method:'POST',cookie,body:{revision:1}});await waiting;assert.equal(calls[0].engineId,'maia3');assert.deepEqual(calls[0].moves,['e2e4']);assert.equal(calls[0].rating,250);
   stamp=66000;release({move:'e7e5',engineId:'maia3',engine:'Maia3'});const finished=await pending;assert.equal(finished.status,200);assert.equal(finished.body.game.result,'1-0');assert.deepEqual(finished.body.game.moves,['e2e4']);assert.equal(finished.body.game.crownsAwarded,3);
   assert.equal((await f.request(route+'/bot',{method:'POST',cookie,body:{revision:1}})).status,409);
-  await f.restart();assert.equal((await f.request('/api/me',{cookie})).body.progress.bots.martin,3);assert.equal((await f.request('/api/me',{cookie:second.cookie})).body.progress.bots,undefined);
+  await f.restart();assert.equal((await f.request('/api/me',{cookie})).body.progress.bots.marlo,3);assert.equal((await f.request('/api/me',{cookie:second.cookie})).body.progress.bots,undefined);
   assert.equal((await f.request(route,{cookie})).body.game.clock.activeSince,null);assert.equal((await f.request(route,{cookie:second.cookie})).status,404);
  }finally{release?.({move:'e7e5'});await f.close();}
 });
@@ -224,7 +224,7 @@ test('position practice copies a saved branch, preserves its source and resets o
   const study={version:1,anchorPly:2,selectedBranchId:'nested',branches:[{id:'first',parentId:null,anchorPly:2,moves:['e2e4','e7e5','d2d4'],question:'Try the centre'},{id:'nested',parentId:'first',anchorPly:3,moves:['e2e4','e7e5','d2d4','e5d4'],question:'Recapture?'}]};
   assert.equal((await f.request(route+'/study',{method:'POST',cookie,body:{study,studyRevision:0}})).status,200);
   const source=(await f.request(route,{cookie})).body.game;
-  const body={revision:0,studyRevision:1,branchId:'nested',ply:4,botId:'martin',engineId:'stockfish19',rating:250,color:'w',timeControl:{initialSeconds:60,incrementSeconds:2}};
+  const body={revision:0,studyRevision:1,branchId:'nested',ply:4,botId:'marlo',engineId:'stockfish19',rating:250,color:'w',timeControl:{initialSeconds:60,incrementSeconds:2}};
   const practice=(extra={},owner=cookie)=>f.request(route+'/practice',{method:'POST',cookie:owner,body:{...body,...extra}});
   assert.equal((await practice({},other.cookie)).status,404);assert.equal((await practice({revision:1})).status,409);assert.equal((await practice({studyRevision:0})).status,409);assert.equal((await practice({ply:5})).status,400);assert.equal((await practice({branchId:'absent'})).status,400);
   const created=await practice();assert.equal(created.status,201);const game=created.body.game,child=`/api/games/${game.id}`;

@@ -9,6 +9,7 @@ import {validatePosition} from '../shared/position.js';
 import {openingSource,openingById,searchOpenings,recognizeOpening} from './openings.mjs';
 import * as engine from './engine.mjs';
 import * as opponents from './opponent-engines.mjs';
+import {engineControls} from '../shared/strength-ladder.js';
 import {setupOptions,practiceSnapshot,beginClock,settleClock,finishMoveClock,crownsFor,adaptiveRating,addBotChat,undoTurn,attackedPieces} from './bot-game.mjs';
 const profiles = JSON.parse(readFileSync(new URL('./bot-profiles.json',import.meta.url),'utf8'));
 import {createTrainer} from './puzzle-training.mjs';
@@ -239,7 +240,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
    if(game.legacyStrength||!game.engineId){
     const analysis=await engineApi.analyze({moves:game.moves,initialFen:game.initialFen,variant:game.variant,movetime:[80,150,250,400,700][game.level-1],lines:1,skill:[0,4,8,14,20][game.level-1]});
     decision={move:analysis.bestmove,engine:analysis.engine,engineId:'stockfish19'};
-   }else decision=await opponentApi.chooseOpponentMove({engineId:game.engineId,moves:game.moves,initialFen:game.initialFen,variant:game.variant,rating:game.currentRating,...(game.botId&&game.rating<250?{profileRating:game.rating}:{}),skill:Math.max(0,Math.min(20,Math.round((game.currentRating-600)/110))),movetime:Math.max(80,Math.min(1200,Math.round(game.currentRating/3))),style:game.style});
+   }else{const {skill,movetime}=engineControls(game.currentRating);decision=await opponentApi.chooseOpponentMove({engineId:game.engineId,moves:game.moves,initialFen:game.initialFen,variant:game.variant,rating:game.currentRating,...(game.botId&&game.rating<250?{profileRating:game.rating}:{}),skill,movetime,style:game.style});}
    if(!decision.move)fail(503,'The engine returned no move. Retry the opponent turn.');
    const fresh=owned(req);expected(req,fresh);
    if(settleClock(fresh,nowMs()))return res.json({game:storeGame(req.user.id,fresh,fresh.revision)});
@@ -310,10 +311,10 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
  app.post('/api/import',(req,res)=>res.status(201).json({game:insertGame(req.user.id,readAnnotatedPgn(req.body.pgn))}));
  app.post('/api/import-study',(req,res)=>res.status(201).json({game:insertGame(req.user.id,readPortableStudy(req.body))}));
  app.get('/api/games/:id/pgn',(req,res)=>{
-  const game=owned(req);res.type('text/plain').set('Content-Disposition',`attachment; filename="chesslab-${game.id}.pgn"`).send(writeAnnotatedPgn(game,req.user.username));
+  const game=owned(req);res.type('text/plain').set('Content-Disposition',`attachment; filename="askthemove-${game.id}.pgn"`).send(writeAnnotatedPgn(game,req.user.username));
  });
  app.get('/api/games/:id/study-file',(req,res)=>{
-  const game=owned(req);res.set('Content-Disposition',`attachment; filename="chesslab-${game.id}.chesslab.json"`).json(portableStudy(game,req.user.username));
+  const game=owned(req);res.set('Content-Disposition',`attachment; filename="askthemove-${game.id}.chesslab.json"`).json(portableStudy(game,req.user.username));
  });
  app.post('/api/games/:id/study',(req,res)=>{
   const game=owned(req);

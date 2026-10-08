@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Spec · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/board-annotations/specs/board-annotations/spec.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/board-annotations/specs/board-annotations/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/board-annotations/specs/board-annotations/spec.md<br>SHA-256: 262be575013d2c6c80d6e8aaaaf3125ef183647647b5b0a6bc6fa2393d803441</p><h3 id="added-requirements">ADDED Requirements</h3>
+<h4 id="requirement-position-bound-board-drawings">Requirement: Position-bound board drawings</h4>
+<p>Saved-game Review/Analysis SHALL allow red, green, yellow and blue arrows and square highlights at an exact branch/ply. Marks SHALL survive save/reload, orientation changes and local study export/import. Editing comments or glyphs SHALL preserve marks. Selecting another node SHALL show only that node's marks. Clear marks SHALL affect only the current node and preserve its comment/glyphs and all game moves.</p>
+<h5 id="scenario-return-to-a-drawn-position">Scenario: Return to a drawn position</h5>
+<ul>
+<li><strong>WHEN</strong> the learner draws on a nested variation, leaves it and returns after reload</li>
+<li><strong>THEN</strong> the same squares and arrows return in either board orientation without changing moves</li>
+</ul>
+<h4 id="requirement-mouse-and-accessible-drawing-controls">Requirement: Mouse and accessible drawing controls</h4>
+<p>Right-drag SHALL draw an arrow and right-click SHALL highlight a square, with the reference color modifiers. Explicit Arrow, Highlight and Move controls plus a color selector SHALL support keyboard and touch. Repeating an identical mark SHALL toggle it off; changing its color SHALL replace that geometry. Drawing SHALL not move pieces. Cancelled/outside gestures and a gesture completed after its node changes SHALL not write a mark.</p>
+<h5 id="scenario-draw-using-a-phone">Scenario: Draw using a phone</h5>
+<ul>
+<li><strong>WHEN</strong> Arrow is selected and the learner taps two squares</li>
+<li><strong>THEN</strong> an arrow connects them while the chess position remains unchanged</li>
+</ul>
+<h4 id="requirement-validated-portable-drawings">Requirement: Validated portable drawings</h4>
+<p>The server SHALL validate coordinates, four supported colors, uniqueness and at most 64 marks per annotated node. Annotated PGN SHALL preserve standard cal/csl mark directives alongside comments/glyphs; malformed drawing directives SHALL fail before creating a game. Exact study files SHALL preserve all drawings. Existing ownership and revision protection SHALL apply.</p>
+<h5 id="scenario-preserve-marks-while-editing-text">Scenario: Preserve marks while editing text</h5>
+<ul>
+<li><strong>WHEN</strong> a marked note receives a new comment and is exported and re-imported</li>
+<li><strong>THEN</strong> its drawings and text both remain attached to the intended node</li>
+</ul>
+<h4 id="requirement-verified-local-delivery">Requirement: Verified local delivery</h4>
+<p>Original and new mouse/keyboard/mobile flows SHALL run against the production app with synthetic accounts and video proof. The private PR and installed build SHALL share verified source/build/proof hashes; the user's database SHALL be backed up and preserved. Full platform parity SHALL remain active after this increment.</p>
+<h5 id="scenario-reject-a-malformed-mark">Scenario: Reject a malformed mark</h5>
+<ul>
+<li><strong>WHEN</strong> imported data contains an invalid square, color or excessive mark list</li>
+<li><strong>THEN</strong> the request fails and the active game and saved studies remain unchanged</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

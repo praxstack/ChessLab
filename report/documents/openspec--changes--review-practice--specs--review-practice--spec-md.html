@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Spec · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/review-practice/specs/review-practice/spec.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/review-practice/specs/review-practice/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/review-practice/specs/review-practice/spec.md<br>SHA-256: 3309abd0d5e464d26036ccca6d2e78541b0fb0c4a5ee1cbd794295f75443b3b0</p><h3 id="added-requirements">ADDED Requirements</h3>
+<h4 id="requirement-guided-review-retries">Requirement: Guided review retries</h4>
+<p>A completed game review SHALL offer practice of its inaccuracies, mistakes and blunders for White, Black or both. Each question SHALL use the full history before its original move, pin the saved native-engine recommendation and preserve the original game/study. Incomplete reviews and unfinished bot games SHALL not start a practice run. Empty selections SHALL report that no mistakes were found without fabricating questions.</p>
+<h5 id="scenario-retry-a-reviewed-mistake">Scenario: Retry a reviewed mistake</h5>
+<ul>
+<li><strong>WHEN</strong> the learner starts practice for one side</li>
+<li><strong>THEN</strong> the board shows the position before that side's first eligible mistake with its answer hidden</li>
+</ul>
+<h4 id="requirement-evidence-bound-attempts-and-hints">Requirement: Evidence-bound attempts and hints</h4>
+<p>Legal board, drag, typed and promotion input SHALL be supported. A saved recommended move SHALL solve the question. Other legal attempts SHALL be checked by the native engine at the saved review settings capped at two seconds per position for interactive feedback. A fresh Best, Checkmate or numerically Good result under the existing 50-centipawn boundary SHALL count as a strong alternative; uncertain mate lines SHALL not be falsely called incorrect. Failed searches SHALL preserve progress and allow retry. A rejected attempt SHALL show its own resulting position and feedback, then allow returning to the question. The two hint levels SHALL reveal the recommended piece and then the arrow. Reveal and skip SHALL not earn unassisted credit.</p>
+<h5 id="scenario-preserve-a-strong-alternative">Scenario: Preserve a strong alternative</h5>
+<ul>
+<li><strong>WHEN</strong> a legal alternative receives a fresh Good result with finite loss below 50 centipawns</li>
+<li><strong>THEN</strong> practice accepts it with its engine evidence and identifies it as an alternative, not the saved recommendation</li>
+</ul>
+<h4 id="requirement-saved-private-practice-progress">Requirement: Saved private practice progress</h4>
+<p>Practice SHALL persist question order, side, index, attempts, hints and outcomes separately from the source game. Reload SHALL resume the exact question and feedback state. Ownership and optimistic revisions SHALL protect every action, including delayed engine results. A source-history change SHALL reject stale practice. Completion SHALL distinguish first-try unassisted solves, assisted or repeated solves, revealed answers and skipped questions. Starting again SHALL be explicit. Answers SHALL stay out of active question responses until the relevant hint or outcome permits them.</p>
+<h5 id="scenario-resume-after-a-hint">Scenario: Resume after a hint</h5>
+<ul>
+<li><strong>WHEN</strong> the learner reloads after receiving a piece hint</li>
+<li><strong>THEN</strong> the same question and hint return without an unassisted completion award</li>
+</ul>
+<h4 id="requirement-verified-local-installation">Requirement: Verified local installation</h4>
+<p>Existing and new desktop/mobile flows SHALL pass against the production app with synthetic accounts, native-engine evidence and video proof. The private PR and installed build SHALL share verified hashes. The database SHALL be backed up and preserved, including unrelated working changes. This increment SHALL not establish completion of the full parity objective.</p>
+<h5 id="scenario-concurrent-attempt">Scenario: Concurrent attempt</h5>
+<ul>
+<li><strong>WHEN</strong> another request updates the practice while an engine result is pending</li>
+<li><strong>THEN</strong> the delayed result is rejected and cannot overwrite newer progress</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

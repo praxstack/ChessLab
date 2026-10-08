@@ -24,11 +24,11 @@ The first experiment should cover completed-game import, one confusing move, a v
 
 | Area | Observed state | What that means |
 | --- | --- | --- |
-| Research | Two supplied research texts, their source PDF, the original conversation and lesson images are preserved | A substantial reference library, not a validated business case |
+| Research | Two supplied research texts, their source PDF, the original conversation and lesson images are preserved in the repository; the dossier describes the lesson images rather than displaying them | A substantial reference library, not a validated business case |
 | Repository | Private GitHub repository with the application and reference archive committed and pushed | The early signing failure is historical; current delivery is recorded in application verification |
 | Skills | 22 Matt Pocock, two Unslop entries, 12 OpenSpec skills, and 54 Gstack entries per host | 90 entries per primary host tree, not 180 independent skills |
-| Specifications | Four OpenSpec changes, including the implemented bot platform and an open parity change | Structural validation passes; remaining parity tasks are explicit |
-| Chess application | Local multi-engine bot platform, review and saved studies; see the current application chapter | Full vendor parity, learning results, revenue and retention remain unproven |
+| Specifications | OpenSpec changes for the implemented platform; the 2026-10-08 original-asset change supersedes the earlier parity goal | Structural validation passes; unperformed tasks stay unchecked |
+| Chess application | Local multi-engine bot platform, review and saved studies; see the current application chapter | Learning results, revenue and retention remain unproven |
 | This dossier | A local HTML reading site generated from the documents | A report about the proposed product, not the product itself |
 
 ## Three ways to read this dossier

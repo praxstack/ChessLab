@@ -1,3 +1,5 @@
+> Superseded in part on 2026-10-08: the original-asset policy in `original-asset-pack` replaced the Chess.com reference-parity goal and Chess.com-derived assets for the hosted beta. The text below is kept as the record of the earlier direction.
+
 ## Why
 
 The user changed direction on 7 September 2026: establish a usable Chess.com-like web platform before layering on the branching conversational tutor. Their latest clarification makes coach/bot play the first build and explicitly defers actual human players. The full platform remains the roadmap, not a claim that this first build matches Chess.com's complete service.

@@ -38,7 +38,7 @@ test('real Stockfish gives legal PVs, identity, limits and deterministic facts',
 });
 
 test('advanced analysis uses actual Lite with five legal lines and preserves strict engine selection', async()=>{
-  for(const engineId of ['torch4','/bin/sh', ['stockfish18'], '__proto__']) await assert.rejects(analyze({moves:[],engineId}),{status:400});
+  for(const engineId of ['not-installed','/bin/sh', ['stockfish18'], '__proto__']) await assert.rejects(analyze({moves:[],engineId}),{status:400});
   const result=await analyze({moves:['e2e4'],engineId:'stockfish18-lite',movetime:200,lines:5,threads:2});
   assert.match(result.engine,/Stockfish 18 Lite/);
   assert.deepEqual(result.limits,{engineId:'stockfish18-lite',movetime:200,lines:5,threads:2});

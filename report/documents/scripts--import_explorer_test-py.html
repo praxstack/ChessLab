@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Import Explorer Test · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Import Explorer Test</h1><p class="lede">scripts/import_explorer_test.py</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Import Explorer Test"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/import_explorer_test.py" download>Download original file ↗</a></div><p class="source-meta">scripts/import_explorer_test.py<br>SHA-256: 55bfe0405161e29ecf8f7f1b4e83e485d1ee3b6bcb967247f9bef71130c8422f</p><pre><code>import io
+import sqlite3
+import tempfile
+import unittest
+import zipfile
+from pathlib import Path
+import chess.pgn
+from import_explorer import MainLine, SCHEMA, StrictPgn, add_game, import_archive
+
+class ImportTest(unittest.TestCase):
+    def test_counts_legality_and_atomic_publication(self):
+        db = sqlite3.connect(&#x27;:memory:&#x27;); db.executescript(SCHEMA)
+        valid = &#x27;[Result &quot;1-0&quot;]\n\n1. Nf3 Nf6 2. Ng1 Ng8 3. e4 e5 1-0\n&#x27;
+        game = chess.pgn.read_game(io.StringIO(valid), Visitor=MainLine)
+        self.assertEqual(add_game(db,game,1),&#x27;accepted&#x27;)
+        start = &#x27; &#x27;.join(chess.Board().fen().split()[:4])
+        self.assertEqual(db.execute(&#x27;SELECT move,white FROM edges WHERE position=?&#x27;,(start,)).fetchall(), [(&#x27;g1f3&#x27;,1)])
+        invalid = chess.pgn.read_game(io.StringIO(&#x27;[Result &quot;0-1&quot;]\n\n1. e4 e5 2. Bh6 0-1&#x27;),Visitor=MainLine)
+        self.assertEqual(add_game(db,invalid,2),&#x27;invalid_or_nonstandard&#x27;)
+        self.assertEqual(db.execute(&#x27;SELECT count(*) FROM games&#x27;).fetchone()[0],1)
+        with tempfile.TemporaryDirectory() as tmp:
+            archive, target = Path(tmp)/&#x27;a.zip&#x27;, Path(tmp)/&#x27;games.sqlite&#x27;
+            with zipfile.ZipFile(archive,&#x27;w&#x27;) as z: z.writestr(&#x27;a.pgn&#x27;,valid)
+            receipt = import_archive(archive,target,label=&#x27;Synthetic&#x27;,url=&#x27;https://example.invalid&#x27;)
+            self.assertEqual(receipt[&#x27;count&#x27;],1); self.assertTrue(target.exists())
+            with self.assertRaises(ValueError): import_archive(archive,target,label=&#x27;Synthetic&#x27;,url=&#x27;https://example.invalid&#x27;)
+            with zipfile.ZipFile(archive,&#x27;w&#x27;) as z: z.writestr(&#x27;a.pgn&#x27;,&#x27;[Result &quot;*&quot;]\n\n1. e4 *&#x27;)
+            with self.assertRaises(ValueError): import_archive(archive,Path(tmp)/&#x27;bad.sqlite&#x27;,label=&#x27;Synthetic&#x27;,url=&#x27;https://example.invalid&#x27;)
+            self.assertFalse((Path(tmp)/&#x27;bad.sqlite&#x27;).exists())
+        with self.assertRaises(ValueError): StrictPgn(io.StringIO(&#x27;1. e4 e5 2. Qh9 1-0&#x27;)).readline()
+        with self.assertRaises(ValueError): StrictPgn(io.StringIO(&#x27;1. e4 -- *&#x27;)).readline()
+        checked=StrictPgn(io.StringIO(&#x27;1. e4 {a multiline\ncomment} e5 (1... c5) 2. Nf3!? *&#x27;))
+        while checked.readline(): pass
+        db.close()
+
+if __name__ == &#x27;__main__&#x27;: unittest.main()
+</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

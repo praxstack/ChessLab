@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Spec · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/opening-library/specs/openings/spec.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/opening-library/specs/openings/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/opening-library/specs/openings/spec.md<br>SHA-256: 42ae73f7e9e4ef16940ed5a6a60cb92ec1f5a33dc206352dc8f0a5431d0892bd</p><h3 id="added-requirements">ADDED Requirements</h3>
+<h4 id="requirement-complete-local-named-line-catalogue">Requirement: Complete local named-line catalogue</h4>
+<p>The app SHALL browse and search every line in the pinned local CC0 source dataset, filter by ECO code, and page bounded results. Each line SHALL replay legally to its displayed position. Names, license and source revision SHALL remain attributable; runtime browsing SHALL not require an external request.</p>
+<h5 id="scenario-find-and-inspect-an-opening">Scenario: Find and inspect an opening</h5>
+<ul>
+<li><strong>WHEN</strong> a learner searches a name or ECO code and selects a result</li>
+<li><strong>THEN</strong> the opening name, code, move sequence and matching board are displayed with position navigation</li>
+</ul>
+<h4 id="requirement-history-preserving-opening-practice">Requirement: History-preserving opening practice</h4>
+<p>The learner SHALL save an opening as an owned independent study and practice from any selected nonterminal point against a chosen local bot. The saved study SHALL contain the full catalogue move history; practice SHALL copy only the selected historical prefix, keeping the source intact.</p>
+<h5 id="scenario-practice-part-of-a-named-line">Scenario: Practice part of a named line</h5>
+<ul>
+<li><strong>WHEN</strong> the learner selects an earlier move and starts practice</li>
+<li><strong>THEN</strong> the new bot game starts with that exact prefix and the source study retains the complete opening line</li>
+</ul>
+<h4 id="requirement-honest-opening-recognition">Requirement: Honest opening recognition</h4>
+<p>Review SHALL identify the latest named position reached by the selected history, preserving side, castling and legal en-passant state. Recognition by exact move sequence SHALL be distinguished from position matching through transposition or a custom FEN. Recognition in an unfinished bot game SHALL record review assistance. Recognition SHALL never alter saved histories or imply game statistics, guaranteed best moves or proprietary classification equivalence.</p>
+<h5 id="scenario-recognize-a-transposition">Scenario: Recognize a transposition</h5>
+<ul>
+<li><strong>WHEN</strong> a reviewed line reaches a named position by another legal move order</li>
+<li><strong>THEN</strong> the matching opening is shown as a position match and the actual move sequence stays unchanged</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

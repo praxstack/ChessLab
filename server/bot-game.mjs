@@ -1,24 +1,37 @@
 import { randomInt } from 'node:crypto';
 import {createChess,chess960Fen,gameVariant} from '../shared/chess.js';
 import { replay } from './engine.mjs';
+import {shiftOnLadder} from '../shared/strength-ladder.js';
 
 const fail = message => { throw Object.assign(new Error(message), {status:400}); };
 export const assistanceDefaults = {chat:true,evaluation:false,threats:false,suggestions:false,feedback:false,engine:false};
+// Saved games and rematches can name a bot from an earlier roster. Such an id resolves to the current
+// bot nearest the requested strength (first-moves bots below 250), so old games keep working.
+export function resolveProfile(botId, profiles, rating) {
+ if(typeof botId!=='string'||!/^[a-z0-9][a-z0-9-]{0,63}$/.test(botId))fail('Choose a bot from the current catalog.');
+ const exact=profiles.find(p=>p.id===botId);
+ if(exact)return exact;
+ const target=Number.isInteger(rating)?rating:1050;
+ const candidates=profiles.filter(p=>!p.adaptive&&(target<250?p.rating<250:p.rating>=250));
+ const pool=candidates.length?candidates:profiles;
+ if(!pool.length)fail('Choose a bot from the current catalog.');
+ return pool.reduce((best,p)=>Math.abs(p.rating-target)<Math.abs(best.rating-target)?p:best);
+}
 export function setupOptions(body, profiles) {
  let variant;try{variant=gameVariant(body.variant);}catch(error){fail(error.message);}
  if(body.positionNumber!==undefined&&body.positionNumber!==null&&(!Number.isInteger(body.positionNumber)||body.positionNumber<0||body.positionNumber>959||variant!=='chess960'))fail('Choose a Chess960 position from 0 to 959.');
  const positionNumber=variant==='chess960'?(body.positionNumber??randomInt(960)):undefined;
  const {color='w',level=2,title,botId=null,engineId='stockfish19'}=body;
  if(!['w','b','random'].includes(color)||!Number.isInteger(level)||level<1||level>5||typeof engineId!=='string'||(title!==undefined&&(typeof title!=='string'||title.length>100)))fail('Choose a color, an available engine and a valid strength.');
- const profile=botId===null?null:profiles.find(p=>p.id===botId);
- if(botId!==null&&!profile)fail('Choose a bot from the current catalog.');
+ const profile=botId===null?null:resolveProfile(botId,profiles,body.rating);
  const rating=body.rating??profile?.rating??[400,800,1200,1800,2600][level-1];
- if(!Number.isInteger(rating)||rating<(profile?.category==='New to Chess'?100:250)||rating>3200)fail('Choose a target rating between 250 and 3200.');
+ // The picker offers ladder levels only (strengthChoices). Any target in range stays valid here so rematches of saved games from earlier rosters, such as 925, still start.
+ if(!Number.isInteger(rating)||rating<(profile&&profile.rating<250?100:250)||rating>3200)fail('Choose a target rating between 250 and 3200.');
  const timeControl=body.timeControl??{initialSeconds:0,incrementSeconds:0};
  if(!timeControl||Array.isArray(timeControl)||!Number.isInteger(timeControl.initialSeconds)||!(timeControl.initialSeconds===0||(timeControl.initialSeconds>=60&&timeControl.initialSeconds<=3600))||!Number.isInteger(timeControl.incrementSeconds)||timeControl.incrementSeconds<0||timeControl.incrementSeconds>60||(timeControl.initialSeconds===0&&timeControl.incrementSeconds!==0))fail('Choose no clock, or 1–60 minutes with an increment of 0–60 seconds.');
  const assistance={...assistanceDefaults};
  if(body.assistance!==undefined){if(!body.assistance||Array.isArray(body.assistance)||typeof body.assistance!=='object')fail('Invalid assistance settings.');for(const [key,value] of Object.entries(body.assistance)){if(!Object.hasOwn(assistance,key)||typeof value!=='boolean')fail('Invalid assistance setting.');assistance[key]=value;}}
- return {...(variant==='chess960'?{variant,positionNumber,initialFen:chess960Fen(positionNumber)}:{}),color:color==='random'?(randomInt(2)?'w':'b'):color,level,title:title||profile?.name||`Practice · level ${level}`,botId,botName:profile?.name||'Engine opponent',engineId,rating,currentRating:rating,style:profile?.style||'balanced',adaptive:profile?.adaptive||false,timeControl:{initialSeconds:timeControl.initialSeconds,incrementSeconds:timeControl.incrementSeconds},assistance,hintsUsed:0,undosUsed:0,crownsAwarded:0,resultReason:null,chat:assistance.chat?[profile?(profile.description||`I'm ${profile.name}. Let's play.`):'Ready when you are. Choose your move.']:[],legacyStrength:body.rating===undefined&&!profile&&!body.engineId};
+ return {...(variant==='chess960'?{variant,positionNumber,initialFen:chess960Fen(positionNumber)}:{}),color:color==='random'?(randomInt(2)?'w':'b'):color,level,title:title||profile?.name||`Practice · level ${level}`,botId:profile?.id??null,botName:profile?.name||'Engine opponent',engineId,rating,currentRating:rating,style:profile?.style||'balanced',adaptive:profile?.adaptive||false,timeControl:{initialSeconds:timeControl.initialSeconds,incrementSeconds:timeControl.incrementSeconds},assistance,hintsUsed:0,undosUsed:0,crownsAwarded:0,resultReason:null,chat:assistance.chat?[profile?(profile.description||`I'm ${profile.name}. Let's play.`):'Ready when you are. Choose your move.']:[],legacyStrength:body.rating===undefined&&!profile&&!body.engineId};
 }
 export function practiceSnapshot(source,body) {
  if(body.restart!==undefined&&typeof body.restart!=='boolean')fail('Invalid practice restart.');
@@ -70,7 +83,8 @@ export function adaptiveRating(game) {
  if(!game.adaptive)return game.rating;
  const values={p:1,n:3,b:3,r:5,q:9,k:0};let advantage=0;
  for(const p of replay(game.moves,game.initialFen,game.variant).board().flat())if(p)advantage+=(p.color===game.color?1:-1)*values[p.type];
- return Math.max(250,Math.min(3200,game.rating+Math.max(-350,Math.min(350,advantage*80))));
+ // About 80 points per pawn, capped at 350, landing on a ladder level (OA-005).
+ return shiftOnLadder(game.rating,Math.max(-350,Math.min(350,advantage*80)));
 }
 export function addBotChat(game,move) {
  if(!game.assistance?.chat)return;

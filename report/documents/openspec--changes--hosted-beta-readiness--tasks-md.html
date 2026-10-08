@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Tasks · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Tasks</h1><p class="lede">openspec/changes/hosted-beta-readiness/tasks.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Tasks"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/hosted-beta-readiness/tasks.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/hosted-beta-readiness/tasks.md<br>SHA-256: 384c725967f2f738a4fb68879490af2eb5945f0c6755bbe4fa0d4ea43ebce8ec</p><h3 id="1-baseline">1. Baseline</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked=""></input>1.1 Record <code>npm ci</code>, <code>npm test</code>, <code>npm run build</code> and the browser smoke test before changes. Separate environment gaps (missing Stockfish 19, Lite, Maia, Leela, tablebases, puzzle catalogue) from product failures.</label></li>
+<li><label><input type="checkbox" checked=""></input>1.2 Fix the sign-up username <code>pattern</code> attribute, which the browser rejected as an invalid regular expression under the <code>v</code> flag.</label></li>
+</ul>
+<h3 id="2-grounded-claude-explanations">2. Grounded Claude explanations</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked=""></input>2.1 AI-001 Build structured evidence from replayed history and bounded engine analysis. Reuse the account's own panel evidence or saved review step. Refuse mismatched positions.</label></li>
+<li><label><input type="checkbox" checked=""></input>2.2 AI-002 Verify cited moves and mate claims against the evidence; fall back to the deterministic summary on any failure.</label></li>
+<li><label><input type="checkbox" checked=""></input>2.3 AI-003 Parse a why-not move, reject illegal moves, and compute its engine evidence before any model call.</label></li>
+<li><label><input type="checkbox" checked=""></input>2.4 AI-004/AI-005 Use the pinned Anthropic SDK with timeout, concurrency cap, per-account hourly quota and reason-only logging. Test success, invented move, missing key, timeout, quota, API errors, refusal and truncation with a fake client, and evidence with real Stockfish.</label></li>
+<li><label><input type="checkbox" checked=""></input>2.5 AI-006 Add "Explain why" and the why-not input to the review panel with AI-generated labelling. Hide them when no key is configured. Capture a desktop screenshot with a stubbed client.</label></li>
+<li><label><input type="checkbox"></input>2.6 AI-001 through AI-006 Make one live request with a real API key. Confirm the answer passes verification and the label names the model. Confirm the static instructions are cached (cache read tokens on a repeat request).</label></li>
+</ul>
+<h3 id="3-hosting-readiness">3. Hosting readiness</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked=""></input>3.1 HB-001/HB-002 Add <code>APP_ORIGIN</code>, <code>TRUST_PROXY</code>, Secure cookies, security headers and CSP with tests; keep local defaults unchanged.</label></li>
+<li><label><input type="checkbox" checked=""></input>3.2 HB-003 Add a per-account sign-in throttle and test distributed guessing.</label></li>
+<li><label><input type="checkbox" checked=""></input>3.3 HB-004 Add <code>BETA_INVITE_CODES</code> sign-up gating and the invite field; test gated, wrong-code and existing-account cases.</label></li>
+<li><label><input type="checkbox" checked=""></input>3.4 HB-005 Add <code>/healthz</code>, the production <code>Dockerfile</code> and <code>.dockerignore</code>. Lint with hadolint, build and run as non-root, and check health, analysis and restart persistence on a volume (sandbox build used proxy-only additions).</label></li>
+<li><label><input type="checkbox" checked=""></input>3.5 HB-006 Stop serving archives when hosted and hide their links.</label></li>
+<li><label><input type="checkbox" checked=""></input>3.6 HB-007 Write <code>docs/deploy-beta.md</code> and update the settings documentation.</label></li>
+<li><label><input type="checkbox"></input>3.7 HB-001 Verify the proxy hop count and per-visitor limits on the chosen host.</label></li>
+<li><label><input type="checkbox"></input>3.8 HB-005/HB-007 Deploy to the chosen host, point <code>app.&lt;domain&gt;</code> at it, and rehearse backup and restore there.</label></li>
+</ul>
+<h3 id="4-delivery">4. Delivery</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked=""></input>4.1 Run the full test suite, production build, browser smoke test and strict OpenSpec validation; record environment-caused failures separately.</label></li>
+<li><label><input type="checkbox" checked=""></input>4.2 Audit Chess.com-derived content for the founder without changing it.</label></li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

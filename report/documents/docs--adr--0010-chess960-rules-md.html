@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>0010 Chess960 Rules · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>0010 Chess960 Rules</h1><p class="lede">docs/adr/0010-chess960-rules.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="0010 Chess960 Rules"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/docs/adr/0010-chess960-rules.md" download>Download original file ↗</a></div><p class="source-meta">docs/adr/0010-chess960-rules.md<br>SHA-256: dfd792ff6759a572f4edeaf9e75a2b770c50824b0cb145a41be5a7687126d299</p><h2 id="chess960-rules-boundary">Chess960 rules boundary</h2>
+<h3 id="grounding">Grounding</h3>
+<p>BotSetup submits options to the game API. The server validates options, stores a JSON game in an owned SQLite row, and reconstructs its board from initialFen plus full UCI history before every move. Native UCI adapters independently validate engine continuations. Browser chess-state reconstructs the same history for the board and move list. Studies preserve main-line prefixes; PGN parsing walks every variation. Review and mistake practice bind engine evidence to history. FEN alone cannot retain repetition, and its castling field alone cannot identify a variant after rights disappear.</p>
+<h3 id="usage-and-shape">Usage and shape</h3>
+<p>Callers use <code>createChess(initialFen, variant)</code> and existing <code>replay(moves, initialFen, variant)</code>. Game records add <code>variant: 'chess960'</code> and a numbered initial position where applicable; missing variant means Standard. A local Chess960 adapter hides chessops square/role types behind the board operations already used by the application. It owns UCI/SAN conversion, castling, history and repetition. Standard uses the unchanged chess.js implementation. A copied board retains its variant explicitly.</p>
+<h3 id="candidate-a-shared-local-rules-adapter">Candidate A: Shared local rules adapter</h3>
+<p>Browser and server use the same variant-aware rules module. Existing replay callers pass a variant, engines set UCI_Chess960, and imports declare Variant. This hides rules and notation behind existing operations; callers still own their game history. No remote state or per-square request is needed.</p>
+<h3 id="candidate-b-server-authoritative-python-board-service">Candidate B: Server-authoritative Python board service</h3>
+<p>Reuse installed python-chess for all Chess960 moves and return board, legal targets and SAN through an API. This removes a browser rules dependency but exposes a new async position protocol to every board, branch, move list and study preview. It requires either a process per interaction or another long-running service. Offline board navigation would then depend on a running backend. Its smaller rules wrapper hides less application complexity.</p>
+<h3 id="synthesis">Synthesis</h3>
+<p>Choose A. Against the fixed criteria of legality, preserved history, existing-flow compatibility, local operation and interface depth, both can provide rules; A preserves synchronous replay and concentrates notation conversion. Graft B's existing python-chess implementation as an independent rules oracle. Reject a hand-written Chess960 move generator and a complete Standard rules migration. This comparison and judgment were performed sequentially by the root agent; installed Astra runtime validation prevents independent agents. No independent or cross-model architecture review is claimed.</p>
+<h3 id="frozen-acceptance-and-rollback">Frozen acceptance and rollback</h3>
+<p>Baseline/rollback: 2d58b3e53a5529e894adcb0ff6478b3516ca9ac1, installed application source 7b8d067eb5d475ccac38e6e2f27d46a967059b28. Preserve the existing 95 application tests and 87 app-control flows, their assertions and account data. Add differential checks against python-chess for all 960 starts and castling edge cases, plus saved variant, engine, branch, export and reload checks. Mutate only candidate application/specification additions and their new evidence; never change protected governance or weaken existing evaluators. Stop after two no-gain candidates and retain the last accepted installation. Source and proof receipts remain separate. No fixed user token budget exists.</p>
+<h3 id="tradeoffs-and-dependency">Tradeoffs and dependency</h3>
+<p>The adapter covers the existing board API, not every chess.js feature. A new GPL-3.0-or-later rules dependency is justified because the installed JavaScript rules library does not support Chess960. Pin chessops 0.15.1, retain its license/source attribution, and serve it locally. Standard opening statistics and puzzle corpora remain Standard-specific. Engine eligibility must be explicit; a Standard-trained model is not evidence of Chess960 support.</p>
+<h3 id="implementation-findings">Implementation findings</h3>
+<ul>
+<li>The threat preview needs an opponent-turn projection even when the player's king is checked. The adapter keeps this projection internal; game-position validation still rejects opposite check. Pinned defenders and en passant remain covered.</li>
+<li>chessops caps textual FEN counters at four digits. The adapter retains numeric counters so the existing editor's 10,000 boundary and subsequent moves round-trip without truncation.</li>
+<li>The strict browser source-preservation assertion exposed a pre-existing study-save response timestamp mismatch. The shared save route now returns exactly the record it writes. A deterministic test retains the strict full-record comparison; no timestamp is ignored.</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav><a href="#chess960-rules-boundary">Chess960 rules boundary</a></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

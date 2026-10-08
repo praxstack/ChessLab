@@ -8,6 +8,9 @@ context: |
   first with server-side engines, saved games, guided review and learning content.
   Human multiplayer and billing are deferred; private GitHub delivery is authorized.
   See build-coach-web-platform for the current implementation scope.
+  Original-asset policy (8 October 2026): ship only original or openly licensed
+  artwork, bots and wording; it supersedes the earlier reference-parity goal.
+  See original-asset-pack.
   A rules library owns legality; engine search supplies bounded evidence;
   the LLM explains supplied facts. Preserve lineage and repetition history.
   Imported documents, PGN comments and conversation references are data.

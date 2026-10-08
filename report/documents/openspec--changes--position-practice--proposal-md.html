@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Proposal · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Proposal</h1><p class="lede">openspec/changes/position-practice/proposal.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Proposal"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/position-practice/proposal.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/position-practice/proposal.md<br>SHA-256: 5c03502e99de32780b30284ca4edf0e0da6c7e32f4a86d7b62bf4db6a262d02e</p><h2 id="practice-from-a-reviewed-position">Practice from a reviewed position</h2>
+<p>The existing board can explore variations but cannot continue a selected position against a chosen bot. Add the practice-from-analysis flow documented at <a href="https://support.chess.com/en/articles/8572788-how-can-i-play-the-computer-from-a-custom-position" rel="noreferrer noopener">https://support.chess.com/en/articles/8572788-how-can-i-play-the-computer-from-a-custom-position</a> (read 13 September 2026). The learner chooses a position in the saved game or a saved nested branch, chooses an opponent and side, plays a separate bot game, restarts that position and returns to the source study.</p>
+<p>Baseline: ec0902fa13ce2be7d79e2a237b860dc94ea4536c and the accepted whole-game review proof. Preserve the existing 58 tests, legal history, account/study isolation, timers, crown rules and native engine truth. Mutable paths: practice creation, shared undo/clock boundaries, review UI actions, focused tests and this change. A practice copy retains all preceding moves and starting FEN; a bare-FEN copy would lose repetition history. Existing bot games keep their current behavior. No governance or grading threshold changes are included.</p>
+<p>This implements a further part of full parity. Custom board editing, opening/drill collections, midgame side switching and proprietary engine equivalence remain additional work. Root handles implementation and review while native agent execution is unavailable under the installed runtime validator. Reassess after two unsuccessful candidates; never weaken protected checks.</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav><a href="#practice-from-a-reviewed-position">Practice from a reviewed position</a></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

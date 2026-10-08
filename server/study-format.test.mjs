@@ -14,7 +14,7 @@ test('annotated PGN preserves legal nested alternatives, comments, glyphs and bl
 test('portable studies preserve exact tree identity and arbitrary note text without transplanting account or running state',()=>{
  const g=readAnnotatedPgn('1. e4 (1. d4 d5 (1... Nf6)) e5 *');g.title='My study';g.study.selectedBranchId=g.study.branches[1].id;g.study.anchorPly=0;g.study.branches[0].question='What about {this}?\nAnd "that"? ♟';g.user_id='private';g.clock={running:true};
  const portable=portableStudy(g);assert.equal(portable.format,'chesslab-study');assert.ok(!JSON.stringify(portable).includes('private'));assert.ok(!('clock' in portable.game));
- const bot=portableStudy({...g,source:'bot',color:'b',botName:'Martin'},'Local player');assert.equal(bot.game.headers.White,'Martin');assert.equal(bot.game.headers.Black,'Local player');
+ const bot=portableStudy({...g,source:'bot',color:'b',botName:'Marlo'},'Local player');assert.equal(bot.game.headers.White,'Marlo');assert.equal(bot.game.headers.Black,'Local player');
  const imported=readPortableStudy(JSON.parse(JSON.stringify(portable)));assert.equal(imported.title,g.title);assert.deepEqual(imported.study,g.study);assert.deepEqual(imported.moves,g.moves);assert.equal(imported.source,'import');
  for(const change of [p=>p.version=9,p=>p.game.moves=['e2e5'],p=>p.game.study.branches[0].parentId='missing',p=>p.game.study.annotations=[{branchId:'',ply:0,comment:'bad',nags:[]}],p=>p.game.study.annotations=[{branchId:null,ply:99,comment:'bad',nags:[]}],p=>p.game.study.annotations=[{branchId:null,ply:1,comment:'bad',nags:[-1]}]]){const bad=structuredClone(portable);change(bad);assert.throws(()=>readPortableStudy(bad));}
  const bad=structuredClone(g.study);bad.annotations=[{branchId:g.study.branches[1].id,ply:0,comment:'Wrong branch prefix',nags:[]}];assert.throws(()=>validateStudy(bad,g));
@@ -24,4 +24,13 @@ test('PGN keeps the original boundary while carrying terminal continuations and 
  const game=readAnnotatedPgn('[SetUp "1"]\n[FEN "4k3/8/8/8/8/8/8/4K2R b - - 0 9"]\n\n*');
  game.study.branches=[{id:'end',parentId:null,anchorPly:0,moves:['e8d7'],question:'Try this defense'}];game.study.annotations=[{branchId:null,ply:0,comment:'Original setup',nags:[]},{branchId:'end',ply:1,comment:'King moves',nags:[]}];
  const copy=readAnnotatedPgn(writeAnnotatedPgn(game,'local'));assert.deepEqual(copy.moves,[]);assert.deepEqual(copy.study.branches[0].moves,['e8d7']);assert.equal(copy.study.branches[0].anchorPly,0);assert.ok(copy.study.annotations.some(a=>a.comment==='King moves'));
+});
+
+test('exports carry the AskTheMove name while study files from earlier builds still import',()=>{
+ const pgn=writeAnnotatedPgn({...readAnnotatedPgn('1. e4 e5 *'),source:'bot',color:'w',headers:{}},'Learner');
+ assert.match(pgn,/\[Event "AskTheMove study"\]/);assert.match(pgn,/\[White "Learner"\]/);assert.match(pgn,/\[Black "AskTheMove bot"\]/);assert.ok(!/ChessLab (study|bot)/.test(pgn));
+ assert.match(pgn,/\[ChessLabOriginalPly "2"\]/,'The original-game boundary header keeps its name so earlier exports and other copies still read it');
+ const earlier={format:'chesslab-study',version:1,game:{title:'Saved before the rename',initialFen:null,moves:['e2e4','e7e5'],result:null,headers:{Event:'ChessLab study',White:'Learner',Black:'ChessLab bot'},study:{version:1,branches:[],selectedBranchId:null,anchorPly:0}}};
+ const restored=readPortableStudy(structuredClone(earlier));assert.deepEqual(restored.moves,['e2e4','e7e5']);assert.equal(restored.headers.Black,'ChessLab bot');
+ assert.throws(()=>readPortableStudy({...earlier,format:'askthemove-study'}),error=>error.status===400&&error.message.includes('.chesslab.json')&&!error.message.includes('ChessLab'));
 });

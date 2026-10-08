@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Spec · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/add-chess960/specs/chess960/spec.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/add-chess960/specs/chess960/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/add-chess960/specs/chess960/spec.md<br>SHA-256: 1ee3671e51a75f60246fa2fab3adedb6229694a85a5642afd1caaa4fa12d4075</p><h3 id="added-requirements">ADDED Requirements</h3>
+<h4 id="requirement-variant-aware-bot-games">Requirement: Variant-aware bot games</h4>
+<p>The application SHALL support Standard and Chess960 bot games, using legal rules for the selected variant and preserving the chosen initial position and variant in every saved game.</p>
+<h5 id="scenario-start-a-numbered-chess960-game">Scenario: Start a numbered Chess960 game</h5>
+<ul>
+<li><strong>WHEN</strong> the player chooses a valid position number from 0 through 959 and starts Chess960</li>
+<li><strong>THEN</strong> the board uses that Scharnagl position, the engine uses Chess960 rules, and the game can be resumed after reload</li>
+</ul>
+<h5 id="scenario-unsupported-input">Scenario: Unsupported input</h5>
+<ul>
+<li><strong>WHEN</strong> a request supplies an unknown variant, invalid number, malformed position or incompatible engine</li>
+<li><strong>THEN</strong> the server rejects it without creating or changing a game</li>
+</ul>
+<h4 id="requirement-chess960-castling-and-history">Requirement: Chess960 castling and history</h4>
+<p>The application SHALL handle Chess960 castling, repetition, en passant, promotion and terminal results consistently in both browser and server. Stored Chess960 castling moves SHALL use king-to-rook UCI notation.</p>
+<h5 id="scenario-castling-without-moving-both-pieces">Scenario: Castling without moving both pieces</h5>
+<ul>
+<li><strong>WHEN</strong> castling is legal with a king or rook already on its final square, or with the pieces exchanging squares</li>
+<li><strong>THEN</strong> the board places the king on c/g and rook on d/f, consumes both rights for that side and preserves legal history</li>
+</ul>
+<h5 id="scenario-preserve-study-behavior">Scenario: Preserve study behavior</h5>
+<ul>
+<li><strong>WHEN</strong> a Chess960 game is analyzed, branched, practiced, exported or imported</li>
+<li><strong>THEN</strong> its variant and legal move history remain attached to the position and the original game is preserved</li>
+</ul>
+<h4 id="requirement-protected-local-delivery">Requirement: Protected local delivery</h4>
+<p>The application SHALL retain Standard behavior and existing account data while providing app-control screenshots and video for the new user flows.</p>
+<h5 id="scenario-install-a-verified-candidate">Scenario: Install a verified candidate</h5>
+<ul>
+<li><strong>WHEN</strong> the candidate passes the protected application checks and new variant checks</li>
+<li><strong>THEN</strong> it is installed locally with a database snapshot, source/build receipts and a private PR containing video proof</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

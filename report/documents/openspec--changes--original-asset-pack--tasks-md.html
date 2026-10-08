@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Tasks · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Tasks</h1><p class="lede">openspec/changes/original-asset-pack/tasks.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Tasks"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/original-asset-pack/tasks.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/original-asset-pack/tasks.md<br>SHA-256: 30b9d90cd012a5a274b6451bd57310a5a997789ca1b3a57b65b67c9f8cc675f3</p><h3 id="1-baseline">1. Baseline</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked=""></input>1.1 Record <code>npm test</code> (125 tests: 110 pass, 6 environment failures, 9 skipped), <code>npm run build</code>, strict OpenSpec validation and before-screenshots of the bot picker, a game board and the review panel.</label></li>
+</ul>
+<h3 id="2-artwork">2. Artwork</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked=""></input>2.1 OA-001 Replace the piece images with the unmodified cburnett SVGs from lila <code>53f8fc8</code>, record provenance and hashes, serve the GPL-2.0 text and attribution, add Credits to Settings, and migrate stored piece-set ids.</label></li>
+<li><label><input type="checkbox" checked=""></input>2.2 OA-002 Replace the navigation icons with pinned Lucide icons and the ISC licence.</label></li>
+<li><label><input type="checkbox" checked=""></input>2.3 OA-003 Generate the original palette and board themes, replace the favicon, migrate stored theme ids, and check contrast for text, buttons and coordinates.</label></li>
+<li><label><input type="checkbox"></input>2.4 OA-001 Confirm the cburnett licence on Wikimedia Commons (blocked from this environment) and decide whether to also credit CC BY-SA 3.0.</label></li>
+</ul>
+<h3 id="3-bots">3. Bots</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked=""></input>3.1 OA-004 Replace the roster with 43 invented characters, remove the copied portraits, roster records and engine-level references, and add the deterministic portrait generator with a check mode.</label></li>
+<li><label><input type="checkbox" checked=""></input>3.2 OA-005 Define the strength ladder from engine controls, use it for raw engine levels and the novice policy, and show medals in place of crowns.</label></li>
+<li><label><input type="checkbox" checked=""></input>3.3 OA-006 Resolve retired bot ids to the nearest current bot, keep stored names, refuse malformed ids, and test each case.</label></li>
+</ul>
+<h3 id="4-copy-and-captures">4. Copy and captures</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked=""></input>4.1 OA-008 Remove other-site names and unavailable engine options from interface strings.</label></li>
+<li><label><input type="checkbox" checked=""></input>4.2 OA-007 Remove the recording, frames, screenshot archive, Chrome reference session, design-studies archive and dossier copies; update the design and dossier generators and their checks.</label></li>
+<li><label><input type="checkbox" checked=""></input>4.3 OA-008 Rewrite README, CONTEXT and docs in neutral language and add dated supersession notes to earlier changes.</label></li>
+<li><label><input type="checkbox"></input>4.4 OA-007 Founder decision: make the repository private or purge the removed files from history.</label></li>
+<li><label><input type="checkbox"></input>4.5 OA-007 Founder decision: keep or remove <code>docs/verification/</code> screenshots of earlier builds and the two lesson screenshots in <code>docs/research/sources/</code>.</label></li>
+</ul>
+<h3 id="5-delivery">5. Delivery</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked=""></input>5.1 Run the full test suite, production build, design check, dossier check, portrait check and strict OpenSpec validation; record environment failures separately.</label></li>
+<li><label><input type="checkbox" checked=""></input>5.2 Capture after-screenshots of the bot picker, a game board and the review panel at desktop and mobile widths.</label></li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

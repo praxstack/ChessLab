@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Tasks · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Tasks</h1><p class="lede">openspec/changes/local-web-first/tasks.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Tasks"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/local-web-first/tasks.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/local-web-first/tasks.md<br>SHA-256: 3afd119690064e3163abb998656680751cf928865efdba2daeec9b53d122dbaa</p><h3 id="pstack-workflow">Pstack workflow</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked=""></input>Read the Principles section of poteto-mode in full.</label></li>
+<li><label><input type="checkbox" checked=""></input>Phase A: Frame.</label></li>
+<li><label><input type="checkbox" checked=""></input>Phase B: Design the workflow.</label></li>
+<li><label><input type="checkbox" checked=""></input>Phase C: Run the loop.</label></li>
+<li><label><input type="checkbox" checked=""></input>Run setup-pstack with host-confirmed model routing and preserve previous configuration.</label></li>
+<li><label><input type="checkbox" checked=""></input>Trace existing account, game, engine and study flows; capture baseline checks.</label></li>
+<li><label><input type="checkbox" checked=""></input>Capture the baseline visual state.</label></li>
+<li><label><input type="checkbox" checked=""></input>Compare two design shapes and choose the implementation boundary.</label></li>
+<li><label><input type="checkbox" checked=""></input>Serve app and archives locally; retain both account databases with safe snapshots.</label></li>
+<li><label><input type="checkbox" checked=""></input>Rebuild the bot picker and visual system without changing game integrity.</label></li>
+<li><label><input type="checkbox" checked=""></input>Create and execute the project verification skill and feature map.</label></li>
+<li><label><input type="checkbox" checked=""></input>Exercise desktop/mobile user flows and record video proof.</label></li>
+<li><label><input type="checkbox" checked=""></input>Phase D: Keep the audit trail.</label></li>
+<li><label><input type="checkbox" checked=""></input>Phase E: Verify and hand back.</label></li>
+<li><label><input type="checkbox" checked=""></input>Open the reviewed PR with video proof and explicit gaps.</label></li>
+</ul>
+<h3 id="engineering-graph">Engineering graph</h3>
+<pre class="mermaid"><code>flowchart TD
+  P[Pstack setup and preserved goal] --&gt; B[Baseline source, data and checks]
+  B --&gt; L[Local server and data snapshots]
+  B --&gt; D[Design candidates and synthesis]
+  D --&gt; U[Board, bot picker and responsive UI]
+  L --&gt; V[Local app-control flows]
+  U --&gt; V
+  V --&gt; E[Video, screenshots and persistence evidence]
+  E --&gt; R[Diff review and PR]
+  R --&gt; C[Remaining curriculum and platform parity]
+  C --&gt; T[Full branching conversational tutor]
+  T --&gt; M[Human multiplayer]
+  M --&gt; X[Billing last]</code></pre>
+<p>The full goal remains active until the original parity objective is verified. This graph orders work; it does not certify vendor equivalence. Team and independent-agent execution currently fail at the installed Astra runtime validator. No validator bypass is authorized by this document.</p>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>
