@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import Board, {Piece} from './Board.jsx';
 import BotSetup, {BotAvatar, Crowns, assistanceDefaults} from './BotSetup.jsx';
-import {replay, parseMove, moveRows, emptyStudy, addBranch, scoreText, branchDepth, rootAnchor, studyLimitError, mergePolledGame, clockText, rematchOptions} from './chess-state.js';
+import {replay, parseMove, moveRows, emptyStudy, addBranch, scoreText, branchDepth, rootAnchor, studyLimitError, mergePolledGame, clockText, rematchOptions, coachKey} from './chess-state.js';
 import Settings, {settingDefaults} from './Settings.jsx';
 import GameReview from './GameReview.jsx';
 import ReviewPractice from './ReviewPractice.jsx';
@@ -76,7 +76,7 @@ function App() {
   const cachedAnalysis=gameReport&&game&&!branchId&&analysisScope==='review'&&gameReport.gameId===game.id?gameReport.entries[ply-1]?.analysis:null;
   // The AI coach explains the same node as the evidence panel: the position before the selected move.
   const coachNode=game?{gameId:game.id,moves:ply?history.slice(0,ply-1):[],initialFen:game.initialFen??null,...(game.variant?{variant:game.variant}:{}),...(ply?{playedMove:history[ply-1]}:{}),...(analysis?.evidenceId?{evidenceId:analysis.evidenceId}:{})}:null;
-  const coachNodeKey=JSON.stringify([game?.id,branchId,ply,historyKey]);
+  const coachNodeKey=coachKey({gameId:game?.id,branchId,ply,historyKey,scope:analysisScope,analysis});
 
   function startBusy(){if(busyRef.current||savingRef.current)return false;busyRef.current=true;setBusy(true);setError('');return true;}
   function endBusy(){busyRef.current=false;setBusy(false);}
