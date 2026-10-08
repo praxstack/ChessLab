@@ -1,5 +1,7 @@
 # Rated and daily puzzle evidence
 
+> The screenshots and recordings linked here were removed on 8 October 2026. See [the verification README](../README.md).
+
 Puzzles now offers Rated, Daily and Custom practice. Rated chooses unseen local puzzles using Standard, Hard and Extra Hard difficulty bands. A clean full solution wins; the first legal mistake, hint, reveal or skip scores one loss. Continuing practice does not rescore the attempt. Each receipt records before, after, delta and result; the receipt and profile update commit atomically. Try again always creates custom practice.
 
 [Video](proof/local-user-flow.webm) · [Receipt](proof/receipt.json) · [Rated result](proof/26-rated-puzzle-result.png) · [Daily completion](proof/27-daily-complete.png) · [Mobile daily](proof/28-mobile-daily.png)

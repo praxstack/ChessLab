@@ -1,5 +1,7 @@
 # Guided game-review practice evidence
 
+> The screenshots and recordings linked here were removed on 8 October 2026. See [the verification README](../README.md).
+
 Practice key moves turns completed local reviews into saved exercises. White, Black or both sides can revisit inaccuracies, mistakes, blunders and non-recommended mate-sequence decisions. The full source history and saved native recommendation are pinned. Questions hide their answer; legal attempts, piece/arrow hints, reveal, skip and completion stay separate from the original game and its studies. Reopen practice after a reload to resume the exact question and feedback.
 
 [Video](proof/local-user-flow.webm) · [Receipt](proof/receipt.json) · [Native feedback](proof/51-native-practice-feedback.png) · [Mobile solve](proof/52-mobile-practice-solved.png) · [Results](proof/53-review-practice-results.png) · [Promotion](proof/55-promotion-practice-results.png)

@@ -20,7 +20,7 @@
 <header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
 <main id="main" tabindex="-1">
 <header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>HTML dossier generator</h1><p class="lede">scripts/build_report.py</p></header>
-<div class="reading-layout"><article class="prose" aria-label="HTML dossier generator"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/build_report.py" download>Download original file ↗</a></div><p class="source-meta">scripts/build_report.py<br>SHA-256: 56ed81abde26b208909310745cee0dcb9deda290402eecc191927802dff689e1</p><pre><code>&quot;&quot;&quot;Generate the portable ChessLab dossier from project sources; requires Pandoc.&quot;&quot;&quot;
+<div class="reading-layout"><article class="prose" aria-label="HTML dossier generator"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/build_report.py" download>Download original file ↗</a></div><p class="source-meta">scripts/build_report.py<br>SHA-256: 8899a46665cac6aacbe857bc98c1219a0c24aad9c9f1fcb1974cf841fdbf5843</p><pre><code>&quot;&quot;&quot;Generate the portable ChessLab dossier from project sources; requires Pandoc.&quot;&quot;&quot;
 import argparse
 import hashlib
 import html
@@ -82,7 +82,8 @@ def category(path):
 
 # Since the 2026-10-08 original-asset policy the dossier neither copies nor displays screenshots of
 # another product&#x27;s interface. The founder&#x27;s two lesson screenshots stay in docs/research/sources as
-# research; docs/verification holds browser evidence of earlier builds, not reading material.
+# research; docs/verification holds text records of how earlier builds were checked (its screenshots
+# and recordings were removed on 2026-10-08), not reading material.
 WITHHELD = {&#x27;docs/research/sources/IMG_0859.png&#x27;,&#x27;docs/research/sources/IMG_0860.png&#x27;}
 
 

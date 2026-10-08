@@ -1,5 +1,7 @@
 # Position practice evidence
 
+> The screenshots and recordings linked here were removed on 8 October 2026. See [the verification README](../README.md).
+
 From a reviewed game or saved nested variation, choose Practice this position, select an opponent and side, and play an independent bot game. The server copies the full history prefix and original starting FEN. Fresh clocks and undo history begin at the selected position; practice never awards roster crowns. Restart uses the retained practice snapshot even if the source study later changes.
 
 [Video](proof/local-user-flow.webm) · [Receipt](proof/receipt.json) · [Setup](proof/12-position-setup.png) · [Mobile setup](proof/13-mobile-position-setup.png) · [Native play](proof/14-native-position-practice.png) · [Returned branch and note](proof/15-returned-source-study.png)

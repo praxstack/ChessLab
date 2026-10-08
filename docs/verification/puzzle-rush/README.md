@@ -1,5 +1,7 @@
 # Local Puzzle Rush evidence
 
+> The screenshots and recordings linked here were removed on 8 October 2026. See [the verification README](../README.md).
+
 Puzzle Rush now provides three-minute, five-minute and untimed Survival runs. Each full solution scores one point; the first legal mistake or skip fails that puzzle once. Three failures end the run. The server owns a fixed deadline, revisions and account state. Reload and restart preserve the position and score. Local bests are separated by mode; finished runs retain every encountered puzzle for separate Custom practice and native analysis. Rated profiles and Daily credit remain unchanged.
 
 [Video](proof/local-user-flow.webm) · [Receipt](proof/receipt.json) · [Survival](proof/29-rush-survival.png) · [Results](proof/30-rush-results.png) · [Mobile clock](proof/33-mobile-rush-clock.png)

@@ -1,5 +1,7 @@
 # Local game collections evidence
 
+> The screenshots and recordings linked here were removed on 8 October 2026. See [the verification README](../README.md).
+
 My games now organizes the existing archive into account-private collections with names and descriptions. Games can belong to multiple collections. Bulk add/remove, text search, source/variation filters and game/collection sorting reuse the saved games. Deleting a collection requires confirmation and preserves the archive, nested studies and other memberships. The mobile view uses a native collection selector.
 
 [Video](proof/local-user-flow.webm) · [Receipt](proof/receipt.json) · [Desktop](proof/41-game-collections.png) · [Mobile](proof/42-mobile-collection.png) · [Preserved second collection](proof/43-preserved-collection.png)

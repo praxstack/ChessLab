@@ -1,5 +1,7 @@
 # Local custom puzzle training evidence
 
+> The screenshots and recordings linked here were removed on 8 October 2026. See [the verification README](../README.md).
+
 Puzzles now opens 6,100,952 locally stored source puzzles across 73 themes. Custom practice supports source rating/theme filters, server-owned multi-move attempts, hints, reveal, skip, recent history, retrying mistakes, solution playback and native analysis in a separate saved study. The original six starter exercises remain accessible.
 
 [Video](proof/local-user-flow.webm) · [Receipt](proof/receipt.json) · [Catalogue](proof/22-training-catalogue.png) · [Restored attempt](proof/23-persisted-training.png) · [Native analysis](proof/24-puzzle-native-analysis.png) · [Mobile](proof/25-mobile-training.png)

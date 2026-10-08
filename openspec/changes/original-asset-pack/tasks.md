@@ -17,7 +17,7 @@
 - [x] 4.2 OA-007 Remove the recording, frames, screenshot archive, Chrome reference session, design-studies archive and dossier copies; update the design and dossier generators and their checks.
 - [x] 4.3 OA-008 Rewrite README, CONTEXT and docs in neutral language and add dated supersession notes to earlier changes.
 - [ ] 4.4 OA-007 Founder decision: make the repository private or purge the removed files from history.
-- [ ] 4.5 OA-007 Founder decision: keep or remove `docs/verification/` screenshots of earlier builds and the two lesson screenshots in `docs/research/sources/`.
+- [x] 4.5 OA-007 Founder decision: keep or remove `docs/verification/` screenshots of earlier builds and the two lesson screenshots in `docs/research/sources/`. 2026-10-08: the `docs/verification/` screenshots and recordings were removed and `design/check.py` keeps them out; the two lesson screenshots stay as the founder's research sources.
 
 ## 5. Delivery
 - [x] 5.1 Run the full test suite, production build, design check, dossier check, portrait check and strict OpenSpec validation; record environment failures separately.

@@ -1,5 +1,7 @@
 # Local Vision delivery
 
+> The screenshots and recordings linked here were removed on 8 October 2026. See [the verification README](../README.md).
+
 Vision now offers Coordinates, Moves and mixed 30-second rounds, a three-second countdown, White/Black/random perspective and optional board coordinates. Moves require moving the lone piece; coordinates require selecting the square. Mouse, touch and keyboard input work through the existing board. The server protects scores, deadlines and revisions; local accounts retain recent rounds and bests for identical settings.
 
 [Full video proof](proof/local-user-flow.webm) · [Coordinate round](proof/70-vision-coordinates.png) · [Completed result](proof/71-vision-complete.png) · [Moves](proof/72-vision-moves.png) · [Mobile](proof/73-vision-mobile.png) · [History](proof/74-vision-history.png).

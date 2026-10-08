@@ -1,5 +1,7 @@
 # Local web delivery evidence
 
+> The screenshots and recordings linked here were removed on 8 October 2026. See [the verification README](../README.md).
+
 This change polishes the local board and opponent picker, serves the existing archives locally, and preserves hosted data in a separate local snapshot. It does not complete the full Chess.com platform.
 
 The final recording is [the local user flow](reviewed-proof/local-user-flow.webm). [Its receipt](reviewed-proof/receipt.json) records the real engine and tested actions. Screenshots cover the [laptop picker](reviewed-proof/00-laptop-picker.png), [desktop picker](reviewed-proof/01-bot-picker.png), [bot game](reviewed-proof/02-local-game.png), [review](reviewed-proof/03-engine-review.png), [nested study](reviewed-proof/04-nested-study.png), [puzzle completion](reviewed-proof/05-puzzle-complete.png), [saved games](reviewed-proof/06-saved-games.png), [mobile game](reviewed-proof/07-mobile-game.png) and [mobile settings](reviewed-proof/08-mobile-settings.png).
