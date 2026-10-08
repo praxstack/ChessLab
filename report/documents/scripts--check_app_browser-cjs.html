@@ -20,7 +20,7 @@
 <header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
 <main id="main" tabindex="-1">
 <header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Check App Browser</h1><p class="lede">scripts/check_app_browser.cjs</p></header>
-<div class="reading-layout"><article class="prose" aria-label="Check App Browser"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/check_app_browser.cjs" download>Download original file ↗</a></div><p class="source-meta">scripts/check_app_browser.cjs<br>SHA-256: 1a1eaefbeb0a9ee56d2fd873191edd460c1f267389754f74a72a2a2eabda829b</p><pre><code>/* Run after `npm run build`; uses a fresh database and the real server engine. */
+<div class="reading-layout"><article class="prose" aria-label="Check App Browser"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/check_app_browser.cjs" download>Download original file ↗</a></div><p class="source-meta">scripts/check_app_browser.cjs<br>SHA-256: 0e51e14fc4f9e89208aed6ef61cb23968669fda64280c180f40e05b4231d71a7</p><pre><code>/* Run after `npm run build`; uses a fresh database and the real server engine. */
 const assert = require(&#x27;node:assert/strict&#x27;);
 const fs = require(&#x27;node:fs&#x27;);
 const path = require(&#x27;node:path&#x27;);
@@ -228,7 +228,7 @@ if (evidence) fs.mkdirSync(evidence, {recursive:true});
     await page.getByText(&#x27;Coach online&#x27;,{exact:true}).waitFor();
     assert.equal(await page.locator(&#x27;.app-shell&#x27;).getAttribute(&#x27;data-board-theme&#x27;),&#x27;blue&#x27;,&#x27;Board preference persists&#x27;);
     await page.getByRole(&#x27;button&#x27;,{name:&#x27;Open settings&#x27;,exact:true}).click();
-    await page.getByRole(&#x27;dialog&#x27;,{name:&#x27;Settings&#x27;,exact:true}).getByLabel(&#x27;Board&#x27;,{exact:true}).selectOption(&#x27;green&#x27;);
+    await page.getByRole(&#x27;dialog&#x27;,{name:&#x27;Settings&#x27;,exact:true}).getByLabel(&#x27;Board&#x27;,{exact:true}).selectOption(&#x27;slate&#x27;);
     await page.getByRole(&#x27;button&#x27;,{name:&#x27;Close dialog&#x27;,exact:true}).click();
     await navigation.getByRole(&#x27;button&#x27;,{name:&#x27;My games&#x27;,exact:true}).click();
     await page.getByRole(&#x27;button&#x27;,{name:&#x27;Import a PGN&#x27;,exact:true}).click();

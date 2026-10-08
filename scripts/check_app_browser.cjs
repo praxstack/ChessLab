@@ -206,7 +206,7 @@ if (evidence) fs.mkdirSync(evidence, {recursive:true});
     await page.getByText('Coach online',{exact:true}).waitFor();
     assert.equal(await page.locator('.app-shell').getAttribute('data-board-theme'),'blue','Board preference persists');
     await page.getByRole('button',{name:'Open settings',exact:true}).click();
-    await page.getByRole('dialog',{name:'Settings',exact:true}).getByLabel('Board',{exact:true}).selectOption('green');
+    await page.getByRole('dialog',{name:'Settings',exact:true}).getByLabel('Board',{exact:true}).selectOption('slate');
     await page.getByRole('button',{name:'Close dialog',exact:true}).click();
     await navigation.getByRole('button',{name:'My games',exact:true}).click();
     await page.getByRole('button',{name:'Import a PGN',exact:true}).click();
