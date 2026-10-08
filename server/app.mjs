@@ -311,10 +311,10 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
  app.post('/api/import',(req,res)=>res.status(201).json({game:insertGame(req.user.id,readAnnotatedPgn(req.body.pgn))}));
  app.post('/api/import-study',(req,res)=>res.status(201).json({game:insertGame(req.user.id,readPortableStudy(req.body))}));
  app.get('/api/games/:id/pgn',(req,res)=>{
-  const game=owned(req);res.type('text/plain').set('Content-Disposition',`attachment; filename="chesslab-${game.id}.pgn"`).send(writeAnnotatedPgn(game,req.user.username));
+  const game=owned(req);res.type('text/plain').set('Content-Disposition',`attachment; filename="askthemove-${game.id}.pgn"`).send(writeAnnotatedPgn(game,req.user.username));
  });
  app.get('/api/games/:id/study-file',(req,res)=>{
-  const game=owned(req);res.set('Content-Disposition',`attachment; filename="chesslab-${game.id}.chesslab.json"`).json(portableStudy(game,req.user.username));
+  const game=owned(req);res.set('Content-Disposition',`attachment; filename="askthemove-${game.id}.chesslab.json"`).json(portableStudy(game,req.user.username));
  });
  app.post('/api/games/:id/study',(req,res)=>{
   const game=owned(req);

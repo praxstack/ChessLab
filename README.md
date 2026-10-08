@@ -1,8 +1,10 @@
-# ChessLab
+# AskTheMove
 
 Play a bot, review a decision, try a different line, and return to the actual game.
 
-ChessLab (hosted beta name: AskTheMove) has a web application with a board-first layout, 43 original bot characters with generated portraits, ten installed engine configurations, clocks and assistance, server analysis, saved variations, PGN import/export and accounts on the same server. Six original introductory lessons and six puzzles provide a small practice collection. The coach explains engine evidence. Learner questions are saved notes, not a free-form conversational AI.
+AskTheMove has a web application with a board-first layout, 43 original bot characters with generated portraits, ten installed engine configurations, clocks and assistance, server analysis, saved variations, PGN import/export and accounts on the same server. Six original introductory lessons and six puzzles provide a small practice collection. The coach explains engine evidence. Learner questions are saved notes, not a free-form conversational AI.
+
+AskTheMove was built under the working name ChessLab. The repository, npm package, Docker image, database file, session cookie, environment variables, browser storage keys and the `.chesslab.json` study format keep that name, so existing data and exported files still work.
 
 The current build follows the user's platform-first direction: bot and coach play first. Human multiplayer and billing are deferred. The app has its own artwork, bot characters, strength ladder and scoring. The full branching conversational tutor remains the longer-term objective.
 
@@ -23,7 +25,7 @@ cp .env.example .env
 npm run dev
 ```
 
-Open [ChessLab at localhost:8770](http://127.0.0.1:8770). Check `STOCKFISH_PATH` in `.env` against `command -v stockfish`, especially on Intel Macs or other operating systems. The server runs Stockfish as a process. It sends moves and analysis to the browser, with no engine or model download.
+Open [AskTheMove at localhost:8770](http://127.0.0.1:8770). Check `STOCKFISH_PATH` in `.env` against `command -v stockfish`, especially on Intel Macs or other operating systems. The server runs Stockfish as a process. It sends moves and analysis to the browser, with no engine or model download.
 
 For the built application:
 
