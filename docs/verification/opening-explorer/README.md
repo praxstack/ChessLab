@@ -1,5 +1,7 @@
 # Local opening explorer evidence
 
+> The screenshots and recordings linked here were removed on 8 October 2026. See [the verification README](../README.md).
+
 Openings now combines the existing 3,810 named lines with an interactive game explorer. Position-based move counts and White/draw/Black result bars include transpositions. Board clicks, dragging, typed SAN/UCI, promotions, navigation and flip share the existing legal chess board. Examples replay full games, return to the previous exploration, or open a new owned study through the existing draft-safe import flow. My Games is restricted to the signed-in user's completed standard games, including local bot games.
 
 The [official workflow](https://support.chess.com/en/articles/8708732-how-do-i-use-the-game-explorer) and [position identity guide](https://support.chess.com/en/articles/8709003-does-move-order-matter-when-looking-at-a-position-in-explorer) informed this increment. The public data is the [Lichess Elite November 2025 archive](https://database.nikonoel.fr/), derived from CC0 Lichess exports. Its 280,246 source game headers all date to November 2025, have unique source URLs, and meet the stated 2500+/2300+ rating selection. The parser's accepted/rejected totals are recorded separately; this is an online selected corpus, not Chess.com's master database.

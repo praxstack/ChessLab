@@ -1,5 +1,7 @@
 # Local opening library evidence
 
+> The screenshots and recordings linked here were removed on 8 October 2026. See [the verification README](../README.md).
+
 Openings provides 3,810 locally stored named lines with name/ECO search, pagination, legal move playback, flip, FEN/PGN details, saved study and native bot practice from a selected move. Review identifies the latest named opening; a transposed or custom position is labelled Position match instead of claiming the named move order was played. Existing source histories remain separate.
 
 [Video](proof/local-user-flow.webm) · [Receipt](proof/receipt.json) · [Desktop library](proof/19-local-openings.png) · [Native practice](proof/20-opening-practice.png) · [Mobile](proof/21-mobile-openings.png)

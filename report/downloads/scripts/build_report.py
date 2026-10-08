@@ -60,7 +60,8 @@ def category(path):
 
 # Since the 2026-10-08 original-asset policy the dossier neither copies nor displays screenshots of
 # another product's interface. The founder's two lesson screenshots stay in docs/research/sources as
-# research; docs/verification holds browser evidence of earlier builds, not reading material.
+# research; docs/verification holds text records of how earlier builds were checked (its screenshots
+# and recordings were removed on 2026-10-08), not reading material.
 WITHHELD = {'docs/research/sources/IMG_0859.png','docs/research/sources/IMG_0860.png'}
 
 

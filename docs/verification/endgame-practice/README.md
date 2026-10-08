@@ -1,5 +1,7 @@
 # Local endgame practice
 
+> The screenshots and recordings linked here were removed on 8 October 2026. See [the verification README](../README.md).
+
 24 original pawn, rook, queen and minor-piece positions now open through the existing saved study and bot-practice flow. Learners choose an opponent, strength and color, play legal moves, request help, restart without overwriting earlier attempts, and return to the source study. A private attempt list shows actual game results and assistance counts. The browser also exposes original teaching notes and the solved starting-position result.
 
 The complete standard 3–5-piece Syzygy set is locally downloaded: 290 files, 983,957,920 bytes. Each matches the published Lichess SHA-256. Python-chess 1.11.2 verifies all 24 catalogue outcomes and 371 legal continuations. Native Stockfish 16, 18 and 19 report actual tablebase hits. Unsupported engine options are not sent; Lite remains on ordinary search. No new runtime service or package dependency was added. Table files remain local and are not committed to Git.
