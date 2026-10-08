@@ -23,6 +23,8 @@ import {hostingGuard} from './hosting.mjs';
 import {positionKey,reviewSignature,beginReview,appendReview} from './game-review.mjs';
 import {createExplorer} from './opening-explorer.mjs';
 import {installReviewPractice} from './review-practice.mjs';
+import {createCoach,parseAskedMove} from './coach-explain.mjs';
+import {securityConfig,securityHeaders,inviteAccepted} from './security.mjs';
 
 const derive = promisify(scrypt);
 const hash = value => createHash('sha256').update(value).digest('hex');
@@ -37,7 +39,7 @@ function moveOn(chess, value) {
 const replay = engine.replay;
 const gameResult = chess => chess.isCheckmate() ? (chess.turn() === 'w' ? '0-1' : '1-0') : chess.isDraw() ? '1/2-1/2' : null;
 
-export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('data/chesslab.sqlite'), engineApi = engine, opponentApi = opponents, nowMs = Date.now, explorerCataloguePath = process.env.CHESSLAB_EXPLORER || resolve('data/explorer/catalogue.sqlite'), puzzleCataloguePath = process.env.CHESSLAB_PUZZLES || resolve('data/puzzles/catalogue.sqlite')} = {}) {
+export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('data/chesslab.sqlite'), engineApi = engine, opponentApi = opponents, nowMs = Date.now, explorerCataloguePath = process.env.CHESSLAB_EXPLORER || resolve('data/explorer/catalogue.sqlite'), puzzleCataloguePath = process.env.CHESSLAB_PUZZLES || resolve('data/puzzles/catalogue.sqlite'), config = securityConfig(), coach = createCoach()} = {}) {
  if (databasePath !== ':memory:') mkdirSync(dirname(databasePath), {recursive:true});
  const db = new DatabaseSync(databasePath);
  db.exec(`PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON; PRAGMA busy_timeout=5000;
@@ -49,24 +51,33 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
  CREATE TABLE IF NOT EXISTS progress (user_id TEXT NOT NULL REFERENCES users(id), kind TEXT NOT NULL, item_id TEXT NOT NULL, PRIMARY KEY(user_id,kind,item_id));
  CREATE TABLE IF NOT EXISTS bot_results (user_id TEXT NOT NULL REFERENCES users(id), bot_id TEXT NOT NULL, crowns INTEGER NOT NULL CHECK(crowns BETWEEN 1 AND 3), PRIMARY KEY(user_id,bot_id));`);
  const app = express(); app.disable('x-powered-by');
+ if (config.trustProxy) app.set('trust proxy', config.trustProxy);
+ app.use(securityHeaders(config));
+ // Container and load-balancer probe: before the private-backend guard, no account data.
+ app.get('/healthz',(req,res)=>{
+  res.set('Cache-Control','no-store');
+  try { db.prepare('SELECT 1').get(); res.json({status:'ok'}); } catch { res.status(503).json({status:'unavailable'}); }
+ });
  app.use(hostingGuard());
  const rateWindows = new Map(); const pendingBot = new Set(); const pendingReview = new Set();
- function limit(key, max, period = 60000) {
+ function limit(key, max, period = 60000, message = 'Too many requests. Wait a minute and try again.') {
   const stamp = Date.now(); const bucket = rateWindows.get(key);
   if (!bucket || bucket.until < stamp) {
    if (rateWindows.size > 10000) for (const [id, b] of rateWindows) if (b.until < stamp) rateWindows.delete(id);
    rateWindows.set(key,{count:1,until:stamp+period}); return;
   }
-  if (++bucket.count > max) fail(429, 'Too many requests. Wait a minute and try again.');
+  if (++bucket.count > max) fail(429, message);
  }
+ const expectedOrigin = config.appOrigin || process.env.PUBLIC_ORIGIN;
  app.use((req,res,next)=>{
-  res.set('X-Content-Type-Options','nosniff'); res.set('Referrer-Policy','same-origin'); res.set('X-Frame-Options','DENY');
   if (req.path.startsWith('/api/')) res.set('Cache-Control','no-store');
   if (!['GET','HEAD','OPTIONS'].includes(req.method)) {
    const origin = req.get('origin');
+   // A hosted beta knows its origin, so browser changes must say where they came from.
+   if (!origin && config.appOrigin) return res.status(403).json({error:'Cross-origin changes are not allowed.'});
    if (origin) {
     let requestOrigin; try { requestOrigin = new URL(origin).origin; } catch { return res.status(403).json({error:'This request came from an invalid origin.'}); }
-    if (requestOrigin !== (process.env.PUBLIC_ORIGIN || `${req.protocol}://${req.get('host')}`)) return res.status(403).json({error:'Cross-origin changes are not allowed.'});
+    if (requestOrigin !== (expectedOrigin || `${req.protocol}://${req.get('host')}`)) return res.status(403).json({error:'Cross-origin changes are not allowed.'});
    }
    if (req.get('sec-fetch-site') === 'cross-site') return res.status(403).json({error:'Cross-site changes are not allowed.'});
    if (!req.is('application/json')) return res.status(415).json({error:'Use JSON for this request.'});
@@ -93,15 +104,16 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   db.prepare('DELETE FROM sessions WHERE expires_at<=?').run(Date.now());
   const token = randomBytes(32).toString('hex');
   db.prepare('INSERT INTO sessions VALUES (?,?,?)').run(hash(token),userId,Date.now()+7*86400000);
-  res.cookie('chesslab_session',token,{httpOnly:true,sameSite:'strict',secure:process.env.COOKIE_SECURE==='1',maxAge:7*86400000,path:'/'});
+  res.cookie('chesslab_session',token,{httpOnly:true,sameSite:'strict',secure:config.cookieSecure,maxAge:7*86400000,path:'/'});
  }
- app.get('/api/status',async(req,res)=>res.json({engine:await engineApi.engineStatus(),billingEnabled:false}));
+ app.get('/api/status',async(req,res)=>res.json({engine:await engineApi.engineStatus(),billingEnabled:false,coachAi:coach.status(),inviteRequired:config.inviteCodes.length>0,hosted:config.hosted,archives:config.serveArchives}));
  app.get('/api/bots',async(req,res)=>res.json({bots:profiles,engines:await opponentApi.listOpponentEngines()}));
  app.get('/api/me',(req,res)=>res.json(me(req.user)));
  app.post('/api/register',async(req,res)=>{
   limit(`auth:${req.ip}`,15);
   const {username,password} = req.body;
   if (typeof username !== 'string' || !/^[a-zA-Z0-9_-]{3,32}$/.test(username) || typeof password !== 'string' || password.length < 10 || password.length > 128) fail(400,'Use a 3–32 character username (letters, numbers, _ or -) and a 10–128 character password.');
+  if (!inviteAccepted(config.inviteCodes,req.body.inviteCode)) fail(403,'This private beta needs a valid invite code.');
   if (db.prepare('SELECT id FROM users WHERE username=?').get(username)) fail(409,'That username is already in use.');
   const salt = randomBytes(16).toString('hex'); const secret = (await derive(password,salt,64)).toString('hex');
   const user = {id:randomUUID(),username};
@@ -113,6 +125,8 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   limit(`auth:${req.ip}`,15);
   const {username,password} = req.body;
   if (typeof username !== 'string' || username.length>32 || typeof password !== 'string' || password.length>128) fail(400,'Enter your username and password.');
+  // Per-account throttle slows password guessing spread across many addresses.
+  limit(`login:${username.toLowerCase()}`,10,900000,'Too many sign-in attempts for this account. Wait 15 minutes and try again.');
   const user = db.prepare('SELECT * FROM users WHERE username=?').get(username);
   const secret = await derive(password,user?.salt || 'missing-account-salt',64);
   if (!user || !timingSafeEqual(secret,Buffer.from(user.password_hash,'hex'))) fail(401,'The username or password is incorrect.');
@@ -121,7 +135,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
  app.post('/api/logout',(req,res)=>{
   const token = /(?:^|;\s*)chesslab_session=([a-f0-9]{64})(?:;|$)/.exec(req.headers.cookie || '')?.[1];
   if (token) db.prepare('DELETE FROM sessions WHERE token_hash=?').run(hash(token));
-  res.clearCookie('chesslab_session',{path:'/',httpOnly:true,sameSite:'strict',secure:process.env.COOKIE_SECURE==='1'});res.json(me(null));
+  res.clearCookie('chesslab_session',{path:'/',httpOnly:true,sameSite:'strict',secure:config.cookieSecure});res.json(me(null));
  });
  const trainer=createTrainer({db,cataloguePath:puzzleCataloguePath,nowMs,insertStudy:(userId,value)=>insertGame(userId,{...value,result:gameResult(replay(value.moves,value.initialFen))})});
  app.get('/api/training/catalog',(req,res)=>res.json(trainer.catalogue()));
@@ -349,8 +363,41 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   const controller=new AbortController();
   const cancel=()=>{if(!res.writableEnded)controller.abort();};
   res.once('close',cancel);
-  try {res.json(await engineApi.analyze(req.body,{signal:controller.signal}));}
+  try {
+   const analysis=await engineApi.analyze(req.body,{signal:controller.signal});
+   const evidenceId=coach.remember(req.user.id,req.body,analysis);
+   res.json(evidenceId?{...analysis,evidenceId}:analysis);
+  }
   finally {res.removeListener('close',cancel);}
+ });
+ // Saved whole-game review steps are server-produced evidence for the same position and move.
+ const reviewedEvidence=(req,{gameId,moves,initialFen,variant,playedMove})=>{
+  if(typeof gameId!=='string'||typeof playedMove!=='string')return null;
+  const game=owned({params:{id:gameId},user:req.user}),entry=savedReview(game)?.entries[moves.length];
+  const samePosition=(game.initialFen??null)===(initialFen??null)&&(game.variant||'standard')===(variant||'standard')&&moves.every((move,index)=>game.moves[index]===move);
+  return samePosition&&game.moves[moves.length]===playedMove&&entry?.analysis?.played?.move===playedMove?entry.analysis:null;
+ };
+ app.post('/api/coach/explain',async(req,res)=>{
+  limit(`analysis:${req.user.id}`,100);
+  const {gameId,moves=[],initialFen=null,variant,playedMove,evidenceId,question}=req.body;
+  if(gameId!==undefined)markReviewAccess(req,gameId);
+  if(playedMove!==undefined&&typeof playedMove!=='string')fail(400,'Choose a legal move in UCI notation.');
+  const board=replay(moves,initialFen,variant);
+  const asked=question===undefined?null:parseAskedMove(board,question);
+  if(!asked&&playedMove!==undefined)replay([...moves,playedMove],initialFen,variant);
+  const controller=new AbortController(),cancel=()=>{if(!res.writableEnded)controller.abort();};
+  res.once('close',cancel);
+  try{
+   const position={moves,initialFen,variant,playedMove:asked?asked.uci:playedMove};
+   const recalled=asked?null:coach.recall(req.user.id,evidenceId,position);
+   // The explanation must rest on the lines the panel shows. When that evidence has expired, predates a restart or
+   // belongs to another position, a fresh search with other settings could cite moves the panel never showed.
+   if(!asked&&evidenceId!==undefined&&!recalled)fail(409,'This analysis has expired on the server. Run the analysis again, then ask.');
+   const analysis=recalled||(!asked&&reviewedEvidence(req,{gameId,...position}))
+    ||await engineApi.analyze({...position,movetime:coach.engineMovetime,lines:3},{signal:controller.signal});
+   if((position.playedMove??null)!==(analysis.played?.move??null))fail(503,'The engine evidence does not match this move. Try again.');
+   res.json(await coach.explain({userId:req.user.id,analysis,moves,initialFen,variant,asked,signal:controller.signal}));
+  }finally{res.removeListener('close',cancel);}
  });
  app.post('/api/lessons/:id/answer',(req,res)=>{
   const lesson=lessons.find(x=>x.id===req.params.id);if(!lesson)fail(404,'Lesson not found.');
@@ -376,5 +423,5 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   if(status===500)console.error('Request failed:',error.message);
   res.status(status).json({error:status===500?'The request could not be saved. Retry; your existing games are preserved.':error.type==='entity.parse.failed'?'The request body is not valid JSON.':error.message});
  });
- return {app,db,close:()=>{trainer.close();explorer.close();db.close();}};
+ return {app,db,config,close:()=>{trainer.close();explorer.close();db.close();}};
 }

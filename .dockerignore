@@ -1,0 +1,37 @@
+# The image copies only package files, server/, shared/, web/ and vite.config.mjs.
+# Keep secrets, local data and large reference material out of the build context.
+**/.DS_Store
+.git
+.gitattributes
+.env
+.env.*
+node_modules
+data
+web/dist
+coverage
+.scratch
+.context
+.gstack
+.agents
+.claude
+.codex
+.cursor
+.openai
+.playwright-mcp
+*.zip
+*.png
+design
+docs
+references
+report
+site
+skills
+skills.local.json
+openspec
+scripts
+justfile
+AGENTS.md
+CLAUDE.md
+CONTEXT.md
+server/*.test.mjs
+web/src/*.test.js

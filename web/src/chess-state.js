@@ -76,3 +76,10 @@ export function rematchOptions(game, fallback) {
   if (game.legacyStrength || !game.engineId) return {color:game.color, level:game.level,...(game.variant==='chess960'?{variant:game.variant,positionNumber:game.positionNumber}: {})};
   return {...(game.variant==='chess960'?{variant:game.variant,positionNumber:game.positionNumber}:{}),botId:game.botId??null,engineId:game.engineId,rating:game.rating??fallback.rating,color:game.color,timeControl:game.timeControl??fallback.timeControl,assistance:game.assistance??fallback.assistance};
 }
+
+// The AI coach answers the evidence panel for one move. Its key changes when that evidence changes,
+// so earlier answers never sit beside lines they were not grounded in. Live analysis carries the
+// server's evidence id; a saved review step is identified by the review limits that produced it.
+export function coachKey({gameId, branchId, ply, historyKey, scope, analysis}) {
+  return JSON.stringify([gameId ?? null, branchId ?? null, ply, historyKey, scope, analysis?.evidenceId ?? analysis?.limits ?? null]);
+}

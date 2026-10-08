@@ -8,6 +8,10 @@ The learner plays an AI opponent at a chosen difficulty. Every move can be revis
 
 The board and explanation must agree. Arrows, highlighted pieces, capture sequences and material comparisons help explain the reasoning. Questions belong to the position and branch where they were asked. The tutor should support active calculation and learning rather than only reveal engine recommendations.
 
+## Hosted private beta — updated 8 October 2026
+
+The founder now directs preparation for a hosted private beta under the AskTheMove name, plus the first Claude API feature: grounded "Explain why" explanations of engine evidence. `openspec/changes/hosted-beta-readiness/` governs this work. Local operation remains supported and is the default. Nothing has been deployed; hosting provider, domain and launch timing are open decisions.
+
 ## Local web priority — updated 13 September 2026
 
 The user rejects further hosted-site development and directs that the app, assets, engines, models, research/design sites and persistent data run locally on this Mac. `openspec/changes/local-web-first/` governs this additive delivery. Full Chess.com parity remains the goal, with the prior bot/coach-first sequence and full branching tutor objective preserved. Pstack setup, autonomous routing, an explicit work graph, real app-control verification and a PR with video proof are required. Tool installation is authorized when it serves delivery; installed tools are not product progress.

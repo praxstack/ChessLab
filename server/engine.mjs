@@ -299,7 +299,8 @@ export async function analyze(input, {signal} = {}) {
       const evidence = moveEvidence(board, playedMove);
       const lossText = lossCp == null ? 'Mate scores have no centipawn-loss estimate.' : `Estimated loss: ${lossCp} centipawns for ${board.turn() === 'w' ? 'White' : 'Black'}.`;
       const continuation = afterBoard.isGameOver() ? terminalText(afterBoard) : lineEvidence(afterBoard, after.lines[0]?.moves);
-      analysis.played = { move: playedMove, san: evidence.san, classification, lossCp, afterScore, explanation: `${evidence.text} ${continuation} ${lossText}` };
+      const reply = after.lines[0];
+      analysis.played = { move: playedMove, san: evidence.san, classification, lossCp, afterScore, line: reply ? { moves: reply.moves, san: reply.san, score: reply.score, depth: reply.depth } : null, explanation: `${evidence.text} ${continuation} ${lossText}` };
     }
     return analysis;
   }, signal);
