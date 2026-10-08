@@ -125,7 +125,7 @@ function scoreSheetHTML() {
 
 function notePageHTML(st, key, count, current) {
   return `<div class="note__page${current ? ' is-current' : ''}" data-key="${key}"${current ? '' : ' aria-hidden="true"'}>
-      <p class="note__label"><span class="note__count">${count}</span> <span class="note__label-text">${st.label}</span></p>
+      <p class="note__label">${count ? `<span class="note__count">${count}</span> ` : ''}<span class="note__label-text">${st.label}</span></p>
       <p class="note__title" data-write>${st.title}</p>
       <p class="note__body" data-write>${st.body}</p>
       <p class="note__evidence">${markSVG('tick', 110, 100, seedFrom(`ev:${key}`), 'note__tick')}<span>${st.evidence}</span></p>
@@ -137,7 +137,7 @@ function demoHTML() {
   const total = DEMO.main.length;
   const pages = [
     ...DEMO.main.map((st, i) => notePageHTML(st, `main-${i}`, `${i + 1} / ${total}`, i === 0)),
-    ...DEMO.branch.steps.map((st, i) => notePageHTML(st, `branch-${i}`, 'Your branch', false)),
+    ...DEMO.branch.steps.map((st, i) => notePageHTML(st, `branch-${i}`, '', false)),
   ].join('\n    ');
   const chevron = (dir) =>
     `<svg class="ctl__icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="${dir === 'l' ? 'M10.5 2.8 4.8 8.2l5.9 5' : 'M5.6 2.8l5.8 5.3-5.9 5'}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;

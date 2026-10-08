@@ -269,7 +269,8 @@ p {
   text-wrap: pretty;
 }
 
-/* Notation: lining figures so d1 and 1600 read clearly. */
+/* Notation: lining figures so d1 and 1600 read clearly. Labels that can
+   hold notation are never uppercased: Qxg4 is not QXG4, and f7 is not F7. */
 .moves,
 .ss,
 .printout,
@@ -1228,8 +1229,7 @@ p {
   margin-bottom: var(--s-3);
   font-family: var(--font-print);
   font-size: 0.8125rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--ink-2);
 }
 
@@ -1393,8 +1393,7 @@ p {
   padding-bottom: var(--s-2);
   border-bottom: 1px dashed var(--graphite-2);
   font-size: 0.8125rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--ink-2);
 }
 
@@ -1621,8 +1620,7 @@ p {
 
 .fact dt {
   font-size: 0.75rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--ink-2);
   padding-top: 0.2em;
 }
@@ -1663,8 +1661,7 @@ p {
   margin-bottom: var(--s-3);
   font-family: var(--font-print);
   font-size: 0.8125rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--ink-2);
 }
 

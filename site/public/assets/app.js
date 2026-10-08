@@ -589,7 +589,9 @@ function initDemo() {
   // The red-blue pencil follows whichever stroke is being drawn, and travels
   // between strokes that follow each other closely. It lifts away otherwise.
   function followPencil(tl, token) {
-    const strokes = tl.strokes;
+    // Only strokes on the board: the tick beside the evidence line is in the
+    // note, in another drawing's coordinates.
+    const strokes = tl.strokes.filter((s) => ink.contains(s.path));
     if (!strokes.length) return;
     // The last stroke's animation is the clock: its time runs from the start of
     // the timeline to the end of the last stroke (a finished animation's time
@@ -599,7 +601,8 @@ function initDemo() {
     const at = (i, f) => strokes[i].path.getPointAtLength(lengths[i] * f);
     const frame = () => {
       const now = clock.currentTime;
-      if (token !== state.token || now === null) {
+      // The clock stops at the end of the last stroke, so stop there too.
+      if (token !== state.token || now === null || clock.playState === 'finished') {
         board.classList.remove('is-drawing');
         return;
       }
@@ -632,8 +635,7 @@ function initDemo() {
       } else {
         board.classList.remove('is-drawing');
       }
-      if (now < strokes[strokes.length - 1].end + 60) requestAnimationFrame(frame);
-      else board.classList.remove('is-drawing');
+      requestAnimationFrame(frame);
     };
     requestAnimationFrame(frame);
   }
