@@ -17,7 +17,7 @@ Each voice has its own typeface and colour. The product's whole idea is to turn 
 | Voice | What it says | Face | Colour |
 | --- | --- | --- | --- |
 | The book | Headings, body copy, the form | Vollkorn (variable 400–900) | ink |
-| The engine | Scores, depths, rules checks and lines, as a printout | Courier Prime 400 | graphite |
+| The engine | Scores, depths, rules checks and lines, as a printout; also the printed labels of forms (the score sheet's headings, the note's step label) | Courier Prime 400 | graphite |
 | The coach | Notes, circles, arrows, ticks, `??` | Kalam 400 / 700 | blue ink for explanations, red pen for mistakes and marking, graphite pencil for workings |
 
 ## References
@@ -46,11 +46,12 @@ the lesson (the board walkthrough) spans both columns:
 |        |             | Back · Next · Try another line                     |
 ```
 
+- **Masthead.** The wordmark and one action ("Join the beta") over a heavy double rule, with nothing between them. The page is a single lesson, so the section links live in the footer.
 - **Opening.** The h1 runs across both columns. The lede and the sign-up slip sit in the main column, and two coach notes sit in the side column. There is no card on the right and no split hero. The first thing below the form is the board.
 - **The lesson** is the signature. The score sheet sits on the left, the board in the middle and the note on the right. The note writes itself while the pencil draws on the board.
 - **Each section has its own shape.** "What a review leaves out" puts an engine printout next to the coach's questions. "How it works" is four steps joined by a pencil line in the margin. "Who it's for" is a two-column marking list. "Status" is a checklist the coach ticks off. The FAQ is questions with a hand-drawn plus. The page closes with "Homework".
 - **Section heads have no eyebrows and no numbers in the margin.** Numbers appear only where order is real: the four steps of how it works, and move numbers.
-- **On tablet (700–1079px)** the side notes flow under the main text and are indented.
+- **On tablet (700–1079px)** the side notes flow under the main text. In the lesson, the board and the note stay side by side down to 700px, so the pencil and the writing are seen together; the controls and the score sheet go underneath.
 - **On mobile (under 700px)** the margin rule moves to 12px from the edge. Content has 28px on the left and 16px on the right. Notes run inline. The lesson stacks as board, note, controls, then score sheet.
 
 ## Tokens
@@ -109,15 +110,16 @@ Everything that moves is the coach drawing or writing. Nothing loops, bounces or
 | Stroke (arrow shaft, circle, underline, tick) | SVG path with `pathLength="1"`, `stroke-dashoffset` from 1 to 0, path jittered from a seeded random so it wobbles like a hand | about 1.1 ms per pixel of length, 260–1100 ms; `--ease-stroke: cubic-bezier(0.65, 0, 0.35, 1)` (easeInOutCubic), because a hand accelerates into a stroke and slows into its end |
 | Pen lift | a pause between strokes | 160–260 ms |
 | Arrowhead | two short strokes after the shaft | 140 ms each |
-| Pencil tip | on the board only, a red-blue pencil follows the stroke's end point (`getPointAtLength`) and lifts away when done | follows the stroke |
-| Handwriting | each word is revealed left to right with `clip-path` | 34 ms per character, plus 90 ms after a full stop |
+| Pencil tip | on the board only, a red-blue pencil, held right-handed, follows the stroke's end point (`getPointAtLength`), travels between strokes that follow closely, and lifts away when done | follows the stroke |
+| Handwriting | each word is revealed left to right with `clip-path` | 34 ms per character, plus 90 ms after a full stop and 45 ms after a comma; a note outside the lesson takes at most about 2.5 s |
 | Highlighter | one left-to-right swipe | 520 ms, ease-out |
 | Pieces | glide with `transform` | 420 ms, `--ease-out: cubic-bezier(0.23, 1, 0.32, 1)` |
 | Buttons | `scale(0.97)` on press; hover colour shifts only behind `(hover: hover) and (pointer: fine)` | 160 ms ease-out |
 
-- **Triggers.** Each section draws once, when it scrolls into view (IntersectionObserver at 45% visible). Within a section, one pen does the marks in order. The lesson autoplays once, when the board is in view, and pauses on hover, focus or a hidden tab.
+- **Triggers.** Each section draws once, when its top passes about 80% of the viewport. Within a section, one pen does the marks in document order, and a mark further down waits until it is on screen itself. The lesson autoplays once, when half the board is in view, and its hold between steps pauses on mouse hover, focus or a hidden tab.
+- **Who is driving.** When the visitor clicks Next, Back or a move on the score sheet, the coach draws 1.4 times faster. Arrow keys show each step finished, because keyboard steps repeat quickly and should feel instant. Replay runs the lesson again from the start.
 - **Pacing.** In each lesson step the pieces move, the title is written, and then each sentence is preceded by the stroke it explains. The coach then holds for about 3 seconds before the next step. Next, Back and the score-sheet moves are always available.
-- **Reduced motion.** Every drawing and note is shown finished and there is no autoplay. Step changes are instant.
+- **Reduced motion.** Every drawing and note is shown finished and there is no autoplay. Step changes are instant, and the pencil is hidden. If the setting changes while the page is open, every drawing in progress finishes at once.
 - **At rest.** Every mark is in the HTML that the build writes. Without JavaScript, or before a section is reached, the page is complete. JavaScript hides a mark only just before it draws that mark.
 
 ## Components
