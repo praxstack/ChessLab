@@ -20,7 +20,7 @@
 <header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
 <main id="main" tabindex="-1">
 <header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/original-asset-pack/specs/original-assets/spec.md</p></header>
-<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/original-asset-pack/specs/original-assets/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/original-asset-pack/specs/original-assets/spec.md<br>SHA-256: a97ca8bbb2aa8e5317ac71c6dcefaf4806f24690395033a800afb5b160cc402f</p><h3 id="purpose">Purpose</h3>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/original-asset-pack/specs/original-assets/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/original-asset-pack/specs/original-assets/spec.md<br>SHA-256: f23bd19f3e41ab405981d2fd8087cf16c5ba12844117a8960f8015a5e267fe36</p><h3 id="purpose">Purpose</h3>
 <p>Ship only original or openly licensed artwork, bots and wording, so the app can be shown to outside testers and the repository distributes no other product's assets or captures.</p>
 <h3 id="added-requirements">ADDED Requirements</h3>
 <h4 id="requirement-oa-001-openly-licensed-piece-set">Requirement: OA-001 Openly licensed piece set</h4>
@@ -69,11 +69,16 @@
 <li><strong>THEN</strong> the game result and the bot card show a silver medal</li>
 </ul>
 <h4 id="requirement-oa-006-games-that-name-retired-bots">Requirement: OA-006 Games that name retired bots</h4>
-<p>A saved game or account result that names a bot id no longer in the roster SHALL open without error and show its stored bot name. A rematch or new game requested with a well-formed retired id SHALL play the current non-adaptive bot nearest the requested rating, using first-moves bots below 250. A malformed id MUST be refused with 400.</p>
+<p>A saved game that names a bot id no longer in the roster SHALL open without error and show its stored bot name. Results an account recorded against a retired bot id SHALL stay stored and SHALL NOT be shown on any card in the current bot picker, which shows results only for the current roster (founder decision, 8 October 2026). A rematch or new game requested with a well-formed retired id SHALL play the current non-adaptive bot nearest the requested rating, using first-moves bots below 250. A malformed id MUST be refused with 400.</p>
 <h5 id="scenario-rematch-against-a-retired-bot">Scenario: Rematch against a retired bot</h5>
 <ul>
 <li><strong>WHEN</strong> a learner requests a rematch of a saved game against a bot id from the earlier roster at 250</li>
 <li><strong>THEN</strong> the new game is created against the current 250 bot</li>
+</ul>
+<h5 id="scenario-results-against-a-retired-bot">Scenario: Results against a retired bot</h5>
+<ul>
+<li><strong>WHEN</strong> an account holds a medal recorded against a bot id from the earlier roster and the learner opens the bot picker</li>
+<li><strong>THEN</strong> the result stays stored, no card in the picker shows it, and a saved game against that bot still opens with its stored bot name</li>
 </ul>
 <h5 id="scenario-malformed-bot-id">Scenario: Malformed bot id</h5>
 <ul>

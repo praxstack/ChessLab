@@ -20,12 +20,12 @@
 <header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
 <main id="main" tabindex="-1">
 <header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Deploy Beta</h1><p class="lede">docs/deploy-beta.md</p></header>
-<div class="reading-layout"><article class="prose" aria-label="Deploy Beta"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/docs/deploy-beta.md" download>Download original file ↗</a></div><p class="source-meta">docs/deploy-beta.md<br>SHA-256: 202064ad4d2139373d8f1a5716ee8c0eeaeccd55c813b6a5b225bcb82ff8305c</p><h2 id="deploying-the-private-beta">Deploying the private beta</h2>
+<div class="reading-layout"><article class="prose" aria-label="Deploy Beta"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/docs/deploy-beta.md" download>Download original file ↗</a></div><p class="source-meta">docs/deploy-beta.md<br>SHA-256: 5ecf073231f58cf3f089ada22bec91bb5710ebfe2e077441a88b48ed12b58024</p><h2 id="deploying-the-private-beta">Deploying the private beta</h2>
 <p>This guide covers running the app for a small invited group on one server. It has not been used for a real deployment. On 8 October 2026 the image was built and run in a sandbox. Health checks, invite gating, secure cookies, Stockfish analysis and data surviving a restart were all checked there, as a non-root user. No domain, host or Anthropic API key was involved.</p>
 <p>The governing change is <code>openspec/changes/hosted-beta-readiness/</code>.</p>
 <h3 id="what-runs">What runs</h3>
 <p>One container serves the API and the built web app on port 8770. It runs Stockfish 18 as a child process and stores accounts, sessions, games and progress in SQLite under <code>/data</code>. A TLS reverse proxy (Caddy, nginx, Fly.io or Render) terminates HTTPS and forwards to the container.</p>
-<p>Run exactly one instance. Rate limits, the AI-explanation quota and saved explanation evidence live in process memory. A restart clears them. SQLite allows one writer, and the data volume belongs to one machine. Accounts and sessions persist on the volume.</p>
+<p>Run exactly one instance. Rate limits, the AI-explanation quota and saved explanation evidence live in process memory. A restart clears them. After a restart, or 30 minutes after an analysis, a learner asking for an explanation is asked to run the analysis again. SQLite allows one writer, and the data volume belongs to one machine. Accounts and sessions persist on the volume.</p>
 <h3 id="settings">Settings</h3>
 <p>Set these in the host's secret store or a <code>chmod 600</code> env file. Never commit them.</p>
 <div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
@@ -50,7 +50,7 @@
 <tr class="odd">
 <td><code>BETA_INVITE_CODES</code></td>
 <td><code>code-one-2026,code-two-2026</code></td>
-<td>Comma-separated codes of 8–128 characters. New accounts need one; existing accounts sign in without one. Leave unset to allow open sign-up.</td>
+<td>Comma-separated codes of 8–128 characters. New accounts need one; existing accounts sign in without one. Leave unset to allow open sign-up. An empty entry, such as a trailing comma, stops the server from starting.</td>
 </tr>
 <tr class="even">
 <td><code>ANTHROPIC_API_KEY</code></td>
@@ -94,7 +94,7 @@
 </tr>
 </tbody>
 </table></div>
-<p>The image already sets <code>NODE_ENV=production</code>, <code>HOST=0.0.0.0</code>, <code>PORT=8770</code>, <code>CHESSLAB_DB=/data/chesslab.sqlite</code>, <code>STOCKFISH_PATH</code>, <code>CHESSLAB_ENGINES_DIR</code>, and catalogue paths under <code>/data</code>. Do not set <code>PUBLIC_ORIGIN</code> or <code>CHESSLAB_BACKEND_SECRET</code>. Those belong to the earlier owner-private Sites tunnel. They make every request require that tunnel's secret header.</p>
+<p>The image already sets <code>NODE_ENV=production</code>, <code>HOST=0.0.0.0</code>, <code>PORT=8770</code>, <code>CHESSLAB_DB=/data/chesslab.sqlite</code>, <code>STOCKFISH_PATH</code>, <code>CHESSLAB_ENGINES_DIR</code>, and catalogue paths under <code>/data</code>. Do not set <code>PUBLIC_ORIGIN</code> or <code>CHESSLAB_BACKEND_SECRET</code>. Those belong to the earlier owner-private Sites tunnel. They make every request require that tunnel's secret header. The server refuses to start when <code>PUBLIC_ORIGIN</code> differs from <code>APP_ORIGIN</code>.</p>
 <h3 id="build-the-image">Build the image</h3>
 <div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> build <span class="at">-t</span> chesslab:beta .</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># On x86-64 CPUs without AVX2:</span></span>
@@ -155,7 +155,7 @@
 <ul>
 <li>No password reset, email verification or account deletion flow. Testers who forget a password need a manual reset.</li>
 <li>Rate limits and the AI quota are in memory and reset on restart. Each account allows 10 sign-in attempts per 15 minutes. Someone who knows a username can use that limit to lock its owner out for 15 minutes.</li>
-<li>The server checks that every move Claude cites appears in the evidence and that any "mate in N" matches the engine. It does not check move order or claims about squares and defenders; the prompt alone governs those.</li>
+<li>The server checks that every move Claude cites appears in the evidence with the same check and mate markers, that any mention of mate matches the side and distance the engine reported, that every number appears in the evidence, and that a piece said to be won, lost or traded is one the evidence lines capture. These checks read simple wording patterns, so unusual phrasing can be misread, and they do not check which side gains the material. They do not check move order or claims about squares and defenders; the prompt alone governs those. Answers over 110 words or two paragraphs are withheld.</li>
 <li>Nothing here has been load-tested. Analysis runs two Stockfish searches at once and bot moves run one at a time. Up to eight more requests queue; beyond that the server answers "busy".</li>
 </ul>
 </article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav><a href="#deploying-the-private-beta">Deploying the private beta</a></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>

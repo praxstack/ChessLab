@@ -46,7 +46,10 @@ receipts=json.loads((root/'imagine-provenance.json').read_text())['images']
 # The session recording and its frames were removed under the 2026-10-08 original-asset policy.
 # Only the generated mockups named in the provenance receipts may remain.
 generated={(root/x['local_path']).resolve() for x in receipts}
-captures=[p for p in root.rglob('*') if p.is_file() and p.suffix.lower() in {'.mp4','.webm','.mov','.png','.jpg','.jpeg'} and p.resolve() not in generated]
+media={'.png','.jpg','.jpeg','.jfif','.gif','.webp','.avif','.apng','.bmp','.tif','.tiff','.heic','.heif','.svg','.ico',
+       '.mp4','.m4v','.mov','.webm','.mkv','.avi','.wmv','.flv','.mpg','.mpeg','.3gp','.ogv',
+       '.mp3','.m4a','.aac','.wav','.ogg','.oga','.opus','.flac','.weba'}
+captures=[p for p in root.rglob('*') if p.is_file() and p.suffix.lower() in media and p.resolve() not in generated]
 assert not captures, f'Capture media must not be stored here: {captures[:3]}'
 assert len(items)==len(receipts)==17
 cards=pages[(root/'index.html').resolve()].cards

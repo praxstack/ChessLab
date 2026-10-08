@@ -95,6 +95,9 @@ input::placeholder, textarea::placeholder { color: #9fa7b4; }
 [data-board-theme=walnut] .square.light { background: #f1e7d0; color: #7a5a40; }[data-board-theme=walnut] .square.dark { background: #845c3f; color: #f7ecd6; }
 [data-board-theme=gray] .square.light { background: #ddd; color: #555; }[data-board-theme=gray] .square.dark { background: #888; color: #1a2230; }
 [data-board-theme] .square.last-move { box-shadow: inset 0 0 0 100px #f0c75e55; }
+/* Highlights lighten or tint a square under its coordinate; a darker ink keeps 4.5:1. */
+.square.light.selected .rank, .square.light.selected .file { color: #1a2230; }
+[data-board-theme=walnut] .square.dark.last-move .rank, [data-board-theme=walnut] .square.dark.last-move .file, [data-board-theme=walnut] .square.dark.selected .rank, [data-board-theme=walnut] .square.dark.selected .file { color: #000; }
 .evaluation-rail { width: 15px; flex: none; background: #13171f; position: relative; overflow: hidden; border-radius: 3px; }
 .evaluation-hidden { display: none; }.evaluation-white { position: absolute; bottom: 0; left: 0; right: 0; background: #eef0f4; transition: height .4s; }
 .evaluation-rail > span { position: absolute; bottom: 8px; left: 0; right: 0; text-align: center; font-family: var(--mono); font-size: 10px; color: #363636; writing-mode: vertical-rl; transform: rotate(180deg); margin: auto; width: 11px; }
