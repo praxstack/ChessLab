@@ -20,7 +20,7 @@ try {
     child.once('exit',()=>{clearTimeout(timeout);reject(new Error(`Server exited: ${diagnostics}`));});
     child.stdout.on('data',chunk=>{const match=String(chunk).match(/ChessLab ready at (http:\/\/[^\s]+)/);if(match){clearTimeout(timeout);resolve(match[1]);}});
   });
-  for(const path of ['/','/research/','/design/','/pieces/chesscom/wn.png']){
+  for(const path of ['/','/research/','/design/','/pieces/cburnett/wN.svg']){
     const response=await fetch(base+path);
     assert.equal(response.status,200,path);
     assert.ok((await response.arrayBuffer()).byteLength>100,path);

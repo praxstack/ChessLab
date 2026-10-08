@@ -55,7 +55,7 @@ if (evidence) fs.mkdirSync(evidence, {recursive:true});
     assert.equal((await botsLoaded).status(),200);
     if(evidence) await page.screenshot({path:path.join(evidence,'01-bot-picker.png'),fullPage:true});
     if(process.env.CHESSLAB_BASELINE_ONLY==='1'){console.log('Baseline screenshot recorded');await context.close();return;}
-    await page.waitForFunction(() => [...document.querySelectorAll('.board img.piece')].length === 32 && [...document.querySelectorAll('.board img.piece')].every(image => image.complete && image.naturalWidth === 150));
+    await page.waitForFunction(() => [...document.querySelectorAll('.board img.piece')].length === 32 && [...document.querySelectorAll('.board img.piece')].every(image => image.complete && image.naturalWidth > 0));
     assert.equal(new Set(await page.locator('.board img.piece').evaluateAll(images => images.map(image => new URL(image.src).pathname))).size, 12, 'All twelve piece images load on the starting board');
     await page.setViewportSize({width:1280,height:720});
     assert.ok(await page.locator('.move-entry').evaluate(element=>element.getBoundingClientRect().bottom<=innerHeight),'Laptop move entry stays above the fold');

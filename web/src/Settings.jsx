@@ -1,6 +1,7 @@
 import React from 'react';
+import {pieceSet} from './settings-state.js';
 
-export const settingDefaults={coordinates:true,legalMoves:true,lastMove:true,arrows:true,sound:true,orientation:'auto',movetime:3000,lines:3,threads:2,pace:1000,boardTheme:'green',pieceSet:'chesscom',animation:200,notation:'figurine',coachAvatar:true,classification:true,autoplay:true,analysisEngine:'stockfish18',reviewStrength:1000};
+export {settingDefaults} from './settings-state.js';
 export function SettingSelect({label,value,onChange,options}) {const id=React.useId();return <div className="setting-row"><label htmlFor={id}>{label}</label><select id={id} value={value} onChange={e=>onChange(e.target.value)}>{options.map(option=><option key={option.value} value={option.value} disabled={option.disabled}>{option.label}</option>)}</select></div>;}
 export function SettingToggle({label,value,onChange}){return <div className="setting-row"><span>{label}</span><button type="button" className={`toggle ${value?'on':''}`} role="switch" aria-checked={!!value} aria-label={label} onClick={onChange}><span/></button></div>;}
 export default function Settings({settings,tab,onTab,onChange,engines}) {
@@ -10,13 +11,14 @@ export default function Settings({settings,tab,onTab,onChange,engines}) {
  return <><div className="settings-tabs" role="tablist" aria-label="Settings sections">{['board','review','engine'].map(id=><button type="button" role="tab" aria-selected={tab===id} key={id} className={tab===id?'active':''} onClick={()=>onTab(id)}>{id==='review'?'Interface':id}</button>)}</div>
  <div className="settings-body">{tab==='board'?<>
   <h3>Board</h3>
-  {select('pieceSet','Pieces',[['chesscom','Neo']])}
+  <div className="setting-row"><span>Pieces</span><span className="setting-value">{pieceSet.label}</span></div>
   {select('boardTheme','Board',[['green','Green'],['blue','Blue'],['brown','Brown'],['gray','Gray']])}
   {select('orientation','Orientation',[['auto','Your playing color'],['w','White at bottom'],['b','Black at bottom']])}
   {select('coordinates','Coordinates',[[true,'Inside'],[false,'None']])}
   {select('notation','Piece Notation',[['figurine','Figurine'],['text','Text']])}
   {select('animation','Piece Animations',[[0,'None'],[100,'Fast'],[200,'Medium (default)'],[400,'Slow']],true)}
   {toggle('lastMove','Highlight Last Move')}{toggle('sound','Play Sounds')}{toggle('legalMoves','Show Legal Moves')}
+  <h3>Credits</h3><ul className="credits" aria-label="Artwork and software credits"><li>Pieces: cburnett by Colin M.L. Burnett · GPLv2+ · <a href="/licenses/cburnett/README.txt" target="_blank" rel="noreferrer">licence</a></li></ul>
  </>:tab==='review'?<>
   <h3>Review</h3>{toggle('arrows',"Coach’s Arrows")}{toggle('classification','Show Move Classification On Board')}{toggle('autoplay','Autoplay Show Moves')}
   {select('pace','Delay Between Moves',[[500,'0.5 seconds'],[1000,'1 second'],[2000,'2 seconds'],[3000,'3 seconds']],true)}

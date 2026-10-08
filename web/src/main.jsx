@@ -3,7 +3,8 @@ import {createRoot} from 'react-dom/client';
 import Board, {Piece} from './Board.jsx';
 import BotSetup, {BotAvatar, Crowns, assistanceDefaults} from './BotSetup.jsx';
 import {replay, parseMove, moveRows, emptyStudy, addBranch, scoreText, branchDepth, rootAnchor, studyLimitError, mergePolledGame, clockText, rematchOptions} from './chess-state.js';
-import Settings, {settingDefaults} from './Settings.jsx';
+import Settings from './Settings.jsx';
+import {settingDefaults, normalizeSettings} from './settings-state.js';
 import GameReview from './GameReview.jsx';
 import ReviewPractice from './ReviewPractice.jsx';
 import PositionEditor from './PositionEditor.jsx';
@@ -20,7 +21,7 @@ import {toggleMark} from '../../shared/board-marks.js';
 import './styles.css';
 
 const defaults = settingDefaults;
-function loadSettings() { try {return {...defaults,...JSON.parse(localStorage.getItem('chesslab-settings') || '{}')};} catch {return defaults;} }
+function loadSettings() { try {return normalizeSettings(JSON.parse(localStorage.getItem('chesslab-settings') || '{}'));} catch {return defaults;} }
 async function api(path, body, signal) {
   const response = await fetch(path, {method:body===undefined?'GET':'POST',headers:body===undefined?{}:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body),signal});
   const result = await response.json();

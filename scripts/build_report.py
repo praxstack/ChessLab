@@ -61,7 +61,7 @@ def category(path):
 
 
 def source_files():
-    files = {ROOT/p for p in ['README.md','CONTEXT.md','AGENTS.md','CLAUDE.md','skills.local.json','justfile','.gitignore','.gitattributes','references/engine-installation.json','references/engine-games-verification.json','references/engine-availability.md','references/chesscom-piece-assets.json','web/public/bots/provenance.json']}
+    files = {ROOT/p for p in ['README.md','CONTEXT.md','AGENTS.md','CLAUDE.md','skills.local.json','justfile','.gitignore','.gitattributes','references/engine-installation.json','references/engine-games-verification.json','references/engine-availability.md','web/public/bots/provenance.json']}
     files.update(p for p in (ROOT/'references').iterdir() if p.is_file() and p.suffix in ['.json','.md'])
     files.update((ROOT/'references').glob('chrome-session-*/session-report.md'))
     for folder in ['docs','openspec','scripts']:
