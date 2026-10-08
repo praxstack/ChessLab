@@ -42,10 +42,12 @@ items=json.loads((root/'scenarios.json').read_text())
 sampling=json.loads((root/'video/study/sampling.json').read_text())
 frame_times={x['seconds'] for x in sampling['frames']}|set(sampling['targeted_seconds'])
 assert len(frame_times)==150 and min(frame_times)==0 and max(frame_times)==919
-# The session recording and its frames were removed under the 2026-10-08 original-asset policy.
-captures=[p for p in root.rglob('*') if p.is_file() and p.suffix.lower() in {'.mp4','.webm','.mov','.png','.jpg','.jpeg'} and 'mockups' not in p.relative_to(root).parts]
-assert not captures, f'Capture media must not be stored here: {captures[:3]}'
 receipts=json.loads((root/'imagine-provenance.json').read_text())['images']
+# The session recording and its frames were removed under the 2026-10-08 original-asset policy.
+# Only the generated mockups named in the provenance receipts may remain.
+generated={(root/x['local_path']).resolve() for x in receipts}
+captures=[p for p in root.rglob('*') if p.is_file() and p.suffix.lower() in {'.mp4','.webm','.mov','.png','.jpg','.jpeg'} and p.resolve() not in generated]
+assert not captures, f'Capture media must not be stored here: {captures[:3]}'
 assert len(items)==len(receipts)==17
 cards=pages[(root/'index.html').resolve()].cards
 assert len(cards)==17 and set(cards)=={x['id']+'.html' for x in items}, 'Each scenario needs exactly one gallery card'
