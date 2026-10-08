@@ -10,11 +10,11 @@ CREATE TABLE IF NOT EXISTS waitlist (
   source TEXT,          -- which form on the site, e.g. "hero"
   utm TEXT,             -- JSON: utm_source, utm_medium, utm_campaign, referrer
   consent_at TEXT,      -- ISO timestamp when the consent box was ticked
-  created_at TEXT,      -- ISO timestamp
-  ip_hash TEXT          -- salted SHA-256 of the IP, never the raw IP
+  created_at TEXT       -- ISO timestamp
 );
 
 -- One row per hashed IP per one-minute bucket. Rows older than a day are deleted.
+-- The salted SHA-256 hash lives only here, never with an email address.
 CREATE TABLE IF NOT EXISTS rate_limits (
   ip_hash TEXT NOT NULL,
   window_start INTEGER NOT NULL,  -- bucket start, milliseconds since epoch

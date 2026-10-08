@@ -294,6 +294,11 @@ function outputs() {
       ? `<div class="cf-turnstile" data-sitekey="${escAttr(turnstileKey)}" data-theme="light" data-size="flexible"></div>`
       : '',
     TURNSTILE_SCRIPT: turnstileKey ? `<script src="${TURNSTILE_HOST}/turnstile/v0/api.js" async defer></script>` : '',
+    // Turnstile's check runs in the browser, so with it on, a visitor without
+    // JavaScript is pointed to the contact address instead.
+    NOSCRIPT_NOTE: turnstileKey
+      ? `The spam check on this form needs JavaScript. If you can’t turn it on, email ${config.contactEmail} and we’ll add you.`
+      : 'Without JavaScript the form still works: you’ll come back to this page with the result.',
   };
   for (const page of PAGES) {
     const template = readFileSync(join(root, 'pages', page.src), 'utf8');

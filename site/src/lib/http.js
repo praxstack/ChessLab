@@ -28,8 +28,8 @@ export function text(status, body, headers = {}) {
 const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]']);
 
 /**
- * Same-origin check. Browsers send Origin on POST; when it is present it must
- * match the host the request was made to. During local development any
+ * Same-origin check. Browsers send Origin on POST; when it is present its
+ * scheme and host must match the request's. During local development any
  * localhost origin is accepted when the request itself is to localhost.
  */
 export function isAllowedOrigin(request) {
@@ -43,7 +43,7 @@ export function isAllowedOrigin(request) {
   } catch {
     return false;
   }
-  if (originUrl.host === requestUrl.host) return true;
+  if (originUrl.protocol === requestUrl.protocol && originUrl.host === requestUrl.host) return true;
   return LOCAL_HOSTS.has(requestUrl.hostname) && LOCAL_HOSTS.has(originUrl.hostname);
 }
 

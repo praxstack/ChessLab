@@ -89,8 +89,8 @@ export async function handleWaitlistPost(request, env, { now = Date.now(), fetch
     const stamp = new Date(now).toISOString();
 
     await env.DB.prepare(
-      'INSERT INTO waitlist (email, product, fields, source, utm, consent_at, created_at, ip_hash) ' +
-        'VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (email) DO NOTHING',
+      'INSERT INTO waitlist (email, product, fields, source, utm, consent_at, created_at) ' +
+        'VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (email) DO NOTHING',
     )
       .bind(
         email.email,
@@ -100,7 +100,6 @@ export async function handleWaitlistPost(request, env, { now = Date.now(), fetch
         JSON.stringify(utm),
         stamp,
         stamp,
-        ipHash,
       )
       .run();
 

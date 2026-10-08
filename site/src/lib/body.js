@@ -2,12 +2,39 @@
 
 export class BodyError extends Error {}
 
+/**
+ * Reads the body as UTF-8 text, stopping as soon as it passes maxBytes, so a
+ * chunked request without a Content-Length can't make us buffer all of it.
+ */
+async function readCappedText(request, maxBytes) {
+  if (!request.body) return '';
+  const reader = request.body.getReader();
+  const chunks = [];
+  let size = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > maxBytes) {
+      await reader.cancel().catch(() => {});
+      throw new BodyError('too-large');
+    }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder().decode(bytes);
+}
+
 export async function readBody(request, maxBytes) {
   const declared = Number(request.headers.get('content-length') || 0);
   if (declared > maxBytes) throw new BodyError('too-large');
 
-  const raw = await request.text();
-  if (new TextEncoder().encode(raw).length > maxBytes) throw new BodyError('too-large');
+  const raw = await readCappedText(request, maxBytes);
 
   const rawType = request.headers.get('content-type') || '';
   const type = rawType.toLowerCase();

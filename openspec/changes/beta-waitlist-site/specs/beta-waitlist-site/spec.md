@@ -5,7 +5,7 @@ Let visitors join the AskTheMove beta waitlist from a public page, keeping only 
 ## ADDED Requirements
 
 ### Requirement: WL-001 Sign-up with and without JavaScript
-The waitlist form SHALL post to `/api/waitlist` and work without JavaScript. A JSON caller SHALL receive `{ ok: true }` on success or `{ ok: false, error }` with a sentence the page can show. A plain form post SHALL be redirected back to the page with a fragment that names a result note the page shows without JavaScript.
+The waitlist form SHALL post to `/api/waitlist` and work without JavaScript. A JSON caller SHALL receive `{ ok: true }` on success or `{ ok: false, error }` with a sentence the page can show. A plain form post SHALL be redirected back to the page with a fragment that names a result note the page shows without JavaScript. Optional Turnstile runs in the browser, so while it is on the form SHALL tell visitors without JavaScript to email the contact address instead.
 
 #### Scenario: Plain form post
 - **WHEN** a visitor without JavaScript submits a valid email with consent ticked

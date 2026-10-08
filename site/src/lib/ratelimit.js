@@ -7,7 +7,9 @@ import { LIMITS } from './config.js';
  */
 export async function countSubmission(db, ipHash, now = Date.now()) {
   const bucket = Math.floor(now / LIMITS.rateLimitBucketMs) * LIMITS.rateLimitBucketMs;
-  const since = now - LIMITS.rateLimitWindowMs;
+  // Count every bucket that overlaps the last 10 minutes, including the one that
+  // starts just before it, so no attempt inside the window is missed.
+  const since = now - LIMITS.rateLimitWindowMs - LIMITS.rateLimitBucketMs;
   const results = await db.batch([
     db
       .prepare(
@@ -26,7 +28,7 @@ export async function countSubmission(db, ipHash, now = Date.now()) {
   return Number(row ? row.total : 0);
 }
 
-/** Seconds until the oldest counted bucket leaves the window. */
+/** Seconds until every bucket counted now has left the window. */
 export function retryAfterSeconds() {
-  return Math.ceil(LIMITS.rateLimitWindowMs / 1000);
+  return Math.ceil((LIMITS.rateLimitWindowMs + LIMITS.rateLimitBucketMs) / 1000);
 }

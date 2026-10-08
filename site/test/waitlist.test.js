@@ -24,8 +24,10 @@ test('valid signup returns ok and stores one normalised row', async () => {
   assert.equal(row.source, 'hero');
   assert.deepEqual(JSON.parse(row.utm), { utm_source: 'reddit', referrer: 'https://news.ycombinator.com/' });
   assert.ok(row.consent_at && row.created_at);
-  assert.match(row.ip_hash, /^[0-9a-f]{64}$/);
+  assert.ok(!('ip_hash' in row), 'the IP hash stays in the rate-limit table, not with the email');
   assert.ok(!JSON.stringify(row).includes('203.0.113.7'), 'raw IP must not be stored');
+  const [counter] = env.DB.rows('rate_limits');
+  assert.match(counter.ip_hash, /^[0-9a-f]{64}$/);
 });
 
 test('duplicate email gets the same answer as a new one and adds no row', async () => {
@@ -139,10 +141,31 @@ test('sixth attempt from one IP inside ten minutes gets 429; other IPs are unaff
   assert.equal(later.status, 200);
 });
 
+test('attempts late in a minute still count for the full ten minutes', async () => {
+  const { handleWaitlistPost } = await import('../src/lib/waitlist.js');
+  const env = makeEnv();
+  const t0 = Date.UTC(2026, 9, 8, 10, 0, 59);
+  for (let i = 0; i < 5; i += 1) {
+    const r = await handleWaitlistPost(postJson({ ...good, email: `r${i}@gmail.com` }), env, { now: t0 });
+    assert.equal(r.status, 200);
+  }
+  // 9 minutes 2 seconds later all five are still inside the window.
+  const sixth = await handleWaitlistPost(postJson({ ...good, email: 'r5@gmail.com' }), env, {
+    now: Date.UTC(2026, 9, 8, 10, 10, 1),
+  });
+  assert.equal(sixth.status, 429);
+  assert.equal(sixth.headers.get('retry-after'), '660');
+});
+
 test('cross-origin posts are refused; same origin and localhost dev are allowed', async () => {
   const env = makeEnv();
   const res = await call(postJson(good, { origin: 'https://evil.example' }), env);
   assert.equal(res.status, 403);
+  assert.equal(env.DB.rows('waitlist').length, 0);
+
+  // Same host over plain HTTP is a different origin.
+  const plain = await call(postJson(good, { origin: 'http://askthemove.pages.dev' }), env);
+  assert.equal(plain.status, 403);
   assert.equal(env.DB.rows('waitlist').length, 0);
 
   const noOrigin = await call(postJson({ ...good, email: 'n@gmail.com' }, { origin: null }), env);
@@ -181,6 +204,35 @@ test('unreadable and oversized bodies are rejected', async () => {
   assert.equal((await call(broken, env)).status, 400);
   const huge = postJson({ ...good, source: 'x'.repeat(20000) });
   assert.equal((await call(huge, env)).status, 413);
+});
+
+test('a chunked body with no length is cut off once it passes 16 KB', async () => {
+  const env = makeEnv();
+  const chunk = new TextEncoder().encode('x'.repeat(1024));
+  let pulled = 0;
+  let cancelled = false;
+  const stream = new ReadableStream({
+    pull(controller) {
+      pulled += 1;
+      if (pulled > 1024) controller.close();
+      else controller.enqueue(chunk);
+    },
+    cancel() {
+      cancelled = true;
+    },
+  });
+  const request = new Request('https://askthemove.pages.dev/api/waitlist', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', accept: 'application/json', 'cf-connecting-ip': '203.0.113.7' },
+    body: stream,
+    duplex: 'half',
+  });
+  assert.equal(request.headers.get('content-length'), null);
+  const res = await call(request, env);
+  assert.equal(res.status, 413);
+  assert.ok(cancelled, 'the rest of the body is not read');
+  assert.ok(pulled < 40, `read ${pulled} KB before stopping`);
+  assert.equal(env.DB.rows('waitlist').length, 0);
 });
 
 test('Turnstile is enforced only when TURNSTILE_SECRET is set', async () => {

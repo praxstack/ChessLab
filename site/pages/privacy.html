@@ -21,7 +21,7 @@
         <li><strong>Your optional answer</strong> to “Roughly what’s your rating?”, if you choose one.</li>
         <li><strong>How you found us</strong>: the form you used, campaign tags in the link you followed (utm_source, utm_medium, utm_campaign) and the page that referred you, if your browser shares it.</li>
         <li><strong>When you joined and when you gave consent.</strong></li>
-        <li><strong>A one-way hash of your IP address</strong>, made with a secret salt, used only to limit repeated sign-ups and abuse. We never store your IP address itself.</li>
+        <li><strong>A one-way hash of your IP address</strong>, made with a secret salt, used only to limit repeated sign-ups and abuse. It is kept in short-lived counters, never with your email address, and we never store your IP address itself.</li>
       </ul>
       <p>This site sets no cookies and uses no advertising or tracking scripts.</p>
 
@@ -32,7 +32,7 @@
       <p>In a Cloudflare D1 database that belongs to AskTheMove. Cloudflare hosts this website and the database and may process data outside India. When we send email, we will use an email provider to deliver it.</p>
 
       <h2>How long we keep it</h2>
-      <p>Until the beta ends, or sooner if you ask us to delete it. That includes the hashed IP stored with your sign-up. The separate counters used for rate limiting are deleted by the first sign-up that arrives after they are a day old.</p>
+      <p>Your sign-up is kept until the beta ends, or sooner if you ask us to delete it. The rate-limit counters that hold hashed IPs are deleted by the first sign-up that arrives after they are a day old.</p>
 
       <h2>Your choices</h2>
       <ul>
