@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {replay,parseMove,emptyStudy,addBranch,moveRows,rootAnchor,studyLimitError} from './chess-state.js';
+import {replay,parseMove,emptyStudy,addBranch,moveRows,rootAnchor,studyLimitError,coachKey} from './chess-state.js';
 
 test('SAN and UCI preserve legal state; illegal moves fail', () => {
   assert.equal(parseMove(replay(), 'e4'), 'e2e4');
@@ -74,4 +74,22 @@ test('Black-first custom positions display the clock of the actual side to move'
  const game={initialFen:'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 12',moves:[],timeControl:{initialSeconds:60},clock:{whiteMs:60000,blackMs:60000,activeSince:1000}};
  assert.equal(clockText(game,'b',2500),'0:59');assert.equal(clockText(game,'w',2500),'1:00');
  assert.equal(clockText({...game,moves:['e7e5']},'w',2500),'0:59');
+});
+
+test('AI coach answers reset when the evidence panel changes at the same move',()=>{
+ const node={gameId:'g',branchId:null,ply:2,historyKey:'e2e4 e7e5'};
+ const live={evidenceId:'live-1',limits:{movetime:1000,lines:3,threads:1,engineId:'stockfish19'}};
+ const step={limits:{movetime:1000,lines:1,threads:1,engineId:'stockfish19'}};
+ const key=(scope,analysis,at={})=>coachKey({...node,...at,scope,analysis});
+ // A resumed full-game review reaches the selected move and replaces the live analysis with its saved step.
+ assert.notEqual(key('review',live),key('review',step));
+ // Switching between the Analysis and Review tabs changes the evidence source, even before new evidence arrives.
+ assert.notEqual(key('analysis',live),key('review',live));
+ assert.notEqual(key('analysis',live),key('review',step));
+ // A fresh live search, or a review saved with other limits, is different evidence.
+ assert.notEqual(key('analysis',live),key('analysis',{...live,evidenceId:'live-2'}));
+ assert.notEqual(key('review',step),key('review',{limits:{...step.limits,movetime:3000}}));
+ // Each later review step resends the saved step unchanged, so an answer about it stays.
+ assert.equal(key('review',step),key('review',structuredClone(step)));
+ assert.notEqual(key('review',step),key('review',step,{ply:1,historyKey:'e2e4'}));
 });

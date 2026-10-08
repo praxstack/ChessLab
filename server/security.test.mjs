@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createApp} from './app.mjs';
 import {createCoach} from './coach-explain.mjs';
-import {securityConfig, parseTrustProxy, parseInviteCodes, canonicalOrigin, inviteAccepted} from './security.mjs';
+import {securityConfig, securityHeaders, parseTrustProxy, parseInviteCodes, canonicalOrigin, inviteAccepted} from './security.mjs';
 
 async function fixture(env = {}) {
   const temp = mkdtempSync(join(tmpdir(), 'chesslab-security-'));
@@ -32,9 +32,20 @@ test('hosting settings fail closed on unsafe values and stay local by default', 
   assert.throws(() => parseTrustProxy('everyone'));
   assert.deepEqual([parseTrustProxy(undefined), parseTrustProxy('0'), parseTrustProxy('2'), parseTrustProxy('loopback'), parseTrustProxy('10.0.0.0/8, 172.16.0.1')], [false, false, 2, 'loopback', ['10.0.0.0/8', '172.16.0.1']]);
   assert.throws(() => parseInviteCodes('short'), /8 to 128/);
+  for (const value of [',', ' ', ' , ', 'first-cohort-2026,', 'first-cohort-2026,,second-cohort-2026']) assert.throws(() => parseInviteCodes(value), /8 to 128/, `An empty entry must not silently turn off invites: ${JSON.stringify(value)}`);
+  assert.throws(() => securityConfig({APP_ORIGIN:'https://app.example.com', PUBLIC_ORIGIN:'https://private.example.com'}), /PUBLIC_ORIGIN/, 'Conflicting origins fail at startup');
+  assert.equal(securityConfig({APP_ORIGIN:'https://app.example.com', PUBLIC_ORIGIN:'https://app.example.com'}).appOrigin, 'https://app.example.com');
   assert.equal(inviteAccepted([], undefined), true);
   assert.equal(inviteAccepted(['first-cohort-2026'], ' first-cohort-2026 '), true);
   for (const code of [undefined, '', 'first-cohort-2027', 'x'.repeat(129), {}]) assert.equal(inviteAccepted(['first-cohort-2026'], code), false);
+});
+
+test('archive paths skip the content security policy only when the archives are served', () => {
+  const policyFor = (env, path) => { const headers = {}; securityHeaders(securityConfig(env))({path}, {set:(name, value) => { headers[name.toLowerCase()] = value; }}, () => {}); return headers['content-security-policy']; };
+  for (const path of ['/design/', '/research/index.html', '/']) assert.match(policyFor({APP_ORIGIN:'https://app.example.com'}, path) ?? '', /default-src 'self'/, `Hosted ${path} falls through to the app and keeps the policy`);
+  assert.equal(policyFor({APP_ORIGIN:'https://app.example.com', SERVE_ARCHIVES:'1'}, '/design/'), undefined, 'Served archives keep their inline scripts');
+  assert.match(policyFor({APP_ORIGIN:'https://app.example.com', SERVE_ARCHIVES:'1'}, '/'), /default-src 'self'/);
+  assert.equal(policyFor({NODE_ENV:'production'}, '/research/'), undefined, 'Local production still serves the archives');
 });
 
 test('health check, security headers and secure session cookie for a hosted origin', async () => {

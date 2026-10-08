@@ -23,7 +23,8 @@ export function parseTrustProxy(value) {
 
 export function parseInviteCodes(value) {
   if (!value) return [];
-  const codes = value.split(',').map(code => code.trim()).filter(Boolean);
+  // An empty entry (",", a trailing comma or only spaces) must not leave an empty list that turns the gate off.
+  const codes = value.split(',').map(code => code.trim());
   if (codes.some(code => code.length < 8 || code.length > 128 || /\s/.test(code))) throw new Error('Each BETA_INVITE_CODES entry needs 8 to 128 characters without spaces.');
   return codes;
 }
@@ -39,6 +40,8 @@ export function inviteAccepted(codes, supplied) {
 
 export function securityConfig(env = process.env) {
   const appOrigin = env.APP_ORIGIN ? canonicalOrigin(env.APP_ORIGIN) : null;
+  // PUBLIC_ORIGIN belongs to the earlier owner-private Sites tunnel. Two different origins would refuse one of them.
+  if (appOrigin && env.PUBLIC_ORIGIN && env.PUBLIC_ORIGIN !== appOrigin) throw new Error('APP_ORIGIN and PUBLIC_ORIGIN name different origins. PUBLIC_ORIGIN is for the earlier private Sites tunnel; unset it for the hosted beta.');
   const https = appOrigin?.startsWith('https:') ?? false;
   return {
     appOrigin,
@@ -63,8 +66,9 @@ export function securityHeaders(config) {
     res.set('Cross-Origin-Resource-Policy', 'same-origin');
     res.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
     if (config.hsts) res.set('Strict-Transport-Security', 'max-age=31536000');
-    // The research and design archives are static HTML with their own inline scripts.
-    if (config.contentSecurityPolicy && !/^\/(?:research|design)(?:\/|$)/.test(req.path)) res.set('Content-Security-Policy', CSP);
+    // The research and design archives are static HTML with their own inline scripts. When they are not
+    // served, those paths fall through to the app and keep the policy.
+    if (config.contentSecurityPolicy && !(config.serveArchives && /^\/(?:research|design)(?:\/|$)/.test(req.path))) res.set('Content-Security-Policy', CSP);
     next();
   };
 }
