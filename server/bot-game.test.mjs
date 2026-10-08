@@ -35,6 +35,16 @@ test('adaptive targets stay on the strength ladder and move with the material ba
  assert.equal(adaptiveRating({adaptive:true,rating:650,color:'w',moves:[],initialFen:fen(1)}),850,`${mirra.id} moves one level for one pawn`);
  assert.equal(adaptiveRating({adaptive:true,rating:650,color:'w',moves:[],initialFen:fen(5)}),1050,'the shift stays capped at about 350 points');
 });
+test('a portrait depends on the bot id, category and style, and on nothing else',()=>{
+ const bots=JSON.parse(readFileSync(new URL('./bot-profiles.json',import.meta.url)));
+ for(const bot of bots){
+  const svg=avatarSvg(bot);
+  assert.equal(avatarSvg({id:bot.id,category:bot.category,style:bot.style}),svg,bot.id);
+  assert.equal(avatarSvg({...bot,name:'Renamed',rating:3200,level:22,description:'Another description.',adaptive:!bot.adaptive,avatar:'/elsewhere.svg'}),svg,`${bot.id}: other fields leave the portrait unchanged`);
+  assert.notEqual(avatarSvg({...bot,category:bot.category==='Club'?'Expert':'Club'}),svg,`${bot.id}: the category is part of the portrait`);
+  assert.notEqual(avatarSvg({...bot,style:bot.style==='solid'?'aggressive':'solid'}),svg,`${bot.id}: the style is part of the portrait`);
+ }
+});
 test('the portrait check fails on any file no profile uses, at any depth',()=>{
  const check=root=>spawnSync(process.execPath,[join(root,'scripts/generate_bot_avatars.mjs'),'--check'],{encoding:'utf8'});
  const repo=fileURLToPath(new URL('../',import.meta.url));

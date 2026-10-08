@@ -1,7 +1,8 @@
-// Draws each bot's portrait from its id, so the roster's artwork is original and reproducible.
-// Usage: node scripts/generate_bot_avatars.mjs [--check]
-// The same id always produces the same SVG. --check fails when a committed portrait differs or
-// when any other file is in web/public/bots.
+// Draws each bot's portrait from its id, category and style, so the roster's artwork is original and
+// reproducible: the id seeds the face, the category the background, and the style the shirt, brows
+// and mouth. Usage: node scripts/generate_bot_avatars.mjs [--check]
+// The same id, category and style always produce the same SVG. --check fails when a committed
+// portrait differs or when any other file is in web/public/bots.
 import {createHash} from 'node:crypto';
 import {readFileSync, writeFileSync, existsSync, readdirSync, statSync, unlinkSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';

@@ -20,7 +20,7 @@
 <header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
 <main id="main" tabindex="-1">
 <header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/original-asset-pack/specs/original-assets/spec.md</p></header>
-<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/original-asset-pack/specs/original-assets/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/original-asset-pack/specs/original-assets/spec.md<br>SHA-256: 6b11e78af7bf41a9ac9c1d8bbf90114dd0d4edf99929cf9e11cc8318d8a906e0</p><h3 id="purpose">Purpose</h3>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/original-asset-pack/specs/original-assets/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/original-asset-pack/specs/original-assets/spec.md<br>SHA-256: 19ef721ff7d4e6ec218dbd6181d4782dfcf7ae186e8b44640ee65b6ea535e73b</p><h3 id="purpose">Purpose</h3>
 <p>Ship only original or openly licensed artwork, bots and wording, so the app can be shown to outside testers and the repository distributes no other product's assets or captures.</p>
 <h3 id="added-requirements">ADDED Requirements</h3>
 <h4 id="requirement-oa-001-openly-licensed-piece-set">Requirement: OA-001 Openly licensed piece set</h4>
@@ -50,11 +50,16 @@
 <li><strong>THEN</strong> the board loads Slate &amp; sand or Walnut &amp; ivory respectively</li>
 </ul>
 <h4 id="requirement-oa-004-original-bot-roster">Requirement: OA-004 Original bot roster</h4>
-<p>Every bot SHALL have an invented name, an original description and a category of the app's own. The roster MUST NOT name real people, link to other sites or carry country flags. Each portrait SHALL be produced by a committed generator that gives the same file for the same bot id, and a check mode SHALL fail when a committed portrait differs, or when the portrait folder holds any other file at any depth.</p>
+<p>Every bot SHALL have an invented name, an original description and a category of the app's own. The roster MUST NOT name real people, link to other sites or carry country flags. Each portrait SHALL be produced by a committed generator from the bot's id, category and style: the id seeds the face, the category picks the background, and the style picks the shirt colours, brows and mouth. The same three values SHALL always give the same file, and no other profile field MAY change it. A check mode SHALL fail when a committed portrait differs, or when the portrait folder holds any other file at any depth.</p>
 <h5 id="scenario-roster-audit">Scenario: Roster audit</h5>
 <ul>
 <li><strong>WHEN</strong> the automated roster test reads the catalog</li>
 <li><strong>THEN</strong> ids are unique, no entry contains another site's name, a URL or a country field, and every avatar equals the generator's output</li>
+</ul>
+<h5 id="scenario-bot-moved-to-another-category">Scenario: Bot moved to another category</h5>
+<ul>
+<li><strong>WHEN</strong> a bot keeps its id but its category or style changes</li>
+<li><strong>THEN</strong> the generator draws a portrait for the new values, and the check fails until the committed file is regenerated</li>
 </ul>
 <h4 id="requirement-oa-005-engine-defined-strength-ladder">Requirement: OA-005 Engine-defined strength ladder</h4>
 <p>Bot ratings and raw engine levels SHALL be levels of one ladder defined by the engine controls the server applies: below 1100 a share of moves is sampled from the legal moves, and higher levels add Stockfish skill and thinking time. Each level SHALL map to distinct controls. An adaptive bot's target during play SHALL also be a ladder level: each pawn of material the learner leads or trails by shifts it by about 80 points, capped at 350, and the result lands on the nearest level, at least one level in the direction of the shift. The interface MUST NOT describe ladder ratings as calibrated human ratings. Wins SHALL earn gold, silver or bronze medals under the existing assistance rule.</p>

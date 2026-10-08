@@ -30,11 +30,15 @@ The interface and default board SHALL use the project's own palette. Body text, 
 - **THEN** the board loads Slate & sand or Walnut & ivory respectively
 
 ### Requirement: OA-004 Original bot roster
-Every bot SHALL have an invented name, an original description and a category of the app's own. The roster MUST NOT name real people, link to other sites or carry country flags. Each portrait SHALL be produced by a committed generator that gives the same file for the same bot id, and a check mode SHALL fail when a committed portrait differs, or when the portrait folder holds any other file at any depth.
+Every bot SHALL have an invented name, an original description and a category of the app's own. The roster MUST NOT name real people, link to other sites or carry country flags. Each portrait SHALL be produced by a committed generator from the bot's id, category and style: the id seeds the face, the category picks the background, and the style picks the shirt colours, brows and mouth. The same three values SHALL always give the same file, and no other profile field MAY change it. A check mode SHALL fail when a committed portrait differs, or when the portrait folder holds any other file at any depth.
 
 #### Scenario: Roster audit
 - **WHEN** the automated roster test reads the catalog
 - **THEN** ids are unique, no entry contains another site's name, a URL or a country field, and every avatar equals the generator's output
+
+#### Scenario: Bot moved to another category
+- **WHEN** a bot keeps its id but its category or style changes
+- **THEN** the generator draws a portrait for the new values, and the check fails until the committed file is regenerated
 
 ### Requirement: OA-005 Engine-defined strength ladder
 Bot ratings and raw engine levels SHALL be levels of one ladder defined by the engine controls the server applies: below 1100 a share of moves is sampled from the legal moves, and higher levels add Stockfish skill and thinking time. Each level SHALL map to distinct controls. An adaptive bot's target during play SHALL also be a ladder level: each pawn of material the learner leads or trails by shifts it by about 80 points, capped at 350, and the result lands on the nearest level, at least one level in the direction of the shift. The interface MUST NOT describe ladder ratings as calibrated human ratings. Wins SHALL earn gold, silver or bronze medals under the existing assistance rule.
