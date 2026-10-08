@@ -5,7 +5,7 @@ Let a learner ask Claude to explain the engine evidence for one position. The se
 ## ADDED Requirements
 
 ### Requirement: AI-001 Evidence-only model input
-The server SHALL replay the submitted history, obtain bounded engine analysis and send the model only structured evidence derived from them. The evidence comprises side to move, check state, legal move count, material, engine identity and search limits, and up to three candidate lines in SAN with capture and check flags. It also covers the played or asked move's classification, estimated loss and engine reply line. It MUST NOT include account identifiers, usernames, game identifiers, saved notes or free-form learner text. Evidence SHALL be refused when the analysed position does not match the replayed history.
+The server SHALL replay the submitted history, obtain bounded engine analysis and send the model only structured evidence derived from them. The evidence comprises side to move, check state, legal move count, material, engine identity and search limits, and up to three candidate lines in SAN with capture and check flags. It also covers the played or asked move's classification, estimated loss and engine reply line. It MUST NOT include account identifiers, usernames, game identifiers, saved notes or free-form learner text. Evidence SHALL be refused when the analysed position does not match the replayed history. When a request names panel evidence that the server no longer holds, or that belongs to another account or position, it SHALL be refused with a recoverable error asking the learner to run the analysis again, and MUST NOT be replaced by a different search.
 
 #### Scenario: Explain a reviewed move
 - **WHEN** a signed-in learner asks for an explanation of a position with engine evidence
@@ -15,12 +15,20 @@ The server SHALL replay the submitted history, obtain bounded engine analysis an
 - **WHEN** the learner has just analysed the position, or opens a saved full-game review step
 - **THEN** the explanation reuses that same account's evidence for that exact position rather than a fresh search with different lines
 
+#### Scenario: Panel evidence has expired
+- **WHEN** the learner asks after the server has dropped the panel's evidence, for example after its retention window or a restart
+- **THEN** the request is refused with an error offering to run the analysis again, and no search or model call is made
+
 ### Requirement: AI-002 Server verification of cited moves
-Every move the answer cites SHALL appear in the supplied evidence with the same check and mate markers; only `!` and `?` annotations are ignored. Any mention of mate SHALL credit a side that the evidence shows mating, through an engine mate score or a checkmating move, and a "mate in N" claim SHALL match that side's engine mate score. Mate wording that names no side SHALL pass only when the evidence shows exactly one side mating. Piece moves, captures, castling, promotions and checks written outside the required citation markers SHALL also count as citations. Bare square names are not checked. An answer that fails any check, is empty, too long, truncated or refused MUST be withheld and replaced by the deterministic engine summary.
+Every move the answer cites SHALL appear in the supplied evidence with the same check and mate markers; only `!` and `?` annotations are ignored. Any mention of mate SHALL credit a side that the evidence shows mating, through an engine mate score or a checkmating move, and a "mate in N" claim SHALL match that side's engine mate score. Mate wording that names no side SHALL pass only when the evidence shows exactly one side mating. Each numeral SHALL equal a number in the evidence or the prompt's fixed scale (piece values and classification thresholds), with its sign when one is written. A claim that a piece is won, lost, captured, traded or hung SHALL name a piece type that a move in the evidence captures, and a claim that material is won or lost SHALL need a capture in the evidence; which side gains it is not checked. Piece moves, captures, castling, promotions and checks written outside the required citation markers SHALL also count as citations. Bare square names are not checked. An answer that fails any check, is empty, truncated or refused, or is too long (over 110 words, two paragraphs or 1,600 characters) MUST be withheld and replaced by the deterministic engine summary.
 
 #### Scenario: Invented move
 - **WHEN** the model's answer cites a legal-looking move that is not in the evidence
 - **THEN** the learner receives the deterministic engine summary with an "unverified claims" reason, and the model text is not shown
+
+#### Scenario: Invented number or material
+- **WHEN** the answer says a move loses 900 centipawns or wins a queen, and the evidence states no such loss and captures no queen
+- **THEN** the answer is withheld and the deterministic engine summary is shown
 
 #### Scenario: Invented check or mate
 - **WHEN** the answer adds a check or mate marker to an evidenced move, or credits a mate to the side the engine shows being mated

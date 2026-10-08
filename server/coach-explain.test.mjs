@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtempSync, rmSync} from 'node:fs';
+import {randomUUID} from 'node:crypto';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {Chess} from 'chess.js';
@@ -32,11 +33,11 @@ function fakeClient(respond) {
 const silentLogger = () => { const lines = []; return {lines, warn:line => lines.push(String(line))}; };
 const testConfig = overrides => ({...coachConfig({}), apiKey:'sk-ant-test-not-a-real-key', ...overrides});
 
-async function fixture({client, config = testConfig(), logger = silentLogger(), security = securityConfig({})} = {}) {
+async function fixture({client, config = testConfig(), logger = silentLogger(), security = securityConfig({}), nowMs} = {}) {
   const temp = mkdtempSync(join(tmpdir(), 'chesslab-coach-'));
   const engineCalls = [];
   const engineApi = {engineStatus:async () => ({available:true, name:'test engine'}), analyze:async request => { engineCalls.push(request); return fakeAnalysis(request); }};
-  const coach = createCoach({client, config, logger});
+  const coach = createCoach({client, config, logger, ...(nowMs ? {nowMs} : {})});
   const state = createApp({databasePath:join(temp, 'db.sqlite'), engineApi, coach, config:security});
   const server = state.app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
   const base = `http://127.0.0.1:${server.address().port}`;
@@ -97,8 +98,19 @@ test('a mate claim must match the side and distance of the engine evidence', () 
   for (const fine of ['[[Qh4#]] is mate in 1 for Black.', 'White is checkmated after [[Qh4#]].', 'Black mates with [[Qh4#]].']) assert.equal(verifyAnswer(fine, black).ok, true, fine);
   for (const contradiction of ['[[Qh4#]] is mate in 1 for White.', 'White mates in 1 instead.', 'Black is mated after [[Qh4#]].']) assert.equal(verifyAnswer(contradiction, black).ok, false, contradiction);
   // When the evidence holds mates for both sides, an unattributed mate claim is ambiguous.
-  const both = {allowed:new Map(), mates:{scores:new Set(['White 2', 'Black 3']), sides:new Set(['White', 'Black'])}};
+  const both = {allowed:new Map(), mates:{scores:new Set(['White 2', 'Black 3']), sides:new Set(['White', 'Black'])}, numbers:{signed:new Set([2, 3]), unsigned:new Set([2, 3])}, captured:new Set()};
   assert.deepEqual(['White has mate in 2.', 'Black has mate in 3.', 'It is mate in 2.', 'Black has mate in 2.'].map(text => verifyAnswer(text, both).ok), [true, true, false, false]);
+});
+
+test('numbers and won or lost pieces must come from the evidence', () => {
+  // Played Qe7: estimated loss 60 centipawns, score after +0.90, reply Nc3; best line g6 Qf3 Nf6 at +0.30, depth 18, 800 ms.
+  const quiet = buildEvidence(fakeAnalysis({playedMove:'d8e7'}), {moves:BASE});
+  for (const fine of ['[[Qe7]] loses about 60 centipawns at depth 18; the engine preferred [[g6]] at +0.30.', 'After [[Qe7]] the score is 0.90 for White in 800 ms of search.', 'Stockfish 18 rates [[Qe7]] an Inaccuracy: from 50 centipawns of loss, short of a Mistake at 150.', 'The f7 square stays covered and the material stays level.']) assert.equal(verifyAnswer(fine, quiet).ok, true, fine);
+  for (const invented of ['[[Qe7]] loses 900 centipawns.', 'The score after [[Qe7]] is -0.90.', '[[Qe7]] wins a queen for Black.', 'After [[Qe7]] White trades queens.', '[[Qe7]] hangs the knight on c6.', 'Black is up a pawn after [[g6]].', 'Black wins material with [[Qe7]].', 'This loses 25% of the advantage.']) assert.equal(verifyAnswer(invented, quiet).ok, false, invented);
+  // Nf6 allows Qxf7#, which captures a pawn: a claim about that pawn is evidenced, one about a queen is not.
+  const mate = buildEvidence(fakeAnalysis({playedMove:'g8f6'}), {moves:BASE});
+  assert.equal(verifyAnswer('[[Nf6]] hangs the f7 pawn to [[Qxf7#]].', mate).ok, true);
+  assert.equal(verifyAnswer('[[Nf6]] loses the queen to [[Qxf7#]].', mate).ok, false);
 });
 
 test('a follow-up move is parsed and checked by the rules library, never by the model', () => {
@@ -152,7 +164,7 @@ test('an answer citing a move outside the evidence falls back to the determinist
     assert.equal(result.body.fallbackReason, 'unverified_claims');
     assert.equal(result.body.text, fakeAnalysis({playedMove:'g8f6'}).played.explanation);
     assert.ok(!result.body.text.includes('Bxf7'));
-    assert.deepEqual(f.logger.lines, ['Coach AI fallback: unverified_claims (1 unverified claims)']);
+    assert.deepEqual(f.logger.lines, ['Coach AI fallback: unverified_claims (2 unverified claims)']);
   } finally { await f.close(); }
 });
 
@@ -245,11 +257,29 @@ test('server evidence is reused only for the same account and position', async (
     assert.equal(f.engineCalls.length, 1);
     await f.request('/api/coach/explain', {cookie:owner, body:{moves:BASE, playedMove:'g8f6', evidenceId:analysis.body.evidenceId}});
     assert.equal(f.engineCalls.length, 1, 'The panel and the explanation share one search');
-    await f.request('/api/coach/explain', {cookie:other, body:{moves:BASE, playedMove:'g8f6', evidenceId:analysis.body.evidenceId}});
-    assert.equal(f.engineCalls.length, 2, 'Another account cannot reuse the evidence');
-    await f.request('/api/coach/explain', {cookie:owner, body:{moves:BASE, playedMove:'d8e7', evidenceId:analysis.body.evidenceId}});
-    assert.equal(f.engineCalls.length, 3, 'A different move gets fresh evidence');
+    assert.equal((await f.request('/api/coach/explain', {cookie:other, body:{moves:BASE, playedMove:'g8f6', evidenceId:analysis.body.evidenceId}})).status, 409, 'Another account cannot reuse the evidence');
+    assert.equal((await f.request('/api/coach/explain', {cookie:owner, body:{moves:BASE, playedMove:'d8e7', evidenceId:analysis.body.evidenceId}})).status, 409, 'Evidence for another move is refused');
+    assert.equal(f.engineCalls.length, 1, 'Neither is replaced by a different search');
+    await f.request('/api/coach/explain', {cookie:owner, body:{moves:BASE, playedMove:'d8e7'}});
+    assert.equal(f.engineCalls.length, 2, 'Without panel evidence, a move gets its own search');
     assert.equal((await f.request('/api/coach/explain', {cookie:owner, body:{moves:BASE, playedMove:'e2e4'}})).status, 400, 'Illegal played moves are rejected');
+  } finally { await f.close(); }
+});
+
+test('panel evidence the server no longer holds is refused rather than replaced by another search', async () => {
+  let now = Date.parse('2026-10-08T12:00:00Z');
+  const client = fakeClient(() => answer('[[Nf6]] allows [[Qxf7#]] in the engine\'s line.'));
+  const f = await fixture({client, nowMs:() => now});
+  try {
+    const cookie = await f.register('coach_mona');
+    const analysis = await f.request('/api/analyze', {cookie, body:{moves:BASE, playedMove:'g8f6'}});
+    now += 31 * 60000;
+    const expired = await f.request('/api/coach/explain', {cookie, body:{moves:BASE, playedMove:'g8f6', evidenceId:analysis.body.evidenceId}});
+    assert.equal(expired.status, 409);
+    assert.match(expired.body.error, /Run the analysis again/);
+    const restarted = await f.request('/api/coach/explain', {cookie, body:{moves:BASE, playedMove:'g8f6', evidenceId:randomUUID()}});
+    assert.equal(restarted.status, 409, 'An id from before a restart is unknown');
+    assert.deepEqual([f.engineCalls.length, client.calls.length], [1, 0], 'No substitute search and no model call');
   } finally { await f.close(); }
 });
 
@@ -260,6 +290,8 @@ test('API errors, refusals and truncation fall back without logging the key or t
     () => ({model:DEFAULT_MODEL, stop_reason:'refusal', content:[]}),
     () => ({model:DEFAULT_MODEL, stop_reason:'max_tokens', content:[{type:'text', text:'[[g6]] is'}]}),
     () => answer('   '),
+    () => answer(`[[g6]] ${'keeps the position balanced at this depth. '.repeat(16)}`),
+    () => answer('[[g6]] keeps the balance.\n\nThe engine prefers it.\n\nRemember the idea.'),
   ];
   const client = fakeClient((body, options, count) => outcomes[count - 1]());
   const f = await fixture({client});
@@ -267,7 +299,7 @@ test('API errors, refusals and truncation fall back without logging the key or t
     const cookie = await f.register('coach_jade');
     const reasons = [];
     for (let i = 0; i < outcomes.length; i++) reasons.push((await f.request('/api/coach/explain', {cookie, body:{moves:BASE}})).body.fallbackReason);
-    assert.deepEqual(reasons, ['api_error', 'upstream_busy', 'refusal', 'incomplete', 'empty']);
+    assert.deepEqual(reasons, ['api_error', 'upstream_busy', 'refusal', 'incomplete', 'empty', 'too_long', 'too_long'], 'Over 110 words or two paragraphs is too long');
     const logged = f.logger.lines.join('\n');
     assert.ok(!logged.includes('sk-ant') && !logged.includes('evidence') && !logged.includes('g6'), logged);
   } finally { await f.close(); }

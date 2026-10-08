@@ -389,7 +389,11 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   res.once('close',cancel);
   try{
    const position={moves,initialFen,variant,playedMove:asked?asked.uci:playedMove};
-   const analysis=(!asked&&(coach.recall(req.user.id,evidenceId,position)||reviewedEvidence(req,{gameId,...position})))
+   const recalled=asked?null:coach.recall(req.user.id,evidenceId,position);
+   // The explanation must rest on the lines the panel shows. When that evidence has expired, predates a restart or
+   // belongs to another position, a fresh search with other settings could cite moves the panel never showed.
+   if(!asked&&evidenceId!==undefined&&!recalled)fail(409,'This analysis has expired on the server. Run the analysis again, then ask.');
+   const analysis=recalled||(!asked&&reviewedEvidence(req,{gameId,...position}))
     ||await engineApi.analyze({...position,movetime:coach.engineMovetime,lines:3},{signal:controller.signal});
    if((position.playedMove??null)!==(analysis.played?.move??null))fail(503,'The engine evidence does not match this move. Try again.');
    res.json(await coach.explain({userId:req.user.id,analysis,moves,initialFen,variant,asked,signal:controller.signal}));

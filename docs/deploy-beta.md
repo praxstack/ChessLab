@@ -8,7 +8,7 @@ The governing change is `openspec/changes/hosted-beta-readiness/`.
 
 One container serves the API and the built web app on port 8770. It runs Stockfish 18 as a child process and stores accounts, sessions, games and progress in SQLite under `/data`. A TLS reverse proxy (Caddy, nginx, Fly.io or Render) terminates HTTPS and forwards to the container.
 
-Run exactly one instance. Rate limits, the AI-explanation quota and saved explanation evidence live in process memory. A restart clears them. SQLite allows one writer, and the data volume belongs to one machine. Accounts and sessions persist on the volume.
+Run exactly one instance. Rate limits, the AI-explanation quota and saved explanation evidence live in process memory. A restart clears them. After a restart, or 30 minutes after an analysis, a learner asking for an explanation is asked to run the analysis again. SQLite allows one writer, and the data volume belongs to one machine. Accounts and sessions persist on the volume.
 
 ## Settings
 
@@ -119,5 +119,5 @@ The marketing site can live at the apex domain or `www` independently. Both are 
 
 - No password reset, email verification or account deletion flow. Testers who forget a password need a manual reset.
 - Rate limits and the AI quota are in memory and reset on restart. Each account allows 10 sign-in attempts per 15 minutes. Someone who knows a username can use that limit to lock its owner out for 15 minutes.
-- The server checks that every move Claude cites appears in the evidence with the same check and mate markers, and that any mention of mate matches the side and distance the engine reported. It reads which side a mate sentence credits from simple wording patterns, so unusual phrasing can be misread. It does not check move order or claims about squares and defenders; the prompt alone governs those.
+- The server checks that every move Claude cites appears in the evidence with the same check and mate markers, that any mention of mate matches the side and distance the engine reported, that every number appears in the evidence, and that a piece said to be won, lost or traded is one the evidence lines capture. These checks read simple wording patterns, so unusual phrasing can be misread, and they do not check which side gains the material. They do not check move order or claims about squares and defenders; the prompt alone governs those. Answers over 110 words or two paragraphs are withheld.
 - Nothing here has been load-tested. Analysis runs two Stockfish searches at once and bot moves run one at a time. Up to eight more requests queue; beyond that the server answers "busy".
