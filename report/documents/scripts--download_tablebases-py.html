@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Download Tablebases · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Download Tablebases</h1><p class="lede">scripts/download_tablebases.py</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Download Tablebases"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/download_tablebases.py" download>Download original file ↗</a></div><p class="source-meta">scripts/download_tablebases.py<br>SHA-256: 3b52523bba12e76afa09005e14dbca8e430e9146a66c221a2002c257869bd9ac</p><pre><code>&quot;&quot;&quot;Download the pinned 3–5-piece Syzygy set with published SHA-256 verification.&quot;&quot;&quot;
+import concurrent.futures
+import hashlib
+import json
+import os
+from pathlib import Path
+import urllib.request
+
+ROOT = Path(__file__).resolve().parents[1]
+
+def download(item, target):
+    name = item[&#x27;name&#x27;]
+    if Path(name).name != name or not name.endswith((&#x27;.rtbw&#x27;, &#x27;.rtbz&#x27;)):
+        raise ValueError(&#x27;Invalid tablebase filename&#x27;)
+    path = target / name
+    def valid(file):
+        if not file.exists() or file.stat().st_size != item[&#x27;bytes&#x27;]:
+            return False
+        with file.open(&#x27;rb&#x27;) as source:
+            return hashlib.file_digest(source, &#x27;sha256&#x27;).hexdigest() == item[&#x27;sha256&#x27;]
+    if valid(path):
+        return name
+    part = target / (name + &#x27;.part&#x27;)
+    with urllib.request.urlopen(item[&#x27;url&#x27;], timeout=60) as response, part.open(&#x27;wb&#x27;) as output:
+        while block := response.read(1024 * 1024):
+            output.write(block)
+        output.flush()
+        os.fsync(output.fileno())
+    if not valid(part):
+        raise ValueError(&#x27;Tablebase checksum mismatch: &#x27; + name)
+    part.replace(path)
+    return name
+
+if __name__ == &#x27;__main__&#x27;:
+    manifest = json.loads((ROOT / &#x27;docs/verification/endgame-practice/tablebase-download.json&#x27;).read_text())
+    target = ROOT / &#x27;data/tablebases/standard&#x27;
+    target.mkdir(parents=True, exist_ok=True)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+        for count, name in enumerate(pool.map(lambda item: download(item, target), manifest[&#x27;files&#x27;]), 1):
+            if count % 20 == 0 or count == len(manifest[&#x27;files&#x27;]):
+                print(f&#x27;{count}/{len(manifest[&quot;files&quot;])} verified&#x27;, flush=True)
+</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

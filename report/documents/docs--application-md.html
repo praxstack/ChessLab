@@ -20,7 +20,7 @@
 <header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
 <main id="main" tabindex="-1">
 <header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Application</h1><p class="lede">docs/application.md</p></header>
-<div class="reading-layout"><article class="prose" aria-label="Application"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/docs/application.md" download>Download original file ↗</a></div><p class="source-meta">docs/application.md<br>SHA-256: 5e175284fe07c41009d1cb6c78c7990d43ae37580b811b0a82cd332b013fb671</p><h2 id="running-chesslab">Running ChessLab</h2>
+<div class="reading-layout"><article class="prose" aria-label="Application"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/docs/application.md" download>Download original file ↗</a></div><p class="source-meta">docs/application.md<br>SHA-256: 43ab4f26d87257f16609afce35dfa31da829319c8b471a9012d298c09ddbc67a</p><h2 id="running-chesslab">Running ChessLab</h2>
 <p>ChessLab is a local web application for bot play and review. The browser uses React and chess.js. One Node server validates games, runs installed chess engines and human-move models, and stores accounts, games and learning progress in SQLite.</p>
 <h3 id="install-and-start">Install and start</h3>
 <p>Requirements are Node.js 24 or newer, npm, and a native Stockfish executable. Node's built-in SQLite is used; no separate database service is needed.</p>
@@ -36,40 +36,46 @@
 <p>Production mode serves <code>web/dist</code>. This is a local run command, not a public deployment. Stop the server with Ctrl-C before switching between development and production on the same port.</p>
 <div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
 <thead>
-<tr>
+<tr class="header">
 <th>Setting</th>
 <th>Default in <code>.env.example</code></th>
 <th>Purpose</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><code>STOCKFISH_PATH</code></td>
 <td><code>/opt/homebrew/bin/stockfish</code></td>
 <td>Native engine executable on the server</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>HOST</code></td>
 <td><code>127.0.0.1</code></td>
 <td>Listen on loopback</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>PORT</code></td>
 <td><code>8770</code></td>
 <td>HTTP port</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>CHESSLAB_DB</code></td>
 <td><code>./data/chesslab.sqlite</code></td>
 <td>SQLite file, resolved from the working directory</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>COOKIE_SECURE</code></td>
 <td><code>0</code></td>
 <td>Local HTTP cookie setting; HTTPS deployment needs <code>1</code></td>
 </tr>
+<tr class="even">
+<td><code>ANTHROPIC_API_KEY</code></td>
+<td>unset</td>
+<td>Optional. Turns on "Explain why", which asks Claude to explain the engine evidence</td>
+</tr>
 </tbody>
 </table></div>
+<p>The hosted private beta adds <code>APP_ORIGIN</code>, <code>TRUST_PROXY</code>, <code>BETA_INVITE_CODES</code> and the <code>COACH_AI_*</code> limits. See <a href="../documents/docs--deploy-beta-md.html">deploying the private beta</a>.</p>
 <p>Run commands from the repository root. Keep <code>.env</code> and <code>data/</code> out of Git. The repository ignores both.</p>
 <h3 id="play-and-review">Play and review</h3>
 <p>Choose a bot portrait or the <strong>Engines</strong> tab. In <strong>Game options</strong>, select the opponent engine, target strength, color, clock and assistance, then press <strong>Play</strong>. An account is required to save a game. Usernames use 3 to 32 letters, digits, underscores or hyphens; passwords use 10 to 128 characters. Accounts work on this server only. There is no email provider, password recovery or cloud sync.</p>
@@ -83,22 +89,22 @@
 <p>On this Apple Silicon Mac, Stockfish 19 remains the Homebrew installation. The other engines and model runtime live under ignored <code>data/engines/</code>. Install or reproduce them with:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> scripts/install_engines.py</span></code></pre></div>
 <p>The installer is currently for Apple Silicon macOS. It downloads official releases or pinned upstream source/model revisions and creates an isolated Python environment. Executables, model weights and accounts are excluded from Git. A different server needs its own installation; cloning the repository does not install models automatically.</p>
-<p>Target strength is a challenge setting from 250 to 3200 (from 100 for New to Chess profiles), not measured human Elo. Raw engine selection maps the 25 observed reference levels, from 250 to 3200. Yoko Ono’s “Play It By Trust” and the Mechanical Turk’s “?” remain reference labels; their local target starts at an adjustable 1500. Stockfish uses native skill and bounded search. Below 1100, a disclosed local novice policy can replace its successful engine choice with a legal sampled move; aggressive and solid style labels bias that policy. Its receipt retains the engine's original choice. Maia uses the upstream rating conditioning; Maia2 groups ratings below 1100 and at least 2000 into outer bins. Maia3's accepted conditioning range is not proof of a validated training range. Lc0 uses bounded native search, not a calibrated rating control. Styles outside the novice policy affect scripted context, not a reproduced proprietary personality.</p>
+<p>Target strength is a challenge setting from 250 to 3200 (from 100 for first-moves bots), not measured human Elo. Raw engine selection uses the app's own 22-level strength ladder, from 250 to 3200 (<code>shared/strength-ladder.js</code>). Each level is defined by the controls the server applies: below 1100 a share of moves is sampled from the legal moves, and from 1150 each level adds one Stockfish skill step with a longer think. Stockfish uses native skill and bounded search. Below 1100, a disclosed local novice policy can replace its successful engine choice with a legal sampled move; aggressive and solid style labels bias that policy. Its receipt retains the engine's original choice. Maia uses the upstream rating conditioning; Maia2 groups ratings below 1100 and at least 2000 into outer bins. Maia3's accepted conditioning range is not proof of a validated training range. Lc0 uses bounded native search, not a calibrated rating control. Styles outside the novice policy affect scripted context, not a reproduced proprietary personality.</p>
 <p>On each turn the server checks account ownership, revision, turn and legality, then saves the human move. It passes full game history to the selected engine, validates the returned move and saves the reply. An engine failure preserves the game and provides a retry; it never silently substitutes another engine. Maia processes currently start cold for each request, taking roughly three to seven seconds on this Mac. Opponent work is bounded to one cold process at a time with a short bounded queue (Stockfish review separately admits two searches). Review and assistance use Stockfish 19. Analysis independently selects Stockfish 18, 18 Lite, 19 or 16, with up to five lines and eight threads. Maximum review permits 90 seconds per position; abandoning a request cancels queued work and native searches.</p>
 <p>Old saved games retain their five Stockfish presets: skill 0/4/8/14/20 and search 80/150/250/400/700 ms. New games use the expanded setup. Difficulty changes apply to a new game; review settings do not change an existing opponent.</p>
 <h3 id="bot-setup-clocks-and-assistance">Bot setup, clocks and assistance</h3>
-<p>166 observed profiles are grouped into twelve public roster categories. Names, portraits and reference ratings were observed in the public Chess.com roster. Their playing behavior is a local implementation. The engine selector lets you choose what actually runs behind a profile. Adaptive profiles adjust the target by up to 350 points from their base according to the current material balance; this is a simple disclosed practice rule, not a learned rating estimator.</p>
+<p>43 original bot characters are grouped into six categories: Starter, Developing, Club, Expert, Summit and Adaptive. Their names and descriptions are invented for this app, their portraits are drawn by <code>scripts/generate_bot_avatars.mjs</code>, and each rating is a level on the strength ladder. A saved game or rematch that names a bot from an earlier roster opens with its stored name, and a rematch plays the current bot nearest its rating. The engine selector lets you choose what actually runs behind a profile. Adaptive profiles adjust the target by up to 350 points from their base according to the current material balance; this is a simple disclosed practice rule, not a learned rating estimator.</p>
 <p>Choose White, Black or random, an untimed game or one of the timed presets with increments. Server time decides flag fall across reloads and delayed replies. Clocks keep running when you navigate away or review; they do not pause the game. An expired clock resolves the game, and a late engine reply cannot overwrite it.</p>
 <p><strong>Hint</strong> shows a legal engine suggestion and counts as help. <strong>Undo</strong> restores your prior turn and its saved clocks, while preserving assistance usage. Undo is refused if it would invalidate saved variations. The settings independently enable contextual bot chat, evaluation, threat arrows, suggestion arrows, move feedback and engine lines. Bot chat is scripted; it is not free-form conversation. <strong>Rematch</strong> creates a separate saved game with the same setup.</p>
-<p>A win against a roster bot earns three crowns without help, two after one to three hints or undos, and one after more help, opening engine review during play, or with automatic assistance enabled. Chat does not reduce crowns. The best result is saved for each bot on that account. These are local results, with no ranked ladder or anti-cheat claims.</p>
-<h3 id="difference-from-chesscoms-platform">Difference from Chess.com's platform</h3>
-<p>This remains an incomplete one-to-one clone. It now has an actual multi-engine roster and the bot-play controls above, but not Chess.com's full roster, exact personality code, proprietary coach/classification system, complete curriculum or every visual setting. Installing multiple engines does not reproduce those systems.</p>
-<p>Torch and newer Komodo Dragon versions require separate availability; the <a href="../documents/references--engine-availability-md.html">engine availability record</a> records the observed upstream limits. The app does not label unavailable proprietary engines as installed.</p>
-<h3 id="piece-artwork-correction">Piece artwork correction</h3>
-<p>At the user's request, the custom SVG pieces were replaced with the twelve original PNG images used by Chess.com's standard analysis board, theme ID <code>ejgfv</code>: pawn, knight, bishop, rook, queen and king, in both colors. Their URLs were read from the rendered <a href="https://www.chess.com/analysis" rel="noreferrer noopener">Chess.com analysis board</a>, then the files were downloaded without alteration. They are served locally from <code>web/public/pieces/chesscom/</code> and total 93,344 bytes. This is one complete piece set, not every Chess.com theme.</p>
-<p><code>references/chesscom-piece-assets.json</code> records the source URLs, retrieval time, dimensions and SHA-256 hashes. These remain third-party Chess.com assets; no open-source redistribution license is asserted. Green is the default; Blue remains selectable on the board. The difficulty label changed from “Choose your pace” to “Bot difficulty.”</p>
+<p>A win against a roster bot earns a gold medal without help, silver after one to three hints or undos, and bronze after more help, opening engine review during play, or with automatic assistance enabled. Chat does not lower the medal. The stored field is still called <code>crowns</code> for compatibility with saved results. The best result is saved for each bot on that account. These are local results, with no ranked ladder or anti-cheat claims.</p>
+<h3 id="scope-and-history">Scope and history</h3>
+<p>The app is an independent product. It has a multi-engine roster and the bot-play controls above; it does not aim to reproduce another site's roster, personalities, coach, classification system or curriculum. Installing multiple engines does not create those systems. Earlier work (September 2026) pursued reference parity with Chess.com; the original-asset policy of 8 October 2026 superseded that goal for the hosted beta.</p>
+<p>Proprietary engines are not bundled; the <a href="../documents/references--engine-availability-md.html">engine availability record</a> records the observed upstream limits. The app does not label unavailable engines as installed.</p>
+<h3 id="artwork-and-licences">Artwork and licences</h3>
+<p>The pieces are the cburnett set by Colin M.L. Burnett, copied unmodified from the lichess <code>lila</code> repository (commit <code>53f8fc8</code>) into <code>web/public/pieces/cburnett/</code> and used under GPL-2.0-or-later. <code>provenance.json</code> beside them records the source, licence evidence and SHA-256 hashes. The navigation icons are from Lucide (<code>lucide-static</code> 1.47.0, ISC). Licence texts are in <code>web/public/licenses/</code>, and <strong>Settings → Credits</strong> names each source.</p>
+<p>The board defaults to the Slate &amp; sand theme; Walnut &amp; ivory, Blue and Gray remain selectable. Older stored settings that named the previous piece set or the green and brown themes are mapped to the current set and to Slate and Walnut. The palette tokens are generated from the earlier stylesheet by <code>scripts/retheme_palette.py</code>.</p>
 <h3 id="practice-collection">Practice collection</h3>
-<p>The current catalog contains six original introductory lessons and six puzzles. It is a starter collection, not Chess.com's curriculum. Lesson answers and puzzle move sequences are checked on the server. Incorrect answers earn no completion. A puzzle reveals only the next opponent reply after a correct move, and completion is stored with the account.</p>
+<p>The current catalog contains six original introductory lessons and six puzzles. It is a small starter collection. Lesson answers and puzzle move sequences are checked on the server. Incorrect answers earn no completion. A puzzle reveals only the next opponent reply after a correct move, and completion is stored with the account.</p>
 <h3 id="back-up-your-data">Back up your data</h3>
 <p>Accounts, sessions, games, studies and learning progress live in the SQLite database. The default is <code>data/chesslab.sqlite</code>. SQLite can also create <code>chesslab.sqlite-wal</code> and <code>chesslab.sqlite-shm</code> beside it. Copying only the main file while the server is running can miss recent writes.</p>
 <p>For a simple complete backup, stop every ChessLab process using that database, then copy the entire <code>data/</code> directory to a private backup location. Preserve any companion files that remain. If <code>CHESSLAB_DB</code> points elsewhere, back up that database and its companion files instead. Restore while the server is stopped, using the same path or an updated <code>CHESSLAB_DB</code>. The backup contains account data and should not be published.</p>
@@ -111,9 +117,9 @@
 <p>If the engine is unavailable, verify <code>STOCKFISH_PATH</code> and run the executable directly. A missing or failing engine produces an error; the application does not substitute a fabricated move or explanation. If port 8770 is already in use, stop the other server or set a different <code>PORT</code> and open that address. If production mode reports a missing build, run <code>npm run build</code>.</p>
 <p><code>just check</code> also checks agent skill hashes. The latest check stops at a missing installed Pstack <code>unslop</code> source; an earlier check also recorded <code>gstack-cso</code> source drift. These are setup verification failures. Do not silently regenerate its stored hash to make the check pass. Review the changed installed entrypoint before updating the manifest.</p>
 <h3 id="current-limits">Current limits</h3>
-<p>Human multiplayer and billing remain deferred. Owner-private Sites hosting uses a protected HTTPS connection to this Mac; continued remote availability requires the native service and tunnel to remain running. The hosted account database is separate from local development data. Target strengths and reference bot ratings are uncalibrated, not measured human Elo ratings. The coach uses deterministic evidence wording and engine estimates. It does not provide unrestricted language-model conversation. Questions are saved learner notes.</p>
-<p>A candidate continuation demonstrates a legal line at a bounded search. It does not prove that every reply is forced, and additional search can change a score or move classification. The app does not copy Chess.com's classification algorithm or claim its accuracy metrics. The current labels use estimated mover loss: 50 centipawns for inaccuracy, 150 for mistake and 300 for blunder. Short searches and mate scores require separate interpretation. The interface sends position histories to the local server; it downloads no engine binary, neural weights or model to the browser.</p>
-<p>This server supports a local baseline, with bounded engine work and SQLite persistence. Public use requires separate decisions and work for HTTPS, backups, password recovery, abuse handling and capacity. No learning effectiveness, demand, scale or public availability has been established by local application tests.</p>
+<p>Human multiplayer and billing remain deferred. Owner-private Sites hosting uses a protected HTTPS connection to this Mac; continued remote availability requires the native service and tunnel to remain running. The hosted account database is separate from local development data. Target strengths and reference bot ratings are uncalibrated, not measured human Elo ratings. The coach uses deterministic evidence wording and engine estimates. When the server has an Anthropic API key, "Explain why" adds a Claude explanation limited to that position's engine evidence. The server checks every move it cites and falls back to the engine summary otherwise. It does not provide unrestricted language-model conversation. Questions are saved learner notes.</p>
+<p>A candidate continuation demonstrates a legal line at a bounded search. It does not prove that every reply is forced, and additional search can change a score or move classification. The app's move labels are its own rule, not any other site's classification algorithm or accuracy metric. The current labels use estimated mover loss: 50 centipawns for inaccuracy, 150 for mistake and 300 for blunder. Short searches and mate scores require separate interpretation. The interface sends position histories to the local server; it downloads no engine binary, neural weights or model to the browser.</p>
+<p>This server supports a local baseline, with bounded engine work and SQLite persistence. Public use requires separate decisions and work for HTTPS, backups, password recovery, abuse handling and capacity. <a href="../documents/docs--deploy-beta-md.html">Deploying the private beta</a> covers HTTPS, invites and backups for a small invited group; password recovery and capacity remain open. No learning effectiveness, demand, scale or public availability has been established by local application tests.</p>
 </article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav><a href="#running-chesslab">Running ChessLab</a></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
 
 </main>

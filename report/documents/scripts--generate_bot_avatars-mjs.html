@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Generate Bot Avatars · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Generate Bot Avatars</h1><p class="lede">scripts/generate_bot_avatars.mjs</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Generate Bot Avatars"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/generate_bot_avatars.mjs" download>Download original file ↗</a></div><p class="source-meta">scripts/generate_bot_avatars.mjs<br>SHA-256: 2f691a2a27fbc5f9cab366e63a7dec34e35bf0518acfa231d31ce295af321588</p><pre><code>// Draws each bot&#x27;s portrait from its id, so the roster&#x27;s artwork is original and reproducible.
+// Usage: node scripts/generate_bot_avatars.mjs [--check]
+// The same id always produces the same SVG. --check fails when a committed portrait differs.
+import {createHash} from &#x27;node:crypto&#x27;;
+import {readFileSync, writeFileSync, existsSync, readdirSync, unlinkSync} from &#x27;node:fs&#x27;;
+import {fileURLToPath} from &#x27;node:url&#x27;;
+
+const root = fileURLToPath(new URL(&#x27;../&#x27;, import.meta.url));
+const skins = [&#x27;#f3d7bf&#x27;, &#x27;#eac2a0&#x27;, &#x27;#d9a57e&#x27;, &#x27;#bf8761&#x27;, &#x27;#9a6646&#x27;, &#x27;#704a33&#x27;];
+const hairs = [&#x27;#2a211e&#x27;, &#x27;#4b3326&#x27;, &#x27;#6f4529&#x27;, &#x27;#a8693a&#x27;, &#x27;#d4a85f&#x27;, &#x27;#8f8a86&#x27;, &#x27;#e6e0d4&#x27;, &#x27;#9c3a2c&#x27;, &#x27;#33425f&#x27;];
+const shirts = {
+  balanced: [&#x27;#2f9e88&#x27;, &#x27;#5d6fbf&#x27;, &#x27;#c08a2e&#x27;, &#x27;#7b5aa6&#x27;, &#x27;#3f7f9e&#x27;],
+  aggressive: [&#x27;#c4493d&#x27;, &#x27;#d9733a&#x27;, &#x27;#b23a5b&#x27;, &#x27;#a8402a&#x27;, &#x27;#e0894a&#x27;],
+  solid: [&#x27;#3c5a80&#x27;, &#x27;#4f6b5a&#x27;, &#x27;#5a5f73&#x27;, &#x27;#2e6d78&#x27;, &#x27;#6b5a48&#x27;],
+};
+const backgrounds = {
+  Starter: [&#x27;#efe2c8&#x27;, &#x27;#e6d3ad&#x27;],
+  Developing: [&#x27;#d3e9e1&#x27;, &#x27;#bcdcd0&#x27;],
+  Club: [&#x27;#d8deef&#x27;, &#x27;#c3cce6&#x27;],
+  Expert: [&#x27;#ecd7df&#x27;, &#x27;#e0c1cd&#x27;],
+  Summit: [&#x27;#ddd5ef&#x27;, &#x27;#cbbfe6&#x27;],
+  Adaptive: [&#x27;#f1e3bd&#x27;, &#x27;#e7d197&#x27;],
+};
+const ink = &#x27;#1d2430&#x27;;
+
+function stream(id) {
+  const bytes = createHash(&#x27;sha256&#x27;).update(`askthemove-avatar:${id}`).digest();
+  let index = 0;
+  return {
+    int: n =&gt; bytes[index++ % bytes.length] % n,
+    pick(list) { return list[this.int(list.length)]; },
+    chance(percent) { return this.int(100) &lt; percent; },
+  };
+}
+
+function shade(hex, amount) {
+  const value = parseInt(hex.slice(1), 16);
+  const channel = shift =&gt; Math.round(((value &gt;&gt; shift) &amp; 255) * (1 - amount));
+  return &#x27;#&#x27; + [16, 8, 0].map(shift =&gt; channel(shift).toString(16).padStart(2, &#x27;0&#x27;)).join(&#x27;&#x27;);
+}
+
+const backHair = {
+  long: c =&gt; `&lt;path d=&quot;M27 46C24 22 72 22 69 46L72 80H24Z&quot; fill=&quot;${c}&quot;/&gt;`,
+  bob: c =&gt; `&lt;path d=&quot;M28 45C25 21 71 21 68 45L70 63C62 67 34 67 26 63Z&quot; fill=&quot;${c}&quot;/&gt;`,
+};
+const frontHair = {
+  crop: c =&gt; `&lt;path d=&quot;M31 41C30 24 66 24 65 41C60 33 36 33 31 41Z&quot; fill=&quot;${c}&quot;/&gt;`,
+  part: c =&gt; `&lt;path d=&quot;M31 43C29 22 67 22 65 41C58 31 46 35 39 30C36 33 33 37 31 43Z&quot; fill=&quot;${c}&quot;/&gt;`,
+  curls: c =&gt; `&lt;path d=&quot;M31 42C30 27 66 27 65 42C60 36 36 36 31 42Z&quot; fill=&quot;${c}&quot;/&gt;${[33, 39, 45, 51, 57, 63].map((x, i) =&gt; `&lt;circle cx=&quot;${x}&quot; cy=&quot;${i % 2 ? 27 : 30}&quot; r=&quot;6.5&quot; fill=&quot;${c}&quot;/&gt;`).join(&#x27;&#x27;)}`,
+  bun: c =&gt; `&lt;circle cx=&quot;48&quot; cy=&quot;20&quot; r=&quot;7.5&quot; fill=&quot;${c}&quot;/&gt;&lt;path d=&quot;M31 41C30 24 66 24 65 41C60 33 36 33 31 41Z&quot; fill=&quot;${c}&quot;/&gt;`,
+  fringe: c =&gt; `&lt;path d=&quot;M31 45C29 24 67 24 65 45C62 39 57 35 48 37C40 35 34 39 31 45Z&quot; fill=&quot;${c}&quot;/&gt;`,
+  shaved: c =&gt; `&lt;path d=&quot;M31 45C30 37 33 33 36 31L35 46ZM65 45C66 37 63 33 60 31L61 46Z&quot; fill=&quot;${c}&quot;/&gt;`,
+};
+const hats = {
+  beanie: (c, band) =&gt; `&lt;path d=&quot;M30 39C30 17 66 17 66 39Z&quot; fill=&quot;${c}&quot;/&gt;&lt;rect x=&quot;28&quot; y=&quot;34&quot; width=&quot;40&quot; height=&quot;8&quot; rx=&quot;4&quot; fill=&quot;${band}&quot;/&gt;&lt;circle cx=&quot;48&quot; cy=&quot;16&quot; r=&quot;4.5&quot; fill=&quot;${band}&quot;/&gt;`,
+  cap: (c, band) =&gt; `&lt;path d=&quot;M30 38C30 21 66 21 66 38Z&quot; fill=&quot;${c}&quot;/&gt;&lt;path d=&quot;M30 37H73C71 41 62 42 56 40Z&quot; fill=&quot;${band}&quot;/&gt;`,
+};
+const mouths = {
+  smile: () =&gt; `&lt;path d=&quot;M42 55Q48 60 54 55&quot; fill=&quot;none&quot; stroke=&quot;#7a3b34&quot; stroke-width=&quot;2.2&quot; stroke-linecap=&quot;round&quot;/&gt;`,
+  grin: () =&gt; `&lt;path d=&quot;M41.5 54Q48 62 54.5 54Z&quot; fill=&quot;#7a3b34&quot;/&gt;&lt;path d=&quot;M43 54.6H53&quot; stroke=&quot;#fff&quot; stroke-width=&quot;1.6&quot; stroke-linecap=&quot;round&quot;/&gt;`,
+  smirk: () =&gt; `&lt;path d=&quot;M43 56.5Q49 58 54 54&quot; fill=&quot;none&quot; stroke=&quot;#7a3b34&quot; stroke-width=&quot;2.2&quot; stroke-linecap=&quot;round&quot;/&gt;`,
+  calm: () =&gt; `&lt;path d=&quot;M44 56H52&quot; stroke=&quot;#7a3b34&quot; stroke-width=&quot;2.2&quot; stroke-linecap=&quot;round&quot;/&gt;`,
+};
+const brows = {
+  aggressive: c =&gt; `&lt;path d=&quot;M37 39.5L44 41.5M59 39.5L52 41.5&quot; stroke=&quot;${c}&quot; stroke-width=&quot;2.4&quot; stroke-linecap=&quot;round&quot;/&gt;`,
+  solid: c =&gt; `&lt;path d=&quot;M37 40.5H44M52 40.5H59&quot; stroke=&quot;${c}&quot; stroke-width=&quot;2.4&quot; stroke-linecap=&quot;round&quot;/&gt;`,
+  balanced: c =&gt; `&lt;path d=&quot;M37 41Q40.5 38.5 44 40.5M52 40.5Q55.5 38.5 59 41&quot; fill=&quot;none&quot; stroke=&quot;${c}&quot; stroke-width=&quot;2.4&quot; stroke-linecap=&quot;round&quot;/&gt;`,
+};
+
+export function avatarSvg(profile) {
+  const r = stream(profile.id);
+  const skin = r.pick(skins), skinShade = shade(skin, 0.14), hair = r.pick(hairs);
+  const style = shirts[profile.style] ? profile.style : &#x27;balanced&#x27;;
+  const shirt = r.pick(shirts[style]), [bg, halo] = backgrounds[profile.category] || backgrounds.Club;
+  const back = r.chance(30) ? r.pick(Object.keys(backHair)) : null;
+  const headwear = !back &amp;&amp; r.chance(18) ? r.pick(Object.keys(hats)) : null;
+  const front = r.pick(Object.keys(frontHair));
+  const beard = !back &amp;&amp; r.chance(18), moustache = !beard &amp;&amp; !back &amp;&amp; r.chance(12);
+  const glasses = r.chance(26), earrings = r.chance(22), cheeks = r.chance(45);
+  const happyEyes = r.chance(20), collar = r.pick([&#x27;crew&#x27;, &#x27;vee&#x27;, &#x27;turtle&#x27;, &#x27;scarf&#x27;]);
+  const mouth = r.pick(profile.style === &#x27;aggressive&#x27; ? [&#x27;grin&#x27;, &#x27;smirk&#x27;, &#x27;smile&#x27;] : profile.style === &#x27;solid&#x27; ? [&#x27;calm&#x27;, &#x27;smile&#x27;, &#x27;smirk&#x27;] : [&#x27;smile&#x27;, &#x27;grin&#x27;, &#x27;smile&#x27;]);
+  const accent = shade(shirt, 0.28);
+  const parts = [
+    `&lt;rect x=&quot;8&quot; y=&quot;9&quot; width=&quot;80&quot; height=&quot;80&quot; rx=&quot;18&quot; fill=&quot;${bg}&quot;/&gt;`,
+    `&lt;circle cx=&quot;48&quot; cy=&quot;46&quot; r=&quot;35&quot; fill=&quot;${halo}&quot;/&gt;`,
+    back ? backHair[back](hair) : &#x27;&#x27;,
+    `&lt;path d=&quot;M14 96C16 77 30 69 48 69C66 69 80 77 82 96Z&quot; fill=&quot;${shirt}&quot;/&gt;`,
+    `&lt;path d=&quot;M41 57H55V70C55 75 41 75 41 70Z&quot; fill=&quot;${skinShade}&quot;/&gt;`,
+    collar === &#x27;vee&#x27; ? `&lt;path d=&quot;M40 69L48 80L56 69Z&quot; fill=&quot;${skinShade}&quot;/&gt;` :
+      collar === &#x27;turtle&#x27; ? `&lt;rect x=&quot;38&quot; y=&quot;66&quot; width=&quot;20&quot; height=&quot;9&quot; rx=&quot;4.5&quot; fill=&quot;${accent}&quot;/&gt;` :
+      collar === &#x27;scarf&#x27; ? `&lt;path d=&quot;M34 70C40 76 56 76 62 70L63 76C56 81 40 81 33 76Z&quot; fill=&quot;${accent}&quot;/&gt;&lt;path d=&quot;M55 76L59 90H52Z&quot; fill=&quot;${accent}&quot;/&gt;` :
+      `&lt;path d=&quot;M39 70C42 74 54 74 57 70&quot; fill=&quot;none&quot; stroke=&quot;${accent}&quot; stroke-width=&quot;3&quot; stroke-linecap=&quot;round&quot;/&gt;`,
+    `&lt;circle cx=&quot;31&quot; cy=&quot;47&quot; r=&quot;4.5&quot; fill=&quot;${skin}&quot;/&gt;&lt;circle cx=&quot;65&quot; cy=&quot;47&quot; r=&quot;4.5&quot; fill=&quot;${skin}&quot;/&gt;`,
+    `&lt;ellipse cx=&quot;48&quot; cy=&quot;45&quot; rx=&quot;17&quot; ry=&quot;19&quot; fill=&quot;${skin}&quot;/&gt;`,
+    beard ? `&lt;path d=&quot;M31 46C31 68 65 68 65 46C62 61 34 61 31 46Z&quot; fill=&quot;${hair}&quot;/&gt;` : &#x27;&#x27;,
+    headwear ? hats[headwear](r.pick(Object.values(shirts).flat()), accent) : frontHair[front](hair),
+    brows[style](shade(hair, 0.2)),
+    happyEyes
+      ? `&lt;path d=&quot;M38.5 47.5Q41 44.5 43.5 47.5M52.5 47.5Q55 44.5 57.5 47.5&quot; fill=&quot;none&quot; stroke=&quot;${ink}&quot; stroke-width=&quot;2.2&quot; stroke-linecap=&quot;round&quot;/&gt;`
+      : `&lt;circle cx=&quot;41&quot; cy=&quot;47&quot; r=&quot;2.3&quot; fill=&quot;${ink}&quot;/&gt;&lt;circle cx=&quot;55&quot; cy=&quot;47&quot; r=&quot;2.3&quot; fill=&quot;${ink}&quot;/&gt;&lt;circle cx=&quot;41.8&quot; cy=&quot;46.2&quot; r=&quot;.7&quot; fill=&quot;#fff&quot;/&gt;&lt;circle cx=&quot;55.8&quot; cy=&quot;46.2&quot; r=&quot;.7&quot; fill=&quot;#fff&quot;/&gt;`,
+    glasses ? `&lt;g fill=&quot;none&quot; stroke=&quot;${ink}&quot; stroke-width=&quot;1.8&quot;&gt;&lt;circle cx=&quot;41&quot; cy=&quot;47&quot; r=&quot;5.6&quot;/&gt;&lt;circle cx=&quot;55&quot; cy=&quot;47&quot; r=&quot;5.6&quot;/&gt;&lt;path d=&quot;M46.6 46.5Q48 45.3 49.4 46.5M35.4 46L32 44.5M60.6 46L64 44.5&quot;/&gt;&lt;/g&gt;` : &#x27;&#x27;,
+    `&lt;path d=&quot;M48 48.5Q46 52.5 48.8 53&quot; fill=&quot;none&quot; stroke=&quot;${shade(skin, 0.28)}&quot; stroke-width=&quot;1.6&quot; stroke-linecap=&quot;round&quot;/&gt;`,
+    moustache ? `&lt;path d=&quot;M41.5 53.5Q48 50 54.5 53.5Q48 55.5 41.5 53.5Z&quot; fill=&quot;${hair}&quot;/&gt;` : &#x27;&#x27;,
+    mouths[mouth](),
+    cheeks ? `&lt;circle cx=&quot;36.5&quot; cy=&quot;53&quot; r=&quot;3&quot; fill=&quot;#e5847866&quot;/&gt;&lt;circle cx=&quot;59.5&quot; cy=&quot;53&quot; r=&quot;3&quot; fill=&quot;#e5847866&quot;/&gt;` : &#x27;&#x27;,
+    earrings ? `&lt;circle cx=&quot;30.5&quot; cy=&quot;52.5&quot; r=&quot;1.8&quot; fill=&quot;#e2b33e&quot;/&gt;&lt;circle cx=&quot;65.5&quot; cy=&quot;52.5&quot; r=&quot;1.8&quot; fill=&quot;#e2b33e&quot;/&gt;` : &#x27;&#x27;,
+  ];
+  return `&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;8 9 80 80&quot; width=&quot;80&quot; height=&quot;80&quot;&gt;${parts.join(&#x27;&#x27;)}&lt;/svg&gt;\n`;
+}
+
+export function avatarPath(profile) { return `web/public/bots/${profile.id}.svg`; }
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const profiles = JSON.parse(readFileSync(new URL(&#x27;../server/bot-profiles.json&#x27;, import.meta.url), &#x27;utf8&#x27;));
+  const check = process.argv.includes(&#x27;--check&#x27;);
+  const expected = new Set(profiles.map(profile =&gt; `${profile.id}.svg`));
+  let problems = 0;
+  for (const profile of profiles) {
+    const file = root + avatarPath(profile), svg = avatarSvg(profile);
+    if (profile.avatar !== `/bots/${profile.id}.svg`) { console.error(`${profile.id}: avatar must be /bots/${profile.id}.svg`); problems++; }
+    if (check) {
+      if (!existsSync(file) || readFileSync(file, &#x27;utf8&#x27;) !== svg) { console.error(`${profile.id}: portrait differs; run node scripts/generate_bot_avatars.mjs`); problems++; }
+    } else writeFileSync(file, svg);
+  }
+  for (const name of readdirSync(root + &#x27;web/public/bots&#x27;)) {
+    if (name.endsWith(&#x27;.svg&#x27;) &amp;&amp; !expected.has(name)) {
+      if (check) { console.error(`${name}: no profile uses this portrait`); problems++; } else unlinkSync(root + &#x27;web/public/bots/&#x27; + name);
+    }
+  }
+  if (problems) process.exit(1);
+  console.log(`${check ? &#x27;Checked&#x27; : &#x27;Wrote&#x27;} ${profiles.length} portraits.`);
+}
+</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

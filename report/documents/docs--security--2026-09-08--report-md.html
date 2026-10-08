@@ -47,33 +47,33 @@
 <h4 id="scan-summary">Scan Summary</h4>
 <div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
 <thead>
-<tr>
+<tr class="header">
 <th>Field</th>
 <th>Value</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>Scan outcome</td>
 <td>completed</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Reportable findings</td>
 <td>0</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Severity mix</td>
 <td>none</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Confidence mix</td>
 <td>none</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Coverage</td>
 <td>partial</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Validation mode</td>
 <td>Source-backed audit with bounded isolated executable proof.</td>
 </tr>
@@ -123,7 +123,7 @@
 <h3 id="reviewed-surfaces">Reviewed Surfaces</h3>
 <div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
 <thead>
-<tr>
+<tr class="header">
 <th>Surface</th>
 <th>Risk Area</th>
 <th>Outcome</th>
@@ -131,61 +131,61 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>Authentication and session lifecycle</td>
 <td>not recorded</td>
 <td>No issue found</td>
 <td>In-memory fixture verified configured HTTPS Origin over loopback HTTP registers successfully, emits Secure/HttpOnly/SameSite=Strict cookies, and stores only token hashes. Logged-out and expired sessions return 401. Source: server/app.mjs:95-110,115-138.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Account-owned games, studies, exports and progress</td>
 <td>not recorded</td>
 <td>No issue found</td>
 <td>Prepared user-scoped reads/writes and revision guards protect game/study/progress state. Ten executed cross-account read/export/move/bot/resign/undo/hint/assist/study/analyze requests returned 404 before engine work. Source: server/app.mjs:99-102,142-155,261-284.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Origin, CSRF and native-host exposure</td>
 <td>not recorded</td>
 <td>No issue found</td>
 <td>Foreign Origin, spoofed X-Forwarded-Proto/Host and Sec-Fetch-Site cross-site requests were rejected. Native hosting guard precedes all API/static handlers. Missing/wrong backend keys reject API and non-API paths with403. Final five incomplete/noncanonical/non-HTTPS hosting config fixtures throw at startup; missing/wrong/multibyte keys return403 without throwing, valid key passes. Earlier HTTPS termination and partial-config guard issues were fixed by task owner during scan and independently revalidated. Source: server/app.mjs:67,77-91; server/hosting.mjs:3-11; server/index.mjs:20.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Native engine command and resource bounds</td>
 <td>not recorded</td>
 <td>No issue found</td>
 <td>Six executed UCI/FEN/engine-ID/rating/style/search-limit abuse inputs return400 before spawn. Source uses catalog enum, bounded integers, validated legal UCI and canonical FEN, shell:false spawn, bounded active/queued processes and hard deadlines. Inspected supporting Maia2 UCI consumer uses enum-selected checkpoint plus python-chess move parsing. Source: server/engine.mjs:17-39,48-80,114-116,224-238; server/opponent-engines.mjs:39-70,94,180-201.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Worker credential forwarding and streamed body bounds</td>
 <td>not recorded</td>
 <td>No issue found</td>
 <td>Offline fetch mock proves missing/foreign/cross-site Origin rejected before fetch, only chesslab_session forwarded, Sites cookie/client Authorization/forwarded-host omitted, secret and Origin derived from trusted server context, redirects refused with502, missing backend config503. Final endless16KiB stream fixture canceled on read17 after crossing256KiB, returned413, zero backend fetches. Source: server/sites-worker.mjs:6-39.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Authentication, sessions and account ownership</td>
 <td>not recorded</td>
 <td>No issue found</td>
 <td>In-memory fixture: missing/wrong backend key rejected API and non-API paths with 403; fixed HTTPS origin over loopback HTTP registered successfully and emitted Secure/HttpOnly/SameSite=Strict cookie; database stores hash rather than token; 10 cross-account game/export/mutation/analyze requests returned 404 before engine work; logout and expiry returned 401. Controls: server/app.mjs:67,77-110,142-155,267-284.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Native engine command boundary</td>
 <td>not recorded</td>
 <td>No issue found</td>
 <td>Six executed engine/FEN/UCI/control injection or bound-abuse inputs rejected with status 400 before process spawning. Source enum and integer validation, canonical legal FEN/history, shell:false spawn, bounded active/queued processes and deadlines hold the boundary: server/engine.mjs:17-39,48-80,114-116,224-238; server/opponent-engines.mjs:39-70,94,180-201. Maia2 supporting script consumes only enum-selected checkpoint and parsed UCI.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Worker request and credential forwarding</td>
 <td>not recorded</td>
 <td>No issue found</td>
 <td>Offline fetch mock: missing/foreign/cross-site Origin rejected before fetch; only chesslab_session forwarded, never Sites cookie or client Authorization/forwarded-host; configured secret and derived fixed origin replace client values; oversized request returned 413 before forwarding; redirects returned 502 without following; missing backend config returned 503. Source: server/sites-worker.mjs:6-30.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Hosting configuration and early bounds</td>
 <td>not recorded</td>
 <td>Needs follow-up</td>
 <td>Task owner is correcting malformed multibyte secret header handling and streaming request size enforcement. Reported PUBLIC_ORIGIN-only configuration currently disables shared-secret guard because secret is absent (server/hosting.mjs:4-6); owner has been asked to enforce both configuration fields together.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Authentication, account isolation and native command boundaries</td>
 <td>not recorded</td>
 <td>No issue found</td>

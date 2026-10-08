@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Spec · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/full-game-review/specs/game-review/spec.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/full-game-review/specs/game-review/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/full-game-review/specs/game-review/spec.md<br>SHA-256: 636d4162a58e35946670e3c81501ac915d9ed989de65bad741cb0d4b39f129a3</p><h3 id="added-requirements">ADDED Requirements</h3>
+<h4 id="requirement-complete-local-game-report">Requirement: Complete local game report</h4>
+<p>The app SHALL review every recorded move of a completed bot game or imported study with the existing native analysis engine. It SHALL retain legal history and report the engine identity, search limits, per-move evaluation and classification. Local centipawn summaries SHALL not be represented as proprietary CAPS2 accuracy.</p>
+<h5 id="scenario-review-a-finished-game">Scenario: Review a finished game</h5>
+<ul>
+<li><strong>WHEN</strong> an account requests a full review of its saved finished game</li>
+<li><strong>THEN</strong> every recorded move is analyzed, both colors receive classification counts and average centipawn loss where measurable, and the advantage graph links to actual game positions</li>
+</ul>
+<h4 id="requirement-resumable-and-isolated-review">Requirement: Resumable and isolated review</h4>
+<p>Each completed review step SHALL be saved locally and scoped to the owning account, exact move history, starting FEN and analysis limits. Pausing, disconnecting or restarting SHALL retain completed steps. Stale or concurrent requests SHALL not corrupt a report or overwrite moves and studies.</p>
+<h5 id="scenario-resume-after-reload">Scenario: Resume after reload</h5>
+<ul>
+<li><strong>WHEN</strong> the learner pauses a review and reloads the same game</li>
+<li><strong>THEN</strong> the saved progress returns and review continues at the next unanalyzed move</li>
+</ul>
+<h5 id="scenario-a-game-changes-during-analysis">Scenario: A game changes during analysis</h5>
+<ul>
+<li><strong>WHEN</strong> a review step completes against a changed game or report</li>
+<li><strong>THEN</strong> the stale result is rejected and the existing report and game are preserved</li>
+</ul>
+<h4 id="requirement-key-move-navigation">Requirement: Key move navigation</h4>
+<p>The learner SHALL navigate the evaluation graph and classified key moves, filter key moves by color and open the existing evidence explanation and variation controls at that move. Viewing a saved report SHALL not rerun the engine automatically.</p>
+<h5 id="scenario-inspect-a-mistake">Scenario: Inspect a mistake</h5>
+<ul>
+<li><strong>WHEN</strong> the learner selects a classified mistake in the report</li>
+<li><strong>THEN</strong> the board shows that move and its cached evidence, and a new variation can still preserve the original game</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

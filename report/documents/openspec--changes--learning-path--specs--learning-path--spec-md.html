@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Spec · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/learning-path/specs/learning-path/spec.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/learning-path/specs/learning-path/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/learning-path/specs/learning-path/spec.md<br>SHA-256: 3590b25694aeb0cc933021f90ff41cf18b208d57b0a2d0b226edb62b0dba43db</p><h3 id="added-requirements">ADDED Requirements</h3>
+<h4 id="requirement-guided-courses-and-lesson-library">Requirement: Guided courses and lesson library</h4>
+<p>The application SHALL provide a course path grouped by four skill levels, with lesson/course completion and a next unfinished lesson. A library SHALL support text, topic and level filtering. Twelve new instructional lessons with two board challenges each SHALL be locally present, along with the six preserved introductory lessons. All lessons SHALL remain accessible for deliberate practice without changing saved completion.</p>
+<h5 id="scenario-pick-up-the-next-lesson">Scenario: Pick up the next lesson</h5>
+<ul>
+<li><strong>WHEN</strong> a learner completes a lesson and returns to Learn</li>
+<li><strong>THEN</strong> the course shows that completion and the next unfinished lesson is available</li>
+</ul>
+<h4 id="requirement-board-grounded-instruction">Requirement: Board-grounded instruction</h4>
+<p>Each new lesson SHALL present original explanatory text and legally replayable board challenges. Correct learner moves SHALL advance the verified line with legal opponent replies. Illegal or incorrect moves SHALL not advance the accepted position. Promotion, orientation, typing, clicks and drag controls SHALL use the existing board rules. Source examples SHALL retain attribution and distinguish a demonstrated line from all possible defenses.</p>
+<h5 id="scenario-calculate-a-multi-move-example">Scenario: Calculate a multi-move example</h5>
+<ul>
+<li><strong>WHEN</strong> a learner plays the first correct move of a multi-move challenge</li>
+<li><strong>THEN</strong> the reply is played, the learner continues from the resulting position, and incomplete work earns no lesson completion</li>
+</ul>
+<h4 id="requirement-persistent-isolated-lesson-progress">Requirement: Persistent isolated lesson progress</h4>
+<p>The server SHALL persist each account's current lesson, challenge, accepted moves and revision. Reload and restart SHALL restore them. Completion SHALL be recorded once only after all required challenges are solved. Stale actions and cross-account access SHALL be rejected. Repeating a completed lesson SHALL preserve previous completion and use a fresh attempt identity.</p>
+<h5 id="scenario-resume-the-second-challenge">Scenario: Resume the second challenge</h5>
+<ul>
+<li><strong>WHEN</strong> the learner solves the first challenge, continues to the second and reloads</li>
+<li><strong>THEN</strong> the same challenge and accepted moves return, while other accounts see their own progress</li>
+</ul>
+<h4 id="requirement-verified-local-delivery">Requirement: Verified local delivery</h4>
+<p>The path, library, interactive challenges, persistence and mobile layout SHALL be exercised through the production app and recorded, preserving previous protected flows. The reviewed PR SHALL include video evidence and the installed local build SHALL match the verified files.</p>
+<h5 id="scenario-delivery-remains-partial-platform-progress">Scenario: Delivery remains partial platform progress</h5>
+<ul>
+<li><strong>WHEN</strong> this learning workflow is verified</li>
+<li><strong>THEN</strong> it is reported as delivered local curriculum functionality while full platform parity and tutor requirements remain active</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

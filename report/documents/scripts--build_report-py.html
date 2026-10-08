@@ -20,7 +20,7 @@
 <header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
 <main id="main" tabindex="-1">
 <header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>HTML dossier generator</h1><p class="lede">scripts/build_report.py</p></header>
-<div class="reading-layout"><article class="prose" aria-label="HTML dossier generator"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/build_report.py" download>Download original file ↗</a></div><p class="source-meta">scripts/build_report.py<br>SHA-256: 112ffee979aa98b337ab3566f8776b38343eb2919bf63b07d7092d2447b032fc</p><pre><code>&quot;&quot;&quot;Generate the portable ChessLab dossier from project sources; requires Pandoc.&quot;&quot;&quot;
+<div class="reading-layout"><article class="prose" aria-label="HTML dossier generator"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/build_report.py" download>Download original file ↗</a></div><p class="source-meta">scripts/build_report.py<br>SHA-256: 56ed81abde26b208909310745cee0dcb9deda290402eecc191927802dff689e1</p><pre><code>&quot;&quot;&quot;Generate the portable ChessLab dossier from project sources; requires Pandoc.&quot;&quot;&quot;
 import argparse
 import hashlib
 import html
@@ -58,8 +58,6 @@ TITLES = {
  &#x27;docs/research/sources/startup-research.pdf&#x27;:&#x27;Original startup research PDF&#x27;,
  &#x27;docs/research/sources/original-conversation.md&#x27;:&#x27;Original ChatGPT conversation, full available text&#x27;,
  &#x27;docs/research/sources/original-conversation.json&#x27;:&#x27;Original conversation retrieval record&#x27;,
- &#x27;docs/research/sources/IMG_0860.png&#x27;:&#x27;Original lesson: starting position&#x27;,
- &#x27;docs/research/sources/IMG_0859.png&#x27;:&#x27;Original lesson: incorrect rook move&#x27;,
  &#x27;docs/research/assessment.md&#x27;:&#x27;Previous run: research assessment&#x27;,
  &#x27;skills.local.json&#x27;:&#x27;Complete skill-source manifest&#x27;,
  &#x27;scripts/setup_skills.py&#x27;:&#x27;Repeatable skill-link setup helper&#x27;,
@@ -82,17 +80,18 @@ def category(path):
     return &#x27;Project &amp; tooling&#x27;
 
 
+# Since the 2026-10-08 original-asset policy the dossier neither copies nor displays screenshots of
+# another product&#x27;s interface. The founder&#x27;s two lesson screenshots stay in docs/research/sources as
+# research; docs/verification holds browser evidence of earlier builds, not reading material.
+WITHHELD = {&#x27;docs/research/sources/IMG_0859.png&#x27;,&#x27;docs/research/sources/IMG_0860.png&#x27;}
+
+
 def source_files():
-    files = {ROOT/p for p in [&#x27;README.md&#x27;,&#x27;CONTEXT.md&#x27;,&#x27;AGENTS.md&#x27;,&#x27;CLAUDE.md&#x27;,&#x27;skills.local.json&#x27;,&#x27;justfile&#x27;,&#x27;.gitignore&#x27;,&#x27;.gitattributes&#x27;,&#x27;references/engine-installation.json&#x27;,&#x27;references/engine-games-verification.json&#x27;,&#x27;references/engine-availability.md&#x27;,&#x27;references/chesscom-piece-assets.json&#x27;,&#x27;web/public/bots/provenance.json&#x27;]}
+    files = {ROOT/p for p in [&#x27;README.md&#x27;,&#x27;CONTEXT.md&#x27;,&#x27;AGENTS.md&#x27;,&#x27;CLAUDE.md&#x27;,&#x27;skills.local.json&#x27;,&#x27;justfile&#x27;,&#x27;.gitignore&#x27;,&#x27;.gitattributes&#x27;,&#x27;references/engine-installation.json&#x27;,&#x27;references/engine-games-verification.json&#x27;,&#x27;references/engine-availability.md&#x27;]}
     files.update(p for p in (ROOT/&#x27;references&#x27;).iterdir() if p.is_file() and p.suffix in [&#x27;.json&#x27;,&#x27;.md&#x27;])
-    files.update((ROOT/&#x27;references&#x27;).glob(&#x27;chrome-session-*/session-report.md&#x27;))
     for folder in [&#x27;docs&#x27;,&#x27;openspec&#x27;,&#x27;scripts&#x27;]:
-        files.update(p for p in (ROOT/folder).rglob(&#x27;*&#x27;) if p.is_file() and not p.is_symlink() and &#x27;__pycache__&#x27; not in p.parts and p.name != &#x27;.gitkeep&#x27;)
+        files.update(p for p in (ROOT/folder).rglob(&#x27;*&#x27;) if p.is_file() and not p.is_symlink() and &#x27;__pycache__&#x27; not in p.parts and p.name != &#x27;.gitkeep&#x27; and &#x27;verification&#x27; not in p.relative_to(ROOT/folder).parts[:1] and p.relative_to(ROOT).as_posix() not in WITHHELD)
     return sorted(files)
-
-
-def capture_files():
-    return sorted(p for folder in (ROOT/&#x27;references&#x27;).glob(&#x27;chrome-session-*&#x27;) for p in folder.rglob(&#x27;*&#x27;) if p.is_file())
 
 
 def doc_name(path):
@@ -108,6 +107,11 @@ class Fragment(HTMLParser):
         self.heading = None
     def handle_starttag(self, tag, attrs):
         data = dict(attrs)
+        if tag == &#x27;img&#x27; and data.get(&#x27;src&#x27;) and not urlsplit(data[&#x27;src&#x27;]).scheme:
+            target = (self.source.parent / unquote(urlsplit(data[&#x27;src&#x27;]).path)).resolve()
+            if target.is_relative_to(ROOT) and target.relative_to(ROOT).as_posix() in WITHHELD:
+                self.result.append(&#x27;&lt;em&gt;[Screenshot kept with the research sources, not reproduced here: &#x27;+html.escape(data.get(&#x27;alt&#x27;) or &#x27;image&#x27;)+&#x27;]&lt;/em&gt;&#x27;)
+                return
         for key in [&#x27;href&#x27;,&#x27;src&#x27;]:
             value = data.get(key)
             if not value: continue
@@ -122,12 +126,12 @@ class Fragment(HTMLParser):
                     else:
                         data[key] = self.base+&#x27;/documents/&#x27;+doc_name(target)
                     if parsed.fragment: data[key] += &#x27;#&#x27;+parsed.fragment
-                elif target.is_relative_to(ROOT/&#x27;references&#x27;) and any(part.startswith(&#x27;chrome-session-&#x27;) for part in target.parts):
-                    data[key] = self.base+&#x27;/&#x27;+target.relative_to(ROOT).as_posix()
-                    if parsed.fragment: data[key] += &#x27;#&#x27;+parsed.fragment
                 elif target.is_relative_to(OUT):
                     data[key] = self.base+&#x27;/&#x27;+target.relative_to(OUT).as_posix()
                     if parsed.fragment: data[key] += &#x27;#&#x27;+parsed.fragment
+                elif key == &#x27;href&#x27; and target.is_relative_to(ROOT):
+                    # Project files the dossier does not copy (app source, licences, evidence) are named, not linked.
+                    del data[key]
             if key == &#x27;href&#x27; and parsed.scheme in [&#x27;https&#x27;,&#x27;http&#x27;]:
                 data[&#x27;rel&#x27;] = &#x27;noreferrer noopener&#x27;
         if tag == &#x27;h2&#x27; and data.get(&#x27;id&#x27;):
@@ -181,8 +185,8 @@ def components(files):
         cards.append(f&#x27;&lt;a class=&quot;document-card&quot; href=&quot;documents/{doc_name(p)}&quot; data-category=&quot;{cat}&quot; data-search=&quot;{html.escape((title+&quot; &quot;+rel+&quot; &quot;+cat).lower(),quote=True)}&quot;&gt;&lt;span class=&quot;doc-type&quot;&gt;{cat}&lt;/span&gt;&lt;strong&gt;{html.escape(title)}&lt;/strong&gt;&lt;small&gt;{html.escape(rel)}&lt;/small&gt;&lt;span class=&quot;doc-arrow&quot;&gt;Read full document →&lt;/span&gt;&lt;/a&gt;&#x27;)
     cats=sorted({category(p.relative_to(ROOT)) for p in files})
     library=&#x27;&lt;div class=&quot;library-controls&quot;&gt;&lt;label for=&quot;document-search&quot;&gt;Search the full inventory&lt;input id=&quot;document-search&quot; type=&quot;search&quot; placeholder=&quot;Try pricing, proposal, skills…&quot;&gt;&lt;/label&gt;&lt;label for=&quot;document-category&quot;&gt;Document type&lt;select id=&quot;document-category&quot;&gt;&lt;option value=&quot;&quot;&gt;All types&lt;/option&gt;&#x27;+&#x27;&#x27;.join(f&#x27;&lt;option&gt;{c}&lt;/option&gt;&#x27; for c in cats)+&#x27;&lt;/select&gt;&lt;/label&gt;&lt;/div&gt;&lt;div id=&quot;document-count&quot; class=&quot;result-count&quot; aria-live=&quot;polite&quot;&gt;&#x27;+str(len(files))+&#x27; documents&lt;/div&gt;&lt;div class=&quot;document-grid&quot;&gt;&#x27;+&#x27;&#x27;.join(cards)+&#x27;&lt;/div&gt;&lt;p id=&quot;no-documents&quot; class=&quot;empty-state&quot; hidden&gt;No documents match. Try a different title or choose all types.&lt;/p&gt;&#x27;
-    images=&#x27;&lt;div class=&quot;image-pair&quot;&gt;&#x27;+&#x27;&#x27;.join(f&#x27;&lt;figure&gt;&lt;a href=&quot;downloads/docs/research/sources/{name}&quot;&gt;&lt;img src=&quot;downloads/docs/research/sources/{name}&quot; alt=&quot;{caption}&quot; loading=&quot;lazy&quot;&gt;&lt;/a&gt;&lt;figcaption&gt;{caption}&lt;/figcaption&gt;&lt;/figure&gt;&#x27; for name,caption in [(&#x27;IMG_0860.png&#x27;,&#x27;Original lesson: the bishop attacks the knight and rook.&#x27;),(&#x27;IMG_0859.png&#x27;,&#x27;Original lesson: saving the rook is marked incorrect.&#x27;)])+&#x27;&lt;/div&gt;&#x27;
-    evidence=&#x27;&lt;div class=&quot;evidence-grid&quot;&gt;&#x27;+&#x27;&#x27;.join(&#x27;&lt;div class=&quot;evidence-card&quot;&gt;&lt;span class=&quot;chip &#x27;+state+&#x27;&quot;&gt;&#x27;+label+&#x27;&lt;/span&gt;&lt;strong&gt;&#x27;+title+&#x27;&lt;/strong&gt;&lt;p&gt;&#x27;+body+&#x27;&lt;/p&gt;&lt;/div&gt;&#x27; for state,label,title,body in [(&#x27;good&#x27;,&#x27;LOCAL APPLICATION&#x27;,&#x27;Bot games and review&#x27;,&#x27;Installed engines, bot profiles, clocks, assistance and saved studies. See the application chapter for current evidence.&#x27;),(&#x27;proposed&#x27;,&#x27;REMAINING WORK&#x27;,&#x27;Full platform parity&#x27;,&#x27;Proprietary personalities, full curriculum and conversational tutoring remain incomplete.&#x27;),(&#x27;good&#x27;,&#x27;PRIVATE REPOSITORY&#x27;,&#x27;Source delivery&#x27;,&#x27;The GitHub repository is private. Exact pushes and verification boundaries are recorded in the application receipt.&#x27;),(&#x27;&#x27;,&#x27;NOT DEMONSTRATED&#x27;,&#x27;Learning and demand&#x27;,&#x27;No measured learning results, paying-user retention or public deployment established.&#x27;)])+&#x27;&lt;/div&gt;&#x27;
+    images=&#x27;&lt;p&gt;The founder photographed this lesson on an iPad: in the starting position a bishop attacks a knight and a rook, and saving the rook is marked incorrect. The two screenshots stay with the research sources in the repository; this dossier describes them rather than displaying another product’s interface.&lt;/p&gt;&#x27;
+    evidence=&#x27;&lt;div class=&quot;evidence-grid&quot;&gt;&#x27;+&#x27;&#x27;.join(&#x27;&lt;div class=&quot;evidence-card&quot;&gt;&lt;span class=&quot;chip &#x27;+state+&#x27;&quot;&gt;&#x27;+label+&#x27;&lt;/span&gt;&lt;strong&gt;&#x27;+title+&#x27;&lt;/strong&gt;&lt;p&gt;&#x27;+body+&#x27;&lt;/p&gt;&lt;/div&gt;&#x27; for state,label,title,body in [(&#x27;good&#x27;,&#x27;LOCAL APPLICATION&#x27;,&#x27;Bot games and review&#x27;,&#x27;Installed engines, bot profiles, clocks, assistance and saved studies. See the application chapter for current evidence.&#x27;),(&#x27;proposed&#x27;,&#x27;REMAINING WORK&#x27;,&#x27;A complete learning product&#x27;,&#x27;A larger curriculum, more bot personalities and conversational tutoring remain incomplete.&#x27;),(&#x27;good&#x27;,&#x27;PRIVATE REPOSITORY&#x27;,&#x27;Source delivery&#x27;,&#x27;The GitHub repository is private. Exact pushes and verification boundaries are recorded in the application receipt.&#x27;),(&#x27;&#x27;,&#x27;NOT DEMONSTRATED&#x27;,&#x27;Learning and demand&#x27;,&#x27;No measured learning results, paying-user retention or public deployment established.&#x27;)])+&#x27;&lt;/div&gt;&#x27;
     receipt=&#x27;&lt;p&gt;&lt;a href=&quot;verification.json&quot;&gt;Open the report verification receipt&lt;/a&gt;. This records static and browser checks for the generated dossier, including their limits.&lt;/p&gt;&#x27;
     return {&#x27;ORIGIN&#x27;:original,&#x27;PRODUCT_DEMO&#x27;:concept,&#x27;ECONOMICS&#x27;:economics,&#x27;ARCHITECTURE&#x27;:architecture,&#x27;LIBRARY&#x27;:library,&#x27;ORIGINAL_IMAGES&#x27;:images,&#x27;EVIDENCE&#x27;:evidence,&#x27;REPORT_RECEIPT&#x27;:receipt}
 
@@ -236,11 +240,8 @@ def build():
             content=&#x27;&lt;pre&gt;&lt;code&gt;&#x27;+html.escape(text)+&#x27;&lt;/code&gt;&lt;/pre&gt;&#x27;
         output=OUT/&#x27;documents&#x27;/doc_name(path); output.write_text(render_page(title,&#x27;Document library&#x27;,notice+content,toc,&#x27;library&#x27;,&#x27;..&#x27;,str(rel),doc=True)); outputs.append(output)
     outputs += [p for p in (OUT/&#x27;assets&#x27;).iterdir() if p.is_file()]
-    for path in capture_files():
-        output=OUT/path.relative_to(ROOT); output.parent.mkdir(parents=True,exist_ok=True); shutil.copyfile(path,output); outputs.append(output)
     inputs={p.relative_to(ROOT).as_posix():digest(p.read_bytes()) for p in files}
     manifest={&#x27;edition&#x27;:&#x27;2026-09-08&#x27;,&#x27;generator&#x27;:&#x27;scripts/build_report.py&#x27;,&#x27;document_count&#x27;:len(files),&#x27;chapter_count&#x27;:len(CHAPTERS),&#x27;source_hashes&#x27;:inputs,&#x27;output_hashes&#x27;:{p.relative_to(OUT).as_posix():digest(p.read_bytes()) for p in sorted(outputs)}}
-    manifest[&#x27;capture_source_hashes&#x27;]={p.relative_to(ROOT).as_posix():digest(p.read_bytes()) for p in capture_files()}
     (OUT/&#x27;manifest.json&#x27;).write_text(json.dumps(manifest,indent=2)+&#x27;\n&#x27;)
     print(f&#x27;Built {len(CHAPTERS)} chapters and {len(files)} full document pages in {OUT}&#x27;)
 
@@ -261,8 +262,6 @@ def check():
         if not (ROOT/name).is_file() or digest((ROOT/name).read_bytes())!=expected: raise RuntimeError(&#x27;Changed source; rebuild: &#x27;+name)
     current={p.relative_to(ROOT).as_posix() for p in source_files()}
     if current != set(manifest[&#x27;source_hashes&#x27;]): raise RuntimeError(&#x27;Source inventory changed; rebuild&#x27;)
-    captures={p.relative_to(ROOT).as_posix():digest(p.read_bytes()) for p in capture_files()}
-    if captures != manifest.get(&#x27;capture_source_hashes&#x27;,{}): raise RuntimeError(&#x27;Capture evidence changed; rebuild&#x27;)
     for name,expected in manifest[&#x27;output_hashes&#x27;].items():
         if not (OUT/name).is_file() or digest((OUT/name).read_bytes())!=expected: raise RuntimeError(&#x27;Stale or edited output: &#x27;+name)
     pages={p:Links() for p in OUT.rglob(&#x27;*.html&#x27;) if &#x27;downloads&#x27; not in p.parts}

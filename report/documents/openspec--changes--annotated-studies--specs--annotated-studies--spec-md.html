@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Spec · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/annotated-studies/specs/annotated-studies/spec.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/annotated-studies/specs/annotated-studies/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/annotated-studies/specs/annotated-studies/spec.md<br>SHA-256: 89fb067ca5fccfa539d865fc6169575709ba6c700e64b1c5d1aa31d40b8f81ef</p><h3 id="added-requirements">ADDED Requirements</h3>
+<h4 id="requirement-position-bound-annotations">Requirement: Position-bound annotations</h4>
+<p>A study SHALL preserve a comment and numeric move annotations at an exact branch identity and ply, including the original game. Same-FEN nodes SHALL not merge. Existing learner branch questions SHALL remain unchanged. Saving SHALL retain study revision checks, validation and failed-save draft protection.</p>
+<h5 id="scenario-annotate-a-nested-alternative">Scenario: Annotate a nested alternative</h5>
+<ul>
+<li><strong>WHEN</strong> a learner comments on a nested branch move and revisits it after reload</li>
+<li><strong>THEN</strong> the comment and glyph return at that branch and ply while the original game remains unchanged</li>
+</ul>
+<h4 id="requirement-annotated-pgn-interoperability">Requirement: Annotated PGN interoperability</h4>
+<p>PGN import SHALL legally replay all mainline and alternative moves, preserve comments and numeric annotations, and reject invalid alternatives or excessive structures without creating a partial game. PGN export SHALL include the saved alternatives and comments, with correct starting FEN, move numbers and results. Unsaved study edits SHALL be saved successfully before export proceeds.</p>
+<h5 id="scenario-reject-an-invalid-alternative">Scenario: Reject an invalid alternative</h5>
+<ul>
+<li><strong>WHEN</strong> a valid mainline contains an illegal nested variation</li>
+<li><strong>THEN</strong> import fails without altering the active game or any saved study</li>
+</ul>
+<h4 id="requirement-exact-local-study-file">Requirement: Exact local study file</h4>
+<p>The application SHALL export and import a versioned local study file containing title, initial position, original moves, result, player headers and the complete study tree, questions, annotations and selected branch/return anchor. Import SHALL validate every move and branch and create a separate owned study. Credentials, account identifiers, running clocks and engine caches SHALL not be transplanted. Arbitrary note text SHALL round trip exactly in this format.</p>
+<h5 id="scenario-restore-portable-analysis">Scenario: Restore portable analysis</h5>
+<ul>
+<li><strong>WHEN</strong> the learner imports an exported local study file</li>
+<li><strong>THEN</strong> a separate saved study restores the tree and notes with the original file's game untouched</li>
+</ul>
+<h4 id="requirement-verified-local-delivery">Requirement: Verified local delivery</h4>
+<p>Protected behavior plus annotated import/export, reload and mobile controls SHALL be recorded using isolated accounts. The PR SHALL contain video proof and installation SHALL preserve the user's database and match the verified build. Full parity SHALL remain active.</p>
+<h5 id="scenario-export-does-not-lose-a-draft">Scenario: Export does not lose a draft</h5>
+<ul>
+<li><strong>WHEN</strong> saving the current annotations fails</li>
+<li><strong>THEN</strong> export is stopped and the learner's draft stays visible</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Spec · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/original-asset-pack/specs/original-assets/spec.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/original-asset-pack/specs/original-assets/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/original-asset-pack/specs/original-assets/spec.md<br>SHA-256: a97ca8bbb2aa8e5317ac71c6dcefaf4806f24690395033a800afb5b160cc402f</p><h3 id="purpose">Purpose</h3>
+<p>Ship only original or openly licensed artwork, bots and wording, so the app can be shown to outside testers and the repository distributes no other product's assets or captures.</p>
+<h3 id="added-requirements">ADDED Requirements</h3>
+<h4 id="requirement-oa-001-openly-licensed-piece-set">Requirement: OA-001 Openly licensed piece set</h4>
+<p>The board SHALL render one piece set, cburnett, from unmodified files whose source, licence and SHA-256 hashes are recorded beside them. The licence text and attribution SHALL be served with the app, and Settings SHALL credit the author and licence with a link. A stored setting naming any other piece set MUST load cburnett.</p>
+<h5 id="scenario-stored-setting-from-an-earlier-build">Scenario: Stored setting from an earlier build</h5>
+<ul>
+<li><strong>WHEN</strong> a browser's saved settings name the previous piece set</li>
+<li><strong>THEN</strong> the board renders the cburnett pieces and the other saved settings are kept</li>
+</ul>
+<h5 id="scenario-credits">Scenario: Credits</h5>
+<ul>
+<li><strong>WHEN</strong> a learner opens Settings</li>
+<li><strong>THEN</strong> Credits names the cburnett pieces, Lucide icons and chessops with their licences and links to the licence files</li>
+</ul>
+<h4 id="requirement-oa-002-licensed-navigation-icons">Requirement: OA-002 Licensed navigation icons</h4>
+<p>Navigation icons SHALL come from a pinned <code>lucide-static</code> release whose integrity hash and file hashes are recorded, with the ISC licence served beside them. No icon file from another chess site MAY remain.</p>
+<h5 id="scenario-icon-audit">Scenario: Icon audit</h5>
+<ul>
+<li><strong>WHEN</strong> the icon folder is compared with its provenance record</li>
+<li><strong>THEN</strong> every icon matches a recorded Lucide file and hash</li>
+</ul>
+<h4 id="requirement-oa-003-original-palette-with-readable-contrast">Requirement: OA-003 Original palette with readable contrast</h4>
+<p>The interface and default board SHALL use the project's own palette. Body text, muted text, primary-button text and board coordinates SHALL each have a contrast ratio of at least 4.5:1 against their backgrounds. Stored board theme ids from earlier builds MUST map to a current theme, and unknown ids MUST fall back to the default.</p>
+<h5 id="scenario-legacy-board-theme">Scenario: Legacy board theme</h5>
+<ul>
+<li><strong>WHEN</strong> saved settings name the green or brown theme</li>
+<li><strong>THEN</strong> the board loads Slate &amp; sand or Walnut &amp; ivory respectively</li>
+</ul>
+<h4 id="requirement-oa-004-original-bot-roster">Requirement: OA-004 Original bot roster</h4>
+<p>Every bot SHALL have an invented name, an original description and a category of the app's own. The roster MUST NOT name real people, link to other sites or carry country flags. Each portrait SHALL be produced by a committed generator that gives the same file for the same bot id, and a check mode SHALL fail when a committed portrait differs or is unused.</p>
+<h5 id="scenario-roster-audit">Scenario: Roster audit</h5>
+<ul>
+<li><strong>WHEN</strong> the automated roster test reads the catalog</li>
+<li><strong>THEN</strong> ids are unique, no entry contains another site's name, a URL or a country field, and every avatar equals the generator's output</li>
+</ul>
+<h4 id="requirement-oa-005-engine-defined-strength-ladder">Requirement: OA-005 Engine-defined strength ladder</h4>
+<p>Bot ratings and raw engine levels SHALL be levels of one ladder defined by the engine controls the server applies: below 1100 a share of moves is sampled from the legal moves, and higher levels add Stockfish skill and thinking time. Each level SHALL map to distinct controls. The interface MUST NOT describe ladder ratings as calibrated human ratings. Wins SHALL earn gold, silver or bronze medals under the existing assistance rule.</p>
+<h5 id="scenario-distinct-levels">Scenario: Distinct levels</h5>
+<ul>
+<li><strong>WHEN</strong> the controls for every ladder level are computed</li>
+<li><strong>THEN</strong> no two levels have identical skill, think time and sampled share</li>
+</ul>
+<h5 id="scenario-medal-after-a-win">Scenario: Medal after a win</h5>
+<ul>
+<li><strong>WHEN</strong> a learner beats a bot after one hint</li>
+<li><strong>THEN</strong> the game result and the bot card show a silver medal</li>
+</ul>
+<h4 id="requirement-oa-006-games-that-name-retired-bots">Requirement: OA-006 Games that name retired bots</h4>
+<p>A saved game or account result that names a bot id no longer in the roster SHALL open without error and show its stored bot name. A rematch or new game requested with a well-formed retired id SHALL play the current non-adaptive bot nearest the requested rating, using first-moves bots below 250. A malformed id MUST be refused with 400.</p>
+<h5 id="scenario-rematch-against-a-retired-bot">Scenario: Rematch against a retired bot</h5>
+<ul>
+<li><strong>WHEN</strong> a learner requests a rematch of a saved game against a bot id from the earlier roster at 250</li>
+<li><strong>THEN</strong> the new game is created against the current 250 bot</li>
+</ul>
+<h5 id="scenario-malformed-bot-id">Scenario: Malformed bot id</h5>
+<ul>
+<li><strong>WHEN</strong> a request names a bot id containing a path or a non-string value</li>
+<li><strong>THEN</strong> the server responds 400 and creates no game</li>
+</ul>
+<h4 id="requirement-oa-007-no-captures-of-other-products-in-the-tree">Requirement: OA-007 No captures of other products in the tree</h4>
+<p>The current tree SHALL NOT store screenshots, recordings, audio or page captures of another product, except the founder's supplied research sources. The design check SHALL fail if capture media appear in the design archive, and the dossier generator SHALL NOT copy captures or the supplied lesson screenshots. Git history SHALL NOT be rewritten.</p>
+<h5 id="scenario-design-archive-check">Scenario: Design archive check</h5>
+<ul>
+<li><strong>WHEN</strong> <code>python3 design/check.py</code> runs</li>
+<li><strong>THEN</strong> it passes only if the archive holds no video or image files outside the generated mockups</li>
+</ul>
+<h4 id="requirement-oa-008-neutral-product-wording">Requirement: OA-008 Neutral product wording</h4>
+<p>Interface strings SHALL NOT name another chess site or its engines. Project documents SHALL describe the app as its own product and SHALL record that the earlier reference-parity direction was superseded on 8 October 2026, without deleting that history.</p>
+<h5 id="scenario-interface-copy-audit">Scenario: Interface copy audit</h5>
+<ul>
+<li><strong>WHEN</strong> the web source, server source and shared modules are searched for another chess site's name</li>
+<li><strong>THEN</strong> the only matches are tests that assert its absence or migrate old stored values</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

@@ -14,7 +14,7 @@ The server owns actual bot games and validates every move and expected revision.
 
 Original lessons and puzzle solutions are authored and replay-validated. A small initial collection is labeled as such, not a copied full curriculum. Anonymous users can browse the interface; a local-server account saves games and progress. No email or external account provider is required.
 
-Visual direction: recorded Chess.com structural layout with ChessLab identity; midnight #101b2d rail, slate #1d2b42 surfaces, paper #e8eef8 text, blue #5d91ef action, board #dae5f2/#7996bb, amber #edba68 highlights. System body text, Georgia for restrained lesson headings, monospace move/evaluation numbers. The distinctive element is the large uninterrupted board aligned with a coach panel, not a marketing landing page. Click, drag, keyboard move entry, coordinates, arrows, promotion choice, sound toggle and reduced-motion support.
+Visual direction (superseded on 2026-10-08 by the original palette in `original-asset-pack`): recorded Chess.com structural layout with ChessLab identity; midnight #101b2d rail, slate #1d2b42 surfaces, paper #e8eef8 text, blue #5d91ef action, board #dae5f2/#7996bb, amber #edba68 highlights. System body text, Georgia for restrained lesson headings, monospace move/evaluation numbers. The distinctive element is the large uninterrupted board aligned with a coach panel, not a marketing landing page. Click, drag, keyboard move entry, coordinates, arrows, promotion choice, sound toggle and reduced-motion support.
 
 ## API contract
 

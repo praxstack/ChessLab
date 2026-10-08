@@ -20,75 +20,76 @@
 <header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
 <main id="main" tabindex="-1">
 <header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Archive Index</h1><p class="lede">docs/research/archive-index.md</p></header>
-<div class="reading-layout"><article class="prose" aria-label="Archive Index"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/docs/research/archive-index.md" download>Download original file ↗</a></div><p class="source-meta">docs/research/archive-index.md<br>SHA-256: c3b782dcec140d490254554194b8db13a47f22d26295f2421b128d1e5d1b0685</p><h2 id="research-and-design-archive">Research and design archive</h2>
+<div class="reading-layout"><article class="prose" aria-label="Archive Index"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/docs/research/archive-index.md" download>Download original file ↗</a></div><p class="source-meta">docs/research/archive-index.md<br>SHA-256: e410f646eb50ba2e1b42a1e7a23e01d0650efdb2cf29f3a912bef4f23ce3e89b</p><h2 id="research-and-design-archive">Research and design archive</h2>
 <p>Saved for discussion on 7 September 2026. This is a research and design snapshot, not an implemented chess application. The existing OpenSpec change remains a draft.</p>
 <h3 id="where-everything-lives">Where everything lives</h3>
 <p>Paths below are relative to the repository root. Existing gallery paths are retained so previously opened local pages remain usable.</p>
+<p>On 2026-10-08 the project adopted an original-asset policy for its hosted beta. Screenshots, recordings, audio and page captures of another product were removed from the current tree; the rows below say what changed. Earlier commits still contain those files.</p>
 <div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
 <thead>
-<tr>
+<tr class="header">
 <th>Location</th>
 <th>Contents</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><code>docs/research/sources/</code></td>
-<td>Supplied startup PDF and text, learning-products research, original conversation retrieval and lesson screenshots, with provenance.</td>
+<td>Supplied startup PDF and text, learning-products research, original conversation retrieval and lesson screenshots, with provenance. The dossier no longer copies or displays the two lesson screenshots.</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>docs/research/assessment.md</code></td>
 <td>Initial product, market and technical assessment.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>docs/dossier/</code></td>
 <td>Source chapters covering product, market, pricing, investor assessment, architecture, discussion and readiness.</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>report/index.html</code></td>
 <td>Generated offline research dossier and full document library.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>design/index.html</code></td>
 <td>17 Grok Imagine design concepts, with scenario briefs, review notes and generation receipts.</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>design/frame-study.html</code></td>
-<td>Direct visual analysis of the recording.</td>
+<td>Direct visual analysis of the recording, kept as written notes.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>design/settings-study.html</code></td>
 <td>26 observed settings controls and the option lists visible in the recording.</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>design/screen-plan.html</code></td>
 <td>Proposed screen states and changes informed by the frames.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>design/frame-atlas.html</code></td>
-<td>150 timestamped frames and 19 contact sheets.</td>
+<td>The 150 sampled times. The frames and 19 contact sheets were removed on 2026-10-08.</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>design/video/</code></td>
-<td>Compressed full-duration recording with audio, Gemini report, blocked Antigravity attempt, frame evidence and provenance.</td>
+<td>Gemini report, blocked Antigravity attempt, sampling records and provenance. The compressed recording and frame images were removed on 2026-10-08.</td>
 </tr>
-<tr>
-<td><code>references/chesscom-screenshots.zip</code></td>
-<td>The user's original screenshot archive, preserved byte for byte. This commit does not claim a new analysis of every screenshot in that archive.</td>
+<tr class="odd">
+<td>Screenshot archive and Chrome reference session</td>
+<td>Removed from the current tree on 2026-10-08. The user's original screenshot archive and the 2026-09-08 Chrome session captures remain in earlier commits and with the user.</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>ChessLab-dossier.zip</code></td>
 <td>Portable copy of the research dossier.</td>
 </tr>
-<tr>
-<td><code>ChessLab-design-studies.zip</code></td>
-<td>Portable design gallery, frame study and compressed recording.</td>
+<tr class="odd">
+<td>Design studies archive</td>
+<td>Removed on 2026-10-08 because it bundled the compressed recording and its frames.</td>
 </tr>
-<tr>
+<tr class="even">
 <td><code>report-desktop.png</code>, <code>report-mobile.png</code>, <code>report-pricing.png</code></td>
 <td>Earlier report review screenshots.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><code>CONTEXT.md</code>, <code>openspec/</code>, <code>docs/agents/</code></td>
 <td>Product context, draft specification and working conventions. Research is reference material, not governing instructions.</td>
 </tr>
@@ -97,7 +98,7 @@
 <h3 id="evidence-and-limits">Evidence and limits</h3>
 <p>Grok Imagine generated the mockups through its authenticated CLI. Gemini's web app accepted the full compressed video after Antigravity's file hook blocked its attempted ingestion. Gemini's first response contained errors; the saved findings distinguish corrected model output from direct frame inspection.</p>
 <p>The follow-up pass inspected selected frames across the full 15:20 recording, with every second sampled in the settings section. It was not uninterrupted viewing of every video frame or a complete speech transcription. Some generated mockups contain invalid chess positions or incorrect labels; these are flagged in their review notes.</p>
-<p>The original 636 MiB desktop recording remains untouched outside Git. The committed 14.3 MiB viewing copy retains the full duration and audio. Its provenance records the original path, size and hash. No original recording was deleted or substituted.</p>
+<p>The original 636 MiB desktop recording remains untouched outside Git. A 14.3 MiB viewing copy with the full duration and audio was committed on 7 September and removed from the current tree on 8 October; <code>design/video/provenance.json</code> still records the original path, size and hash. No original recording was deleted or substituted.</p>
 <p>The archive includes source documents, generated reading pages, images, receipts, compressed media and portable ZIP deliverables. Local browser extension downloads, browser caches and provider diagnostic stderr files remain on disk outside Git. No account credentials are required to read the saved HTML.</p>
 <h3 id="verification-before-committing">Verification before committing</h3>
 <p>The setup helper self-test and the standalone OpenSpec validation are checked separately from the documentation builds. <code>just check</code> currently fails because the globally linked <code>gstack-cso</code> skill differs from its recorded setup hash. The manifest is preserved rather than silently updated. Earlier passing receipts remain historical snapshots.</p>

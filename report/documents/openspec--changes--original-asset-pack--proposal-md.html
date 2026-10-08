@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Proposal · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Proposal</h1><p class="lede">openspec/changes/original-asset-pack/proposal.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Proposal"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/original-asset-pack/proposal.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/original-asset-pack/proposal.md<br>SHA-256: 09b43326157317604c4c349f0b4be336717f1b934681ea984680d09c1f5e60a9</p><h2 id="original-asset-pack-for-the-hosted-beta">Original asset pack for the hosted beta</h2>
+<h3 id="why">Why</h3>
+<p>On 8 October 2026 the founder decided that the app must be shown to outside beta testers under the AskTheMove name, and that the public repository must stop distributing Chess.com material. Until then the September direction aimed at one-to-one reference parity with Chess.com. The app shipped that site's piece images, navigation icons and green-and-cream board colours, plus a 166-bot roster copied from its public bot page: real people's names, portraits, flags and ratings. The repository also stored a screen recording, frames, screenshots, coach audio and page captures of the site.</p>
+<p>This change adopts an original-asset policy for the hosted beta. It supersedes the reference-parity goal recorded in <code>match-nonmultiplayer-platform</code>, <code>local-web-first</code> and later proposals. The founder's research and history stay; the product stops copying another site.</p>
+<h3 id="what-changes">What changes</h3>
+<ul>
+<li>Pieces: the cburnett SVG set by Colin M.L. Burnett, unmodified from lichess <code>lila</code> at commit <code>53f8fc8</code>, under GPL-2.0-or-later. It is the only piece set. The licence text and attribution are served under <code>/licenses/cburnett/</code>, and Settings lists them under Credits. Stored settings naming the old set load the new one.</li>
+<li>Icons: navigation icons from <code>lucide-static</code> 1.47.0 (ISC), pinned by integrity hash, with the licence under <code>/licenses/lucide/</code>.</li>
+<li>Palette: an original ink, teal and amber interface with a Slate &amp; sand default board, generated by <code>scripts/retheme_palette.py</code>. Walnut &amp; ivory replaces Brown; Blue and Gray remain. A new favicon. Stored green and brown themes map to Slate and Walnut.</li>
+<li>Bots: 43 invented characters in six categories (Starter, Developing, Club, Expert, Summit, Adaptive), with original descriptions and portraits drawn by <code>scripts/generate_bot_avatars.mjs</code>. Ratings are levels on the app's own 22-level ladder (<code>shared/strength-ladder.js</code>), whose engine controls the server applies. Medals replace crowns in the interface; the stored field keeps its name. Old bot ids resolve to the nearest current bot, and saved games keep their stored names.</li>
+<li>Copy: interface strings name no other chess site, and the unavailable Torch options are gone. README, CONTEXT and docs describe the product neutrally and record the supersession with its date.</li>
+<li>Captures: the recording, frames, contact sheets, screenshot archive, Chrome reference session, design-studies archive and the dossier's copies are removed from the current tree. <code>design/check.py</code> fails if capture media return, and the dossier generator no longer copies captures or the founder's two lesson screenshots.</li>
+</ul>
+<h3 id="superseded-requirements">Superseded requirements</h3>
+<ul>
+<li><code>match-nonmultiplayer-platform</code>: "Evidence-based non-multiplayer mapping" (one-to-one objective) and "Original roster assets and playable profiles" (observed names, ratings, portraits) no longer apply to the hosted beta. OA-004 to OA-006 replace them.</li>
+<li><code>expand-bot-platform</code>: the proposal's instruction to keep the Chess.com piece images, and the crown wording in BP-005. OA-001 and OA-005 replace them; BP-005's scoring rule is unchanged.</li>
+<li><code>build-coach-web-platform</code>: the design note that copied the recorded Chess.com structural layout. OA-003 replaces the palette.</li>
+</ul>
+<h3 id="non-goals">Non-goals</h3>
+<ul>
+<li>Rewriting git history. Earlier commits still contain the removed assets and captures; making the repository private or purging history is the founder's decision.</li>
+<li>Deleting the founder's research. <code>docs/research/sources/</code> keeps the supplied documents, including two lesson screenshots, as untrusted reference material.</li>
+<li>Renaming the app or repository to AskTheMove.</li>
+<li>Changing engine behaviour, scoring rules, review, puzzles or lessons beyond the strength ladder.</li>
+<li>Calibrating ladder ratings against human players.</li>
+</ul>
+<h3 id="status">Status</h3>
+<p>Implemented on branch <code>claude/original-assets</code>. Automated tests cover the roster, ladder, legacy bot ids and settings migration; the production build passes; desktop and mobile screenshots of the bot picker, a game board and the review panel were checked. Not deployed.</p>
+<h3 id="open-decisions">Open decisions</h3>
+<ul>
+<li>Whether to make the repository private or purge the removed files from history.</li>
+<li>Whether to keep <code>docs/verification/</code>, which holds about 260 MB of screenshots and videos of earlier builds that show the old pieces, portraits and colours.</li>
+<li>Whether to keep the two lesson screenshots in <code>docs/research/sources/</code>.</li>
+<li>The cburnett licence: lichess lists GPL-2.0-or-later; other redistributors cite CC BY-SA 3.0 from Wikimedia Commons, which could not be checked from this environment.</li>
+<li>When to rename the interface to AskTheMove.</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav><a href="#original-asset-pack-for-the-hosted-beta">Original asset pack for the hosted beta</a></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

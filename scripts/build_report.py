@@ -85,6 +85,11 @@ class Fragment(HTMLParser):
         self.heading = None
     def handle_starttag(self, tag, attrs):
         data = dict(attrs)
+        if tag == 'img' and data.get('src') and not urlsplit(data['src']).scheme:
+            target = (self.source.parent / unquote(urlsplit(data['src']).path)).resolve()
+            if target.is_relative_to(ROOT) and target.relative_to(ROOT).as_posix() in WITHHELD:
+                self.result.append('<em>[Screenshot kept with the research sources, not reproduced here: '+html.escape(data.get('alt') or 'image')+']</em>')
+                return
         for key in ['href','src']:
             value = data.get(key)
             if not value: continue
@@ -102,6 +107,9 @@ class Fragment(HTMLParser):
                 elif target.is_relative_to(OUT):
                     data[key] = self.base+'/'+target.relative_to(OUT).as_posix()
                     if parsed.fragment: data[key] += '#'+parsed.fragment
+                elif key == 'href' and target.is_relative_to(ROOT):
+                    # Project files the dossier does not copy (app source, licences, evidence) are named, not linked.
+                    del data[key]
             if key == 'href' and parsed.scheme in ['https','http']:
                 data['rel'] = 'noreferrer noopener'
         if tag == 'h2' and data.get('id'):

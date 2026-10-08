@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Retheme Palette · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Retheme Palette</h1><p class="lede">scripts/retheme_palette.py</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Retheme Palette"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/retheme_palette.py" download>Download original file ↗</a></div><p class="source-meta">scripts/retheme_palette.py<br>SHA-256: a4ed74f899e8792768817f48543efae9e79e2b0e272941d4fbd5244d10b144e8</p><pre><code>&quot;&quot;&quot;Map the stylesheet&#x27;s inherited warm-gray and green colours onto the original ink and teal palette.
+
+Usage: python3 scripts/retheme_palette.py web/src/styles.css [--check]
+
+Each neutral colour becomes an ink neutral and each green becomes teal at the same relative
+luminance, so every text/background contrast ratio in the stylesheet is preserved. Board,
+highlight and button colours are set explicitly in OVERRIDES. Reds, ambers, blues and purples
+(errors, annotations, focus) are left unchanged. Running the script on its own output is a no-op.
+&quot;&quot;&quot;
+import colorsys
+import re
+import sys
+
+INK_HUE, TEAL_HUE = 218 / 360, 168 / 360
+
+# Explicit choices: board squares, move highlights, the primary button and the board themes.
+OVERRIDES = {
+    # Default &quot;slate&quot; board: warm sand light squares, cool slate dark squares, ink coordinates.
+    &#x27;#eeeed2&#x27;: &#x27;#ebdfc8&#x27;, &#x27;#58723f&#x27;: &#x27;#4a5b70&#x27;, &#x27;#769656&#x27;: &#x27;#7a8ea3&#x27;, &#x27;#f0f0d8&#x27;: &#x27;#1a2230&#x27;,
+    &#x27;#f6f669&#x27;: &#x27;#f3d58c&#x27;, &#x27;#baca44&#x27;: &#x27;#c2ad6c&#x27;, &#x27;#f6f66980&#x27;: &#x27;#3fbfa266&#x27;, &#x27;#e9e94255&#x27;: &#x27;#f0c75e55&#x27;,
+    # &quot;Walnut&quot; replaces the former brown theme.
+    &#x27;#f0d9b5&#x27;: &#x27;#f1e7d0&#x27;, &#x27;#866040&#x27;: &#x27;#7a5a40&#x27;, &#x27;#b58863&#x27;: &#x27;#845c3f&#x27;, &#x27;#fff5e4&#x27;: &#x27;#f7ecd6&#x27;,
+    # Primary action and its pressed edge.
+    &#x27;#81b64c&#x27;: &#x27;#3fbfa2&#x27;, &#x27;#92c25c&#x27;: &#x27;#5fd0b6&#x27;, &#x27;#547b30&#x27;: &#x27;#21806b&#x27;,
+}
+CHOSEN = set(OVERRIDES.values())
+
+
+def parse(value):
+    digits = value[1:]
+    if len(digits) in (3, 4):
+        digits = &#x27;&#x27;.join(c * 2 for c in digits)
+    rgb = tuple(int(digits[i:i + 2], 16) / 255 for i in (0, 2, 4))
+    alpha = digits[6:8] if len(digits) == 8 else &#x27;&#x27;
+    return rgb, alpha
+
+
+def luminance(rgb):
+    def channel(c):
+        return c / 12.92 if c &lt;= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+    r, g, b = (channel(c) for c in rgb)
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def with_luminance(hue, saturation, target):
+    low, high = 0.0, 1.0
+    for _ in range(40):
+        mid = (low + high) / 2
+        if luminance(colorsys.hls_to_rgb(hue, mid, saturation)) &lt; target:
+            low = mid
+        else:
+            high = mid
+    return colorsys.hls_to_rgb(hue, (low + high) / 2, saturation)
+
+
+def hex_of(rgb, alpha=&#x27;&#x27;):
+    return &#x27;#&#x27; + &#x27;&#x27;.join(f&#x27;{round(c * 255):02x}&#x27; for c in rgb) + alpha
+
+
+def remap(value):
+    key = value.lower()
+    if key in OVERRIDES:
+        return OVERRIDES[key]
+    if key in CHOSEN:
+        return value
+    rgb, alpha = parse(key)
+    hue, light, sat = colorsys.rgb_to_hls(*rgb)
+    degrees = hue * 360
+    if sat &lt; 0.02 or light &gt; 0.985 or light &lt; 0.02:
+        return value  # pure greys, white and black (including translucent overlays)
+    target = luminance(rgb)
+    if 65 &lt;= degrees &lt;= 150:
+        # Greens become teal; strongly saturated greens keep their strength, tints stay tints.
+        return hex_of(with_luminance(TEAL_HUE, min(0.62, sat * 1.05), target), alpha)
+    if 20 &lt;= degrees &lt; 65 and sat &lt; 0.45:
+        # Warm greys and beiges become ink neutrals: richer when dark, softer when light.
+        saturation = 0.24 if light &lt; 0.35 else 0.12 if light &lt; 0.75 else 0.2
+        return hex_of(with_luminance(INK_HUE, saturation, target), alpha)
+    return value
+
+
+def retheme(css):
+    return re.sub(r&#x27;#[0-9a-fA-F]{3,8}\b&#x27;, lambda m: remap(m.group(0)) if len(m.group(0)) in (4, 5, 7, 9) else m.group(0), css)
+
+
+if __name__ == &#x27;__main__&#x27;:
+    path = sys.argv[1]
+    source = open(path).read()
+    result = retheme(source)
+    if &#x27;--check&#x27; in sys.argv:
+        sys.exit(0 if result == source else &#x27;Stylesheet contains colours outside the palette; run the retheme script.&#x27;)
+    open(path, &#x27;w&#x27;).write(result)
+</code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Spec · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/hosted-beta-readiness/specs/grounded-coach-ai/spec.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/hosted-beta-readiness/specs/grounded-coach-ai/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/hosted-beta-readiness/specs/grounded-coach-ai/spec.md<br>SHA-256: e2169f95e0bca9d6947b2a8f46e70e90247f36d444f8c178eb07e3224ff81458</p><h3 id="purpose">Purpose</h3>
+<p>Let a learner ask Claude to explain the engine evidence for one position. The server supplies every chess fact, the model only explains it, and a deterministic engine summary stands in whenever the answer cannot be trusted or obtained.</p>
+<h3 id="added-requirements">ADDED Requirements</h3>
+<h4 id="requirement-ai-001-evidence-only-model-input">Requirement: AI-001 Evidence-only model input</h4>
+<p>The server SHALL replay the submitted history, obtain bounded engine analysis and send the model only structured evidence derived from them. The evidence comprises side to move, check state, legal move count, material, engine identity and search limits, and up to three candidate lines in SAN with capture and check flags. It also covers the played or asked move's classification, estimated loss and engine reply line. It MUST NOT include account identifiers, usernames, game identifiers, saved notes or free-form learner text. Evidence SHALL be refused when the analysed position does not match the replayed history.</p>
+<h5 id="scenario-explain-a-reviewed-move">Scenario: Explain a reviewed move</h5>
+<ul>
+<li><strong>WHEN</strong> a signed-in learner asks for an explanation of a position with engine evidence</li>
+<li><strong>THEN</strong> the model request contains only the fixed instructions and that position's structured evidence, and the response names the engine, search time and depth it rests on</li>
+</ul>
+<h5 id="scenario-evidence-matches-the-panel">Scenario: Evidence matches the panel</h5>
+<ul>
+<li><strong>WHEN</strong> the learner has just analysed the position, or opens a saved full-game review step</li>
+<li><strong>THEN</strong> the explanation reuses that same account's evidence for that exact position rather than a fresh search with different lines</li>
+</ul>
+<h4 id="requirement-ai-002-server-verification-of-cited-moves">Requirement: AI-002 Server verification of cited moves</h4>
+<p>Every move the answer cites SHALL appear in the supplied evidence, and any "mate in N" claim SHALL match an engine mate score in it. Piece moves, captures, castling, promotions and checks written outside the required citation markers SHALL also count as citations. Bare square names are not checked. An answer that fails any check, is empty, too long, truncated or refused MUST be withheld and replaced by the deterministic engine summary.</p>
+<h5 id="scenario-invented-move">Scenario: Invented move</h5>
+<ul>
+<li><strong>WHEN</strong> the model's answer cites a legal-looking move that is not in the evidence</li>
+<li><strong>THEN</strong> the learner receives the deterministic engine summary with an "unverified claims" reason, and the model text is not shown</li>
+</ul>
+<h4 id="requirement-ai-003-why-not-follow-up-from-computed-evidence">Requirement: AI-003 Why-not follow-up from computed evidence</h4>
+<p>A follow-up SHALL name one move, in SAN or UCI, optionally after "why not". The server SHALL check that move is legal in the position before any model call. It SHALL then compute engine evidence for that move, its classification, loss and best reply line, and only then request an explanation. Illegal or unparseable moves MUST be rejected with an explicit error and no model call.</p>
+<h5 id="scenario-ask-about-an-alternative">Scenario: Ask about an alternative</h5>
+<ul>
+<li><strong>WHEN</strong> the learner asks "Why not Nf3?" in a position where Nf3 is legal</li>
+<li><strong>THEN</strong> the engine first evaluates Nf3, and the answer compares it only with moves present in the computed evidence</li>
+</ul>
+<h5 id="scenario-ask-about-an-illegal-move">Scenario: Ask about an illegal move</h5>
+<ul>
+<li><strong>WHEN</strong> the learner asks about a move that is illegal in the position</li>
+<li><strong>THEN</strong> the request is rejected with a recoverable error and Claude is not called</li>
+</ul>
+<h4 id="requirement-ai-004-graceful-fallback-and-private-logging">Requirement: AI-004 Graceful fallback and private logging</h4>
+<p>When no API key is configured, the explanation control SHALL be hidden and existing review behaviour SHALL remain. When the model times out, is rate-limited or unreachable, rejects credentials, refuses or errors, the response SHALL be the deterministic engine summary with a short reason. Logs MUST record only the fallback reason and status. They MUST never record the API key, the prompt or learner data.</p>
+<h5 id="scenario-claude-unavailable">Scenario: Claude unavailable</h5>
+<ul>
+<li><strong>WHEN</strong> the server has no key, or the request exceeds its time limit</li>
+<li><strong>THEN</strong> the learner sees the verified engine summary and a notice, and the review continues to work</li>
+</ul>
+<h4 id="requirement-ai-005-bounded-cost-and-load">Requirement: AI-005 Bounded cost and load</h4>
+<p>Each account SHALL have an hourly explanation quota. The server SHALL cap concurrent model requests, each request's time and output tokens, and the engine time used for fresh evidence. Exceeding the quota SHALL return the deterministic summary with a rate-limit reason rather than an error page.</p>
+<h5 id="scenario-quota-reached">Scenario: Quota reached</h5>
+<ul>
+<li><strong>WHEN</strong> an account exceeds its hourly explanation quota</li>
+<li><strong>THEN</strong> further explanations that hour return the engine summary with a rate-limit notice, and other accounts are unaffected</li>
+</ul>
+<h4 id="requirement-ai-006-labelled-explanations">Requirement: AI-006 Labelled explanations</h4>
+<p>Model answers SHALL be labelled as AI-generated, name the model, and state the engine, search time and depth they were grounded in, and that the engine lines remain the evidence. Fallback answers SHALL be labelled as the verified engine summary.</p>
+<h5 id="scenario-read-an-answer">Scenario: Read an answer</h5>
+<ul>
+<li><strong>WHEN</strong> an explanation is shown</li>
+<li><strong>THEN</strong> its label distinguishes an AI-generated explanation from the engine summary and cites its evidence source</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

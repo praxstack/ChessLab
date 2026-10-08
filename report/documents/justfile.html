@@ -20,7 +20,7 @@
 <header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
 <main id="main" tabindex="-1">
 <header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Canonical project commands</h1><p class="lede">justfile</p></header>
-<div class="reading-layout"><article class="prose" aria-label="Canonical project commands"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/justfile" download>Download original file ↗</a></div><p class="source-meta">justfile<br>SHA-256: 50ee388e505d7af2d3c65d670430c0f711b6095d302e6da6041d4964bc1145ad</p><pre><code>set shell := [&quot;bash&quot;, &quot;-euc&quot;]
+<div class="reading-layout"><article class="prose" aria-label="Canonical project commands"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/justfile" download>Download original file ↗</a></div><p class="source-meta">justfile<br>SHA-256: 79b5c61025b97c4152429bf0638587c608ec1f641b5730a4878fbabc07645c3a</p><pre><code>set shell := [&quot;bash&quot;, &quot;-euc&quot;]
 export OPENSPEC_TELEMETRY := &quot;0&quot;
 
 default:
@@ -37,6 +37,8 @@ check:
 test:
     python3 scripts/setup_skills.py --self-test
     npm test
+    python3 scripts/local_snapshot_test.py
+    python3 scripts/import_puzzles_test.py
 
 app:
     npm run dev
@@ -60,6 +62,14 @@ report-test:
 
 report-zip:
     python3 scripts/build_report.py --zip
+
+proof:
+    npm run build
+    CHESSLAB_EVIDENCE_DIR=&quot;data/proof-$(date +%Y%m%d-%H%M%S)&quot; node scripts/check_app_browser.cjs
+
+local-check:
+    npm run build
+    node scripts/check_local_server.mjs
 </code></pre></article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
 
 </main>

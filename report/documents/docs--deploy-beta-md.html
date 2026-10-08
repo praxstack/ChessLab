@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Deploy Beta · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Deploy Beta</h1><p class="lede">docs/deploy-beta.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Deploy Beta"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/docs/deploy-beta.md" download>Download original file ↗</a></div><p class="source-meta">docs/deploy-beta.md<br>SHA-256: 202064ad4d2139373d8f1a5716ee8c0eeaeccd55c813b6a5b225bcb82ff8305c</p><h2 id="deploying-the-private-beta">Deploying the private beta</h2>
+<p>This guide covers running the app for a small invited group on one server. It has not been used for a real deployment. On 8 October 2026 the image was built and run in a sandbox. Health checks, invite gating, secure cookies, Stockfish analysis and data surviving a restart were all checked there, as a non-root user. No domain, host or Anthropic API key was involved.</p>
+<p>The governing change is <code>openspec/changes/hosted-beta-readiness/</code>.</p>
+<h3 id="what-runs">What runs</h3>
+<p>One container serves the API and the built web app on port 8770. It runs Stockfish 18 as a child process and stores accounts, sessions, games and progress in SQLite under <code>/data</code>. A TLS reverse proxy (Caddy, nginx, Fly.io or Render) terminates HTTPS and forwards to the container.</p>
+<p>Run exactly one instance. Rate limits, the AI-explanation quota and saved explanation evidence live in process memory. A restart clears them. SQLite allows one writer, and the data volume belongs to one machine. Accounts and sessions persist on the volume.</p>
+<h3 id="settings">Settings</h3>
+<p>Set these in the host's secret store or a <code>chmod 600</code> env file. Never commit them.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Scrollable data table"><table>
+<thead>
+<tr class="header">
+<th>Setting</th>
+<th>Beta value</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>APP_ORIGIN</code></td>
+<td><code>https://app.example.com</code></td>
+<td>Required. The exact public origin, with no path. It turns on Secure cookies, HSTS, the content security policy and Origin checks, and turns off the <code>/research</code> and <code>/design</code> archives.</td>
+</tr>
+<tr class="even">
+<td><code>TRUST_PROXY</code></td>
+<td><code>1</code></td>
+<td>Number of proxy hops in front of the app. Each visitor then gets their own rate limit. <code>true</code> is rejected because it would trust addresses sent by any client.</td>
+</tr>
+<tr class="odd">
+<td><code>BETA_INVITE_CODES</code></td>
+<td><code>code-one-2026,code-two-2026</code></td>
+<td>Comma-separated codes of 8–128 characters. New accounts need one; existing accounts sign in without one. Leave unset to allow open sign-up.</td>
+</tr>
+<tr class="even">
+<td><code>ANTHROPIC_API_KEY</code></td>
+<td>secret</td>
+<td>Turns on "Explain why". Without it the button is hidden and the engine summary remains.</td>
+</tr>
+<tr class="odd">
+<td><code>ANTHROPIC_MODEL</code></td>
+<td><code>claude-opus-5-5</code></td>
+<td>Model for explanations.</td>
+</tr>
+<tr class="even">
+<td><code>COACH_AI_EFFORT</code></td>
+<td><code>low</code></td>
+<td><code>low</code>, <code>medium</code> or <code>high</code>. Higher is slower and costs more.</td>
+</tr>
+<tr class="odd">
+<td><code>COACH_AI_TIMEOUT_MS</code></td>
+<td><code>15000</code></td>
+<td>Limit per explanation, 2000–60000. On timeout the app shows the engine summary instead.</td>
+</tr>
+<tr class="even">
+<td><code>COACH_AI_MAX_PER_HOUR</code></td>
+<td><code>30</code></td>
+<td>Explanations per account per hour, 1–1000.</td>
+</tr>
+<tr class="odd">
+<td><code>COACH_ENGINE_MOVETIME_MS</code></td>
+<td><code>800</code></td>
+<td>Stockfish time when an explanation needs fresh analysis, 100–2000.</td>
+</tr>
+<tr class="even">
+<td><code>SERVE_ARCHIVES</code></td>
+<td>unset</td>
+<td><code>1</code> serves the research and design archives even when hosted. Keep it unset: the archives are internal founder research, not part of the beta.</td>
+</tr>
+<tr class="odd">
+<td><code>COOKIE_SECURE</code></td>
+<td>unset</td>
+<td>Set automatically by an HTTPS <code>APP_ORIGIN</code>.</td>
+</tr>
+</tbody>
+</table></div>
+<p>The image already sets <code>NODE_ENV=production</code>, <code>HOST=0.0.0.0</code>, <code>PORT=8770</code>, <code>CHESSLAB_DB=/data/chesslab.sqlite</code>, <code>STOCKFISH_PATH</code>, <code>CHESSLAB_ENGINES_DIR</code>, and catalogue paths under <code>/data</code>. Do not set <code>PUBLIC_ORIGIN</code> or <code>CHESSLAB_BACKEND_SECRET</code>. Those belong to the earlier owner-private Sites tunnel. They make every request require that tunnel's secret header.</p>
+<h3 id="build-the-image">Build the image</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> build <span class="at">-t</span> chesslab:beta .</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># On x86-64 CPUs without AVX2:</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> build <span class="at">--build-arg</span> STOCKFISH_BUILD=sse41-popcnt <span class="at">-t</span> chesslab:beta .</span></code></pre></div>
+<p>The build downloads the official Stockfish 18 Linux binary and checks it against a pinned SHA-256. The image targets <code>linux/amd64</code>, because the pinned downloads are x86-64 builds. On an arm64 host, build Stockfish from source in that stage instead. Stockfish is GPL-3.0; the image keeps its licence and authors files. If you publish the image itself, you must also offer the matching Stockfish source.</p>
+<p>What the image does not include:</p>
+<ul>
+<li>The Stockfish 19 opponent. No official Stockfish 19 Linux binary was found, so Stockfish 18 is the default opponent and analysis engine.</li>
+<li>Stockfish 16, Stockfish 18 Lite, Maia and Leela. These need <code>scripts/install_engines.py</code> and Python model weights.</li>
+<li>Opening explorer and puzzle catalogues, and tablebases. Import them into the volume at the <code>/data/...</code> paths above if wanted. Without them those features report that they are unavailable.</li>
+</ul>
+<h3 id="option-a-a-vps-with-docker-and-caddy">Option A: a VPS with Docker and Caddy</h3>
+<p>Use an x86-64 VPS. Resource needs for a beta group have not been measured. Open only ports 22, 80 and 443.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> volume create chesslab-data</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install</span> <span class="at">-m</span> 600 /dev/null /etc/chesslab.env   <span class="co"># then add the settings above</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="at">--name</span> chesslab <span class="at">--restart</span> unless-stopped <span class="dt">\</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--env-file</span> /etc/chesslab.env <span class="dt">\</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">-p</span> 127.0.0.1:8770:8770 <span class="dt">\</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> chesslab-data:/data <span class="dt">\</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  chesslab:beta</span></code></pre></div>
+<p>Publishing the port on <code>127.0.0.1</code> keeps the app reachable only through the proxy. A minimal Caddyfile, which also obtains the certificate:</p>
+<pre><code>app.example.com {
+    reverse_proxy 127.0.0.1:8770
+}</code></pre>
+<p>Caddy adds the client address to <code>X-Forwarded-For</code>, so <code>TRUST_PROXY=1</code> is correct. Check <code>docker inspect --format '{{.State.Health.Status}}' chesslab</code> and <code>curl -fsS https://app.example.com/healthz</code> after starting.</p>
+<h3 id="option-b-flyio-or-render">Option B: Fly.io or Render</h3>
+<p>Both can build from the <code>Dockerfile</code>. Keep one instance with one persistent volume.</p>
+<p><strong>Fly.io.</strong> Create one volume and mount it at <code>/data</code>. Point the HTTP service at internal port 8770, force HTTPS, and add an HTTP check on <code>/healthz</code>. Pin the app to one machine, because a volume belongs to one machine. Keep that machine running rather than stopped when idle; a cold start also restarts Stockfish. Put <code>ANTHROPIC_API_KEY</code> and <code>BETA_INVITE_CODES</code> in <code>fly secrets</code>. Set <code>APP_ORIGIN</code> and <code>TRUST_PROXY=1</code> as plain environment values.</p>
+<p><strong>Render.</strong> Create a Docker web service with a persistent disk mounted at <code>/data</code>. Persistent disks need a paid instance and limit the service to one instance. Set the health check path to <code>/healthz</code>. Add the settings as environment variables or a secret file.</p>
+<p>On either platform, confirm the proxy hop count before relying on per-visitor limits. Log a test request's <code>X-Forwarded-For</code> and check that the last entry is your own address. This has not been checked on a platform.</p>
+<h3 id="backups">Backups</h3>
+<p>The database holds password hashes, session hashes, games and progress. Treat every copy as private data and encrypt it when stored off the server.</p>
+<p>An online backup can run while the app is serving. <code>VACUUM INTO</code> writes one consistent file:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="va">stamp</span><span class="op">=</span><span class="va">$(</span><span class="fu">date</span> <span class="at">-u</span> +%Y%m%dT%H%M%SZ<span class="va">)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec chesslab node <span class="at">-e</span> <span class="st">&quot;const {DatabaseSync}=require(&#39;node:sqlite&#39;);const db=new DatabaseSync(&#39;/data/chesslab.sqlite&#39;,{readOnly:true});db.prepare(&#39;VACUUM INTO ?&#39;).run(process.argv[1])&quot;</span> <span class="st">&quot;/data/backup-</span><span class="va">$stamp</span><span class="st">.sqlite&quot;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> cp <span class="st">&quot;chesslab:/data/backup-</span><span class="va">$stamp</span><span class="st">.sqlite&quot;</span> <span class="st">&quot;./backup-</span><span class="va">$stamp</span><span class="st">.sqlite&quot;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec chesslab rm <span class="st">&quot;/data/backup-</span><span class="va">$stamp</span><span class="st">.sqlite&quot;</span></span></code></pre></div>
+<p>Run it at least daily from cron or the platform's scheduler. Copy the file off the server, and keep several days and weeks of copies. For a cold backup, stop the container and copy the whole volume, including any <code>chesslab.sqlite-wal</code> and <code>chesslab.sqlite-shm</code> files.</p>
+<p>To restore, stop the container. Replace <code>/data/chesslab.sqlite</code> with the backup and remove any stale <code>-wal</code> and <code>-shm</code> files beside it. Then start the container again. Rehearse a restore before inviting testers. Restoring signs out anyone whose session was created after the backup.</p>
+<h3 id="pointing-appdomain-at-it-later">Pointing <code>app.&lt;domain&gt;</code> at it later</h3>
+<ol type="1">
+<li>For a VPS, add an <code>A</code> (and <code>AAAA</code> if available) record for <code>app</code> pointing at the server. For Fly.io or Render, add the custom domain in the platform and create the <code>CNAME</code> or <code>A</code> record it gives you.</li>
+<li>Wait for the platform or Caddy to issue the certificate.</li>
+<li>Set <code>APP_ORIGIN=https://app.&lt;domain&gt;</code> exactly and restart. Requests from any other origin are refused once it is set.</li>
+<li>Moving from a temporary hostname to <code>app.&lt;domain&gt;</code> signs everyone out, because session cookies are tied to the host. Accounts and data are unaffected.</li>
+</ol>
+<p>The marketing site can live at the apex domain or <code>www</code> independently. Both are separate origins. Keep the app on its own subdomain so its cookies stay off the marketing site.</p>
+<h3 id="before-inviting-testers">Before inviting testers</h3>
+<ul>
+<li><code>APP_ORIGIN</code>, <code>TRUST_PROXY</code> and <code>BETA_INVITE_CODES</code> are set. <code>/api/status</code> reports <code>"hosted":true</code>, <code>"inviteRequired":true</code> and <code>"archives":false</code>.</li>
+<li><code>/healthz</code> returns <code>{"status":"ok"}</code> through HTTPS, and the response carries <code>Strict-Transport-Security</code> and <code>Content-Security-Policy</code>.</li>
+<li>Sign-up without a code is refused, and sign-up with a code works.</li>
+<li>If the key is set, one "Explain why" answer is labelled as AI-generated and names the model. With a bad key, the page shows the engine summary and a short notice. Logs record only the fallback reason, never the key or prompt.</li>
+<li>A backup has been taken and restored on a scratch copy.</li>
+<li>The Anthropic Console has a spending limit. The per-account hourly limit caps each tester, not the total across testers.</li>
+</ul>
+<h3 id="known-gaps">Known gaps</h3>
+<ul>
+<li>No password reset, email verification or account deletion flow. Testers who forget a password need a manual reset.</li>
+<li>Rate limits and the AI quota are in memory and reset on restart. Each account allows 10 sign-in attempts per 15 minutes. Someone who knows a username can use that limit to lock its owner out for 15 minutes.</li>
+<li>The server checks that every move Claude cites appears in the evidence and that any "mate in N" matches the engine. It does not check move order or claims about squares and defenders; the prompt alone governs those.</li>
+<li>Nothing here has been load-tested. Analysis runs two Stockfish searches at once and bot moves run one at a time. Up to eight more requests queue; beyond that the server answers "busy".</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav><a href="#deploying-the-private-beta">Deploying the private beta</a></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

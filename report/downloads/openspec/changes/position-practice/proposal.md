@@ -1,0 +1,7 @@
+# Practice from a reviewed position
+
+The existing board can explore variations but cannot continue a selected position against a chosen bot. Add the practice-from-analysis flow documented at https://support.chess.com/en/articles/8572788-how-can-i-play-the-computer-from-a-custom-position (read 13 September 2026). The learner chooses a position in the saved game or a saved nested branch, chooses an opponent and side, plays a separate bot game, restarts that position and returns to the source study.
+
+Baseline: ec0902fa13ce2be7d79e2a237b860dc94ea4536c and the accepted whole-game review proof. Preserve the existing 58 tests, legal history, account/study isolation, timers, crown rules and native engine truth. Mutable paths: practice creation, shared undo/clock boundaries, review UI actions, focused tests and this change. A practice copy retains all preceding moves and starting FEN; a bare-FEN copy would lose repetition history. Existing bot games keep their current behavior. No governance or grading threshold changes are included.
+
+This implements a further part of full parity. Custom board editing, opening/drill collections, midgame side switching and proprietary engine equivalence remain additional work. Root handles implementation and review while native agent execution is unavailable under the installed runtime validator. Reassess after two unsuccessful candidates; never weaken protected checks.
