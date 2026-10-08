@@ -20,7 +20,7 @@ const sleep = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
 const EASE_STROKE = 'cubic-bezier(0.65, 0, 0.35, 1)';
 const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
 const EASE_WRITE = 'cubic-bezier(0.4, 0, 0.6, 1)';
-const CLIP_FROM = 'inset(-0.3em 100% -0.45em -0.3em)';
+const CLIP_FROM = 'inset(-0.3em 100% -0.45em 0)';
 const CLIP_TO = 'inset(-0.3em -0.3em -0.45em -0.3em)';
 const CHAR_MS = 34;
 const STOP_MS = 90;
@@ -102,7 +102,7 @@ class Timeline {
       fill: 'backwards',
     });
     this.anims.push(anim);
-    this.strokes.push({ path, start: this.t, end: this.t + d, tone });
+    this.strokes.push({ path, anim, start: this.t, end: this.t + d, tone });
     this.t += d;
   }
 
@@ -591,7 +591,10 @@ function initDemo() {
   function followPencil(tl, token) {
     const strokes = tl.strokes;
     if (!strokes.length) return;
-    const clock = tl.anims[0];
+    // The last stroke's animation is the clock: its time runs from the start of
+    // the timeline to the end of the last stroke (a finished animation's time
+    // stops at its own end, so an earlier one would stop the pencil).
+    const clock = strokes[strokes.length - 1].anim;
     const lengths = strokes.map((s) => s.path.getTotalLength());
     const at = (i, f) => strokes[i].path.getPointAtLength(lengths[i] * f);
     const frame = () => {

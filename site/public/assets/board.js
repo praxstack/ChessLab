@@ -145,10 +145,11 @@ export function inkSVG(step, orientation) {
 }
 
 /**
- * The teacher's red-blue pencil. Its tip sits at (0, 0) so app.js can move it
+ * The teacher's red-blue pencil, held right-handed: the tip sits at (0, 0) and
+ * the body leans down and to the right, so app.js can move it
  * along a stroke with a single translate. Hidden until something is drawn.
  */
-export const PENCIL_SVG = `<g class="pencil" transform="translate(-40 -40)"><g class="pencil__body" transform="rotate(-38)"><path class="pencil__wood" d="M0 0 L-1.25 -3.6 L1.25 -3.6 Z"/><path class="pencil__lead" d="M0 0 L-0.5 -1.45 L0.5 -1.45 Z"/><rect class="pencil__barrel" x="-1.25" y="-15.5" width="2.5" height="11.9" rx="0.35"/><rect class="pencil__shine" x="-0.35" y="-15" width="0.5" height="10.8"/></g></g>`;
+export const PENCIL_SVG = `<g class="pencil" transform="translate(-40 -40)"><g class="pencil__body" transform="rotate(146)"><path class="pencil__wood" d="M0 0 L-1.25 -3.6 L1.25 -3.6 Z"/><path class="pencil__lead" d="M0 0 L-0.5 -1.45 L0.5 -1.45 Z"/><rect class="pencil__barrel" x="-1.25" y="-15.5" width="2.5" height="11.9" rx="0.35"/><rect class="pencil__shine" x="-0.35" y="-15" width="0.5" height="10.8"/></g></g>`;
 
 /** SAN with a figurine for the piece letter, e.g. "Nxe5" -> [knight]xe5. */
 export function sanHTML(san) {
