@@ -61,6 +61,7 @@ if (evidence) fs.mkdirSync(evidence, {recursive:true});
     assert.ok(await page.locator('.move-entry').evaluate(element=>element.getBoundingClientRect().bottom<=innerHeight),'Laptop move entry stays above the fold');
     assert.ok(await page.locator('.start-button').evaluate(element=>element.getBoundingClientRect().bottom<=innerHeight),'Laptop start button stays above the fold');
     if(evidence) await page.screenshot({path:path.join(evidence,'00-laptop-picker.png'),fullPage:true});
+    for(const width of [1440,1100,390]){await page.setViewportSize({width,height:width===390?844:960});const iconSizes=await navigation.locator('.nav-item').evaluateAll(items=>items.map(item=>{const box=item.querySelector('.nav-asset')?.getBoundingClientRect();return box?Math.min(box.width,box.height):0;}));assert.ok(iconSizes.length===7&&iconSizes.every(size=>size>=16),`Navigation icons are visible at ${width}px: ${iconSizes}`);}
     await page.setViewportSize({width:1440,height:960});
     await page.getByRole('button',{name:'Set up position',exact:true}).click();
     const guestEditor=page.getByRole('dialog',{name:'Set up position',exact:true}),guestFen='4k3/8/8/8/8/8/8/4K2R b - - 0 9';

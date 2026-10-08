@@ -20,7 +20,7 @@
 <header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
 <main id="main" tabindex="-1">
 <header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Check App Browser</h1><p class="lede">scripts/check_app_browser.cjs</p></header>
-<div class="reading-layout"><article class="prose" aria-label="Check App Browser"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/check_app_browser.cjs" download>Download original file ↗</a></div><p class="source-meta">scripts/check_app_browser.cjs<br>SHA-256: f10e552a89d4038afb0a75763997989556e3ffaa996e0b5410cb76a6edafac10</p><pre><code>/* Run after `npm run build`; uses a fresh database and the real server engine. */
+<div class="reading-layout"><article class="prose" aria-label="Check App Browser"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/scripts/check_app_browser.cjs" download>Download original file ↗</a></div><p class="source-meta">scripts/check_app_browser.cjs<br>SHA-256: 697af8cb94c4819d1f99ae71fb8007f374259ea6b59103a7a588010dd7e2f911</p><pre><code>/* Run after `npm run build`; uses a fresh database and the real server engine. */
 const assert = require(&#x27;node:assert/strict&#x27;);
 const fs = require(&#x27;node:fs&#x27;);
 const path = require(&#x27;node:path&#x27;);
@@ -83,6 +83,7 @@ if (evidence) fs.mkdirSync(evidence, {recursive:true});
     assert.ok(await page.locator(&#x27;.move-entry&#x27;).evaluate(element=&gt;element.getBoundingClientRect().bottom&lt;=innerHeight),&#x27;Laptop move entry stays above the fold&#x27;);
     assert.ok(await page.locator(&#x27;.start-button&#x27;).evaluate(element=&gt;element.getBoundingClientRect().bottom&lt;=innerHeight),&#x27;Laptop start button stays above the fold&#x27;);
     if(evidence) await page.screenshot({path:path.join(evidence,&#x27;00-laptop-picker.png&#x27;),fullPage:true});
+    for(const width of [1440,1100,390]){await page.setViewportSize({width,height:width===390?844:960});const iconSizes=await navigation.locator(&#x27;.nav-item&#x27;).evaluateAll(items=&gt;items.map(item=&gt;{const box=item.querySelector(&#x27;.nav-asset&#x27;)?.getBoundingClientRect();return box?Math.min(box.width,box.height):0;}));assert.ok(iconSizes.length===7&amp;&amp;iconSizes.every(size=&gt;size&gt;=16),`Navigation icons are visible at ${width}px: ${iconSizes}`);}
     await page.setViewportSize({width:1440,height:960});
     await page.getByRole(&#x27;button&#x27;,{name:&#x27;Set up position&#x27;,exact:true}).click();
     const guestEditor=page.getByRole(&#x27;dialog&#x27;,{name:&#x27;Set up position&#x27;,exact:true}),guestFen=&#x27;4k3/8/8/8/8/8/8/4K2R b - - 0 9&#x27;;
