@@ -1,5 +1,7 @@
 # Whole-game review evidence
 
+> The screenshots and recordings linked here were removed on 8 October 2026. See [the verification README](../README.md).
+
 The app now saves an incremental native-engine report for a completed bot game or imported study. The report includes every move, evaluation graph, per-color classifications, average measurable centipawn loss, and key-move navigation. Pause and reload retain completed work. Selecting a saved move reuses its saved evidence.
 
 [Recorded user flow](proof/local-user-flow.webm) · [Receipt](proof/receipt.json) · [Full report](proof/09-full-game-report.png) · [Selected key move](proof/10-reviewed-key-move.png) · [Mobile report](proof/11-mobile-report.png)

@@ -1,5 +1,7 @@
 # Guided learning evidence
 
+> The screenshots and recordings linked here were removed on 8 October 2026. See [the verification README](../README.md).
+
 Learn now opens a course path grouped into four levels. Twelve original guided lessons contain 24 legally replayed board challenges; the six original lessons remain accessible with their IDs, answers and progress. The lesson library searches titles, descriptions, teaching terms and body text, with level and topic filters. Next unfinished lesson and per-course completion come from account progress.
 
 [Video](proof/local-user-flow.webm) · [Receipt](proof/receipt.json) · [Path](proof/34-learning-path.png) · [Library](proof/36-lesson-library.png) · [Mobile promotion](proof/37-mobile-lesson.png) · [Completed course](proof/39-course-complete.png)

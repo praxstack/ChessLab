@@ -1,5 +1,7 @@
 # Persistent board drawing evidence
 
+> The screenshots and recordings linked here were removed on 8 October 2026. See [the verification README](../README.md).
+
 Review and Analysis now save arrows and square highlights with an exact study branch and ply. Four colors, right-drag/right-click modifiers, keyboard controls and touch tools share the existing board renderer and study-note storage. Repeating a drawing removes it; changing its color replaces it. Clear marks preserves the current comment and glyphs, other positions and original game moves. Pending gestures cancel on navigation, orientation changes, pointer cancellation/lost capture or Escape within the board.
 
 [Video](proof/local-user-flow.webm) · [Receipt](proof/receipt.json) · [Desktop drawings](proof/48-colored-board-drawings.png) · [Mobile touch tools](proof/49-mobile-drawing-tools.png) · [Restored drawings](proof/50-restored-board-drawings.png)

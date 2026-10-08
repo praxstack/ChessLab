@@ -1,5 +1,7 @@
 # Annotated studies evidence
 
+> The screenshots and recordings linked here were removed on 8 October 2026. See [the verification README](../README.md).
+
 PGN import/export now carries legal nested alternatives, comments and numeric move annotations. Position notes attaches learner text and symbols to a branch identity and exact ply, including the original game and its starting position. Existing branch questions remain intact. Export saves pending edits first; a failed/stale save blocks the download and preserves the draft. Undo refuses to remove annotated original-game history.
 
 [Video](proof/local-user-flow.webm) · [Receipt](proof/receipt.json) · [Position notes](proof/44-position-notes.png) · [Mobile](proof/45-mobile-notes.png) · [Restored study](proof/46-restored-study.png) · [Protected unsaved draft](proof/47-protected-note-draft.png)

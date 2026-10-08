@@ -1,5 +1,7 @@
 # Custom position editor evidence
 
+> The screenshots and recordings linked here were removed on 8 October 2026. See [the verification README](../README.md).
+
 Set up position now provides piece placement, click and drag movement, removal, clear/reset/flip, side to move, castling rights, en-passant target, move counters and FEN loading. Save & analyze position creates an independent local study with native analysis, variations, reload, PGN export and bot practice. Cancelling guest sign-in restores the submitted FEN and title.
 
 [Video](proof/local-user-flow.webm) · [Receipt](proof/receipt.json) · [Desktop editor](proof/16-custom-position-editor.png) · [Mobile editor](proof/17-mobile-position-editor.png) · [Native analysis](proof/18-custom-position-analysis.png)

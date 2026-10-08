@@ -51,6 +51,10 @@ media={'.png','.jpg','.jpeg','.jfif','.gif','.webp','.avif','.apng','.bmp','.tif
        '.mp3','.m4a','.aac','.wav','.ogg','.oga','.opus','.flac','.weba'}
 captures=[p for p in root.rglob('*') if p.is_file() and p.suffix.lower() in media and p.resolve() not in generated]
 assert not captures, f'Capture media must not be stored here: {captures[:3]}'
+# OA-007: screenshots and recordings of earlier builds were removed from docs/verification on
+# 2026-10-08 because they showed the old copied art. Keep them out.
+evidence=[p for p in (root.parent/'docs'/'verification').rglob('*') if p.is_file() and p.suffix.lower() in media]
+assert not evidence, f'Capture media must not return to docs/verification: {evidence[:3]}'
 assert len(items)==len(receipts)==17
 cards=pages[(root/'index.html').resolve()].cards
 assert len(cards)==17 and set(cards)=={x['id']+'.html' for x in items}, 'Each scenario needs exactly one gallery card'

@@ -1,5 +1,7 @@
 # Local Chess960 delivery
 
+> The screenshots and recordings linked here were removed on 8 October 2026. See [the verification README](../README.md).
+
 Chess960 now runs through numbered/random bot setup, legal play, native engine analysis, clocks and undo, rematch, position practice, nested studies, PGN/study files and the position editor. Castling works by king-to-rook click/drag, touch or SAN, including stationary and swapping king/rook cases. Standard rules, opening statistics and puzzle data retain their existing scope.
 
 [Recorded user journey](proof/local-user-flow.webm) · [Desktop game](proof/64-chess960-live-game.png) · [Saved study](proof/65-chess960-castling-study.png) · [Mobile castling](proof/67-chess960-mobile-castling.png) · [Returning to Standard](proof/69-standard-after-chess960.png).
