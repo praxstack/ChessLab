@@ -18,7 +18,7 @@ Set these in the host's secret store or a `chmod 600` env file. Never commit the
 | --- | --- | --- |
 | `APP_ORIGIN` | `https://app.example.com` | Required. The exact public origin, with no path. It turns on Secure cookies, HSTS, the content security policy and Origin checks, and turns off the `/research` and `/design` archives. |
 | `TRUST_PROXY` | `1` | Number of proxy hops in front of the app. Each visitor then gets their own rate limit. `true` is rejected because it would trust addresses sent by any client. |
-| `BETA_INVITE_CODES` | `code-one-2026,code-two-2026` | Comma-separated codes of 8–128 characters. New accounts need one; existing accounts sign in without one. Leave unset to allow open sign-up. |
+| `BETA_INVITE_CODES` | `code-one-2026,code-two-2026` | Comma-separated codes of 8–128 characters. New accounts need one; existing accounts sign in without one. Leave unset to allow open sign-up. An empty entry, such as a trailing comma, stops the server from starting. |
 | `ANTHROPIC_API_KEY` | secret | Turns on "Explain why". Without it the button is hidden and the engine summary remains. |
 | `ANTHROPIC_MODEL` | `claude-opus-5-5` | Model for explanations. |
 | `COACH_AI_EFFORT` | `low` | `low`, `medium` or `high`. Higher is slower and costs more. |
@@ -28,7 +28,7 @@ Set these in the host's secret store or a `chmod 600` env file. Never commit the
 | `SERVE_ARCHIVES` | unset | `1` serves the research and design archives even when hosted. Keep it unset: the design archive holds frames captured from Chess.com. |
 | `COOKIE_SECURE` | unset | Set automatically by an HTTPS `APP_ORIGIN`. |
 
-The image already sets `NODE_ENV=production`, `HOST=0.0.0.0`, `PORT=8770`, `CHESSLAB_DB=/data/chesslab.sqlite`, `STOCKFISH_PATH`, `CHESSLAB_ENGINES_DIR`, and catalogue paths under `/data`. Do not set `PUBLIC_ORIGIN` or `CHESSLAB_BACKEND_SECRET`. Those belong to the earlier owner-private Sites tunnel. They make every request require that tunnel's secret header.
+The image already sets `NODE_ENV=production`, `HOST=0.0.0.0`, `PORT=8770`, `CHESSLAB_DB=/data/chesslab.sqlite`, `STOCKFISH_PATH`, `CHESSLAB_ENGINES_DIR`, and catalogue paths under `/data`. Do not set `PUBLIC_ORIGIN` or `CHESSLAB_BACKEND_SECRET`. Those belong to the earlier owner-private Sites tunnel. They make every request require that tunnel's secret header. The server refuses to start when `PUBLIC_ORIGIN` differs from `APP_ORIGIN`.
 
 ## Build the image
 
