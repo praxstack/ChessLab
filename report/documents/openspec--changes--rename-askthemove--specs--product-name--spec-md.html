@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ChessLab research dossier: product, market, pricing, investor assessment and complete project documents.">
+<meta name="color-scheme" content="light"><title>Spec · ChessLab dossier</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js" defer></script>
+</head>
+<body class="doc-reading">
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Dossier navigation">
+<a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">♞</span><span>ChessLab<small>THE RESEARCH DOSSIER</small></span></a>
+<button class="menu-toggle" aria-expanded="false" aria-controls="chapter-nav">Chapters <span aria-hidden="true">☰</span></button>
+<nav id="chapter-nav" aria-label="Chapters"><a class="nav-link" href="../index.html"><span class="nav-symbol" aria-hidden="true">◇</span>Overview</a><a class="nav-link" href="../product.html"><span class="nav-symbol" aria-hidden="true">♙</span>Product vision</a><a class="nav-link" href="../market.html"><span class="nav-symbol" aria-hidden="true">◎</span>Market & customers</a><a class="nav-link" href="../pricing.html"><span class="nav-symbol" aria-hidden="true">↗</span>Pricing & economics</a><a class="nav-link" href="../investor.html"><span class="nav-symbol" aria-hidden="true">♜</span>Investor memo</a><a class="nav-link" href="../architecture.html"><span class="nav-symbol" aria-hidden="true">⌘</span>Architecture</a><a class="nav-link" href="../application.html"><span class="nav-symbol" aria-hidden="true">♞</span>Working application</a><a class="nav-link" href="../delivery.html"><span class="nav-symbol" aria-hidden="true">✓</span>Work & readiness</a><a class="nav-link" href="../discussion.html"><span class="nav-symbol" aria-hidden="true">↳</span>Conversation</a><a class="nav-link" href="../library.html" aria-current="page"><span class="nav-symbol" aria-hidden="true">▤</span>Document library</a></nav>
+<div class="sidebar-foot"><span class="status-dot"></span> Research &amp; planning<small>Local edition · 05 Sep 2026<br>No playable chess app yet</small><a href="../library.html">Browse the complete record <span aria-hidden="true">↗</span></a></div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div><a href="../index.html">Dossier</a><span aria-hidden="true"> / </span><span>Document library</span></div><div class="top-actions"><a href="../library.html" aria-label="Search the document library">Search documents <span aria-hidden="true">⌕</span></a><button class="print-button" type="button">Print page</button></div></header>
+<main id="main" tabindex="-1">
+<header class="page-heading"><div class="eyebrow">Document library / Research dossier</div><h1>Spec</h1><p class="lede">openspec/changes/rename-askthemove/specs/product-name/spec.md</p></header>
+<div class="reading-layout"><article class="prose" aria-label="Spec"><div class="source-notice"><strong>Complete source document.</strong> This is the full project file at the dossier snapshot, not a claim of implemented product behavior. <a href="../downloads/openspec/changes/rename-askthemove/specs/product-name/spec.md" download>Download original file ↗</a></div><p class="source-meta">openspec/changes/rename-askthemove/specs/product-name/spec.md<br>SHA-256: 940e272d1ac04436ba8443cd744436d63cba6fc92069ea04ef5b5661a580c393</p><h3 id="purpose">Purpose</h3>
+<p>Show testers one product name, AskTheMove, without breaking the data and files that existing users already have.</p>
+<h3 id="added-requirements">ADDED Requirements</h3>
+<h4 id="requirement-pn-001-visible-product-name">Requirement: PN-001 Visible product name</h4>
+<p>The interface SHALL show AskTheMove as the product name in the browser page title, the sidebar wordmark and its accessible label, the footer and the lesson attribution. No text in the app interface MAY show ChessLab. The research and design archives, which a local install links from the sidebar and a hosted install does not serve, are separate documents outside this requirement. Where the interface names the study file format it SHALL use the <code>.chesslab.json</code> extension rather than a product name.</p>
+<h5 id="scenario-opening-the-app">Scenario: Opening the app</h5>
+<ul>
+<li><strong>WHEN</strong> a visitor opens the app on any page</li>
+<li><strong>THEN</strong> the page title, the sidebar wordmark and the footer read AskTheMove, and no visible text reads ChessLab</li>
+</ul>
+<h5 id="scenario-import-dialog">Scenario: Import dialog</h5>
+<ul>
+<li><strong>WHEN</strong> a learner opens Import</li>
+<li><strong>THEN</strong> the dialog offers PGN or a study file identified by its <code>.chesslab.json</code> extension</li>
+</ul>
+<h4 id="requirement-pn-002-exported-files-carry-the-new-name">Requirement: PN-002 Exported files carry the new name</h4>
+<p>New PGN and study downloads SHALL be named <code>askthemove-&lt;id&gt;</code>, and the study download SHALL keep the <code>.chesslab.json</code> extension. An exported PGN without a stored Event tag SHALL use "AskTheMove study", and a bot side without a stored bot name SHALL use "AskTheMove bot". The <code>ChessLabOriginalPly</code> tag and the <code>chesslab-study</code> format id MUST NOT change.</p>
+<h5 id="scenario-exporting-a-bot-game-without-an-event-tag">Scenario: Exporting a bot game without an Event tag</h5>
+<ul>
+<li><strong>WHEN</strong> a learner exports a bot game that has no stored Event tag or bot name</li>
+<li><strong>THEN</strong> the PGN names the event "AskTheMove study" and the bot "AskTheMove bot", and it still records the original-game boundary in <code>ChessLabOriginalPly</code></li>
+</ul>
+<h4 id="requirement-pn-003-existing-data-keeps-working">Requirement: PN-003 Existing data keeps working</h4>
+<p>Saved settings, the open game, signed-in sessions, database files and study files from earlier builds MUST keep working after the rename. Browser storage keys, cookie names, database file names, environment variables, API paths and the study format id SHALL keep their earlier values. An unsupported study file SHALL be refused with 400 and a message that names the <code>.chesslab.json</code> extension.</p>
+<h5 id="scenario-importing-a-study-file-exported-before-the-rename">Scenario: Importing a study file exported before the rename</h5>
+<ul>
+<li><strong>WHEN</strong> a learner imports a <code>.chesslab.json</code> file whose headers name "ChessLab study" and "ChessLab bot"</li>
+<li><strong>THEN</strong> the game imports with its moves and its stored headers unchanged</li>
+</ul>
+<h5 id="scenario-returning-browser">Scenario: Returning browser</h5>
+<ul>
+<li><strong>WHEN</strong> a browser that saved settings and an open game before the rename loads the app</li>
+<li><strong>THEN</strong> it reads the same storage keys and restores those settings and that game</li>
+</ul>
+<h5 id="scenario-unsupported-study-file">Scenario: Unsupported study file</h5>
+<ul>
+<li><strong>WHEN</strong> a learner imports JSON whose format id is not <code>chesslab-study</code></li>
+<li><strong>THEN</strong> the server responds 400 with a message naming <code>.chesslab.json</code> and creates no game</li>
+</ul>
+</article><aside class="on-page" aria-label="On this page"><span>IN THIS CHAPTER</span><nav></nav><div class="reading-note">Read claims at their stated scope. Proposed ideas are not accepted specifications or verified product outcomes.</div></aside></div>
+
+</main>
+<footer><span>ChessLab / Research before conviction.</span><a href="../library.html">Sources &amp; documents</a><span>Updated: September 7, 2026 · Historical sources retained</span></footer>
+</div>
+</body></html>

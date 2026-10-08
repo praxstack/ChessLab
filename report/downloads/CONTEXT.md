@@ -12,6 +12,8 @@ The board and explanation must agree. Arrows, highlighted pieces, capture sequen
 
 The founder now directs preparation for a hosted private beta under the AskTheMove name, plus the first Claude API feature: grounded "Explain why" explanations of engine evidence. `openspec/changes/hosted-beta-readiness/` governs this work. Local operation remains supported and is the default. Nothing has been deployed; hosting provider, domain and launch timing are open decisions.
 
+On 8 October 2026 the founder approved showing the AskTheMove name in the interface. The repository, package, database file, cookie, environment variables, browser storage keys and the `.chesslab.json` study format keep the ChessLab working name. `openspec/changes/rename-askthemove/` records this.
+
 ## Original assets — updated 8 October 2026
 
 For the hosted beta the founder adopted an original-asset policy. It supersedes the reference-parity direction recorded in the sections below: the app is its own product rather than a copy of another site. It ships the cburnett pieces (GPL-2.0-or-later), Lucide icons (ISC), an original slate-and-sand palette, and an invented bot roster with generated portraits. Bot ratings are targets on the app's own strength ladder, not calibrated human ratings. Screenshots, recordings and page captures of other products are no longer stored in the current tree; earlier commits still contain them. The founder's research, the learning intent above and the bot/coach-first sequence are unchanged. `openspec/changes/original-asset-pack/` records this work.
