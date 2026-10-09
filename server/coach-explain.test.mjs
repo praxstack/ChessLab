@@ -8,6 +8,7 @@ import {Chess} from 'chess.js';
 import {createApp} from './app.mjs';
 import {createCoach, coachConfig, buildEvidence, verifyAnswer, parseAskedMove, SYSTEM_PROMPT, DEFAULT_MODEL} from './coach-explain.mjs';
 import {securityConfig} from './security.mjs';
+import {gradeMove} from './move-grade.mjs';
 
 // 1. e4 e5 2. Bc4 Nc6 3. Qh5: Black to move. Nf6 allows Qxf7#.
 const BASE = ['e2e4', 'e7e5', 'f1c4', 'b8c6', 'd1h5'];
@@ -20,8 +21,10 @@ function fakeAnalysis({moves = BASE, playedMove} = {}) {
     const mate = playedMove === 'g8f6';
     const after = new Chess(board.fen()); after.move({from:playedMove.slice(0, 2), to:playedMove.slice(2, 4)});
     const reply = mate ? ['h5f7'] : after.moves({verbose:true}).filter(move => move.from + move.to === 'b1c3').map(move => move.from + move.to);
-    const san = sanLine(moves, [playedMove])[0];
-    analysis.played = {move:playedMove, san, classification:mate ? 'Mate sequence' : 'Inaccuracy', lossCp:mate ? null : 60, afterScore:mate ? {type:'mate', value:1} : {type:'cp', value:90}, line:{moves:reply, san:sanLine([...moves, playedMove], reply), score:mate ? {type:'mate', value:1} : {type:'cp', value:90}, depth:16}, explanation:mate ? `${san}. Sample line: Qxf7#. Black is checkmated. Mate scores have no centipawn-loss estimate.` : `${san}. Sample line: Nc3. Estimated loss: 60 centipawns for Black.`};
+    const san = sanLine(moves, [playedMove])[0], afterScore = mate ? {type:'mate', value:1} : {type:'cp', value:90};
+    // Graded the way the engine grades it, so these fixtures follow the real labels and text.
+    const {classification, lossCp, lossText} = gradeMove({beforeScore:analysis.lines[0].score, afterScore, turn:board.turn(), played:playedMove, best:analysis.bestmove});
+    analysis.played = {move:playedMove, san, classification, lossCp, afterScore, line:{moves:reply, san:sanLine([...moves, playedMove], reply), score:mate ? {type:'mate', value:1} : {type:'cp', value:90}, depth:16}, explanation:mate ? `${san}. Sample line: Qxf7#. Black is checkmated. ${lossText}` : `${san}. Sample line: Nc3. ${lossText}`};
   }
   return analysis;
 }
@@ -54,7 +57,8 @@ test('evidence is replayed from the rules library and limits the vocabulary Clau
   assert.equal(bundle.evidence.position.sideToMove, 'Black');
   assert.deepEqual(bundle.evidence.candidateLines[0].moves.map(m => m.san), ['g6', 'Qf3', 'Nf6']);
   assert.deepEqual(bundle.evidence.playedMove.engineReplyLine, [{san:'Qxf7#', side:'White', captures:'pawn', checkmate:true}]);
-  assert.equal(bundle.evidence.playedMove.classification, 'Mate sequence');
+  assert.equal(bundle.evidence.playedMove.classification, 'Blunder');
+  assert.match(bundle.deterministic, /After this move the search finds mate in 1 for White\.$/);
   assert.deepEqual(bundle.evidence.engine, {name:'Stockfish 18', movetimeMs:800, candidateLines:3, depth:18});
   assert.ok(!JSON.stringify(bundle.evidence).includes('fen'), 'No board string is offered for the model to analyse itself');
   assert.deepEqual([...bundle.allowed.values()].sort(), ['Nf6', 'Qe7', 'Qf3', 'Qxf7#', 'Nc3', 'g6'].sort());
@@ -72,6 +76,8 @@ test('answer check accepts cited evidence and rejects invented moves, unbrackete
   assert.deepEqual(verifyAnswer('After [[Nf6]], Bxf7+ wins material.', bundle).problems, ['Bxf7+']);
   assert.equal(verifyAnswer('After [[Nf6]], it is mate in 2.', bundle).ok, false);
   assert.equal(verifyAnswer('After [[Nf6]], it is mate in 1.', bundle).ok, true);
+  assert.equal(verifyAnswer('[[Nf6]] is a blunder: it allows mate in 1 for White with [[Qxf7#]].', bundle).ok, true);
+  assert.equal(verifyAnswer('[[Nf6]] is a blunder: it allows mate in 2 for White.', bundle).ok, false);
   assert.equal(verifyAnswer('[[Nf6 is unbalanced', bundle).ok, false);
 });
 

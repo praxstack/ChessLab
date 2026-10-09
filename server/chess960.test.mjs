@@ -53,7 +53,7 @@ test('installed engines analyze Chess960 castling and continue its complete UCI 
   const result=await analyze({moves:[],initialFen,variant,engineId,movetime:120,lines:3,playedMove:'f1h1'});
   assert.equal(result.played.san,'O-O');assert.equal(result.fen,initialFen);assert.equal(result.lines[0].move,result.bestmove);
   for(const line of result.lines)replay(line.moves,initialFen,variant);
-  assert.ok(result.played.afterScore||result.played.classification==='Mate sequence');
+  assert.ok(result.played.afterScore);
  }
  for(const engineId of ['stockfish19','stockfish18','stockfish16','stockfish18-lite','lc0']){
   const result=await chooseOpponentMove({moves:['f1h1'],initialFen,variant,engineId,movetime:100,rating:1500});

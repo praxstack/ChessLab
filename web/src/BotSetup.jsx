@@ -1,6 +1,7 @@
 import React, {useId, useState} from 'react';
 import {Piece} from './Board.jsx';
 import {strengthLadder,strengthChoices} from '../../shared/strength-ladder.js';
+import {compatibleEngine,playBlockedReason} from './play-blocked.js';
 
 export const engineRatings=strengthLadder;
 export const assistanceDefaults={chat:true,evaluation:false,threats:false,suggestions:false,feedback:false,engine:false};
@@ -18,11 +19,10 @@ export default function BotSetup({bots,engines,progress,botId,engineId,rating,co
   const filtered=bots.filter(item=>`${item.name} ${item.category} ${item.rating}`.toLocaleLowerCase().includes(query));
   const groups=[...new Set(filtered.map(item=>item.category))];
   const activeGroup=filter??bot?.category??groups[0];
-  const compatible=item=>item.available&&(variant!=='chess960'||item.chess960);
+  const compatible=item=>compatibleEngine(item,variant);
   const chooseVariant=value=>onChange({variant:value,positionNumber:null,...(value==='chess960'&&!engine?.chess960?{engineId:engines.find(e=>e.available&&e.chess960)?.id||''}:{})});
   const chooseBot=bot=>onChange({botId:bot.id,rating:bot.rating});
-  // Say why Play is off instead of leaving a silent disabled button.
-  const playBlocked=!engine?(engines.some(compatible)?'Choose an opponent engine under Game options.':`Play is unavailable. ${engines.find(e=>e.reason)?.reason||'No opponent engine is installed on this server.'}`):!engine.available?`Play is unavailable. ${engine.reason||`${engine.name} is not installed on this server.`}`:!compatible(engine)?`${engine.name} plays standard chess only. Choose another engine under Game options.`:null;
+  const playBlocked=playBlockedReason({engines,engine,variant});
   return <div className={`bot-setup ${compact?'compact':''}`}>
     <div className="opponent-introduction"><BotAvatar bot={bot}/><p>{raw?'Choose an engine and set the strength.':bot?.description||'Choose your opponent.'}</p></div>
     <div className="opponent-name"><strong>{raw?engine?.name||'Engine':bot?.name}</strong> <span>{rating}</span><Medal count={raw?0:progress?.bots?.[botId]||0}/></div>
