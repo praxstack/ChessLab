@@ -1,5 +1,6 @@
 import React,{useEffect,useId,useRef,useState} from 'react';
 import {markColors} from '../../shared/board-marks.js';
+import {isDarkSquare} from './square-color.js';
 
 const names = {p:'pawn',n:'knight',b:'bishop',r:'rook',q:'queen',k:'king'};
 export function Piece({type, color, animation=0, offset}) {
@@ -20,7 +21,7 @@ export default function Board({chess, orientation='w', selected, onSquare, onMov
   function finishDrawing(event){const current=gesture.current;if(!current)return;gesture.current=null;setTapFrom(null);const to=eventSquare(event);if(!to||!onMark||current.key!==positionKey||current.orientation!==orientation)return;const same=current.from===to,color=current.alt?'B':current.shift?'G':current.ctrl?(same?'Y':'R'):(same?'R':'Y');onMark({from:current.from,to,color});}
   return <div className="board" role="group" aria-label={label || 'Chess board'} onPointerDown={startDrawing} onPointerUp={finishDrawing} onPointerCancel={()=>{gesture.current=null;setTapFrom(null);}} onLostPointerCapture={()=>{if(gesture.current){gesture.current=null;setTapFrom(null);}}} onKeyDown={event=>{if(event.key==='Escape'){gesture.current=null;setTapFrom(null);}}} onContextMenu={onMark?event=>event.preventDefault():undefined}>
     {[...ranks].flatMap((rank,row)=>[...files].map((file,col)=>{
-      const square=file+rank, piece=chess.get(square), dark=(file.charCodeAt(0)-97+Number(rank))%2===0;
+      const square=file+rank, piece=chess.get(square), dark=isDarkSquare(square);
       let from=lastMove?.[1]===square?lastMove[0]:null;
       if(lastMoveDetails?.castle&&piece?.type==='r'&&square===lastMoveDetails.castle.rookTo)from=lastMoveDetails.castle.rookFrom;
       if(!lastMoveDetails?.castle&&piece?.type==='r'&&lastMove?.[0]?.[0]==='e'&&chess.get(lastMove[1])?.type==='k'&&lastMove[1][1]===rank){if(lastMove[1][0]==='g'&&file==='f')from='h'+rank;if(lastMove[1][0]==='c'&&file==='d')from='a'+rank;}
