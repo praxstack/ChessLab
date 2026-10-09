@@ -61,6 +61,19 @@
           <p class="slip__done-title" id="join-done-title" tabindex="-1">You’re on the list.</p>
           <p class="slip__done-body" id="join-done-body">We’ll email you when your beta invite is ready.</p>
         </div>
+        <div class="slip__after" id="join-after" hidden>
+          <p class="slip__manage">Your private link, to change what you get or delete your sign-up: <a id="join-manage-link" href="/manage/">/manage/</a>. It will be in every email too.</p>
+          <form class="slip__pulse" id="pulse-form" action="/api/waitlist/pulse" method="post">
+            <input type="hidden" name="t" value="">
+            <p class="slip__title">While you’re here <span class="optional">Optional, one minute</span></p>
+            <!-- @pulse home -->
+            <div class="check"><input id="join-letter" name="letter" type="checkbox"><label for="join-letter">Also send me the AskTheMove letter, about once a month.</label></div>
+            <div class="check"><input id="join-research" name="research" type="checkbox"><label for="join-research">I’m happy to answer the occasional question about how I study.</label></div>
+            <p class="slip__status join__status" id="pulse-status" role="status" aria-live="polite"></p>
+            <p class="slip__actions"><button class="btn btn--pen" type="submit"><span class="btn__label">Send answers</span></button> <button class="btn btn--plain" type="button" id="pulse-skip">Skip</button></p>
+          </form>
+          <p class="slip__thanks" id="pulse-thanks" role="status" hidden>Thank you. That helps more than you’d think.</p>
+        </div>
       </div>
     </div>
 

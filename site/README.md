@@ -13,8 +13,9 @@ Nothing has been deployed yet. Follow the steps below when you are ready.
 | `site.config.json` | Domain, contact address, Turnstile site key and legal date, in one place. |
 | `DESIGN.md` | The visual system: the lesson-notebook layout, the three voices, colours, type and motion. Read it before changing the look. |
 | `scripts/build.mjs` | Turns `pages/` and `site.config.json` into `public/`. |
-| `functions/api/` | The waitlist API: `POST /api/waitlist`, `GET /api/waitlist/export`, `GET /api/health`. |
-| `src/lib/` | Validation, hashing, rate limiting and CSV code used by the API. |
+| `functions/api/` | The waitlist API: `POST /api/waitlist`, the manage-link endpoints (`preferences`, `unsubscribe`, `delete`, `pulse`), the admin `export` and `stats`, and `GET /api/health`. |
+| `functions/manage/` | Serves `/manage/?t=…`, each person's private page to change lists, unsubscribe, answer the pulse or delete their sign-up. It fills the template in `pages/manage.html` with their current choices, so it works without JavaScript. |
+| `src/lib/` | Validation, hashing, rate limiting and CSV code used by the API. `config.js` holds the three lists and the market-pulse questions. |
 | `migrations/` | The D1 database tables. |
 | `test/` | Tests for the API, the chess shown on the page, and page hygiene (one h1, alt text, no inline scripts or styles). |
 | `wrangler.toml` | Cloudflare settings: project name and database. |
@@ -59,7 +60,7 @@ This gives you a working site and waitlist at `https://askthemove.pages.dev`. It
 
    It prints a `database_id`. Paste it into `wrangler.toml` in place of `00000000-0000-0000-0000-000000000000`.
 
-4. Create the tables:
+4. Create the tables (and, after a new migration lands, run it again before deploying):
 
    ```sh
    npm run db:migrate:remote
@@ -132,7 +133,48 @@ printf 'header = "Authorization: Bearer %s"\n' "$ADMIN_TOKEN" \
 unset ADMIN_TOKEN
 ```
 
-Paste `ADMIN_TOKEN` at the prompt; nothing is shown as you paste. The token is passed to `curl` on its standard input, so it never appears in your shell history or in the list of running processes. Don't type it into the command itself. Use your own domain once it is set up. The file has one row per person: email, when they joined, their rating answer, the form they used and any campaign tags.
+Paste `ADMIN_TOKEN` at the prompt; nothing is shown as you paste. The token is passed to `curl` on its standard input, so it never appears in your shell history or in the list of running processes. Don't type it into the command itself. Use your own domain once it is set up. The file has one row per person: email, when they joined, their rating answer, the form they used, any campaign tags, which lists they are on (`lists`, JSON with a timestamp per list or null), their market-pulse answers (`answers`, JSON) and their private manage link (`manage_url`). Treat the file as confidential: a manage link lets anyone holding it change or delete that sign-up.
+
+### The numbers, without a spreadsheet
+
+```sh
+printf 'Admin token: '; read -rs ADMIN_TOKEN; echo
+printf 'header = "Authorization: Bearer %s"\n' "$ADMIN_TOKEN" \
+  | curl -fsS -K - https://askthemove.online/api/waitlist/stats
+unset ADMIN_TOKEN
+```
+
+Returns JSON: the total, how many are on each list, the rating bands, where people came from (form and `utm_source`), the market pulse as counts per answer plus the twenty latest free-text wishes, and sign-ups per day for the last 30 days. It reads at most 5,000 rows and says so with `"truncated": true` beyond that.
+
+## 4a. Lists, the manage link, unsubscribing and deleting
+
+Every sign-up is on the **beta** list (that is what the consent box covers) and may opt in to two more: the monthly **letter** and **research** questions. The three are defined once, in `src/lib/config.js`.
+
+Each person has a private manage link, `https://askthemove.online/manage/?t=<32 hex characters>`, created with their row. It is returned to the page after a new sign-up (never for an address that already exists, so the form can't be used to fetch someone else's link), it is in the CSV as `manage_url`, and it must go into every email you send. The page it opens lets them:
+
+- tick or untick each list (`POST /api/waitlist/preferences`),
+- leave every list in one click (`POST /api/waitlist/unsubscribe`),
+- answer or change the market pulse (`POST /api/waitlist/pulse`),
+- delete the sign-up outright (`POST /api/waitlist/delete`). This removes the row; there is no undo.
+
+Someone who leaves every list keeps a row with all lists off, so an import or a repeat sign-up can't quietly re-add them; signing up again from the form does turn beta back on, because that is a fresh consent. The manage endpoints share a separate rate limit of 30 requests per IP per ten minutes. A link that doesn't match any row gets the "link isn't valid" page, with no hint about why.
+
+If someone writes in instead of using their link, `npm run delete-signup` still removes them by address.
+
+## 4b. The market pulse
+
+After joining (with JavaScript) and on the manage page, people are offered four optional questions: how they review games now, what is hardest about improving, what they would pay a month, and one free-text wish. The questions and answer keys live in `PULSE` in `src/lib/config.js`; the build renders them from there and the API validates against the same list, so the two can't drift. Change a question's meaning and bump `PULSE.version`, so old answers can be told apart in `answers.v`. Read the totals with the stats endpoint above.
+
+## 4c. Sending email (not set up yet)
+
+Nothing sends email yet. When you start, every message must carry the person's manage link and these headers, which let mail apps show an unsubscribe button and let Gmail and Yahoo unsubscribe people with one click (RFC 8058):
+
+```
+List-Unsubscribe: <https://askthemove.online/manage/?t=TOKEN>, <mailto:hello@askthemove.online?subject=unsubscribe>
+List-Unsubscribe-Post: List-Unsubscribe=One-Click
+```
+
+The one-click target is `POST https://askthemove.online/api/waitlist/unsubscribe?t=TOKEN`; it answers `200 Unsubscribed.` Send only to people whose `lists` JSON has the relevant list set. Three realistic ways to send, from least to most work: a newsletter tool that takes a CSV import with a merge field for the link (Buttondown, Kit), a transactional API called from a small script over the export (Resend, Postmark, or Cloudflare's Email Service from a Worker), or Zoho Campaigns since mail already lives at Zoho. Whichever you pick, the DMARC record is `p=none` today; tighten it only after the sender's SPF and DKIM are in place.
 
 To delete someone who asks:
 

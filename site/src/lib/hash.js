@@ -17,9 +17,16 @@ export async function sha256Hex(text) {
  * fallback salt: a known salt would let anyone reverse the hash by trying
  * every IPv4 address, so callers must refuse to store anything without one.
  */
-export async function hashIp(ip, salt) {
+export async function hashIp(ip, salt, scope = '') {
   if (!salt) throw new Error('IP_HASH_SALT is not set');
-  return sha256Hex(`${salt}:${ip || 'unknown'}`);
+  // A scope keeps separate counters, so manage-link requests and sign-ups don't share a limit.
+  return sha256Hex(scope ? `${salt}:${scope}:${ip || 'unknown'}` : `${salt}:${ip || 'unknown'}`);
+}
+
+/** The private code in a manage link: 128 random bits as 32 lower-case hex characters. */
+export function randomToken() {
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 /**

@@ -11,7 +11,7 @@ const site = join(dirname(fileURLToPath(import.meta.url)), '..');
 test('a page no longer in the build is reported by --check and removed by a build', () => {
   const dir = mkdtempSync(join(tmpdir(), 'atm-build-'));
   try {
-    for (const part of ['pages', 'public', 'scripts', 'site.config.json']) {
+    for (const part of ['pages', 'public', 'scripts', 'src', 'site.config.json']) {
       cpSync(join(site, part), join(dir, part), { recursive: true });
     }
     symlinkSync(join(site, 'node_modules'), join(dir, 'node_modules'));

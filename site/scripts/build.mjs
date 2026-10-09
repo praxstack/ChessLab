@@ -23,6 +23,7 @@ import {
   sanHTML,
 } from '../public/assets/board.js';
 import { markSVG, seedFrom } from '../public/assets/ink.js';
+import { PULSE } from '../src/lib/config.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const config = JSON.parse(readFileSync(join(root, 'site.config.json'), 'utf8'));
@@ -66,7 +67,45 @@ const PAGES = [
     description: 'This page does not exist.',
     robots: 'noindex',
   },
+  {
+    // The template for the manage page. It is served at /manage/ by a Pages
+    // Function that fills in a person's choices, so the built file lives under
+    // assets/ where it is never mistaken for the page itself.
+    src: 'manage.html',
+    out: 'assets/manage.html',
+    path: '/manage/',
+    title: 'Your sign-up · AskTheMove',
+    description: 'Change which emails you get from AskTheMove, or delete your sign-up.',
+    robots: 'noindex',
+  },
 ];
+
+// The market-pulse questions, drawn from the same config the API validates
+// against, so a question can never be shown that the server would refuse.
+function pulseHTML(prefix) {
+  const questions = Object.entries(PULSE.questions)
+    .map(([key, question]) => {
+      const options = Object.entries(question.options)
+        .map(
+          ([value, label]) =>
+            `<div class="radio"><input id="pulse-${prefix}-${key}-${value}" name="${key}" type="radio" value="${value}"><label for="pulse-${prefix}-${key}-${value}">${label}</label></div>`,
+        )
+        .join('\n      ');
+      return `<fieldset class="pulse__q">
+      <legend>${question.label}</legend>
+      ${options}
+    </fieldset>`;
+    })
+    .join('\n    ');
+  const ft = PULSE.freeText;
+  return `<div class="pulse">
+    ${questions}
+    <div class="field field--wish">
+      <label for="pulse-${prefix}-${ft.key}">${ft.label} <span class="optional">Optional</span></label>
+      <textarea id="pulse-${prefix}-${ft.key}" name="${ft.key}" rows="2" maxlength="${ft.max}"></textarea>
+    </div>
+  </div>`;
+}
 
 const escAttr = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
@@ -310,6 +349,7 @@ function outputs() {
       ROBOTS: page.robots || 'index, follow',
     });
     if (page.src === 'index.html') html = renderHome(html);
+    html = html.replace(/<!-- @pulse ([a-z]+) -->/g, (_, prefix) => pulseHTML(prefix));
     html = renderMarks(html);
     // Empty optional slots (such as the Turnstile widget) leave blank, indented lines.
     html = html.replace(/[ \t]+$/gm, '').replace(/\n{3,}/g, '\n\n');
@@ -341,6 +381,10 @@ function outputs() {
       '',
       '/assets/pieces/*',
       '  Cache-Control: public, max-age=604800',
+      '',
+      '/assets/manage.html',
+      '  X-Robots-Tag: noindex',
+      '  Cache-Control: no-store',
       '',
     ].join('\n'),
   );

@@ -351,6 +351,69 @@ function initWaitlist() {
     if (tick && moving()) new Timeline().draw(tick);
   };
 
+  // After a new sign-up the server returns the person's private manage link.
+  // Show it, and offer the market pulse with that link's code filled in.
+  const after = document.getElementById('join-after');
+  const pulse = document.getElementById('pulse-form');
+  const pulseStatus = document.getElementById('pulse-status');
+  const thanks = document.getElementById('pulse-thanks');
+  const showAfter = (manage) => {
+    if (!after || !pulse || typeof manage !== 'string' || !manage.startsWith('/manage/?t=')) return;
+    const token = new URLSearchParams(manage.slice(manage.indexOf('?'))).get('t') || '';
+    if (!/^[0-9a-f]{32}$/.test(token)) return;
+    pulse.elements.namedItem('t').value = token;
+    const link = document.getElementById('join-manage-link');
+    link.href = manage;
+    link.textContent = `${window.location.host}${manage}`;
+    after.hidden = false;
+  };
+  if (pulse) {
+    pulse.noValidate = true;
+    const pulseButton = pulse.querySelector('button[type="submit"]');
+    const pulseLabel = pulseButton.querySelector('.btn__label');
+    document.getElementById('pulse-skip').addEventListener('click', () => {
+      pulse.hidden = true;
+    });
+    pulse.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const data = Object.fromEntries(new FormData(pulse));
+      pulseButton.disabled = true;
+      pulseButton.setAttribute('aria-busy', 'true');
+      pulseLabel.textContent = 'Sending…';
+      pulseStatus.textContent = '';
+      pulseStatus.classList.remove('is-error');
+      try {
+        const res = await fetch(pulse.action, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', accept: 'application/json' },
+          body: JSON.stringify(data),
+          credentials: 'same-origin',
+        });
+        let body = {};
+        try {
+          body = await res.json();
+        } catch {
+          /* non-JSON error page */
+        }
+        if (res.ok && body.ok) {
+          pulse.hidden = true;
+          thanks.hidden = false;
+          thanks.focus?.();
+          return;
+        }
+        pulseStatus.textContent = body.error || ERROR_MESSAGES.server;
+        pulseStatus.classList.add('is-error');
+      } catch {
+        pulseStatus.textContent = 'We couldn’t reach the server. Check your connection and try again.';
+        pulseStatus.classList.add('is-error');
+      } finally {
+        pulseButton.disabled = false;
+        pulseButton.removeAttribute('aria-busy');
+        pulseLabel.textContent = 'Send answers';
+      }
+    });
+  }
+
   // After a plain (no-fetch) form post, the server redirects back here.
   if (params.get('joined') === '1') {
     showDone('');
@@ -405,6 +468,7 @@ function initWaitlist() {
       }
       if (res.ok && body.ok) {
         showDone(value.toLowerCase());
+        showAfter(body.manage);
         return;
       }
       const message = body.error || ERROR_MESSAGES.server;
