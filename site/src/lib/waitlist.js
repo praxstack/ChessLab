@@ -389,40 +389,52 @@ export async function handlePulsePost(request, env, { now = Date.now() } = {}) {
     if (byCode && !parsed.ok) {
       return ctx.asJson ? json(400, { ok: false, error: parsed.error }) : redirect(REDIRECTS.error('pulse'));
     }
-    if (ctx.discard) return ctx.asJson ? json(200, { ok: true }) : redirect(REDIRECTS.joined);
+    const byCodeOk = () => (ctx.asJson ? json(200, { ok: true }) : redirect(REDIRECTS.joined));
+    if (ctx.discard) return byCodeOk();
     if (!parsed.ok) return ctx.fail(400, parsed.error, 'pulse');
     const stamp = new Date(now).toISOString();
-    const previous = ctx.answers.v === PULSE.version ? ctx.answers : {};
-    const answers = { ...previous, ...parsed.answers, v: PULSE.version, at: stamp };
-    // A field sent empty clears what was there before.
-    for (const [key, value] of Object.entries(parsed.answers)) if (value === null) delete answers[key];
-    const lists = { ...ctx.lists };
-    let listsChanged = false;
-    for (const key of ['letter', 'research']) {
-      if (parseConsent(ctx.body[key]) && !lists[key]) {
-        lists[key] = stamp;
-        listsChanged = true;
-      }
-    }
+
+    // Both writes are done inside SQL against the row's current value, not a
+    // snapshot read earlier, so a preferences change or an unsubscribe that
+    // lands in between is never undone. By pulse code, the writes also require
+    // the code to still be on the row: leaving every list clears it, and a
+    // late pulse must not bring anything back.
+    const guard = ctx.byPulse ? ' AND pulse_token = ?' : '';
+    const guardArgs = ctx.byPulse ? [ctx.body.p ? parseToken(ctx.body.p) : parseToken(new URL(request.url).searchParams.get('p'))] : [];
+    // Answers: a JSON merge patch. A null (a wish sent empty) removes the key.
+    // Answers to an older questionnaire are replaced rather than merged.
+    const patch = JSON.stringify({ ...parsed.answers, v: PULSE.version, at: stamp });
     const statements = [
-      env.DB.prepare('UPDATE waitlist SET answers = ? WHERE id = ?').bind(JSON.stringify(answers), ctx.row.id),
+      env.DB.prepare(
+        "UPDATE waitlist SET answers = CASE WHEN json_extract(COALESCE(answers, '{}'), '$.v') = ? " +
+          "THEN json_patch(COALESCE(answers, '{}'), ?) ELSE json_patch('{}', ?) END WHERE id = ?" + guard,
+      ).bind(PULSE.version, patch, patch, ctx.row.id, ...guardArgs),
     ];
-    if (listsChanged) {
+    // Opt-ins only ever turn a list on, keeping the time it was first turned on.
+    const optIns = ['letter', 'research'].filter((key) => parseConsent(ctx.body[key]));
+    if (optIns.length) {
+      const sets = optIns
+        .map((key) => `'$.${key}', COALESCE(json_extract(COALESCE(lists, '{}'), '$.${key}'), ?)`)
+        .join(', ');
       statements.push(
-        env.DB.prepare('UPDATE waitlist SET lists = ?, lists_updated_at = ? WHERE id = ?')
-          .bind(JSON.stringify(lists), stamp, ctx.row.id),
+        env.DB.prepare(`UPDATE waitlist SET lists = json_set(COALESCE(lists, '{}'), ${sets}), lists_updated_at = ? WHERE id = ?` + guard)
+          .bind(...optIns.map(() => stamp), stamp, ctx.row.id, ...guardArgs),
       );
     }
     try {
       await env.DB.batch(statements);
     } catch (error) {
       console.error('pulse save failed', error);
-      if (byCode) return ctx.asJson ? json(500, { ok: false, error: ERRORS.server }) : redirect(REDIRECTS.error('server'));
+      // By pulse code the reply must not depend on whether a row was there to
+      // write, so a failed write is answered exactly like a discarded one.
+      if (byCode) return byCodeOk();
       return ctx.fail(500, ERRORS.server, 'server');
     }
-    if (ctx.byPulse) return ctx.asJson ? json(200, { ok: true }) : redirect(REDIRECTS.joined);
+    if (ctx.byPulse) return byCodeOk();
     const answered = Object.values(parsed.answers).filter((value) => value !== null).length;
-    return ctx.asJson ? json(200, { ok: true, lists: listsOn(lists), answered }) : redirect(REDIRECTS.manage(ctx.token, 'saved'));
+    if (!ctx.asJson) return redirect(REDIRECTS.manage(ctx.token, 'saved'));
+    const fresh = await env.DB.prepare('SELECT lists, consent_at FROM waitlist WHERE id = ?').bind(ctx.row.id).first();
+    return json(200, { ok: true, lists: listsOn(parseStoredLists(fresh ? fresh.lists : null, fresh ? fresh.consent_at : null)), answered });
   } catch (error) {
     console.error('pulse request failed', error);
     return wantsJson(request) ? json(500, { ok: false, error: ERRORS.server }) : redirect(REDIRECTS.manageInvalid);

@@ -359,6 +359,65 @@ test('pulse by code: a bad answer gets the same reply whether or not the code ma
   assert.equal(answers(env, 'shape@gmail.com').review, 'engine');
 });
 
+// The pulse handler's first batch call is the rate-limit counter and its
+// second is the write, so "between the read and the write" is just before
+// the second call. Runs `fn` there once, then restores the real batch.
+function beforeSecondBatch(env, fn) {
+  const realBatch = env.DB.batch.bind(env.DB);
+  let calls = 0;
+  env.DB.batch = async (statements) => {
+    calls += 1;
+    if (calls < 2) return realBatch(statements);
+    env.DB.batch = realBatch;
+    await fn();
+    return realBatch(statements);
+  };
+}
+
+test('pulse writes merge against the current row, never a snapshot, and a late pulse cannot undo an unsubscribe', async () => {
+  const env = makeEnv();
+  const { token, pulse } = await signup(env, 'race@gmail.com');
+  // Between the pulse's read and its write, preferences turn beta off and research on.
+  beforeSecondBatch(env, () =>
+    prefsPost({ request: request('/api/waitlist/preferences', { method: 'POST', body: { t: token, research: 'on' }, json: true }), env }),
+  );
+  const res = await pulsePost({ request: request('/api/waitlist/pulse', { method: 'POST', body: { p: pulse, letter: 'on', review: 'none' }, json: true }), env });
+  assert.equal(res.status, 200);
+  const after = lists(env, 'race@gmail.com');
+  assert.equal(after.beta, null, 'the pulse did not turn beta back on');
+  assert.match(after.research, /^\d{4}-/, 'the pulse did not turn research back off');
+  assert.match(after.letter, /^\d{4}-/, 'the opt-in landed');
+
+  // After leaving every list, the old pulse code writes nothing and still answers 200.
+  await unsubPost({ request: request('/api/waitlist/unsubscribe', { method: 'POST', body: { t: token }, json: true }), env });
+  const late = await pulsePost({ request: request('/api/waitlist/pulse', { method: 'POST', body: { p: pulse, letter: 'on', review: 'coach' }, json: true }), env });
+  assert.equal(late.status, 200);
+  assert.deepEqual(await late.json(), { ok: true });
+  assert.deepEqual(lists(env, 'race@gmail.com'), { beta: null, letter: null, research: null });
+  assert.equal(answers(env, 'race@gmail.com'), null);
+});
+
+test('a write failure by pulse code is answered exactly like a discarded one', async () => {
+  const env = makeEnv();
+  const { pulse } = await signup(env, 'wfail@gmail.com');
+  const failWrite = () =>
+    beforeSecondBatch(env, () => {
+      throw new Error('simulated write failure');
+    });
+  failWrite();
+  const real = await pulsePost({ request: request('/api/waitlist/pulse', { method: 'POST', body: { p: pulse, review: 'engine' }, json: true }), env });
+  const none = await pulsePost({ request: request('/api/waitlist/pulse', { method: 'POST', body: { p: 'a'.repeat(32), review: 'engine' }, json: true }), env });
+  assert.equal(real.status, 200);
+  assert.equal(none.status, 200);
+  assert.equal(await real.text(), await none.text());
+  assert.equal(answers(env, 'wfail@gmail.com'), null, 'the failed write wrote nothing');
+  failWrite();
+  const formReal = await pulsePost({ request: request('/api/waitlist/pulse', { method: 'POST', body: { p: pulse, review: 'engine' } }), env });
+  const formNone = await pulsePost({ request: request('/api/waitlist/pulse', { method: 'POST', body: { p: 'a'.repeat(32), review: 'engine' } }), env });
+  assert.equal(formReal.status, formNone.status);
+  assert.equal(formReal.headers.get('location'), formNone.headers.get('location'));
+});
+
 test('a database failure during a one-click unsubscribe is a bare 500, never a redirect', async () => {
   const env = makeEnv();
   const { token } = await signup(env, 'db@gmail.com');

@@ -126,6 +126,7 @@ test('assets/manage.html: every form posts to its endpoint with a blank token to
   }
   assert.match(html, /<input id="delete-confirm" name="confirm" type="checkbox" required>/);
   assert.match(html, /<meta name="robots" content="noindex">/);
+  assert.doesNotMatch(html, /only ever read the answers as totals/, 'the collection-time promise matches the notice');
   assert.match(read('_headers'), /\/assets\/manage\n  X-Robots-Tag: noindex\n  Cache-Control: no-store/);
   assert.doesNotMatch(read('sitemap.xml'), /manage/);
   assert.match(html, /id="pulse-thanks"|data-state="later"/);
