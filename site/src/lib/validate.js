@@ -1,4 +1,4 @@
-import { LIMITS, RATING_BANDS } from './config.js';
+import { LIMITS, LISTS, PULSE, RATING_BANDS } from './config.js';
 
 // Messages are shown on the page as-is, so they are plain sentences.
 export const MESSAGES = Object.freeze({
@@ -9,7 +9,47 @@ export const MESSAGES = Object.freeze({
     "Please use an address you'll still have when the beta opens, not a temporary inbox.",
   consentMissing: 'Tick the box so we can email you about the beta.',
   ratingInvalid: 'Choose a rating from the list, or leave it blank.',
+  pulseInvalid: 'Choose answers from the lists, or leave them blank.',
+  deleteUnconfirmed: 'Tick the box to confirm you want your sign-up deleted.',
 });
+
+const TOKEN = /^[0-9a-f]{32}$/;
+
+/** The private code from a manage link: 32 hex characters, or '' when it is anything else. */
+export function parseToken(value) {
+  if (typeof value !== 'string') return '';
+  const token = value.trim().toLowerCase();
+  return TOKEN.test(token) ? token : '';
+}
+
+/** Which lists a form or JSON body ticks: { beta: bool, letter: bool, research: bool }. */
+export function parseLists(body) {
+  const out = {};
+  for (const key of Object.keys(LISTS)) out[key] = parseConsent(body ? body[key] : undefined);
+  return out;
+}
+
+/**
+ * The market-pulse answers from a body. Multiple-choice answers must be one
+ * of the configured option keys; blanks are skipped. The free-text wish is
+ * `null` when the field was sent empty, which means "clear what I wrote".
+ * Returns { ok: true, answers } or { ok: false, error }.
+ */
+export function parsePulse(body) {
+  const answers = {};
+  for (const [key, question] of Object.entries(PULSE.questions)) {
+    const value = cleanOptional(body ? body[key] : undefined, 40).toLowerCase();
+    if (!value) continue;
+    if (!Object.hasOwn(question.options, value)) return { ok: false, error: MESSAGES.pulseInvalid };
+    answers[key] = value;
+  }
+  const { key, max } = PULSE.freeText;
+  if (body && Object.hasOwn(body, key)) {
+    const wish = cleanOptional(body[key], max);
+    answers[key] = wish || null;
+  }
+  return { ok: true, answers };
+}
 
 // A short list of well-known throwaway inbox services. Not exhaustive on purpose.
 export const DISPOSABLE_DOMAINS = new Set([

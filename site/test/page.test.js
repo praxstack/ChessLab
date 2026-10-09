@@ -10,7 +10,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const PAGES = ['index.html', 'privacy/index.html', 'terms/index.html', '404.html'];
+const PAGES = ['index.html', 'privacy/index.html', 'terms/index.html', '404.html', 'assets/manage.html'];
 const read = (rel) => readFileSync(join(root, 'public', rel), 'utf8');
 const tags = (html, name) => html.match(new RegExp(`<${name}\\b[^>]*>`, 'g')) || [];
 const attr = (tag, name) => {
@@ -83,6 +83,55 @@ test('index.html: the waitlist form works without JavaScript and every field is 
   assert.match(body, /<button class="[^"]*\bjoin__submit\b[^"]*" type="submit">/);
 });
 
+test('index.html: the market pulse after joining is labelled, carries the token and posts to the pulse endpoint', async () => {
+  const { PULSE } = await import('../src/lib/config.js');
+  const html = read('index.html');
+  const form = /<form\b[^>]*id="pulse-form"[^>]*>/.exec(html);
+  assert.ok(form, 'pulse form missing');
+  assert.equal(attr(form[0], 'action'), '/api/waitlist/pulse');
+  const body = html.slice(form.index, html.indexOf('</form>', form.index));
+  assert.match(body, /<input type="hidden" name="p" value="">/, 'the pulse code, never the manage code');
+  assert.doesNotMatch(html, /join-manage-link/, 'the manage link is not shown on the page');
+  for (const [key, question] of Object.entries(PULSE.questions)) {
+    assert.match(body, new RegExp(`<legend>${question.label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</legend>`), `question ${key}`);
+    for (const value of Object.keys(question.options)) {
+      assert.match(body, new RegExp(`<input id="pulse-home-${key}-${value}" name="${key}" type="radio" value="${value}">`), `${key}=${value}`);
+      assert.match(body, new RegExp(`<label for="pulse-home-${key}-${value}">`), `label ${key}=${value}`);
+    }
+  }
+  assert.match(body, /<textarea id="pulse-home-wish" name="wish" rows="2" maxlength="200"><\/textarea>/);
+  for (const id of ['join-letter', 'join-research']) assert.match(body, new RegExp(`<label for="${id}">`));
+  // The panel is hidden until the server returns a pulse code.
+  assert.match(html, /<div class="slip__after" id="join-after" hidden>/);
+  // The page no longer promises "only for beta news" now that there are opt-ins.
+  assert.doesNotMatch(html, /used only (for|to send) beta news/);
+  assert.match(html, /for anything else only if you tick it/);
+});
+
+test('assets/manage.html: every form posts to its endpoint with a blank token to fill, and only the invalid state shows by default', () => {
+  const html = read('assets/manage.html');
+  const forms = tags(html, 'form');
+  assert.deepEqual(
+    forms.map((f) => attr(f, 'action')),
+    ['/api/waitlist/preferences', '/api/waitlist/unsubscribe', '/api/waitlist/pulse', '/api/waitlist/delete'],
+  );
+  assert.equal((html.match(/<input type="hidden" name="t" value="">/g) || []).length, 4);
+  assert.match(html, /<section class="manage__state" data-state="invalid">/);
+  assert.match(html, /<section class="manage__state" data-state="deleted" hidden>/);
+  assert.match(html, /<section class="manage__state" data-state="later" hidden>/);
+  assert.match(html, /<section class="manage__state" data-state="form" hidden>/);
+  for (const key of ['beta', 'letter', 'research']) {
+    assert.match(html, new RegExp(`<input id="list-${key}" name="${key}" type="checkbox">`));
+    assert.match(html, new RegExp(`<label for="list-${key}">`));
+  }
+  assert.match(html, /<input id="delete-confirm" name="confirm" type="checkbox" required>/);
+  assert.match(html, /<meta name="robots" content="noindex">/);
+  assert.doesNotMatch(html, /only ever read the answers as totals/, 'the collection-time promise matches the notice');
+  assert.match(read('_headers'), /\/assets\/manage\n  X-Robots-Tag: noindex\n  Cache-Control: no-store/);
+  assert.doesNotMatch(read('sitemap.xml'), /manage/);
+  assert.match(html, /id="pulse-thanks"|data-state="later"/);
+});
+
 test('index.html: a plain form post lands on a result the page shows without JavaScript', async () => {
   const { REDIRECTS } = await import('../src/lib/config.js');
   const html = read('index.html');
@@ -101,6 +150,15 @@ test('index.html: the walkthrough is pre-rendered with a board, a note and the s
   assert.equal((html.match(/class="note__page[ "]/g) || []).length, 6);
   assert.match(html, /<table class="ss" aria-label="Score sheet/);
   assert.equal((html.match(/class="ss__mv ss__btn"/g) || []).length, 5);
+});
+
+test('_headers and the manage page share one set of security headers', async () => {
+  const { pageHeaders } = await import('../src/lib/security-headers.js');
+  const headers = read('_headers');
+  for (const [name, value] of Object.entries(pageHeaders())) {
+    const line = new RegExp(`^  ${name.replace(/(^|-)([a-z])/g, (m) => m.toUpperCase()).replace(/-/g, '-')}: ${value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'mi');
+    assert.match(headers, line, `${name} missing from _headers`);
+  }
 });
 
 test('styles: every font and image the stylesheet uses exists, and the fonts are credited', () => {

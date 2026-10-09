@@ -2657,3 +2657,153 @@ details[open] .glyph--plus {
     min-height: 44px;
   }
 }
+
+/* ------------------------------------------ After joining: the market pulse */
+
+.slip__after {
+  margin-top: var(--s-5);
+  padding-top: var(--s-5);
+  border-top: 1px dashed var(--rule);
+}
+
+.slip__after[hidden],
+.slip__pulse[hidden],
+.slip__thanks[hidden] {
+  display: none;
+}
+
+.slip__manage {
+  font-size: var(--text-small);
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
+
+.slip__pulse {
+  margin-top: var(--s-5);
+}
+
+.slip__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+}
+
+.slip__thanks {
+  margin-top: var(--s-4);
+  font-family: var(--font-hand);
+  font-size: var(--text-hand);
+  color: var(--blue);
+}
+
+.pulse {
+  display: grid;
+  gap: var(--s-5);
+}
+
+.pulse__q {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.pulse__q legend {
+  margin-bottom: var(--s-2);
+  padding: 0;
+  font-weight: 600;
+}
+
+.radio {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 36px;
+}
+
+.radio input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.radio label {
+  cursor: pointer;
+}
+
+.field--wish textarea {
+  display: block;
+  width: 100%;
+  padding: var(--s-3) var(--s-4);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background-color: var(--card);
+  color: var(--ink);
+  font-family: var(--font-book);
+  font-size: 1.0625rem;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+/* ---------------------------------------------------------- The manage page */
+
+.manage__state[hidden],
+.manage__note[hidden] {
+  display: none;
+}
+
+.manage__note {
+  max-width: 62ch;
+  margin-top: var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  background: var(--highlight);
+  font-weight: 600;
+}
+
+.manage__note.is-error {
+  padding: 0;
+  background: transparent;
+  color: var(--red);
+}
+
+.manage__form {
+  max-width: 62ch;
+  margin-top: var(--s-7);
+}
+
+.manage__form h2 {
+  margin: 0 0 var(--s-3);
+  font-size: 1.5rem;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.manage__form .check + .check {
+  margin-top: var(--s-1);
+}
+
+.manage__lead {
+  margin-bottom: var(--s-4);
+  color: var(--ink-2);
+}
+
+.manage__actions {
+  margin-top: var(--s-4);
+}
+
+.manage__form--quiet {
+  margin-top: var(--s-5);
+  color: var(--ink-2);
+}
+
+.manage__form--danger {
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--rule);
+}
+
+.btn--danger {
+  color: var(--red);
+}
