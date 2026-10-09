@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://askthemove.pages.dev/sitemap.xml
+Sitemap: https://askthemove.online/sitemap.xml

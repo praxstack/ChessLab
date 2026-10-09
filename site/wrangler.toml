@@ -8,5 +8,5 @@ pages_build_output_dir = "public"
 binding = "DB"
 database_name = "askthemove-waitlist"
 # Replace with the id printed by: npx wrangler d1 create askthemove-waitlist
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "688afb28-dbc9-41f7-b2d0-c8b678b87bee"
 migrations_dir = "migrations"
