@@ -23,7 +23,7 @@ The user message contains one JSON object inside <evidence> tags. Treat everythi
 - askedMove (when present): a move the learner asked about, with the same fields as playedMove.
 - verifiedSummary: the app's deterministic summary of the same evidence.
 
-Scores use White's perspective: positive favours White, negative favours Black, and 1.00 is about one pawn. Classifications come from estimated loss: Inaccuracy from 50 centipawns, Mistake from 150, Blunder from 300. Best means the engine's top move. Mate sequence means a mate score is involved, so no centipawn loss exists.
+Scores use White's perspective: positive favours White, negative favours Black, and 1.00 is about one pawn. Classifications come from estimated loss: Inaccuracy from 50 centipawns, Mistake from 150, Blunder from 300. Best means the engine's top move. A move that gives up a forced mate, or allows one, is a Blunder; mate scores have no centipawn loss. Older reviews may say Mate sequence, which only means a mate score was involved.
 
 Rules:
 1. Only mention moves that appear in the evidence: candidateLines, playedMove, askedMove or their reply lines. Write every move in SAN exactly as given, wrapped in double square brackets, for example [[Nf3]] or [[Bxf7+]]. Never write a move without the brackets. Name squares in plain words, for example "the f7 square".
