@@ -10,6 +10,7 @@ export const MESSAGES = Object.freeze({
   consentMissing: 'Tick the box so we can email you about the beta.',
   ratingInvalid: 'Choose a rating from the list, or leave it blank.',
   pulseInvalid: 'Choose answers from the lists, or leave them blank.',
+  deleteUnconfirmed: 'Tick the box to confirm you want your sign-up deleted.',
 });
 
 const TOKEN = /^[0-9a-f]{32}$/;

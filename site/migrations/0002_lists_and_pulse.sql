@@ -28,3 +28,13 @@ UPDATE waitlist
        lists_updated_at = consent_at
  WHERE lists IS NULL;
 UPDATE waitlist SET manage_token = lower(hex(randomblob(16))) WHERE manage_token IS NULL;
+
+-- Sign-ups per day, as an anonymous tally of its own. It is never cleared when
+-- a person leaves every list or deletes their row, so the chart stays true.
+CREATE TABLE IF NOT EXISTS signup_days (
+  day TEXT PRIMARY KEY,           -- YYYY-MM-DD, UTC
+  count INTEGER NOT NULL DEFAULT 0
+);
+INSERT INTO signup_days (day, count)
+  SELECT substr(created_at, 1, 10), count(*) FROM waitlist WHERE created_at IS NOT NULL GROUP BY 1
+  ON CONFLICT (day) DO UPDATE SET count = excluded.count;

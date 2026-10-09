@@ -10,6 +10,7 @@ import {
   MESSAGES,
   cleanOptional,
   isHoneypotFilled,
+  normalizeEmail,
   parseConsent,
   parseLists,
   parsePulse,
@@ -78,14 +79,16 @@ function parseStoredAnswers(value) {
 
 /**
  * The pulse code a sign-up gets back. With a client key (`k`, random, made by
- * the page once per visit) it is derived from the key and the secret salt, so
- * a retry of the same sign-up after a lost response gets the same code and
- * can still save the pulse, while anyone else's key yields a code that
- * matches nothing. Without a key it is simply random.
+ * the page once per visit) it is derived from the key, the address and the
+ * secret salt, so a retry of the same sign-up after a lost response gets the
+ * same code and can still save the pulse. The address is part of the
+ * derivation so one key can never produce the same code for two addresses:
+ * a reused key for another address yields a code that matches nothing and
+ * never collides with a stored one. Without a key the code is simply random.
  */
-async function pulseCodeFor(key, salt) {
+async function pulseCodeFor(key, salt, email) {
   if (!key || !salt) return randomToken();
-  return (await sha256Hex(`${salt}:pulse:${key}`)).slice(0, 32);
+  return (await sha256Hex(`${salt}:pulse:${key}:${email}`)).slice(0, 32);
 }
 
 /**
@@ -121,7 +124,7 @@ export async function handleWaitlistPost(request, env, { now = Date.now(), fetch
     const key = parseToken(body.k);
 
     // Bots fill the hidden "website" field. Pretend it worked and store nothing.
-    if (isHoneypotFilled(body.website)) return succeed(await pulseCodeFor(key, env.IP_HASH_SALT));
+    if (isHoneypotFilled(body.website)) return succeed(await pulseCodeFor(key, env.IP_HASH_SALT, normalizeEmail(body.email)));
 
     // Without the secret salt the stored hashes could be reversed, so store nothing.
     if (!env.IP_HASH_SALT) {
@@ -161,13 +164,13 @@ export async function handleWaitlistPost(request, env, { now = Date.now(), fetch
     }
     const stamp = new Date(now).toISOString();
     const lists = { ...emptyLists(), beta: stamp };
-    const pulse = await pulseCodeFor(key, env.IP_HASH_SALT);
+    const pulse = await pulseCodeFor(key, env.IP_HASH_SALT, email.email);
 
     // An address that is already on the list is left exactly as it is, even
     // when it has unsubscribed from everything: a tick on a public form does
     // not prove the submitter owns the address. Rejoining goes through the
     // person's own manage link.
-    await env.DB.prepare(
+    const inserted = await env.DB.prepare(
       'INSERT INTO waitlist (email, product, fields, source, utm, consent_at, created_at, lists, lists_updated_at, manage_token, pulse_token) ' +
         'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (email) DO NOTHING',
     )
@@ -185,6 +188,15 @@ export async function handleWaitlistPost(request, env, { now = Date.now(), fetch
         pulse,
       )
       .run();
+    // Sign-ups per day are kept as an anonymous tally of their own, so they
+    // stay true after a person clears their dates or deletes their row.
+    if (inserted && inserted.meta && inserted.meta.changes === 1) {
+      await env.DB.prepare(
+        'INSERT INTO signup_days (day, count) VALUES (?, 1) ON CONFLICT (day) DO UPDATE SET count = count + 1',
+      )
+        .bind(stamp.slice(0, 10))
+        .run();
+    }
     return succeed(pulse);
   } catch (error) {
     console.error('waitlist signup failed', error);
@@ -375,11 +387,15 @@ export async function handleUnsubscribePost(request, env, { now = Date.now() } =
   }
 }
 
-/** POST /api/waitlist/delete — remove the sign-up, its choices and its answers. */
+/**
+ * POST /api/waitlist/delete — remove the sign-up, its choices and its answers.
+ * The confirmation tick is checked here, not only by the browser.
+ */
 export async function handleDeletePost(request, env, { now = Date.now() } = {}) {
   try {
     const ctx = await tokenRequest(request, env, now);
     if (ctx.response) return ctx.response;
+    if (!parseConsent(ctx.body.confirm)) return ctx.fail(400, MESSAGES.deleteUnconfirmed, 'confirm');
     try {
       await env.DB.prepare('DELETE FROM waitlist WHERE id = ?').bind(ctx.row.id).run();
     } catch (error) {
@@ -681,8 +697,10 @@ export function createSummary({ now = Date.now(), days = 30 } = {}) {
         }
         if (answered) pulse.answered += 1;
       }
-      const day = String(row.created_at || '').slice(0, 10);
-      if (perDay.has(day)) perDay.set(day, perDay.get(day) + 1);
+    },
+    /** Feeds one row of the anonymous per-day tally. Days outside the window are ignored. */
+    addDay(day, n) {
+      if (perDay.has(day)) perDay.set(day, perDay.get(day) + Number(n || 0));
     },
     result() {
       wishes.sort((a, b) => String(b.at).localeCompare(String(a.at)));
@@ -701,10 +719,12 @@ export function createSummary({ now = Date.now(), days = 30 } = {}) {
   };
 }
 
-/** The numbers behind the waitlist, from the rows given. Shared with the tests. */
+/** The numbers behind the waitlist, from the rows given and the per-day tally rows. Shared with the tests. */
 export function summarize(rows, options = {}) {
-  const summary = createSummary(options);
+  const { signupDays = [], ...rest } = options;
+  const summary = createSummary(rest);
   for (const row of rows) summary.add(row);
+  for (const { day, count: n } of signupDays) summary.addDay(day, n);
   return summary.result();
 }
 
@@ -738,6 +758,9 @@ export async function handleStatsGet(request, env, { now = Date.now(), pageSize 
       }
       if (truncated || rows.length < pageSize) break;
     }
+    const since = new Date(now - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const days = await env.DB.prepare('SELECT day, count FROM signup_days WHERE day >= ? ORDER BY day').bind(since).all();
+    for (const { day, count: n } of days.results || []) summary.addDay(day, n);
     return json(200, { ok: true, truncated, ...summary.result() });
   } catch (error) {
     console.error('waitlist stats failed', error);

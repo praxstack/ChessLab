@@ -30,6 +30,10 @@ A new address and one already on the list SHALL receive the same response shape,
 - **WHEN** the page retries a sign-up with the same per-visit key after the first answer was lost
 - **THEN** it receives the same pulse code, which still saves the pulse for that row
 
+#### Scenario: A key reused for another address
+- **WHEN** a sign-up for a different address carries a key already used for one
+- **THEN** the reply is a normal sign-up reply whether or not that address was on the list, and the code matches nothing
+
 ## ADDED Requirements
 
 ### Requirement: WL-007 Lists
@@ -62,11 +66,15 @@ Each row SHALL carry a 128-bit random manage code. `GET /manage/?t=<code>` SHALL
 - **THEN** their row keeps only the address, the lists all off, the time of that choice and the manage code
 
 ### Requirement: WL-010 Self-delete
-`POST /api/waitlist/delete` with the manage code SHALL remove the row at once. The code SHALL then open the "link not valid" page.
+`POST /api/waitlist/delete` with the manage code and the confirmation tick SHALL remove the row at once. Without the tick the service SHALL refuse with 400 and delete nothing, whatever the client. The code SHALL then open the "link not valid" page.
 
 #### Scenario: Delete
 - **WHEN** a person posts the delete form with the confirmation ticked
 - **THEN** the row is gone and the link no longer works
+
+#### Scenario: No confirmation
+- **WHEN** the delete endpoint is posted with a valid code and no confirmation
+- **THEN** the response is 400 and the row stays
 
 ### Requirement: WL-011 The market pulse
 The pulse SHALL be three multiple-choice questions and one free-text wish, defined once in config; the build SHALL render them from that config and the API SHALL validate against it. Answers SHALL be stored with the questionnaire version. A later save SHALL merge over answers of the same version and replace answers of an older one. A wish sent empty SHALL clear the stored wish.
@@ -76,7 +84,7 @@ The pulse SHALL be three multiple-choice questions and one free-text wish, defin
 - **THEN** the post is refused with 400 and nothing changes
 
 ### Requirement: WL-012 Admin stats
-`GET /api/waitlist/stats` SHALL return, to a bearer of `ADMIN_TOKEN` only, the total, list sizes, rating bands, form names, campaign sources, pulse counts for the current questionnaire version, how many hold answers to an older one (whatever questions existed then), the twenty latest wishes, and sign-ups per day for thirty days, with no addresses, summed over every row. Visitor-supplied labels SHALL be counted as labels, never as object properties.
+`GET /api/waitlist/stats` SHALL return, to a bearer of `ADMIN_TOKEN` only, the total, list sizes, rating bands, form names, campaign sources, pulse counts for the current questionnaire version, how many hold answers to an older one (whatever questions existed then), the twenty latest wishes, and sign-ups per day for thirty days, with no addresses, summed over every row. Sign-ups per day SHALL come from an anonymous tally kept at sign-up time, so leaving every list or deleting a row never changes the history. Visitor-supplied labels SHALL be counted as labels, never as object properties.
 
 #### Scenario: Stats without a token
 - **WHEN** the stats are requested without a valid token

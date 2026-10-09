@@ -296,15 +296,21 @@ test('one-click unsubscribe: the RFC 8058 post with no Origin answers 200, never
   assert.deepEqual(await json.json(), { ok: true, lists: { beta: false, letter: false, research: false } });
 });
 
-test('delete removes the row and the link stops working', async () => {
+test('delete removes the row and the link stops working, and needs the confirmation on the server', async () => {
   const env = makeEnv();
   const { token } = await signup(env, 'gone@gmail.com');
   await signup(env, 'stays@gmail.com', {}, { ip: '198.51.100.3' });
+  const unconfirmed = await deletePost({ request: request('/api/waitlist/delete', { method: 'POST', body: { t: token }, json: true }), env });
+  assert.equal(unconfirmed.status, 400);
+  assert.match((await unconfirmed.json()).error, /Tick the box/);
+  const unconfirmedForm = await deletePost({ request: request('/api/waitlist/delete', { method: 'POST', body: { t: token } }), env });
+  assert.equal(unconfirmedForm.headers.get('location'), `/manage/?t=${token}&error=1#manage`);
+  assert.equal(env.DB.rows('waitlist').length, 2, 'nothing deleted without the tick');
   const res = await deletePost({ request: request('/api/waitlist/delete', { method: 'POST', body: { t: token, confirm: 'on' } }), env });
   assert.equal(res.status, 303);
   assert.equal(res.headers.get('location'), '/manage/?deleted=1#manage');
   assert.deepEqual(env.DB.rows('waitlist').map((r) => r.email), ['stays@gmail.com']);
-  const again = await deletePost({ request: request('/api/waitlist/delete', { method: 'POST', body: { t: token }, json: true }), env });
+  const again = await deletePost({ request: request('/api/waitlist/delete', { method: 'POST', body: { t: token, confirm: true }, json: true }), env });
   assert.equal(again.status, 404);
   assert.equal((await manageGet({ request: request(`/manage/?t=${token}`), env })).status, 404);
 });
@@ -447,6 +453,12 @@ test('a sign-up retried with the same per-visit key gets the same pulse code, an
   assert.notEqual(c.pulse, a.pulse);
   await pulsePost({ request: request('/api/waitlist/pulse', { method: 'POST', body: { p: c.pulse, review: 'none' }, json: true }), env });
   assert.equal(answers(env, 'retry@gmail.com').review, 'coach', 'nothing changed');
+  // The same key for a different, brand-new address must not collide with the stored code.
+  const reused = await signupPost({ request: postJson({ email: 'fresh@gmail.com', consent: true, k: key }, { ip: '198.51.100.9' }), env });
+  assert.equal(reused.status, 200, 'no unique-index failure, so no oracle');
+  const d = await reused.json();
+  assert.notEqual(d.pulse, a.pulse, 'the code depends on the address too');
+  assert.equal(rowOf(env, 'fresh@gmail.com').pulse_token, d.pulse);
   // No key: a random code each time, as before.
   const r1 = await (await signupPost({ request: postJson({ email: 'nokey@gmail.com', consent: true }, { ip: '198.51.100.8' }), env })).json();
   const r2 = await (await signupPost({ request: postJson({ email: 'nokey@gmail.com', consent: true }, { ip: '198.51.100.8' }), env })).json();
@@ -691,7 +703,11 @@ test('stats needs the admin token and sums the lists, ratings, sources, pulse an
   assert.deepEqual(stats.pulse.wishes.map((w) => w.text), ['Why my plan was wrong']);
   assert.equal(stats.perDay.length, 30);
   assert.equal(stats.perDay[29].day, stats.today);
-  assert.equal(stats.perDay[29].count, 2, 'the unsubscribed row lost its join date');
+  assert.equal(stats.perDay[29].count, 3, 'the day tally is anonymous and survives an unsubscribe');
+  await deletePost({ request: request('/api/waitlist/delete', { method: 'POST', body: { t: a.token, confirm: true }, json: true }), env });
+  const after = await (await statsGet({ request: request('/api/waitlist/stats', { headers: { authorization: 'Bearer test-admin-token' } }), env })).json();
+  assert.equal(after.total, 2);
+  assert.equal(after.perDay[29].count, 3, 'and survives a delete');
   assert.ok(!JSON.stringify(stats).includes('@gmail.com'), 'stats carry no addresses');
 });
 
@@ -710,7 +726,9 @@ test('summarize tolerates odd rows and ignores answers that are not options', ()
   assert.equal(s.ratings['not-sure'], 1);
   assert.deepEqual(s.sources, { unknown: 1, hero: 1 });
   assert.equal(s.pulse.answered, 0);
-  assert.equal(s.perDay.reduce((n, d) => n + d.count, 0), 1, 'only the sign-up inside the last 30 days counts');
+  assert.equal(s.perDay.reduce((n, d) => n + d.count, 0), 0, 'rows no longer feed the day chart');
+  const withDays = summarize([], { now, signupDays: [{ day: '2026-10-09', count: 4 }, { day: '2026-09-01', count: 9 }] });
+  assert.equal(withDays.perDay.reduce((n, d) => n + d.count, 0), 4, 'only tally days inside the window count');
 });
 
 test('wrong methods are 405 on every new endpoint', async () => {
