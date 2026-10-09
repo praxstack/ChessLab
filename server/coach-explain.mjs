@@ -239,7 +239,22 @@ export function coachConfig(env = process.env) {
     effort:EFFORTS.has(env.COACH_AI_EFFORT) ? env.COACH_AI_EFFORT : 'low',
     timeoutMs:boundedInteger(env.COACH_AI_TIMEOUT_MS, 15000, 2000, 60000),
     maxPerHour:boundedInteger(env.COACH_AI_MAX_PER_HOUR, 30, 1, 1000),
+    maxPerDay:boundedInteger(env.COACH_AI_MAX_PER_DAY, 50, 1, 5000),
     engineMovetime:boundedInteger(env.COACH_ENGINE_MOVETIME_MS, 800, 100, 2000),
+  };
+}
+
+// Explanations on the server's key per account and UTC day. The app passes a SQLite store so a restart keeps the count.
+export function memoryDailyUsage() {
+  const counts = new Map();
+  return {
+    take(userId, day, max) {
+      const key = `${day} ${userId}`, used = counts.get(key) ?? 0;
+      if (used >= max) return false;
+      if (counts.size > 10000) for (const id of counts.keys()) if (!id.startsWith(`${day} `)) counts.delete(id);
+      counts.set(key, used + 1);
+      return true;
+    },
   };
 }
 
@@ -254,7 +269,7 @@ function classify(error, deadlineHit) {
 
 export function createCoach({client, config = coachConfig(), nowMs = Date.now, logger = console, maxConcurrent = 4} = {}) {
   const claude = client ?? (config.apiKey ? new Anthropic({apiKey:config.apiKey, maxRetries:1, timeout:config.timeoutMs}) : null);
-  const quotas = new Map(), evidence = new Map();
+  const quotas = new Map(), evidence = new Map(), dailyUsage = memoryDailyUsage();
   let inFlight = 0;
 
   function takeQuota(userId) {
@@ -320,7 +335,8 @@ export function createCoach({client, config = coachConfig(), nowMs = Date.now, l
       if (!entry || entry.userId !== userId || entry.until <= nowMs() || entry.key !== requestKey(request)) return null;
       return entry.analysis;
     },
-    async explain({userId, analysis, moves = [], initialFen = null, variant, asked = null, signal}) {
+    // serverKey says whether this account may spend the server's key; usage counts its explanations per day.
+    async explain({userId, analysis, moves = [], initialFen = null, variant, asked = null, serverKey = true, usage = dailyUsage, signal}) {
       try { gameVariant(variant); } catch (error) { throw failure(400, error.message); }
       const bundle = buildEvidence(analysis, {moves, initialFen, variant, asked:Boolean(asked)});
       const receipt = {engine:bundle.evidence.engine.name, movetimeMs:bundle.evidence.engine.movetimeMs, depth:bundle.evidence.engine.depth, lines:bundle.evidence.candidateLines.length};
@@ -328,10 +344,13 @@ export function createCoach({client, config = coachConfig(), nowMs = Date.now, l
       const engineAnswer = reason => ({...base, source:'engine', text:bundle.deterministic, citedMoves:[], fallbackReason:reason});
       if (!bundle.explainable) return engineAnswer('no_evidence');
       if (!claude) return engineAnswer('not_configured');
+      if (!serverKey) return engineAnswer('not_covered');
       // Check capacity before quota so a busy fallback costs the learner nothing. Nothing awaits between
-      // this check and inFlight++, so concurrent requests cannot both pass it.
+      // this check and inFlight++, so concurrent requests cannot both pass it. The hourly quota comes before
+      // the stored daily count, so an hourly refusal never spends one of the day's explanations.
       if (inFlight >= maxConcurrent) return engineAnswer('busy');
       if (!takeQuota(userId)) return engineAnswer('rate_limited');
+      if (!usage.take(userId, new Date(nowMs()).toISOString().slice(0, 10), config.maxPerDay)) return engineAnswer('daily_limit');
       const task = asked ? `Task: the learner asks "why not [[${asked.san}]]?" Answer from the evidence, comparing it with the engine's first candidate line.`
         : bundle.evidence.playedMove ? `Task: explain the played move [[${bundle.evidence.playedMove.san}]] to the learner, comparing it with the engine's first candidate line.`
         : `Task: explain the engine's first candidate move [[${bundle.best}]] in this position to the learner.`;

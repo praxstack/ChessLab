@@ -4,6 +4,8 @@ import React,{useEffect,useRef,useState} from 'react';
 // when Claude is unavailable it answers with the deterministic engine summary instead.
 const reasons={
  rate_limited:'You have reached this hour’s limit for AI explanations.',
+ daily_limit:'You have reached today’s limit for AI explanations.',
+ not_covered:'AI explanations are not included for this account.',
  timeout:'The AI explanation took too long.',
  unverified_claims:'The AI answer made claims the engine evidence does not support, so it was withheld.',
  too_long:'The AI answer was too long, so it was withheld.',

@@ -8,7 +8,7 @@ The governing change is `openspec/changes/hosted-beta-readiness/`.
 
 One container serves the API and the built web app on port 8770. It runs Stockfish 18 as a child process and stores accounts, sessions, games and progress in SQLite under `/data`. A TLS reverse proxy (Caddy, nginx, Fly.io or Render) terminates HTTPS and forwards to the container.
 
-Run exactly one instance. Rate limits, the AI-explanation quota and saved explanation evidence live in process memory. A restart clears them. After a restart, or 30 minutes after an analysis, a learner asking for an explanation is asked to run the analysis again. SQLite allows one writer, and the data volume belongs to one machine. Accounts and sessions persist on the volume.
+Run exactly one instance. Rate limits, the hourly AI-explanation quota and saved explanation evidence live in process memory. A restart clears them. The daily AI-explanation count is stored in SQLite and survives a restart. After a restart, or 30 minutes after an analysis, a learner asking for an explanation is asked to run the analysis again. SQLite allows one writer, and the data volume belongs to one machine. Accounts and sessions persist on the volume.
 
 ## Settings
 
@@ -19,16 +19,31 @@ Set these in the host's secret store or a `chmod 600` env file. Never commit the
 | `APP_ORIGIN` | `https://app.example.com` | Required. The exact public origin, with no path. It turns on Secure cookies, HSTS, the content security policy and Origin checks, and turns off the `/research` and `/design` archives. |
 | `TRUST_PROXY` | `1` | Number of proxy hops in front of the app. Each visitor then gets their own rate limit. `true` is rejected because it would trust addresses sent by any client. |
 | `BETA_INVITE_CODES` | `code-one-2026,code-two-2026` | Comma-separated codes of 8–128 characters. New accounts need one; existing accounts sign in without one. Leave unset to allow open sign-up. An empty entry, such as a trailing comma, stops the server from starting. |
-| `ANTHROPIC_API_KEY` | secret | Turns on "Explain why". Without it the button is hidden and the engine summary remains. |
+| `COACH_AI_INVITE_CODES` | `family-asha-2026,family-ravi-2026` | Codes whose accounts may use your Claude key, same format as `BETA_INVITE_CODES`. Each one also works as a sign-up code, so setting it turns the invite gate on. See [who your Claude key pays for](#who-your-claude-key-pays-for). |
+| `ANTHROPIC_API_KEY` | secret | Turns on "Explain why". Without it the button is hidden and the engine summary remains. On a hosted server it is used only for accounts created with a `COACH_AI_INVITE_CODES` code. |
 | `ANTHROPIC_MODEL` | `claude-opus-5-5` | Model for explanations. |
 | `COACH_AI_EFFORT` | `low` | `low`, `medium` or `high`. Higher is slower and costs more. |
 | `COACH_AI_TIMEOUT_MS` | `15000` | Limit per explanation, 2000–60000. On timeout the app shows the engine summary instead. |
 | `COACH_AI_MAX_PER_HOUR` | `30` | Explanations per account per hour, 1–1000. |
+| `COACH_AI_MAX_PER_DAY` | `50` | Explanations per account per UTC day, 1–5000. The day starts at 00:00 UTC, which is 05:30 in India. |
 | `COACH_ENGINE_MOVETIME_MS` | `800` | Stockfish time when an explanation needs fresh analysis, 100–2000. |
 | `SERVE_ARCHIVES` | unset | `1` serves the research and design archives even when hosted. Keep it unset: the archives are internal founder research, not part of the beta. |
 | `COOKIE_SECURE` | unset | Set automatically by an HTTPS `APP_ORIGIN`. |
 
 The image already sets `NODE_ENV=production`, `HOST=0.0.0.0`, `PORT=8770`, `CHESSLAB_DB=/data/chesslab.sqlite`, `STOCKFISH_PATH`, `CHESSLAB_ENGINES_DIR`, and catalogue paths under `/data`. Do not set `PUBLIC_ORIGIN` or `CHESSLAB_BACKEND_SECRET`. Those belong to the earlier owner-private Sites tunnel. They make every request require that tunnel's secret header. The server refuses to start when `PUBLIC_ORIGIN` differs from `APP_ORIGIN`.
+
+## Who your Claude key pays for
+
+The key in `ANTHROPIC_API_KEY` belongs to you, so the server decides whose explanations it pays for:
+
+- **Local server** (no `APP_ORIGIN`): every account on it, which in practice is you while developing.
+- **Hosted server** (`APP_ORIGIN` set): only accounts created with one of the `COACH_AI_INVITE_CODES` codes, such as friends and family. Accounts created with a `BETA_INVITE_CODES` code, or with no code, never see "Explain why" and get the engine summary.
+
+Give each person their own code. To stop paying for someone, remove their code from `COACH_AI_INVITE_CODES` and restart. Their account keeps working with the engine summary, and they can still sign in. Each account stores a SHA-256 digest of the code it signed up with, never the code itself, so a code moved between the two lists later changes what its accounts get.
+
+Each covered account gets at most `COACH_AI_MAX_PER_HOUR` explanations an hour and `COACH_AI_MAX_PER_DAY` a day. At about 2 to 4 cents each on Claude Opus 5.5 at low effort (an estimate, not a measurement), the default of 50 a day is at most about $2 per person per day.
+
+To run the key on a Claude Max plan's monthly API credits instead of buying any: link the plan's credits to a Console organization (claude.ai, Settings > Billing > API credits), leave auto-reload off in the Console, create a workspace for this app with a monthly spend limit, and create the key in that workspace. When the credits run out, requests stop until the next month and the app falls back to the engine summary. Usage is not charged to the Claude plan.
 
 ## Build the image
 
@@ -111,13 +126,14 @@ The marketing site can live at the apex domain or `www` independently. Both are 
 - `APP_ORIGIN`, `TRUST_PROXY` and `BETA_INVITE_CODES` are set. `/api/status` reports `"hosted":true`, `"inviteRequired":true` and `"archives":false`.
 - `/healthz` returns `{"status":"ok"}` through HTTPS, and the response carries `Strict-Transport-Security` and `Content-Security-Policy`.
 - Sign-up without a code is refused, and sign-up with a code works.
+- An account created with a `COACH_AI_INVITE_CODES` code sees "Explain why"; one created with a `BETA_INVITE_CODES` code does not.
 - If the key is set, one "Explain why" answer is labelled as AI-generated and names the model. With a bad key, the page shows the engine summary and a short notice. Logs record only the fallback reason, never the key or prompt.
 - A backup has been taken and restored on a scratch copy.
-- The Anthropic Console has a spending limit. The per-account hourly limit caps each tester, not the total across testers.
+- The key's Console workspace has a monthly spend limit and auto-reload is off. The per-account hourly and daily limits cap each person, not the total across people.
 
 ## Known gaps
 
 - No password reset, email verification or account deletion flow. Testers who forget a password need a manual reset.
-- Rate limits and the AI quota are in memory and reset on restart. Each account allows 10 sign-in attempts per 15 minutes. Someone who knows a username can use that limit to lock its owner out for 15 minutes.
+- Rate limits and the hourly AI quota are in memory and reset on restart. The daily AI count does not. Each account allows 10 sign-in attempts per 15 minutes. Someone who knows a username can use that limit to lock its owner out for 15 minutes.
 - The server checks that every move Claude cites appears in the evidence with the same check and mate markers, that any mention of mate matches the side and distance the engine reported, that every number appears in the evidence, and that a piece said to be won, lost or traded is one the evidence lines capture. These checks read simple wording patterns, so unusual phrasing can be misread, and they do not check which side gains the material. They do not check move order or claims about squares and defenders; the prompt alone governs those. Answers over 110 words or two paragraphs are withheld.
 - Nothing here has been load-tested. Analysis runs two Stockfish searches at once and bot moves run one at a time. Up to eight more requests queue; beyond that the server answers "busy".

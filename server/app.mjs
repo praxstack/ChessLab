@@ -25,7 +25,7 @@ import {positionKey,reviewSignature,beginReview,appendReview} from './game-revie
 import {createExplorer} from './opening-explorer.mjs';
 import {installReviewPractice} from './review-practice.mjs';
 import {createCoach,parseAskedMove} from './coach-explain.mjs';
-import {securityConfig,securityHeaders,inviteAccepted} from './security.mjs';
+import {securityConfig,securityHeaders,inviteAccepted,inviteDigest} from './security.mjs';
 
 const derive = promisify(scrypt);
 const hash = value => createHash('sha256').update(value).digest('hex');
@@ -50,7 +50,10 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
  CREATE INDEX IF NOT EXISTS games_owner ON games(user_id);
  CREATE TABLE IF NOT EXISTS game_reviews (game_id TEXT PRIMARY KEY REFERENCES games(id), data TEXT NOT NULL);
  CREATE TABLE IF NOT EXISTS progress (user_id TEXT NOT NULL REFERENCES users(id), kind TEXT NOT NULL, item_id TEXT NOT NULL, PRIMARY KEY(user_id,kind,item_id));
- CREATE TABLE IF NOT EXISTS bot_results (user_id TEXT NOT NULL REFERENCES users(id), bot_id TEXT NOT NULL, crowns INTEGER NOT NULL CHECK(crowns BETWEEN 1 AND 3), PRIMARY KEY(user_id,bot_id));`);
+ CREATE TABLE IF NOT EXISTS bot_results (user_id TEXT NOT NULL REFERENCES users(id), bot_id TEXT NOT NULL, crowns INTEGER NOT NULL CHECK(crowns BETWEEN 1 AND 3), PRIMARY KEY(user_id,bot_id));
+ CREATE TABLE IF NOT EXISTS coach_usage (user_id TEXT NOT NULL REFERENCES users(id), day TEXT NOT NULL, count INTEGER NOT NULL, PRIMARY KEY(user_id,day));`);
+ // Accounts record a digest of the invite code they signed up with; databases from before this column gain it empty.
+ if (!db.prepare('PRAGMA table_info(users)').all().some(column=>column.name==='invite_digest')) db.exec('ALTER TABLE users ADD COLUMN invite_digest TEXT');
  const app = express(); app.disable('x-powered-by');
  if (config.trustProxy) app.set('trust proxy', config.trustProxy);
  app.use(securityHeaders(config));
@@ -91,7 +94,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   if (req.body && (Array.isArray(req.body) || typeof req.body !== 'object')) return res.status(400).json({error:'Expected a JSON object.'});
   req.body ??= {};
   const token = /(?:^|;\s*)chesslab_session=([a-f0-9]{64})(?:;|$)/.exec(req.headers.cookie || '')?.[1];
-  if (token) req.user = db.prepare('SELECT u.id,u.username FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=? AND s.expires_at>?').get(hash(token),Date.now());
+  if (token) req.user = db.prepare('SELECT u.id,u.username,u.invite_digest AS inviteDigest FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=? AND s.expires_at>?').get(hash(token),Date.now());
   next();
  });
  const progress = userId => {
@@ -99,7 +102,13 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   const bots = userId ? Object.fromEntries(db.prepare('SELECT bot_id,crowns FROM bot_results WHERE user_id=?').all(userId).map(r=>[r.bot_id,r.crowns])) : {};
   return {...(Object.keys(bots).length?{bots}:{}),lessons:rows.filter(x=>x.kind==='lesson').map(x=>x.item_id),puzzles:rows.filter(x=>x.kind==='puzzle').map(x=>x.item_id)};
  };
- const me = user => ({user:user || null,progress:progress(user?.id)});
+ // The server's Claude key pays for everyone on a local server. A hosted server pays only for accounts created with a
+ // COACH_AI_INVITE_CODES code; removing a code from that list stops paying for the accounts that used it.
+ const coachCodes = new Set(config.coachInviteCodes.map(inviteDigest));
+ const coachCovered = user => !config.hosted || coachCodes.has(user?.inviteDigest);
+ const takeCoachDay = db.prepare('INSERT INTO coach_usage VALUES (?,?,1) ON CONFLICT(user_id,day) DO UPDATE SET count=count+1 WHERE count<?');
+ const coachUsage = {take:(userId,day,max)=>takeCoachDay.run(userId,day,max).changes>0};
+ const me = user => ({user:user ? {id:user.id,username:user.username,coachAi:coachCovered(user)} : null,progress:progress(user?.id)});
  function requireUser(req,res,next) { if (!req.user) return res.status(401).json({error:'Sign in to save your game and progress.'}); next(); }
  function setSession(res,userId) {
   db.prepare('DELETE FROM sessions WHERE expires_at<=?').run(Date.now());
@@ -117,8 +126,8 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   if (!inviteAccepted(config.inviteCodes,req.body.inviteCode)) fail(403,'This private beta needs a valid invite code.');
   if (db.prepare('SELECT id FROM users WHERE username=?').get(username)) fail(409,'That username is already in use.');
   const salt = randomBytes(16).toString('hex'); const secret = (await derive(password,salt,64)).toString('hex');
-  const user = {id:randomUUID(),username};
-  try { db.prepare('INSERT INTO users VALUES (?,?,?,?,?)').run(user.id,username,salt,secret,now()); }
+  const user = {id:randomUUID(),username,inviteDigest:config.inviteCodes.length ? inviteDigest(req.body.inviteCode) : null};
+  try { db.prepare('INSERT INTO users (id,username,salt,password_hash,created_at,invite_digest) VALUES (?,?,?,?,?,?)').run(user.id,username,salt,secret,now(),user.inviteDigest); }
   catch (e) { if (String(e.message).includes('UNIQUE')) fail(409,'That username is already in use.'); throw e; }
   setSession(res,user.id);res.status(201).json(me(user));
  });
@@ -131,7 +140,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   const user = db.prepare('SELECT * FROM users WHERE username=?').get(username);
   const secret = await derive(password,user?.salt || 'missing-account-salt',64);
   if (!user || !timingSafeEqual(secret,Buffer.from(user.password_hash,'hex'))) fail(401,'The username or password is incorrect.');
-  setSession(res,user.id);res.json(me({id:user.id,username:user.username}));
+  setSession(res,user.id);res.json(me({id:user.id,username:user.username,inviteDigest:user.invite_digest}));
  });
  app.post('/api/logout',(req,res)=>{
   const token = /(?:^|;\s*)chesslab_session=([a-f0-9]{64})(?:;|$)/.exec(req.headers.cookie || '')?.[1];
@@ -366,7 +375,8 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
   res.once('close',cancel);
   try {
    const analysis=await engineApi.analyze(req.body,{signal:controller.signal});
-   const evidenceId=coach.remember(req.user.id,req.body,analysis);
+   // Evidence is kept only for accounts that can ask Claude, so other accounts cannot crowd it out.
+   const evidenceId=coachCovered(req.user)?coach.remember(req.user.id,req.body,analysis):undefined;
    res.json(evidenceId?{...analysis,evidenceId}:analysis);
   }
   finally {res.removeListener('close',cancel);}
@@ -397,7 +407,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
    const analysis=recalled||(!asked&&reviewedEvidence(req,{gameId,...position}))
     ||await engineApi.analyze({...position,movetime:coach.engineMovetime,lines:3},{signal:controller.signal});
    if((position.playedMove??null)!==(analysis.played?.move??null))fail(503,'The engine evidence does not match this move. Try again.');
-   res.json(await coach.explain({userId:req.user.id,analysis,moves,initialFen,variant,asked,signal:controller.signal}));
+   res.json(await coach.explain({userId:req.user.id,analysis,moves,initialFen,variant,asked,serverKey:coachCovered(req.user),usage:coachUsage,signal:controller.signal}));
   }finally{res.removeListener('close',cancel);}
  });
  app.post('/api/lessons/:id/answer',(req,res)=>{

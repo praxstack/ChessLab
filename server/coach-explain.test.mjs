@@ -37,16 +37,22 @@ async function fixture({client, config = testConfig(), logger = silentLogger(), 
   const temp = mkdtempSync(join(tmpdir(), 'chesslab-coach-'));
   const engineCalls = [];
   const engineApi = {engineStatus:async () => ({available:true, name:'test engine'}), analyze:async request => { engineCalls.push(request); return fakeAnalysis(request); }};
-  const coach = createCoach({client, config, logger, ...(nowMs ? {nowMs} : {})});
-  const state = createApp({databasePath:join(temp, 'db.sqlite'), engineApi, coach, config:security});
-  const server = state.app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
-  const base = `http://127.0.0.1:${server.address().port}`;
+  let state, server, base;
+  // A restart builds a new coach as well, so anything that survives it was stored by the app.
+  const start = async settings => {
+    security = settings;
+    state = createApp({databasePath:join(temp, 'db.sqlite'), engineApi, coach:createCoach({client, config, logger, ...(nowMs ? {nowMs} : {})}), config:security});
+    server = state.app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
+    base = `http://127.0.0.1:${server.address().port}`;
+  };
+  const stop = async () => { await new Promise(resolve => server.close(resolve)); state.close(); };
+  await start(security);
   const request = async (path, {body, cookie} = {}) => {
-    const response = await fetch(base + path, {method:body === undefined ? 'GET' : 'POST', headers:{...(body !== undefined ? {'Content-Type':'application/json'} : {}), ...(cookie ? {Cookie:cookie} : {})}, body:body === undefined ? undefined : JSON.stringify(body)});
+    const response = await fetch(base + path, {method:body === undefined ? 'GET' : 'POST', headers:{...(body !== undefined ? {'Content-Type':'application/json'} : {}), ...(body !== undefined && security.appOrigin ? {Origin:security.appOrigin} : {}), ...(cookie ? {Cookie:cookie} : {})}, body:body === undefined ? undefined : JSON.stringify(body)});
     return {status:response.status, body:await response.json(), cookie:response.headers.get('set-cookie')?.split(';')[0]};
   };
-  const register = async username => (await request('/api/register', {body:{username, password:'test-password-123'}})).cookie;
-  return {request, register, engineCalls, logger, close:async () => { await new Promise(resolve => server.close(resolve)); state.close(); rmSync(temp, {recursive:true, force:true}); }};
+  const register = async (username, inviteCode) => (await request('/api/register', {body:{username, password:'test-password-123', ...(inviteCode ? {inviteCode} : {})}})).cookie;
+  return {request, register, engineCalls, logger, restart:async (settings = security) => { await stop(); await start(settings); }, close:async () => { await stop(); rmSync(temp, {recursive:true, force:true}); }};
 }
 
 test('evidence is replayed from the rules library and limits the vocabulary Claude may cite', () => {
@@ -223,6 +229,60 @@ test('a busy fallback does not spend the learner\'s hourly quota', async () => {
   assert.equal((await first).source, 'claude');
   const retry = await ask('learner-b');
   assert.deepEqual([retry.source, retry.fallbackReason], ['claude', null], 'The busy request did not use learner-b\'s only explanation this hour');
+  assert.equal(client.calls.length, 2);
+});
+
+test('a hosted server spends its Claude key only on accounts created with a coach invite code', async () => {
+  const client = fakeClient(() => answer('[[Nf6]] allows [[Qxf7#]] in the engine\'s line.'));
+  const hosted = {APP_ORIGIN:'https://app.example.com', BETA_INVITE_CODES:'tester-cohort-1'};
+  const f = await fixture({client, security:securityConfig({...hosted, COACH_AI_INVITE_CODES:'family-and-friends-1'})});
+  try {
+    const friend = await f.register('coach_friend', 'family-and-friends-1'), tester = await f.register('coach_tester', 'tester-cohort-1');
+    assert.deepEqual([(await f.request('/api/me', {cookie:friend})).body.user.coachAi, (await f.request('/api/me', {cookie:tester})).body.user.coachAi], [true, false]);
+    const testerAnalysis = await f.request('/api/analyze', {cookie:tester, body:{moves:BASE, playedMove:'g8f6'}});
+    assert.equal(testerAnalysis.body.evidenceId, undefined, 'No evidence is kept for an account that cannot ask Claude');
+    const refused = await f.request('/api/coach/explain', {cookie:tester, body:{moves:BASE, playedMove:'g8f6'}});
+    assert.deepEqual([refused.body.source, refused.body.fallbackReason, client.calls.length], ['engine', 'not_covered', 0]);
+    const analysis = await f.request('/api/analyze', {cookie:friend, body:{moves:BASE, playedMove:'g8f6'}});
+    const covered = await f.request('/api/coach/explain', {cookie:friend, body:{moves:BASE, playedMove:'g8f6', evidenceId:analysis.body.evidenceId}});
+    assert.deepEqual([covered.body.source, client.calls.length], ['claude', 1]);
+    await f.restart(securityConfig(hosted));
+    const revoked = await f.request('/api/coach/explain', {cookie:friend, body:{moves:BASE, playedMove:'g8f6'}});
+    assert.deepEqual([revoked.body.fallbackReason, client.calls.length], ['not_covered', 1], 'Removing the code stops paying for the accounts that used it');
+    assert.equal((await f.request('/api/me', {cookie:friend})).body.user.coachAi, false);
+  } finally { await f.close(); }
+});
+
+test('the daily cap counts each account per UTC day in the database, so a restart does not reset it', async () => {
+  let clock = Date.UTC(2026, 9, 9, 10);
+  const client = fakeClient(() => answer('[[g6]] keeps the position balanced at this depth.'));
+  const f = await fixture({client, config:testConfig({maxPerDay:2}), nowMs:() => clock});
+  try {
+    const erin = await f.register('coach_erin'), finn = await f.register('coach_finn');
+    const ask = async cookie => (await f.request('/api/coach/explain', {cookie, body:{moves:BASE}})).body;
+    assert.deepEqual([(await ask(erin)).source, (await ask(erin)).source], ['claude', 'claude']);
+    const capped = await ask(erin);
+    assert.deepEqual([capped.source, capped.fallbackReason, capped.text], ['engine', 'daily_limit', fakeAnalysis().explanation]);
+    assert.equal((await ask(finn)).source, 'claude', 'Other accounts keep their own allowance');
+    await f.restart();
+    assert.equal((await ask(erin)).fallbackReason, 'daily_limit', 'The count survives a restart');
+    clock = Date.UTC(2026, 9, 10, 0, 1);
+    assert.equal((await ask(erin)).source, 'claude', 'A new UTC day brings a new allowance');
+    assert.equal(client.calls.length, 4);
+  } finally { await f.close(); }
+});
+
+test('an hourly refusal does not spend one of the day\'s explanations', async () => {
+  let clock = Date.UTC(2026, 9, 9, 1);
+  const client = fakeClient(() => answer('[[g6]] keeps the position balanced at this depth.'));
+  const coach = createCoach({client, config:testConfig({maxPerHour:1, maxPerDay:2}), logger:silentLogger(), nowMs:() => clock});
+  const ask = async () => (await coach.explain({userId:'learner-a', analysis:fakeAnalysis(), moves:BASE})).fallbackReason;
+  assert.deepEqual([await ask(), await ask()], [null, 'rate_limited']);
+  clock += 3600000;
+  assert.equal(await ask(), null, 'The refused request left the second daily explanation unspent');
+  clock += 3600000;
+  assert.equal(await ask(), 'daily_limit');
+  assert.equal((await coach.explain({userId:'learner-b', analysis:fakeAnalysis(), moves:BASE, serverKey:false})).fallbackReason, 'not_covered');
   assert.equal(client.calls.length, 2);
 });
 
