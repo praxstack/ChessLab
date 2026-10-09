@@ -302,6 +302,7 @@ function initWaitlist() {
 
   form.noValidate = true;
   html.classList.add('has-js');
+  const visitKey = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, '0')).join('');
 
   // Where the visitor came from: campaign tags and referrer, both optional.
   const params = new URLSearchParams(window.location.search);
@@ -446,6 +447,9 @@ function initWaitlist() {
 
     const data = Object.fromEntries(new FormData(form));
     data.consent = true;
+    // One random key per visit. If the answer is lost and the visitor retries,
+    // the server hands back the same pulse code, so their answers still count.
+    data.k = visitKey;
     button.disabled = true;
     button.setAttribute('aria-busy', 'true');
     label.textContent = 'Joining…';

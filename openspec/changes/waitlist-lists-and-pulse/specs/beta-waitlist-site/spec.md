@@ -24,7 +24,11 @@ A new address and one already on the list SHALL receive the same response shape,
 
 #### Scenario: Pulse with a code that matches nothing
 - **WHEN** the pulse is posted with a well-formed code that is stored nowhere
-- **THEN** the reply is the same as for a stored code and nothing is written
+- **THEN** the reply is the same as for a stored code, including on bad input and on a storage failure, and nothing is written
+
+#### Scenario: Retry after a lost answer
+- **WHEN** the page retries a sign-up with the same per-visit key after the first answer was lost
+- **THEN** it receives the same pulse code, which still saves the pulse for that row
 
 ## ADDED Requirements
 
@@ -47,7 +51,7 @@ Each row SHALL carry a 128-bit random manage code. `GET /manage/?t=<code>` SHALL
 - **THEN** the response is 503 with the "try again later" state
 
 ### Requirement: WL-009 Changing lists and leaving
-`POST /api/waitlist/preferences` with the manage code SHALL set each list to ticked or not, keeping the original time for a list that stays on. `POST /api/waitlist/unsubscribe` with the code SHALL turn every list off. When every list is off, the service SHALL clear the rating, source, campaign tags, answers, dates and pulse code, and keep the address, the choice and the manage code. A mail provider's `List-Unsubscribe=One-Click` post SHALL be accepted with no Origin header, SHALL NOT count against the rate limit, and SHALL be answered with a bare status, 200 on success, never a redirect.
+`POST /api/waitlist/preferences` with the manage code SHALL set each list to ticked or not, keeping the original time for a list that stays on, and SHALL apply only if the lists have not changed since the page was rendered; otherwise it SHALL report the change and the current state instead of overwriting it. `POST /api/waitlist/unsubscribe` with the code SHALL turn every list off and SHALL work without the rate-limit salt when it is not counted. When every list is off, the service SHALL clear the rating, source, campaign tags, answers, dates and pulse code, and keep the address, the choice and the manage code. A mail provider's `List-Unsubscribe=One-Click` post SHALL be accepted with no Origin header, SHALL NOT count against the rate limit, and SHALL be answered with a bare status, 200 on success, never a redirect.
 
 #### Scenario: One-click unsubscribe
 - **WHEN** a provider posts `List-Unsubscribe=One-Click` with the code in the query and no Origin
@@ -72,7 +76,7 @@ The pulse SHALL be three multiple-choice questions and one free-text wish, defin
 - **THEN** the post is refused with 400 and nothing changes
 
 ### Requirement: WL-012 Admin stats
-`GET /api/waitlist/stats` SHALL return, to a bearer of `ADMIN_TOKEN` only, the total, list sizes, rating bands, form names, campaign sources, pulse counts for the current questionnaire version, how many hold answers to an older one, the twenty latest wishes, and sign-ups per day for thirty days, with no addresses. Visitor-supplied labels SHALL be counted as labels, never as object properties.
+`GET /api/waitlist/stats` SHALL return, to a bearer of `ADMIN_TOKEN` only, the total, list sizes, rating bands, form names, campaign sources, pulse counts for the current questionnaire version, how many hold answers to an older one (whatever questions existed then), the twenty latest wishes, and sign-ups per day for thirty days, with no addresses, summed over every row. Visitor-supplied labels SHALL be counted as labels, never as object properties.
 
 #### Scenario: Stats without a token
 - **WHEN** the stats are requested without a valid token

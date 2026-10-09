@@ -70,7 +70,8 @@ export const LIMITS = Object.freeze({
   rateLimitBucketMs: 60 * 1000, // counted in one-minute buckets
   rateLimitRetentionMs: 24 * 60 * 60 * 1000,
   manageRateLimitMax: 30, // manage-link requests per IP per 10 minutes
-  statsRowCap: 5000, // the stats endpoint reads at most this many rows
+  statsPageSize: 1000, // rows the stats endpoint reads per query
+  statsRowCap: 200000, // absolute cap on rows the stats endpoint will sum
 });
 
 // Where a plain (no-JavaScript) form post lands afterwards. The fragment targets

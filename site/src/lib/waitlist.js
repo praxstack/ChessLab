@@ -1,6 +1,6 @@
 import { LIMITS, LISTS, PRODUCT, PULSE, RATING_BANDS, REDIRECTS, managePath } from './config.js';
 import { BodyError, readBody } from './body.js';
-import { hashIp, randomToken, timingSafeEqualText } from './hash.js';
+import { hashIp, randomToken, sha256Hex, timingSafeEqualText } from './hash.js';
 import { clientIp, isAllowedOrigin, json, redirect, text, wantsJson } from './http.js';
 import { countSubmission, retryAfterSeconds } from './ratelimit.js';
 import { toCsv } from './csv.js';
@@ -77,21 +77,33 @@ function parseStoredAnswers(value) {
 }
 
 /**
+ * The pulse code a sign-up gets back. With a client key (`k`, random, made by
+ * the page once per visit) it is derived from the key and the secret salt, so
+ * a retry of the same sign-up after a lost response gets the same code and
+ * can still save the pulse, while anyone else's key yields a code that
+ * matches nothing. Without a key it is simply random.
+ */
+async function pulseCodeFor(key, salt) {
+  if (!key || !salt) return randomToken();
+  return (await sha256Hex(`${salt}:pulse:${key}`)).slice(0, 32);
+}
+
+/**
  * POST /api/waitlist
  * Returns JSON for fetch() callers, or a 303 redirect for plain HTML form posts.
  *
  * The response is the same whether the address was new or already on the
- * list: { ok: true, pulse } with a fresh random pulse code either way. For a
- * new row the code is stored and lets the page submit the market pulse; for an
- * existing row it is stored nowhere and the pulse is accepted and discarded.
- * So nothing the caller sees says whether an address is on the list. The
- * private manage link is never returned here; it travels only in email.
+ * list: { ok: true, pulse } either way. For a new row the code is stored and
+ * lets the page submit the market pulse; for an existing row it is stored
+ * nowhere and the pulse is accepted and discarded. So nothing the caller sees
+ * says whether an address is on the list. The private manage link is never
+ * returned here; it travels only in email.
  */
 export async function handleWaitlistPost(request, env, { now = Date.now(), fetchImpl } = {}) {
   const asJson = wantsJson(request);
   const fail = (status, error, code, headers) =>
     asJson ? json(status, { ok: false, error }, headers) : redirect(REDIRECTS.error(code));
-  const succeed = (pulse) => (asJson ? json(200, { ok: true, pulse: pulse || randomToken() }) : redirect(REDIRECTS.joined));
+  const succeed = (pulse) => (asJson ? json(200, { ok: true, pulse }) : redirect(REDIRECTS.joined));
 
   try {
     if (!isAllowedOrigin(request)) return fail(403, ERRORS.origin, 'origin');
@@ -106,9 +118,10 @@ export async function handleWaitlistPost(request, env, { now = Date.now(), fetch
       if (error instanceof BodyError) return fail(400, ERRORS.unreadable, 'unreadable');
       throw error;
     }
+    const key = parseToken(body.k);
 
     // Bots fill the hidden "website" field. Pretend it worked and store nothing.
-    if (isHoneypotFilled(body.website)) return succeed();
+    if (isHoneypotFilled(body.website)) return succeed(await pulseCodeFor(key, env.IP_HASH_SALT));
 
     // Without the secret salt the stored hashes could be reversed, so store nothing.
     if (!env.IP_HASH_SALT) {
@@ -148,7 +161,7 @@ export async function handleWaitlistPost(request, env, { now = Date.now(), fetch
     }
     const stamp = new Date(now).toISOString();
     const lists = { ...emptyLists(), beta: stamp };
-    const pulse = randomToken();
+    const pulse = await pulseCodeFor(key, env.IP_HASH_SALT);
 
     // An address that is already on the list is left exactly as it is, even
     // when it has unsubscribed from everything: a tick on a public form does
@@ -234,13 +247,15 @@ async function tokenRequest(request, env, now, { pulse = false, count = true } =
   const pulseToken = !token && pulse ? parseToken(body.p) || parseToken(query.get('p')) : '';
   if (!token && !pulseToken) return stop(404, ERRORS.link, 'link');
 
-  if (!env.IP_HASH_SALT) {
-    console.error('IP_HASH_SALT is not set; refusing manage requests until it is.');
-    return stop(503, ERRORS.server, 'server');
-  }
   let row;
   try {
     if (typeof count === 'function' ? count(body) : count) {
+      // The salt is needed only to count: a request that is not counted, such
+      // as a provider's one-click unsubscribe, must keep working without it.
+      if (!env.IP_HASH_SALT) {
+        console.error('IP_HASH_SALT is not set; refusing counted manage requests until it is.');
+        return stop(503, ERRORS.server, 'server');
+      }
       const ipHash = await hashIp(clientIp(request), env.IP_HASH_SALT, 'manage');
       const attempts = await countSubmission(env.DB, ipHash, now);
       if (attempts > LIMITS.manageRateLimitMax) {
@@ -248,7 +263,7 @@ async function tokenRequest(request, env, now, { pulse = false, count = true } =
       }
     }
     row = await env.DB.prepare(
-      `SELECT id, email, lists, answers, consent_at FROM waitlist WHERE ${token ? 'manage_token' : 'pulse_token'} = ?`,
+      `SELECT id, email, lists, lists_updated_at, answers, consent_at FROM waitlist WHERE ${token ? 'manage_token' : 'pulse_token'} = ?`,
     )
       .bind(token || pulseToken)
       .first();
@@ -259,12 +274,13 @@ async function tokenRequest(request, env, now, { pulse = false, count = true } =
     return stop(500, ERRORS.server, 'server');
   }
   if (!row) {
-    if (pulseToken) return { discard: true, asJson, body };
+    if (pulseToken) return { discard: true, pulseToken, asJson, body };
     return stop(404, ERRORS.link, 'link');
   }
 
   return {
     token,
+    pulseToken,
     byPulse: Boolean(pulseToken),
     oneClick,
     row,
@@ -281,21 +297,23 @@ async function tokenRequest(request, env, now, { pulse = false, count = true } =
  * goes too: the rating, how they found us, the answers, the timestamps and
  * the pulse code. What stays is the address, the choice, and the manage code,
  * so the link still works to delete the row or to come back.
+ *
+ * With `expect`, the write applies only if the lists were last changed at
+ * that time, and the result says whether it did: a form filled in from a
+ * page opened before a later change must not put that change back.
  */
-async function saveLists(env, id, lists, stamp) {
-  if (anyListOn(lists)) {
-    await env.DB.prepare('UPDATE waitlist SET lists = ?, lists_updated_at = ? WHERE id = ?')
-      .bind(JSON.stringify(lists), stamp, id)
-      .run();
-    return;
-  }
-  await env.DB.prepare(
-    "UPDATE waitlist SET lists = ?, lists_updated_at = ?, fields = '{}', source = NULL, utm = '{}', " +
-      'answers = NULL, consent_at = NULL, created_at = NULL, pulse_token = NULL WHERE id = ?',
-  )
-    .bind(JSON.stringify(lists), stamp, id)
-    .run();
+async function saveLists(env, id, lists, stamp, { expect } = {}) {
+  const guard = expect === undefined ? '' : " AND COALESCE(lists_updated_at, '') = ?";
+  const guardArgs = expect === undefined ? [] : [expect || ''];
+  const sql = anyListOn(lists)
+    ? 'UPDATE waitlist SET lists = ?, lists_updated_at = ? WHERE id = ?'
+    : "UPDATE waitlist SET lists = ?, lists_updated_at = ?, fields = '{}', source = NULL, utm = '{}', " +
+      'answers = NULL, consent_at = NULL, created_at = NULL, pulse_token = NULL WHERE id = ?';
+  const result = await env.DB.prepare(sql + guard).bind(JSON.stringify(lists), stamp, id, ...guardArgs).run();
+  return expect === undefined ? true : Boolean(result && result.meta && result.meta.changes === 1);
 }
+
+const CHANGED = 'Your choices were changed somewhere else after this page was opened. This is the current state; check it and save again.';
 
 /** POST /api/waitlist/preferences — tick or untick each list. */
 export async function handlePreferencesPost(request, env, { now = Date.now() } = {}) {
@@ -306,11 +324,19 @@ export async function handlePreferencesPost(request, env, { now = Date.now() } =
     const stamp = new Date(now).toISOString();
     const lists = emptyLists();
     for (const key of LIST_KEYS) lists[key] = wanted[key] ? ctx.lists[key] || stamp : null;
+    let applied;
     try {
-      await saveLists(env, ctx.row.id, lists, stamp);
+      applied = await saveLists(env, ctx.row.id, lists, stamp, { expect: ctx.row.lists_updated_at });
     } catch (error) {
       console.error('preferences update failed', error);
       return ctx.fail(500, ERRORS.server, 'server');
+    }
+    if (!applied) {
+      // Something changed the lists between this page's render and its save,
+      // such as a one-click unsubscribe: the stale form must not undo it.
+      if (!ctx.asJson) return redirect(REDIRECTS.manage(ctx.token, 'changed'));
+      const fresh = await env.DB.prepare('SELECT lists, consent_at FROM waitlist WHERE id = ?').bind(ctx.row.id).first();
+      return json(409, { ok: false, error: CHANGED, lists: listsOn(parseStoredLists(fresh ? fresh.lists : null, fresh ? fresh.consent_at : null)) });
     }
     return ctx.asJson ? json(200, { ok: true, lists: listsOn(lists) }) : redirect(REDIRECTS.manage(ctx.token, 'saved'));
   } catch (error) {
@@ -390,25 +416,25 @@ export async function handlePulsePost(request, env, { now = Date.now() } = {}) {
       return ctx.asJson ? json(400, { ok: false, error: parsed.error }) : redirect(REDIRECTS.error('pulse'));
     }
     const byCodeOk = () => (ctx.asJson ? json(200, { ok: true }) : redirect(REDIRECTS.joined));
-    if (ctx.discard) return byCodeOk();
-    if (!parsed.ok) return ctx.fail(400, parsed.error, 'pulse');
+    if (!parsed.ok && !byCode) return ctx.fail(400, parsed.error, 'pulse');
     const stamp = new Date(now).toISOString();
 
     // Both writes are done inside SQL against the row's current value, not a
     // snapshot read earlier, so a preferences change or an unsubscribe that
-    // lands in between is never undone. By pulse code, the writes also require
-    // the code to still be on the row: leaving every list clears it, and a
-    // late pulse must not bring anything back.
-    const guard = ctx.byPulse ? ' AND pulse_token = ?' : '';
-    const guardArgs = ctx.byPulse ? [ctx.body.p ? parseToken(ctx.body.p) : parseToken(new URL(request.url).searchParams.get('p'))] : [];
+    // lands in between is never undone. By pulse code, the writes are keyed by
+    // the code alone: leaving every list clears it, so a late pulse brings
+    // nothing back, and a code that matches nothing writes nothing. Either
+    // way the same statements run, so a storage failure answers the same.
+    const where = byCode ? 'pulse_token = ?' : 'id = ?';
+    const whereArg = byCode ? ctx.pulseToken : ctx.row.id;
     // Answers: a JSON merge patch. A null (a wish sent empty) removes the key.
     // Answers to an older questionnaire are replaced rather than merged.
     const patch = JSON.stringify({ ...parsed.answers, v: PULSE.version, at: stamp });
     const statements = [
       env.DB.prepare(
         "UPDATE waitlist SET answers = CASE WHEN json_extract(COALESCE(answers, '{}'), '$.v') = ? " +
-          "THEN json_patch(COALESCE(answers, '{}'), ?) ELSE json_patch('{}', ?) END WHERE id = ?" + guard,
-      ).bind(PULSE.version, patch, patch, ctx.row.id, ...guardArgs),
+          `THEN json_patch(COALESCE(answers, '{}'), ?) ELSE json_patch('{}', ?) END WHERE ${where}`,
+      ).bind(PULSE.version, patch, patch, whereArg),
     ];
     // Opt-ins only ever turn a list on, keeping the time it was first turned on.
     const optIns = ['letter', 'research'].filter((key) => parseConsent(ctx.body[key]));
@@ -417,20 +443,18 @@ export async function handlePulsePost(request, env, { now = Date.now() } = {}) {
         .map((key) => `'$.${key}', COALESCE(json_extract(COALESCE(lists, '{}'), '$.${key}'), ?)`)
         .join(', ');
       statements.push(
-        env.DB.prepare(`UPDATE waitlist SET lists = json_set(COALESCE(lists, '{}'), ${sets}), lists_updated_at = ? WHERE id = ?` + guard)
-          .bind(...optIns.map(() => stamp), stamp, ctx.row.id, ...guardArgs),
+        env.DB.prepare(`UPDATE waitlist SET lists = json_set(COALESCE(lists, '{}'), ${sets}), lists_updated_at = ? WHERE ${where}`)
+          .bind(...optIns.map(() => stamp), stamp, whereArg),
       );
     }
     try {
       await env.DB.batch(statements);
     } catch (error) {
       console.error('pulse save failed', error);
-      // By pulse code the reply must not depend on whether a row was there to
-      // write, so a failed write is answered exactly like a discarded one.
-      if (byCode) return byCodeOk();
+      if (byCode) return ctx.asJson ? json(500, { ok: false, error: ERRORS.server }) : redirect(REDIRECTS.error('server'));
       return ctx.fail(500, ERRORS.server, 'server');
     }
-    if (ctx.byPulse) return byCodeOk();
+    if (byCode) return byCodeOk();
     const answered = Object.values(parsed.answers).filter((value) => value !== null).length;
     if (!ctx.asJson) return redirect(REDIRECTS.manage(ctx.token, 'saved'));
     const fresh = await env.DB.prepare('SELECT lists, consent_at FROM waitlist WHERE id = ?').bind(ctx.row.id).first();
@@ -496,7 +520,7 @@ export function renderManagePage(template, { state, email = '', lists = emptyLis
   return html;
 }
 
-const NOTE_KEYS = ['saved', 'left', 'error'];
+const NOTE_KEYS = ['saved', 'left', 'changed', 'error'];
 
 /** Where the built manage template is served: its pretty path, without the extension. */
 export const MANAGE_TEMPLATE_PATH = '/assets/manage';
@@ -587,13 +611,17 @@ export async function handleExportGet(request, env, { now = Date.now() } = {}) {
 // tallied in Maps: a key such as "__proto__" or "constructor" stays a label.
 const count = (map, key) => map.set(key, (map.get(key) || 0) + 1);
 
+/** True when a stored answers object holds any answer at all, whatever questions existed when it was saved. */
+const holdsAnswers = (answers) =>
+  Object.entries(answers).some(([key, value]) => key !== 'v' && key !== 'at' && value !== null && value !== undefined && value !== '');
+
 /**
- * The numbers behind the waitlist, from the rows given. Shared with the tests.
- * Pulse answers are counted only when they were given to the current version
- * of the questionnaire; `pulse.older` says how many people still have answers
- * to an earlier one.
+ * An accumulator for the numbers behind the waitlist: feed it rows one page
+ * at a time with `add`, read `result` at the end. Pulse answers are counted
+ * only when they were given to the current version of the questionnaire;
+ * `pulse.older` says how many people still hold answers to an earlier one.
  */
-export function summarize(rows, { now = Date.now(), days = 30 } = {}) {
+export function createSummary({ now = Date.now(), days = 30 } = {}) {
   const lists = {};
   for (const key of LIST_KEYS) lists[key] = 0;
   const ratings = {};
@@ -611,77 +639,106 @@ export function summarize(rows, { now = Date.now(), days = 30 } = {}) {
   const dayMs = 24 * 60 * 60 * 1000;
   const today = new Date(now).toISOString().slice(0, 10);
   for (let i = days - 1; i >= 0; i -= 1) perDay.set(new Date(now - i * dayMs).toISOString().slice(0, 10), 0);
+  let total = 0;
 
-  for (const row of rows) {
-    const on = parseStoredLists(row.lists, row.consent_at);
-    for (const key of LIST_KEYS) if (on[key]) lists[key] += 1;
-    let fields = {};
-    try {
-      fields = JSON.parse(row.fields || '{}') || {};
-    } catch {
-      /* count as unanswered */
-    }
-    if (fields.rating && Object.hasOwn(ratings, fields.rating)) ratings[fields.rating] += 1;
-    else ratings.unanswered += 1;
-    count(sources, row.source || 'unknown');
-    let utm = {};
-    try {
-      utm = JSON.parse(row.utm || '{}') || {};
-    } catch {
-      /* no tags */
-    }
-    count(utmSources, typeof utm.utm_source === 'string' && utm.utm_source ? utm.utm_source : 'direct');
-    const answers = parseStoredAnswers(row.answers);
-    const hasAnswers = Object.keys(PULSE.questions).some((key) => answers[key]) || Boolean(answers[PULSE.freeText.key]);
-    if (hasAnswers && answers.v !== PULSE.version) {
-      pulse.older += 1;
-    } else {
-      let answered = false;
-      for (const key of Object.keys(PULSE.questions)) {
-        const value = answers[key];
-        if (typeof value === 'string' && Object.hasOwn(pulse[key], value)) {
-          pulse[key][value] += 1;
+  return {
+    add(row) {
+      total += 1;
+      const on = parseStoredLists(row.lists, row.consent_at);
+      for (const key of LIST_KEYS) if (on[key]) lists[key] += 1;
+      let fields = {};
+      try {
+        fields = JSON.parse(row.fields || '{}') || {};
+      } catch {
+        /* count as unanswered */
+      }
+      if (fields.rating && Object.hasOwn(ratings, fields.rating)) ratings[fields.rating] += 1;
+      else ratings.unanswered += 1;
+      count(sources, row.source || 'unknown');
+      let utm = {};
+      try {
+        utm = JSON.parse(row.utm || '{}') || {};
+      } catch {
+        /* no tags */
+      }
+      count(utmSources, typeof utm.utm_source === 'string' && utm.utm_source ? utm.utm_source : 'direct');
+      const answers = parseStoredAnswers(row.answers);
+      if (holdsAnswers(answers) && answers.v !== PULSE.version) {
+        pulse.older += 1;
+      } else {
+        let answered = false;
+        for (const key of Object.keys(PULSE.questions)) {
+          const value = answers[key];
+          if (typeof value === 'string' && Object.hasOwn(pulse[key], value)) {
+            pulse[key][value] += 1;
+            answered = true;
+          }
+        }
+        const wish = answers[PULSE.freeText.key];
+        if (typeof wish === 'string' && wish) {
+          wishes.push({ at: answers.at || null, text: wish });
           answered = true;
         }
+        if (answered) pulse.answered += 1;
       }
-      const wish = answers[PULSE.freeText.key];
-      if (typeof wish === 'string' && wish) {
-        wishes.push({ at: answers.at || null, text: wish });
-        answered = true;
-      }
-      if (answered) pulse.answered += 1;
-    }
-    const day = String(row.created_at || '').slice(0, 10);
-    if (perDay.has(day)) perDay.set(day, perDay.get(day) + 1);
-  }
-  wishes.sort((a, b) => String(b.at).localeCompare(String(a.at)));
-  return {
-    generatedAt: new Date(now).toISOString(),
-    today,
-    total: rows.length,
-    lists,
-    ratings,
-    sources: Object.fromEntries(sources),
-    utmSources: Object.fromEntries(utmSources),
-    pulse: { ...pulse, wishes: wishes.slice(0, 20) },
-    perDay: [...perDay].map(([day, n]) => ({ day, count: n })),
+      const day = String(row.created_at || '').slice(0, 10);
+      if (perDay.has(day)) perDay.set(day, perDay.get(day) + 1);
+    },
+    result() {
+      wishes.sort((a, b) => String(b.at).localeCompare(String(a.at)));
+      return {
+        generatedAt: new Date(now).toISOString(),
+        today,
+        total,
+        lists,
+        ratings,
+        sources: Object.fromEntries(sources),
+        utmSources: Object.fromEntries(utmSources),
+        pulse: { ...pulse, wishes: wishes.slice(0, 20) },
+        perDay: [...perDay].map(([day, n]) => ({ day, count: n })),
+      };
+    },
   };
 }
 
-/** GET /api/waitlist/stats — the market pulse and list sizes as JSON, Bearer ADMIN_TOKEN required. */
-export async function handleStatsGet(request, env, { now = Date.now() } = {}) {
+/** The numbers behind the waitlist, from the rows given. Shared with the tests. */
+export function summarize(rows, options = {}) {
+  const summary = createSummary(options);
+  for (const row of rows) summary.add(row);
+  return summary.result();
+}
+
+/**
+ * GET /api/waitlist/stats — the market pulse and list sizes as JSON, Bearer
+ * ADMIN_TOKEN required. Reads every row, a page at a time by id, so the
+ * totals are totals; `truncated` turns true only past the absolute cap.
+ */
+export async function handleStatsGet(request, env, { now = Date.now(), pageSize = LIMITS.statsPageSize } = {}) {
   if (!(await isAdmin(request, env))) return unauthorized();
   try {
-    // Newest first, so if the cap is ever hit the last 30 days stay accurate.
-    const { results } = await env.DB.prepare(
-      'SELECT created_at, fields, source, utm, lists, answers, consent_at FROM waitlist ORDER BY id DESC LIMIT ?',
-    )
-      .bind(LIMITS.statsRowCap + 1)
-      .all();
-    const rows = results || [];
-    const truncated = rows.length > LIMITS.statsRowCap;
-    const summary = summarize(truncated ? rows.slice(0, LIMITS.statsRowCap) : rows, { now });
-    return json(200, { ok: true, truncated, ...summary });
+    const summary = createSummary({ now });
+    let after = 0;
+    let seen = 0;
+    let truncated = false;
+    for (;;) {
+      const { results } = await env.DB.prepare(
+        'SELECT id, created_at, fields, source, utm, lists, answers, consent_at FROM waitlist WHERE id > ? ORDER BY id LIMIT ?',
+      )
+        .bind(after, pageSize)
+        .all();
+      const rows = results || [];
+      for (const row of rows) {
+        if (seen >= LIMITS.statsRowCap) {
+          truncated = true;
+          break;
+        }
+        summary.add(row);
+        seen += 1;
+        after = row.id;
+      }
+      if (truncated || rows.length < pageSize) break;
+    }
+    return json(200, { ok: true, truncated, ...summary.result() });
   } catch (error) {
     console.error('waitlist stats failed', error);
     return json(500, { ok: false, error: ERRORS.server });

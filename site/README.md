@@ -150,13 +150,13 @@ printf 'header = "Authorization: Bearer %s"\n' "$ADMIN_TOKEN" \
 unset ADMIN_TOKEN
 ```
 
-Returns JSON: the total, how many are on each list, the rating bands, where people came from (form and `utm_source`), the market pulse as counts per answer plus the twenty latest free-text wishes, and sign-ups per day for the last 30 days. It reads at most 5,000 rows and says so with `"truncated": true` beyond that.
+Returns JSON: the total, how many are on each list, the rating bands, where people came from (form and `utm_source`), the market pulse as counts per answer for the current questionnaire plus the twenty latest free-text wishes and how many people still hold answers to an older questionnaire, and sign-ups per day for the last 30 days. It reads every row, a thousand at a time; only past 200,000 rows does it stop and say `"truncated": true`.
 
 ## 4a. Lists, the manage link, unsubscribing and deleting
 
 Every sign-up is on the **beta** list (that is what the consent box covers) and may opt in to two more: the monthly **letter** and **research** questions. The three are defined once, in `src/lib/config.js`.
 
-Each person has a private manage link, `https://askthemove.online/manage/?t=<32 hex characters>`, created with their row. It is never shown on the site: the sign-up response is identical for a new and an existing address (so the form can't be used to find out who is on the list, nor to fetch someone's link), and the link travels only in the CSV as `manage_url` and in every email you send. What a sign-up does get back is a separate pulse code, good only for the market-pulse post; for an address that already existed the code matches nothing and the answers are accepted and discarded. The manage page lets a person:
+Each person has a private manage link, `https://askthemove.online/manage/?t=<32 hex characters>`, created with their row. It is never shown on the site: the sign-up response is identical for a new and an existing address (so the form can't be used to find out who is on the list, nor to fetch someone's link), and the link travels only in the CSV as `manage_url` and in every email you send. What a sign-up does get back is a separate pulse code, good only for the market-pulse post; for an address that already existed the code matches nothing and the answers are accepted and discarded. The page sends a random per-visit key (`k`) with the sign-up and the code is derived from it, so a retry after a lost answer gets the same code and the answers still count. The manage page lets a person:
 
 - tick or untick each list (`POST /api/waitlist/preferences`),
 - leave every list in one click (`POST /api/waitlist/unsubscribe`),

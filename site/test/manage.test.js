@@ -123,13 +123,17 @@ test('the manage page shows invalid, deleted or later, never a good link as bad'
   assert.equal(deleted.status, 200);
   assert.match(await deleted.text(), /<section class="manage__state" data-state="deleted">/);
 
-  // The salt is missing: a service problem, not a bad link.
+  // The database is down: a service problem, not a bad link.
   const { token } = await signup(env, 'later@gmail.com');
-  const down = await manageGet({ request: request(`/manage/?t=${token}`), env: makeEnv({ IP_HASH_SALT: '', DB: env.DB }) });
-  assert.equal(down.status, 503);
+  env.DB.failNext = true;
+  const down = await manageGet({ request: request(`/manage/?t=${token}`), env });
+  assert.equal(down.status, 500);
   const downHtml = await down.text();
   assert.match(downHtml, /<section class="manage__state" data-state="later">/);
   assert.match(downHtml, /<section class="manage__state" data-state="invalid" hidden>/);
+  // A page view is not counted, so it needs no salt and still renders.
+  const noSalt = await manageGet({ request: request(`/manage/?t=${token}`), env: makeEnv({ IP_HASH_SALT: '', DB: env.DB }) });
+  assert.equal(noSalt.status, 200);
 
   assert.equal((await manageAny({ request: request('/manage/', { method: 'POST', body: {} }), env })).status, 405);
 });
@@ -397,7 +401,7 @@ test('pulse writes merge against the current row, never a snapshot, and a late p
   assert.equal(answers(env, 'race@gmail.com'), null);
 });
 
-test('a write failure by pulse code is answered exactly like a discarded one', async () => {
+test('a write failure by pulse code is a 500 for a stored code and a throwaway one alike, so the page can say so', async () => {
   const env = makeEnv();
   const { pulse } = await signup(env, 'wfail@gmail.com');
   const failWrite = () =>
@@ -406,16 +410,131 @@ test('a write failure by pulse code is answered exactly like a discarded one', a
     });
   failWrite();
   const real = await pulsePost({ request: request('/api/waitlist/pulse', { method: 'POST', body: { p: pulse, review: 'engine' }, json: true }), env });
+  failWrite();
   const none = await pulsePost({ request: request('/api/waitlist/pulse', { method: 'POST', body: { p: 'a'.repeat(32), review: 'engine' }, json: true }), env });
-  assert.equal(real.status, 200);
-  assert.equal(none.status, 200);
+  assert.equal(real.status, 500, 'the visitor is not thanked for answers that were not saved');
+  assert.equal(none.status, 500);
   assert.equal(await real.text(), await none.text());
   assert.equal(answers(env, 'wfail@gmail.com'), null, 'the failed write wrote nothing');
   failWrite();
   const formReal = await pulsePost({ request: request('/api/waitlist/pulse', { method: 'POST', body: { p: pulse, review: 'engine' } }), env });
+  failWrite();
   const formNone = await pulsePost({ request: request('/api/waitlist/pulse', { method: 'POST', body: { p: 'a'.repeat(32), review: 'engine' } }), env });
   assert.equal(formReal.status, formNone.status);
   assert.equal(formReal.headers.get('location'), formNone.headers.get('location'));
+  // Without a failure, both still answer 200 and only the stored code writes.
+  const okNone = await pulsePost({ request: request('/api/waitlist/pulse', { method: 'POST', body: { p: 'a'.repeat(32), review: 'engine' }, json: true }), env });
+  assert.equal(okNone.status, 200);
+  assert.equal(answers(env, 'wfail@gmail.com'), null);
+});
+
+test('a sign-up retried with the same per-visit key gets the same pulse code, and it still works', async () => {
+  const env = makeEnv();
+  const key = 'c'.repeat(32);
+  const first = await signupPost({ request: postJson({ email: 'retry@gmail.com', consent: true, k: key }), env });
+  const again = await signupPost({ request: postJson({ email: 'retry@gmail.com', consent: true, k: key }), env });
+  const a = await first.json();
+  const b = await again.json();
+  assert.equal(a.pulse, b.pulse, 'the retry recovers the same code');
+  assert.equal(rowOf(env, 'retry@gmail.com').pulse_token, a.pulse);
+  const saved = await pulsePost({ request: request('/api/waitlist/pulse', { method: 'POST', body: { p: b.pulse, review: 'coach' }, json: true }), env });
+  assert.equal(saved.status, 200);
+  assert.equal(answers(env, 'retry@gmail.com').review, 'coach', 'answers after the retry still count');
+  // Someone else's key for the same address gets a code that matches nothing.
+  const other = await signupPost({ request: postJson({ email: 'retry@gmail.com', consent: true, k: 'd'.repeat(32) }, { ip: '198.51.100.7' }), env });
+  const c = await other.json();
+  assert.match(c.pulse, TOKEN);
+  assert.notEqual(c.pulse, a.pulse);
+  await pulsePost({ request: request('/api/waitlist/pulse', { method: 'POST', body: { p: c.pulse, review: 'none' }, json: true }), env });
+  assert.equal(answers(env, 'retry@gmail.com').review, 'coach', 'nothing changed');
+  // No key: a random code each time, as before.
+  const r1 = await (await signupPost({ request: postJson({ email: 'nokey@gmail.com', consent: true }, { ip: '198.51.100.8' }), env })).json();
+  const r2 = await (await signupPost({ request: postJson({ email: 'nokey@gmail.com', consent: true }, { ip: '198.51.100.8' }), env })).json();
+  assert.notEqual(r1.pulse, r2.pulse);
+});
+
+test('a stale preferences form cannot undo a one-click unsubscribe that landed in between', async () => {
+  const env = makeEnv();
+  const { token } = await signup(env, 'stale@gmail.com');
+  const { handlePreferencesPost: prefs } = await import('../src/lib/waitlist.js');
+  // Preferences are read at t0; just before their guarded write runs, a one-click unsubscribe lands.
+  const realRun = env.DB.prepare.bind(env.DB);
+  let intercepted = false;
+  env.DB.prepare = (sql) => {
+    const statement = realRun(sql);
+    if (!intercepted && /WHERE id = \? AND COALESCE\(lists_updated_at/.test(sql)) {
+      intercepted = true;
+      const realBind = statement.bind.bind(statement);
+      statement.bind = (...args) => {
+        const bound = realBind(...args);
+        const originalRun = bound.run.bind(bound);
+        bound.run = async () => {
+          await unsubPost({
+            request: request(`/api/waitlist/unsubscribe?t=${token}`, { method: 'POST', body: { 'List-Unsubscribe': 'One-Click' }, origin: null }),
+            env,
+          });
+          return originalRun();
+        };
+        return bound;
+      };
+    }
+    return statement;
+  };
+  const res = await prefs(
+    request('/api/waitlist/preferences', { method: 'POST', body: { t: token, beta: 'on', letter: 'on' }, json: true }),
+    env,
+    { now: Date.UTC(2026, 9, 9, 6, 0, 0) },
+  );
+  env.DB.prepare = realRun;
+  assert.equal(res.status, 409);
+  const body = await res.json();
+  assert.equal(body.ok, false);
+  assert.deepEqual(body.lists, { beta: false, letter: false, research: false }, 'the current state is reported');
+  assert.deepEqual(lists(env, 'stale@gmail.com'), { beta: null, letter: null, research: null }, 'the unsubscribe stood');
+  // The same stale form as a plain post goes back to the page with the "changed" note.
+  env.DB.prepare = (sql) => {
+    const statement = realRun(sql);
+    if (/WHERE id = \? AND COALESCE\(lists_updated_at/.test(sql)) {
+      const originalBind = statement.bind.bind(statement);
+      statement.bind = (...args) => originalBind(...args.slice(0, -1), 'never-this-value');
+    }
+    return statement;
+  };
+  const form = await prefs(request('/api/waitlist/preferences', { method: 'POST', body: { t: token, beta: 'on' } }), env);
+  env.DB.prepare = realRun;
+  assert.equal(form.status, 303);
+  assert.equal(form.headers.get('location'), `/manage/?t=${token}&changed=1#manage`);
+  const page = await manageGet({ request: request(`/manage/?t=${token}&changed=1`), env });
+  assert.match(await page.text(), /<p class="manage__note is-error" data-note="changed" role="status">/);
+});
+
+test('one-click unsubscribe works without the rate-limit salt; counted requests still refuse', async () => {
+  const env = makeEnv();
+  const { token } = await signup(env, 'nosalt@gmail.com');
+  const noSalt = makeEnv({ IP_HASH_SALT: '', DB: env.DB });
+  const oneClick = await unsubPost({
+    request: request(`/api/waitlist/unsubscribe?t=${token}`, { method: 'POST', body: { 'List-Unsubscribe': 'One-Click' }, origin: null }),
+    env: noSalt,
+  });
+  assert.equal(oneClick.status, 200);
+  assert.deepEqual(lists(env, 'nosalt@gmail.com'), { beta: null, letter: null, research: null });
+  const counted = await prefsPost({ request: request('/api/waitlist/preferences', { method: 'POST', body: { t: token, beta: 'on' }, json: true }), env: noSalt });
+  assert.equal(counted.status, 503);
+  const view = await manageGet({ request: request(`/manage/?t=${token}`), env: noSalt });
+  assert.equal(view.status, 200, 'a page view is not counted either');
+});
+
+test('stats read every row a page at a time, and count older answers whatever questions they were to', async () => {
+  const env = makeEnv();
+  for (let i = 0; i < 7; i += 1) await signup(env, `page${i}@gmail.com`, {}, { ip: `203.0.113.${50 + i}` });
+  env.DB.db.prepare("UPDATE waitlist SET answers = ? WHERE email = 'page3@gmail.com'").run(JSON.stringify({ v: 0, retired: 'yes' }));
+  const { handleStatsGet: stats } = await import('../src/lib/waitlist.js');
+  const res = await stats(request('/api/waitlist/stats', { headers: { authorization: 'Bearer test-admin-token' } }), env, { pageSize: 3 });
+  const body = await res.json();
+  assert.equal(body.total, 7, 'every row across three pages');
+  assert.equal(body.lists.beta, 7);
+  assert.equal(body.pulse.older, 1, 'an answer to a question that no longer exists still counts as older');
+  assert.equal(body.truncated, false);
 });
 
 test('a database failure during a one-click unsubscribe is a bare 500, never a redirect', async () => {
