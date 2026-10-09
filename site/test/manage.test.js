@@ -339,6 +339,67 @@ test('pulse by the sign-up code: stores answers and opt-ins for a real code, dis
   assert.equal((await badReal.json()).error, MESSAGES.pulseInvalid);
 });
 
+test('pulse by code: a bad answer gets the same reply whether or not the code matched, as JSON and as a form post', async () => {
+  const env = makeEnv();
+  const { pulse } = await signup(env, 'shape@gmail.com');
+  const fake = 'e'.repeat(32);
+  for (const json of [true, false]) {
+    const real = await pulsePost({ request: request('/api/waitlist/pulse', { method: 'POST', body: { p: pulse, review: 'telepathy' }, json }), env });
+    const none = await pulsePost({ request: request('/api/waitlist/pulse', { method: 'POST', body: { p: fake, review: 'telepathy' }, json }), env });
+    assert.equal(real.status, none.status, `status, json=${json}`);
+    assert.equal(real.headers.get('location'), none.headers.get('location'), `location, json=${json}`);
+    assert.equal(real.headers.get('content-type'), none.headers.get('content-type'), `type, json=${json}`);
+    assert.equal(await real.text(), await none.text(), `body, json=${json}`);
+    const okReal = await pulsePost({ request: request('/api/waitlist/pulse', { method: 'POST', body: { p: pulse, review: 'engine' }, json }), env });
+    const okNone = await pulsePost({ request: request('/api/waitlist/pulse', { method: 'POST', body: { p: fake, review: 'engine' }, json }), env });
+    assert.equal(okReal.status, okNone.status);
+    assert.equal(okReal.headers.get('location'), okNone.headers.get('location'));
+    assert.equal(await okReal.text(), await okNone.text());
+  }
+  assert.equal(answers(env, 'shape@gmail.com').review, 'engine');
+});
+
+test('a database failure during a one-click unsubscribe is a bare 500, never a redirect', async () => {
+  const env = makeEnv();
+  const { token } = await signup(env, 'db@gmail.com');
+  env.DB.failNext = true;
+  const res = await unsubPost({
+    request: request(`/api/waitlist/unsubscribe?t=${token}`, { method: 'POST', body: { 'List-Unsubscribe': 'One-Click' }, origin: null }),
+    env,
+  });
+  assert.equal(res.status, 500);
+  assert.equal(res.headers.get('location'), null);
+  assert.match(res.headers.get('content-type'), /text\/plain/);
+  assert.ok(lists(env, 'db@gmail.com').beta, 'nothing changed');
+  // The same failure on a form post from the page goes back to the page with a note.
+  env.DB.failNext = true;
+  const form = await prefsPost({ request: request('/api/waitlist/preferences', { method: 'POST', body: { t: token, beta: 'on' } }), env });
+  assert.equal(form.status, 303);
+  assert.equal(form.headers.get('location'), `/manage/?t=${token}&error=1#manage`);
+});
+
+test('stats count only answers to the current questionnaire, and visitor labels never become properties', () => {
+  const now = Date.UTC(2026, 9, 9, 12, 0, 0);
+  const s = summarize(
+    [
+      { created_at: '2026-10-09T01:00:00Z', fields: '{}', source: '__proto__', utm: '{"utm_source":"constructor"}', lists: '{}', answers: JSON.stringify({ v: PULSE.version, review: 'lichess', at: '2026-10-09T01:00:00Z' }) },
+      { created_at: '2026-10-09T02:00:00Z', fields: '{}', source: 'hero', utm: '{"utm_source":"__proto__"}', lists: '{}', answers: JSON.stringify({ v: PULSE.version - 1, review: 'lichess', wish: 'old wish' }) },
+      { created_at: '2026-10-09T03:00:00Z', fields: '{}', source: 'hero', utm: '{"utm_source":["x"]}', lists: '{}', answers: null },
+    ],
+    { now },
+  );
+  assert.equal(s.pulse.version, PULSE.version);
+  assert.equal(s.pulse.answered, 1);
+  assert.equal(s.pulse.older, 1);
+  assert.equal(s.pulse.review.lichess, 1, 'the older answer is not mixed in');
+  assert.deepEqual(s.pulse.wishes, [], 'an old-version wish is not listed');
+  // Object.fromEntries makes an own "__proto__" property; an object literal would set the prototype instead.
+  assert.deepEqual(s.sources, Object.fromEntries([['__proto__', 1], ['hero', 2]]));
+  assert.equal(Object.getPrototypeOf(s.sources), Object.prototype, 'still a plain object');
+  assert.ok(JSON.stringify(s.sources).includes('"__proto__":1'), 'the label survives into JSON');
+  assert.deepEqual(s.utmSources, Object.fromEntries([['constructor', 1], ['__proto__', 1], ['direct', 1]]));
+});
+
 test('pulse by the manage code merges answers of the same version, replaces an older version, and never turns a list off', async () => {
   const env = makeEnv();
   const { token } = await signup(env, 'merge@gmail.com');

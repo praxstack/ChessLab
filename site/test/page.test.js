@@ -101,8 +101,11 @@ test('index.html: the market pulse after joining is labelled, carries the token 
   }
   assert.match(body, /<textarea id="pulse-home-wish" name="wish" rows="2" maxlength="200"><\/textarea>/);
   for (const id of ['join-letter', 'join-research']) assert.match(body, new RegExp(`<label for="${id}">`));
-  // The panel is hidden until the server returns a manage link.
+  // The panel is hidden until the server returns a pulse code.
   assert.match(html, /<div class="slip__after" id="join-after" hidden>/);
+  // The page no longer promises "only for beta news" now that there are opt-ins.
+  assert.doesNotMatch(html, /used only (for|to send) beta news/);
+  assert.match(html, /for anything else only if you tick it/);
 });
 
 test('assets/manage.html: every form posts to its endpoint with a blank token to fill, and only the invalid state shows by default', () => {

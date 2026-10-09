@@ -238,19 +238,26 @@ async function tokenRequest(request, env, now, { pulse = false, count = true } =
     console.error('IP_HASH_SALT is not set; refusing manage requests until it is.');
     return stop(503, ERRORS.server, 'server');
   }
-  if (typeof count === 'function' ? count(body) : count) {
-    const ipHash = await hashIp(clientIp(request), env.IP_HASH_SALT, 'manage');
-    const attempts = await countSubmission(env.DB, ipHash, now);
-    if (attempts > LIMITS.manageRateLimitMax) {
-      return stop(429, ERRORS.rateLimited, 'rate-limited', { 'retry-after': String(retryAfterSeconds()) });
+  let row;
+  try {
+    if (typeof count === 'function' ? count(body) : count) {
+      const ipHash = await hashIp(clientIp(request), env.IP_HASH_SALT, 'manage');
+      const attempts = await countSubmission(env.DB, ipHash, now);
+      if (attempts > LIMITS.manageRateLimitMax) {
+        return stop(429, ERRORS.rateLimited, 'rate-limited', { 'retry-after': String(retryAfterSeconds()) });
+      }
     }
+    row = await env.DB.prepare(
+      `SELECT id, email, lists, answers, consent_at FROM waitlist WHERE ${token ? 'manage_token' : 'pulse_token'} = ?`,
+    )
+      .bind(token || pulseToken)
+      .first();
+  } catch (error) {
+    // A database problem is answered in the caller's own shape (JSON, plain
+    // text for a mail provider, or a redirect), never as "link not valid".
+    console.error('manage lookup failed', error);
+    return stop(500, ERRORS.server, 'server');
   }
-
-  const row = await env.DB.prepare(
-    `SELECT id, email, lists, answers, consent_at FROM waitlist WHERE ${token ? 'manage_token' : 'pulse_token'} = ?`,
-  )
-    .bind(token || pulseToken)
-    .first();
   if (!row) {
     if (pulseToken) return { discard: true, asJson, body };
     return stop(404, ERRORS.link, 'link');
@@ -299,10 +306,15 @@ export async function handlePreferencesPost(request, env, { now = Date.now() } =
     const stamp = new Date(now).toISOString();
     const lists = emptyLists();
     for (const key of LIST_KEYS) lists[key] = wanted[key] ? ctx.lists[key] || stamp : null;
-    await saveLists(env, ctx.row.id, lists, stamp);
+    try {
+      await saveLists(env, ctx.row.id, lists, stamp);
+    } catch (error) {
+      console.error('preferences update failed', error);
+      return ctx.fail(500, ERRORS.server, 'server');
+    }
     return ctx.asJson ? json(200, { ok: true, lists: listsOn(lists) }) : redirect(REDIRECTS.manage(ctx.token, 'saved'));
   } catch (error) {
-    console.error('preferences update failed', error);
+    console.error('preferences request failed', error);
     return wantsJson(request) ? json(500, { ok: false, error: ERRORS.server }) : redirect(REDIRECTS.manageInvalid);
   }
 }
@@ -320,12 +332,18 @@ export async function handleUnsubscribePost(request, env, { now = Date.now() } =
     const ctx = await tokenRequest(request, env, now, { count: (body) => !isOneClick(body) });
     if (ctx.response) return ctx.response;
     const stamp = new Date(now).toISOString();
-    await saveLists(env, ctx.row.id, emptyLists(), stamp);
+    try {
+      await saveLists(env, ctx.row.id, emptyLists(), stamp);
+    } catch (error) {
+      // A mail provider must see a bare 5xx here so it can retry, never a redirect.
+      console.error('unsubscribe failed', error);
+      return ctx.fail(500, ERRORS.server, 'server');
+    }
     if (ctx.asJson) return json(200, { ok: true, lists: listsOn(emptyLists()) });
     if (ctx.oneClick) return text(200, 'Unsubscribed.\n', { 'content-type': 'text/plain; charset=utf-8' });
     return redirect(REDIRECTS.manage(ctx.token, 'left'));
   } catch (error) {
-    console.error('unsubscribe failed', error);
+    console.error('unsubscribe request failed', error);
     if (wantsJson(request)) return json(500, { ok: false, error: ERRORS.server });
     return redirect(REDIRECTS.manageInvalid);
   }
@@ -336,10 +354,15 @@ export async function handleDeletePost(request, env, { now = Date.now() } = {}) 
   try {
     const ctx = await tokenRequest(request, env, now);
     if (ctx.response) return ctx.response;
-    await env.DB.prepare('DELETE FROM waitlist WHERE id = ?').bind(ctx.row.id).run();
+    try {
+      await env.DB.prepare('DELETE FROM waitlist WHERE id = ?').bind(ctx.row.id).run();
+    } catch (error) {
+      console.error('delete failed', error);
+      return ctx.fail(500, ERRORS.server, 'server');
+    }
     return ctx.asJson ? json(200, { ok: true }) : redirect(REDIRECTS.deleted);
   } catch (error) {
-    console.error('delete failed', error);
+    console.error('delete request failed', error);
     return wantsJson(request) ? json(500, { ok: false, error: ERRORS.server }) : redirect(REDIRECTS.manageInvalid);
   }
 }
@@ -360,10 +383,13 @@ export async function handlePulsePost(request, env, { now = Date.now() } = {}) {
     const ctx = await tokenRequest(request, env, now, { pulse: true });
     if (ctx.response) return ctx.response;
     const parsed = parsePulse(ctx.body);
-    if (ctx.discard) {
-      if (!parsed.ok) return json(400, { ok: false, error: parsed.error });
-      return ctx.asJson ? json(200, { ok: true }) : redirect(REDIRECTS.joined);
+    // By pulse code, the reply depends only on the input, never on whether the
+    // code matched a row, so a bad answer gets the same status either way.
+    const byCode = ctx.discard || ctx.byPulse;
+    if (byCode && !parsed.ok) {
+      return ctx.asJson ? json(400, { ok: false, error: parsed.error }) : redirect(REDIRECTS.error('pulse'));
     }
+    if (ctx.discard) return ctx.asJson ? json(200, { ok: true }) : redirect(REDIRECTS.joined);
     if (!parsed.ok) return ctx.fail(400, parsed.error, 'pulse');
     const stamp = new Date(now).toISOString();
     const previous = ctx.answers.v === PULSE.version ? ctx.answers : {};
@@ -387,12 +413,18 @@ export async function handlePulsePost(request, env, { now = Date.now() } = {}) {
           .bind(JSON.stringify(lists), stamp, ctx.row.id),
       );
     }
-    await env.DB.batch(statements);
+    try {
+      await env.DB.batch(statements);
+    } catch (error) {
+      console.error('pulse save failed', error);
+      if (byCode) return ctx.asJson ? json(500, { ok: false, error: ERRORS.server }) : redirect(REDIRECTS.error('server'));
+      return ctx.fail(500, ERRORS.server, 'server');
+    }
     if (ctx.byPulse) return ctx.asJson ? json(200, { ok: true }) : redirect(REDIRECTS.joined);
     const answered = Object.values(parsed.answers).filter((value) => value !== null).length;
     return ctx.asJson ? json(200, { ok: true, lists: listsOn(lists), answered }) : redirect(REDIRECTS.manage(ctx.token, 'saved'));
   } catch (error) {
-    console.error('pulse save failed', error);
+    console.error('pulse request failed', error);
     return wantsJson(request) ? json(500, { ok: false, error: ERRORS.server }) : redirect(REDIRECTS.manageInvalid);
   }
 }
@@ -539,20 +571,25 @@ export async function handleExportGet(request, env, { now = Date.now() } = {}) {
   }
 }
 
-const count = (map, key) => {
-  map[key] = (map[key] || 0) + 1;
-};
+// Labels like the form name and utm_source come from visitors, so they are
+// tallied in Maps: a key such as "__proto__" or "constructor" stays a label.
+const count = (map, key) => map.set(key, (map.get(key) || 0) + 1);
 
-/** The numbers behind the waitlist, from the rows given. Shared with the tests. */
+/**
+ * The numbers behind the waitlist, from the rows given. Shared with the tests.
+ * Pulse answers are counted only when they were given to the current version
+ * of the questionnaire; `pulse.older` says how many people still have answers
+ * to an earlier one.
+ */
 export function summarize(rows, { now = Date.now(), days = 30 } = {}) {
   const lists = {};
   for (const key of LIST_KEYS) lists[key] = 0;
   const ratings = {};
   for (const key of Object.keys(RATING_BANDS)) ratings[key] = 0;
   ratings.unanswered = 0;
-  const sources = {};
-  const utmSources = {};
-  const pulse = { answered: 0 };
+  const sources = new Map();
+  const utmSources = new Map();
+  const pulse = { version: PULSE.version, answered: 0, older: 0 };
   for (const key of Object.keys(PULSE.questions)) {
     pulse[key] = {};
     for (const option of Object.keys(PULSE.questions[key].options)) pulse[key][option] = 0;
@@ -581,22 +618,27 @@ export function summarize(rows, { now = Date.now(), days = 30 } = {}) {
     } catch {
       /* no tags */
     }
-    count(utmSources, utm.utm_source || 'direct');
+    count(utmSources, typeof utm.utm_source === 'string' && utm.utm_source ? utm.utm_source : 'direct');
     const answers = parseStoredAnswers(row.answers);
-    let answered = false;
-    for (const key of Object.keys(PULSE.questions)) {
-      const value = answers[key];
-      if (value && Object.hasOwn(pulse[key], value)) {
-        pulse[key][value] += 1;
+    const hasAnswers = Object.keys(PULSE.questions).some((key) => answers[key]) || Boolean(answers[PULSE.freeText.key]);
+    if (hasAnswers && answers.v !== PULSE.version) {
+      pulse.older += 1;
+    } else {
+      let answered = false;
+      for (const key of Object.keys(PULSE.questions)) {
+        const value = answers[key];
+        if (typeof value === 'string' && Object.hasOwn(pulse[key], value)) {
+          pulse[key][value] += 1;
+          answered = true;
+        }
+      }
+      const wish = answers[PULSE.freeText.key];
+      if (typeof wish === 'string' && wish) {
+        wishes.push({ at: answers.at || null, text: wish });
         answered = true;
       }
+      if (answered) pulse.answered += 1;
     }
-    const wish = answers[PULSE.freeText.key];
-    if (typeof wish === 'string' && wish) {
-      wishes.push({ at: answers.at || null, text: wish });
-      answered = true;
-    }
-    if (answered) pulse.answered += 1;
     const day = String(row.created_at || '').slice(0, 10);
     if (perDay.has(day)) perDay.set(day, perDay.get(day) + 1);
   }
@@ -607,8 +649,8 @@ export function summarize(rows, { now = Date.now(), days = 30 } = {}) {
     total: rows.length,
     lists,
     ratings,
-    sources,
-    utmSources,
+    sources: Object.fromEntries(sources),
+    utmSources: Object.fromEntries(utmSources),
     pulse: { ...pulse, wishes: wishes.slice(0, 20) },
     perDay: [...perDay].map(([day, n]) => ({ day, count: n })),
   };
