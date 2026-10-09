@@ -1,4 +1,4 @@
--- Subscriptions, the private manage link, and the market-pulse answers.
+-- Subscriptions, the private manage link, the pulse code, and the market-pulse answers.
 -- Apply locally:   npm run db:migrate:local
 -- Apply remotely:  npm run db:migrate:remote
 
@@ -7,13 +7,19 @@
 ALTER TABLE waitlist ADD COLUMN lists TEXT;
 ALTER TABLE waitlist ADD COLUMN lists_updated_at TEXT;
 
--- The private code in a person's manage link. 128 random bits, hex.
+-- The private code in a person's manage link. 128 random bits, hex. It only
+-- ever travels in email and in the admin export, never in a page response.
 ALTER TABLE waitlist ADD COLUMN manage_token TEXT;
+
+-- The code a sign-up returns to the page so it can submit the market pulse.
+-- It can do nothing else, and it is cleared when a person leaves every list.
+ALTER TABLE waitlist ADD COLUMN pulse_token TEXT;
 
 -- Optional market-pulse answers, as JSON: {"v": 1, "review": "...", "hardest": "...", "pay": "...", "wish": "...", "at": "..."}.
 ALTER TABLE waitlist ADD COLUMN answers TEXT;
 
 CREATE UNIQUE INDEX IF NOT EXISTS waitlist_manage_token ON waitlist (manage_token);
+CREATE UNIQUE INDEX IF NOT EXISTS waitlist_pulse_token ON waitlist (pulse_token);
 
 -- Everyone already on the list consented to beta email, so they start on that
 -- list, and each gets a manage link code so the first email can carry it.

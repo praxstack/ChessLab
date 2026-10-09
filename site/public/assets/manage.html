@@ -70,10 +70,18 @@
       </div>
     </section>
 
+    <section class="manage__state" data-state="later" hidden>
+      <p class="doc__meta">Not right now.</p>
+      <div class="prose doc__body">
+        <p>We can’t open your link at the moment. Your link is fine; please try it again in a few minutes. If it keeps failing, write to <a href="mailto:hello@askthemove.online">hello@askthemove.online</a>.</p>
+        <p><a class="btn btn--plain" href="/">Back to AskTheMove</a></p>
+      </div>
+    </section>
+
     <section class="manage__state" data-state="form" hidden>
       <p class="doc__meta">For <span data-email></span></p>
       <p class="manage__note" data-note="saved" role="status" hidden>Saved.</p>
-      <p class="manage__note" data-note="left" role="status" hidden>You’ve left every list, so we won’t email you. Your address stays on file only so it isn’t added again by mistake. Delete it below if you’d rather it went too.</p>
+      <p class="manage__note" data-note="left" role="status" hidden>You’ve left every list, so we won’t email you. Your rating, your answers and how you found us have been cleared. What stays is your address, this choice and this link, so you can come back or delete the rest below.</p>
       <p class="manage__note is-error" data-note="error" role="status" hidden>That didn’t save. Please try again in a few minutes.</p>
 
       <form class="manage__form" id="lists-form" action="/api/waitlist/preferences" method="post">

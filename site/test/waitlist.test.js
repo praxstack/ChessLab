@@ -17,7 +17,8 @@ test('valid signup returns ok and stores one normalised row', async () => {
   assert.match(res.headers.get('content-type'), /application\/json/);
   const body = await res.json();
   assert.equal(body.ok, true);
-  assert.match(body.manage, /^\/manage\/\?t=[0-9a-f]{32}$/, 'a new sign-up gets its private manage link');
+  assert.match(body.pulse, /^[0-9a-f]{32}$/, 'a sign-up gets a pulse code for the market pulse');
+  assert.ok(!('manage' in body), 'the private manage link is never returned to the page');
   const rows = env.DB.rows('waitlist');
   assert.equal(rows.length, 1);
   const [row] = rows;
@@ -27,7 +28,9 @@ test('valid signup returns ok and stores one normalised row', async () => {
   assert.equal(row.source, 'hero');
   assert.deepEqual(JSON.parse(row.utm), { utm_source: 'reddit', referrer: 'https://news.ycombinator.com/' });
   assert.ok(row.consent_at && row.created_at);
-  assert.equal(row.manage_token, body.manage.slice('/manage/?t='.length));
+  assert.equal(row.pulse_token, body.pulse);
+  assert.match(row.manage_token, /^[0-9a-f]{32}$/);
+  assert.notEqual(row.manage_token, row.pulse_token);
   assert.deepEqual(JSON.parse(row.lists), { beta: row.consent_at, letter: null, research: null });
   assert.equal(row.lists_updated_at, row.consent_at);
   assert.equal(row.answers, null);
@@ -37,16 +40,24 @@ test('valid signup returns ok and stores one normalised row', async () => {
   assert.match(counter.ip_hash, /^[0-9a-f]{64}$/);
 });
 
-test('duplicate email gets ok but never the existing manage link, and adds no row', async () => {
+test('duplicate email gets an answer of the same shape as a new one, and nothing is stored or changed', async () => {
   const env = makeEnv();
   const first = await call(postJson(good), env);
-  const res = await call(postJson({ ...good, email: '  LEARNER@gmail.com ' }), env);
+  const before = env.DB.rows('waitlist')[0];
+  const res = await call(postJson({ ...good, email: '  LEARNER@gmail.com ', rating: '1600-plus' }), env);
   assert.equal(res.status, first.status);
   assert.equal(res.status, 200);
-  assert.ok((await first.json()).manage);
-  // Typing someone's address into the form must not hand out their link.
-  assert.deepEqual(await res.json(), { ok: true });
-  assert.equal(env.DB.rows('waitlist').length, 1);
+  const a = await first.json();
+  const b = await res.json();
+  assert.deepEqual(Object.keys(a), ['ok', 'pulse']);
+  assert.deepEqual(Object.keys(b), ['ok', 'pulse']);
+  assert.match(b.pulse, /^[0-9a-f]{32}$/);
+  assert.notEqual(a.pulse, b.pulse);
+  // Nothing about the second answer says the address was already there.
+  const rows = env.DB.rows('waitlist');
+  assert.equal(rows.length, 1);
+  assert.deepEqual(rows[0], before, 'an existing row is never touched by the public form');
+  assert.notEqual(rows[0].pulse_token, b.pulse, 'the throwaway pulse code matches nothing');
 });
 
 test('without IP_HASH_SALT sign-ups are refused and nothing is stored', async () => {
@@ -80,11 +91,13 @@ test('multipart posts keep their case-sensitive boundary', async () => {
   assert.equal(broken.status, 400);
 });
 
-test('honeypot returns 200 and stores nothing at all', async () => {
+test('honeypot returns 200, shaped like a real sign-up, and stores nothing at all', async () => {
   const env = makeEnv();
   const res = await call(postJson({ ...good, website: 'http://spam.example' }), env);
   assert.equal(res.status, 200);
-  assert.deepEqual(await res.json(), { ok: true });
+  const body = await res.json();
+  assert.deepEqual(Object.keys(body), ['ok', 'pulse']);
+  assert.match(body.pulse, /^[0-9a-f]{32}$/);
   assert.equal(env.DB.rows('waitlist').length, 0);
   assert.equal(env.DB.rows('rate_limits').length, 0);
 });

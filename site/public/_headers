@@ -13,6 +13,6 @@
 /assets/pieces/*
   Cache-Control: public, max-age=604800
 
-/assets/manage.html
+/assets/manage
   X-Robots-Tag: noindex
   Cache-Control: no-store

@@ -351,20 +351,15 @@ function initWaitlist() {
     if (tick && moving()) new Timeline().draw(tick);
   };
 
-  // After a new sign-up the server returns the person's private manage link.
-  // Show it, and offer the market pulse with that link's code filled in.
+  // Every sign-up answer carries a pulse code, so the market pulse can be
+  // offered right away. The private manage link only ever arrives by email.
   const after = document.getElementById('join-after');
   const pulse = document.getElementById('pulse-form');
   const pulseStatus = document.getElementById('pulse-status');
   const thanks = document.getElementById('pulse-thanks');
-  const showAfter = (manage) => {
-    if (!after || !pulse || typeof manage !== 'string' || !manage.startsWith('/manage/?t=')) return;
-    const token = new URLSearchParams(manage.slice(manage.indexOf('?'))).get('t') || '';
-    if (!/^[0-9a-f]{32}$/.test(token)) return;
-    pulse.elements.namedItem('t').value = token;
-    const link = document.getElementById('join-manage-link');
-    link.href = manage;
-    link.textContent = `${window.location.host}${manage}`;
+  const showAfter = (code) => {
+    if (!after || !pulse || typeof code !== 'string' || !/^[0-9a-f]{32}$/.test(code)) return;
+    pulse.elements.namedItem('p').value = code;
     after.hidden = false;
   };
   if (pulse) {
@@ -373,6 +368,8 @@ function initWaitlist() {
     const pulseLabel = pulseButton.querySelector('.btn__label');
     document.getElementById('pulse-skip').addEventListener('click', () => {
       pulse.hidden = true;
+      // The button that had focus is gone with the form; land somewhere sensible.
+      doneTitle.focus();
     });
     pulse.addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -398,7 +395,7 @@ function initWaitlist() {
         if (res.ok && body.ok) {
           pulse.hidden = true;
           thanks.hidden = false;
-          thanks.focus?.();
+          thanks.focus();
           return;
         }
         pulseStatus.textContent = body.error || ERROR_MESSAGES.server;
@@ -468,7 +465,7 @@ function initWaitlist() {
       }
       if (res.ok && body.ok) {
         showDone(value.toLowerCase());
-        showAfter(body.manage);
+        showAfter(body.pulse);
         return;
       }
       const message = body.error || ERROR_MESSAGES.server;

@@ -20,8 +20,8 @@
         <li><strong>Your email address</strong>, which you type into the waitlist form.</li>
         <li><strong>Your optional answer</strong> to “Roughly what’s your rating?”, if you choose one.</li>
         <li><strong>Which emails you have chosen</strong>: beta invites and news (the box on the form), and, only if you tick them, the monthly AskTheMove letter and occasional questions about how you study. We record when you turned each one on.</li>
-        <li><strong>Your optional answers</strong> to the four short questions we ask after you join, about how you review games, what is hardest about improving, what you would pay, and what you wish a coach would explain.</li>
-        <li><strong>A private code</strong> that makes your personal manage link work. It is shown once after you join and included in every email we send you.</li>
+        <li><strong>Your optional answers</strong> to the four short questions we ask after you join, about how you review games, what is hardest about improving, what you would pay, and what you wish a coach would explain. They are stored with your sign-up.</li>
+        <li><strong>Two private codes</strong>: one that makes your personal manage link work, sent only inside the emails we send you, and one the page uses to save your answers right after you join.</li>
         <li><strong>How you found us</strong>: the form you used, campaign tags in the link you followed (utm_source, utm_medium, utm_campaign) and the page that referred you, if your browser shares it.</li>
         <li><strong>When you joined and when you gave consent.</strong></li>
         <li><strong>A one-way hash of your IP address</strong>, made with a secret salt, used only to limit repeated sign-ups and abuse. It is kept in short-lived counters, never with your email address, and we never store your IP address itself.</li>
@@ -29,17 +29,17 @@
       <p>This site sets no cookies and uses no advertising or tracking scripts.</p>
 
       <h2>Why we collect it</h2>
-      <p>To email you about the AskTheMove beta, including your invite. We process your address because you consent by ticking the box on the form. The letter and the research questions are separate choices: we send them only if you turn them on, and you can turn either off at any time. We read the answers to the four questions only as totals, to understand what players need and what the product should cost. We never make a decision about you personally from them.</p>
+      <p>To email you about the AskTheMove beta, including your invite. We process your address because you consent by ticking the box on the form. The letter and the research questions are separate choices: we send them only if you turn them on, and you can turn either off at any time. The four questions help us understand what players need and what the product should cost. We look at the multiple-choice answers as totals. The free-text answer is read as you wrote it, by the person who runs AskTheMove, and both are kept next to your address so you can change them. We never make a decision about you personally from them.</p>
 
       <h2>Where it is stored</h2>
       <p>In a Cloudflare D1 database that belongs to AskTheMove. Cloudflare hosts this website and the database and may process data outside India. When we send email, we will use an email provider to deliver it.</p>
 
       <h2>How long we keep it</h2>
-      <p>Your sign-up is kept until the beta ends, or sooner if you delete it. If you unsubscribe from everything, we keep only your address and that choice, so that you are not added again by mistake; use the delete button on your manage page if you would rather we kept nothing. The rate-limit counters that hold hashed IPs are deleted by the first request that arrives after they are a day old.</p>
+      <p>Your sign-up is kept until the beta ends, or sooner if you delete it. If you unsubscribe from everything, your rating answer, your four answers, how you found us and the dates are cleared at that moment. We keep only your address, that choice and your manage code, so that you are not added again by mistake and your link still works if you come back; use the delete button on your manage page if you would rather we kept nothing. Signing up again from the form does not change an address that is already on the list; coming back is done from your link. The rate-limit counters that hold hashed IPs are deleted by the first request that arrives after they are a day old.</p>
 
       <h2>Your choices</h2>
       <ul>
-        <li><strong>Change which emails you get, or unsubscribe from everything in one click</strong>, on your manage page. The link to it is shown after you join and is in every email we send.</li>
+        <li><strong>Change which emails you get, or unsubscribe from everything in one click</strong>, on your manage page. The link to it is in every email we send.</li>
         <li><strong>Delete your sign-up yourself</strong>, instantly, on the same page. That removes your address, your choices and your answers.</li>
         <li><strong>See, correct or delete your data</strong> by emailing <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a> from the address you signed up with, if you no longer have your link. We will act on the request within 30 days.</li>
         <li><strong>Withdraw consent</strong> at any time in the same ways. Withdrawing it does not affect anything done before.</li>

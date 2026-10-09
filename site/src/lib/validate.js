@@ -30,8 +30,9 @@ export function parseLists(body) {
 
 /**
  * The market-pulse answers from a body. Multiple-choice answers must be one
- * of the configured option keys; blanks are skipped. Returns
- * { ok: true, answers } or { ok: false, error }.
+ * of the configured option keys; blanks are skipped. The free-text wish is
+ * `null` when the field was sent empty, which means "clear what I wrote".
+ * Returns { ok: true, answers } or { ok: false, error }.
  */
 export function parsePulse(body) {
   const answers = {};
@@ -41,8 +42,11 @@ export function parsePulse(body) {
     if (!Object.hasOwn(question.options, value)) return { ok: false, error: MESSAGES.pulseInvalid };
     answers[key] = value;
   }
-  const wish = cleanOptional(body ? body[PULSE.freeText.key] : undefined, PULSE.freeText.max);
-  if (wish) answers[PULSE.freeText.key] = wish;
+  const { key, max } = PULSE.freeText;
+  if (body && Object.hasOwn(body, key)) {
+    const wish = cleanOptional(body[key], max);
+    answers[key] = wish || null;
+  }
   return { ok: true, answers };
 }
 

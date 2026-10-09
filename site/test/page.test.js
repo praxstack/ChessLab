@@ -90,7 +90,8 @@ test('index.html: the market pulse after joining is labelled, carries the token 
   assert.ok(form, 'pulse form missing');
   assert.equal(attr(form[0], 'action'), '/api/waitlist/pulse');
   const body = html.slice(form.index, html.indexOf('</form>', form.index));
-  assert.match(body, /<input type="hidden" name="t" value="">/);
+  assert.match(body, /<input type="hidden" name="p" value="">/, 'the pulse code, never the manage code');
+  assert.doesNotMatch(html, /join-manage-link/, 'the manage link is not shown on the page');
   for (const [key, question] of Object.entries(PULSE.questions)) {
     assert.match(body, new RegExp(`<legend>${question.label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</legend>`), `question ${key}`);
     for (const value of Object.keys(question.options)) {
@@ -114,6 +115,7 @@ test('assets/manage.html: every form posts to its endpoint with a blank token to
   assert.equal((html.match(/<input type="hidden" name="t" value="">/g) || []).length, 4);
   assert.match(html, /<section class="manage__state" data-state="invalid">/);
   assert.match(html, /<section class="manage__state" data-state="deleted" hidden>/);
+  assert.match(html, /<section class="manage__state" data-state="later" hidden>/);
   assert.match(html, /<section class="manage__state" data-state="form" hidden>/);
   for (const key of ['beta', 'letter', 'research']) {
     assert.match(html, new RegExp(`<input id="list-${key}" name="${key}" type="checkbox">`));
@@ -121,8 +123,9 @@ test('assets/manage.html: every form posts to its endpoint with a blank token to
   }
   assert.match(html, /<input id="delete-confirm" name="confirm" type="checkbox" required>/);
   assert.match(html, /<meta name="robots" content="noindex">/);
-  assert.match(read('_headers'), /\/assets\/manage\.html\n  X-Robots-Tag: noindex\n  Cache-Control: no-store/);
+  assert.match(read('_headers'), /\/assets\/manage\n  X-Robots-Tag: noindex\n  Cache-Control: no-store/);
   assert.doesNotMatch(read('sitemap.xml'), /manage/);
+  assert.match(html, /id="pulse-thanks"|data-state="later"/);
 });
 
 test('index.html: a plain form post lands on a result the page shows without JavaScript', async () => {
@@ -143,6 +146,15 @@ test('index.html: the walkthrough is pre-rendered with a board, a note and the s
   assert.equal((html.match(/class="note__page[ "]/g) || []).length, 6);
   assert.match(html, /<table class="ss" aria-label="Score sheet/);
   assert.equal((html.match(/class="ss__mv ss__btn"/g) || []).length, 5);
+});
+
+test('_headers and the manage page share one set of security headers', async () => {
+  const { pageHeaders } = await import('../src/lib/security-headers.js');
+  const headers = read('_headers');
+  for (const [name, value] of Object.entries(pageHeaders())) {
+    const line = new RegExp(`^  ${name.replace(/(^|-)([a-z])/g, (m) => m.toUpperCase()).replace(/-/g, '-')}: ${value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'mi');
+    assert.match(headers, line, `${name} missing from _headers`);
+  }
 });
 
 test('styles: every font and image the stylesheet uses exists, and the fonts are credited', () => {

@@ -76,19 +76,27 @@ export class FakeD1 {
 
 const ORIGIN = 'https://askthemove.pages.dev';
 
-// Stands in for the Pages static-asset binding: serves files from public/.
+// Stands in for the Pages static-asset binding: serves files from public/ at
+// their pretty paths, the way Pages does (`/assets/manage` is manage.html, and
+// asking for `/assets/manage.html` itself gets the redirect Pages sends).
 const PUBLIC_DIR = new URL('../../public/', import.meta.url);
 export const fakeAssets = {
   async fetch(input) {
     const url = new URL(typeof input === 'string' ? input : input.url);
     const rel = url.pathname.replace(/^\/+/, '');
-    try {
-      return new Response(readFileSync(new URL(rel, PUBLIC_DIR), 'utf8'), {
-        headers: { 'content-type': 'text/html; charset=utf-8' },
-      });
-    } catch {
-      return new Response('not found', { status: 404 });
+    if (rel.endsWith('.html')) {
+      return new Response(null, { status: 308, headers: { location: `/${rel.slice(0, -'.html'.length)}` } });
     }
+    for (const candidate of [rel, `${rel}.html`, `${rel}/index.html`]) {
+      try {
+        return new Response(readFileSync(new URL(candidate, PUBLIC_DIR), 'utf8'), {
+          headers: { 'content-type': 'text/html; charset=utf-8' },
+        });
+      } catch {
+        /* try the next spelling */
+      }
+    }
+    return new Response('not found', { status: 404 });
   },
 };
 
@@ -105,7 +113,7 @@ export function makeEnv(overrides = {}) {
 /** A request to any site path, for the manage page and the token endpoints. */
 export function request(path, { method = 'GET', body, json = false, ip = '203.0.113.7', origin = ORIGIN, headers = {} } = {}) {
   const init = { method, headers: { 'cf-connecting-ip': ip, ...headers } };
-  if (method !== 'GET') {
+  if (method !== 'GET' && method !== 'HEAD') {
     if (origin) init.headers.origin = origin;
     if (json) {
       init.headers['content-type'] = 'application/json';

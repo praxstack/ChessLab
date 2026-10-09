@@ -66,6 +66,12 @@ This gives you a working site and waitlist at `https://askthemove.pages.dev`. It
    npm run db:migrate:remote
    ```
 
+   A sign-up that arrives in the seconds between a migration and the deploy that follows it is written by the old code. The code treats a row with no `lists` as "beta, since consent", so nobody is lost, but such a row has no manage link until you give it one. After deploying, run this once to fill any gaps:
+
+   ```sh
+   npx wrangler d1 execute askthemove-waitlist --remote --command "UPDATE waitlist SET lists = json_object('beta', consent_at, 'letter', NULL, 'research', NULL), lists_updated_at = consent_at WHERE lists IS NULL; UPDATE waitlist SET manage_token = lower(hex(randomblob(16))) WHERE manage_token IS NULL;"
+   ```
+
 5. Create the Pages project:
 
    ```sh
@@ -150,31 +156,31 @@ Returns JSON: the total, how many are on each list, the rating bands, where peop
 
 Every sign-up is on the **beta** list (that is what the consent box covers) and may opt in to two more: the monthly **letter** and **research** questions. The three are defined once, in `src/lib/config.js`.
 
-Each person has a private manage link, `https://askthemove.online/manage/?t=<32 hex characters>`, created with their row. It is returned to the page after a new sign-up (never for an address that already exists, so the form can't be used to fetch someone else's link), it is in the CSV as `manage_url`, and it must go into every email you send. The page it opens lets them:
+Each person has a private manage link, `https://askthemove.online/manage/?t=<32 hex characters>`, created with their row. It is never shown on the site: the sign-up response is identical for a new and an existing address (so the form can't be used to find out who is on the list, nor to fetch someone's link), and the link travels only in the CSV as `manage_url` and in every email you send. What a sign-up does get back is a separate pulse code, good only for the market-pulse post; for an address that already existed the code matches nothing and the answers are accepted and discarded. The manage page lets a person:
 
 - tick or untick each list (`POST /api/waitlist/preferences`),
 - leave every list in one click (`POST /api/waitlist/unsubscribe`),
 - answer or change the market pulse (`POST /api/waitlist/pulse`),
 - delete the sign-up outright (`POST /api/waitlist/delete`). This removes the row; there is no undo.
 
-Someone who leaves every list keeps a row with all lists off, so an import or a repeat sign-up can't quietly re-add them; signing up again from the form does turn beta back on, because that is a fresh consent. The manage endpoints share a separate rate limit of 30 requests per IP per ten minutes. A link that doesn't match any row gets the "link isn't valid" page, with no hint about why.
+Someone who leaves every list keeps a row with all lists off and everything else cleared (rating, answers, source and campaign tags, dates, the pulse code), so an import or a repeat sign-up can't quietly re-add them. A repeat sign-up from the public form never changes an existing row, because a ticked box doesn't prove the submitter owns the address; coming back is done from the person's own link. The manage form posts share a separate rate limit of 30 per IP per ten minutes; viewing the page is not counted. A link that doesn't match any row gets the "link isn't valid" page with no hint about why; a rate limit or a server problem gets a "try again in a few minutes" page instead, so nobody is told a good link is bad. The page is served with `Referrer-Policy: no-referrer` so the code never leaks into another site's logs.
 
 If someone writes in instead of using their link, `npm run delete-signup` still removes them by address.
 
 ## 4b. The market pulse
 
-After joining (with JavaScript) and on the manage page, people are offered four optional questions: how they review games now, what is hardest about improving, what they would pay a month, and one free-text wish. The questions and answer keys live in `PULSE` in `src/lib/config.js`; the build renders them from there and the API validates against the same list, so the two can't drift. Change a question's meaning and bump `PULSE.version`, so old answers can be told apart in `answers.v`. Read the totals with the stats endpoint above.
+After joining (with JavaScript) and on the manage page, people are offered four optional questions: how they review games now, what is hardest about improving, what they would pay a month, and one free-text wish. The questions and answer keys live in `PULSE` in `src/lib/config.js`; the build renders them from there and the API validates against the same list, so the two can't drift. Change a question's meaning and bump `PULSE.version`: answers saved under an older version are replaced, not merged, the next time that person answers, so totals never mix questionnaires. Read the totals with the stats endpoint above. The free-text wishes appear there as written, which the privacy notice says.
 
 ## 4c. Sending email (not set up yet)
 
 Nothing sends email yet. When you start, every message must carry the person's manage link and these headers, which let mail apps show an unsubscribe button and let Gmail and Yahoo unsubscribe people with one click (RFC 8058):
 
 ```
-List-Unsubscribe: <https://askthemove.online/manage/?t=TOKEN>, <mailto:hello@askthemove.online?subject=unsubscribe>
+List-Unsubscribe: <https://askthemove.online/api/waitlist/unsubscribe?t=TOKEN>, <mailto:hello@askthemove.online?subject=unsubscribe>
 List-Unsubscribe-Post: List-Unsubscribe=One-Click
 ```
 
-The one-click target is `POST https://askthemove.online/api/waitlist/unsubscribe?t=TOKEN`; it answers `200 Unsubscribed.` Send only to people whose `lists` JSON has the relevant list set. Three realistic ways to send, from least to most work: a newsletter tool that takes a CSV import with a merge field for the link (Buttondown, Kit), a transactional API called from a small script over the export (Resend, Postmark, or Cloudflare's Email Service from a Worker), or Zoho Campaigns since mail already lives at Zoho. Whichever you pick, the DMARC record is `p=none` today; tighten it only after the sender's SPF and DKIM are in place.
+Mail providers POST to the HTTPS address in `List-Unsubscribe`, so it must be the API endpoint, not the manage page. That endpoint answers `200 Unsubscribed.` to a one-click post. The body of the email still links to the manage page, `https://askthemove.online/manage/?t=TOKEN`, for people who want to change lists rather than leave. Send only to people whose `lists` JSON has the relevant list set. Three realistic ways to send, from least to most work: a newsletter tool that takes a CSV import with a merge field for the link (Buttondown, Kit), a transactional API called from a small script over the export (Resend, Postmark, or Cloudflare's Email Service from a Worker), or Zoho Campaigns since mail already lives at Zoho. Whichever you pick, the DMARC record is `p=none` today; tighten it only after the sender's SPF and DKIM are in place.
 
 To delete someone who asks:
 
