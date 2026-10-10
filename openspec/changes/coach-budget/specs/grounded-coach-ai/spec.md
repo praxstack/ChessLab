@@ -5,7 +5,7 @@ Let a learner ask Claude to explain the engine evidence for one position, while 
 ## MODIFIED Requirements
 
 ### Requirement: AI-005 Bounded cost and load
-Each account SHALL have an hourly explanation quota and a daily explanation quota counted per UTC day. The daily count SHALL be stored with the account data so that a restart does not reset it. The hourly quota SHALL be checked before the daily count, so a request refused for the hour does not spend one of the day's explanations. The server SHALL cap concurrent model requests, each request's time and output tokens, and the engine time used for fresh evidence. Exceeding either quota SHALL return the deterministic summary with a rate-limit reason naming the hour or the day rather than an error page.
+Each account SHALL have an hourly explanation quota. A daily explanation quota SHALL be counted per UTC day: on a hosted server per invite code, shared by every account created with that code, and on a local server per account. The daily count SHALL be stored in the server's database so that a restart does not reset it. The hourly quota SHALL be checked before the daily count, so a request refused for the hour does not spend one of the day's explanations, and a request refused for the day SHALL NOT spend the hourly quota. The server SHALL cap concurrent model requests, each request's time and output tokens, and the engine time used for fresh evidence. Exceeding either quota SHALL return the deterministic summary with a rate-limit reason naming the hour or the day rather than an error page.
 
 #### Scenario: Quota reached
 - **WHEN** an account exceeds its hourly explanation quota
@@ -18,6 +18,14 @@ Each account SHALL have an hourly explanation quota and a daily explanation quot
 #### Scenario: Hourly refusal
 - **WHEN** a request is refused by the hourly quota
 - **THEN** the account's daily count is unchanged
+
+#### Scenario: Daily refusal
+- **WHEN** a request is refused by the daily quota
+- **THEN** the account's hourly quota is unchanged
+
+#### Scenario: Several accounts on one code
+- **WHEN** two accounts on a hosted server were created with the same coach code
+- **THEN** their explanations count against one daily quota, and accounts created with another code keep their own
 
 ## ADDED Requirements
 

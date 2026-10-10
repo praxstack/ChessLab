@@ -221,7 +221,7 @@ test('a busy fallback does not spend the learner\'s hourly quota', async () => {
   const gate = new Promise(resolve => { release = resolve; });
   const client = fakeClient(async (body, options, count) => { if (count === 1) await gate; return answer('[[g6]] keeps the position balanced at this depth.'); });
   const coach = createCoach({client, config:testConfig({maxPerHour:1}), logger:silentLogger(), maxConcurrent:1});
-  const ask = userId => coach.explain({userId, analysis:fakeAnalysis(), moves:BASE});
+  const ask = userId => coach.explain({userId, analysis:fakeAnalysis(), moves:BASE, serverKey:true});
   const first = ask('learner-a');
   const busy = await ask('learner-b');
   assert.deepEqual([busy.source, busy.fallbackReason], ['engine', 'busy']);
@@ -276,14 +276,40 @@ test('an hourly refusal does not spend one of the day\'s explanations', async ()
   let clock = Date.UTC(2026, 9, 9, 1);
   const client = fakeClient(() => answer('[[g6]] keeps the position balanced at this depth.'));
   const coach = createCoach({client, config:testConfig({maxPerHour:1, maxPerDay:2}), logger:silentLogger(), nowMs:() => clock});
-  const ask = async () => (await coach.explain({userId:'learner-a', analysis:fakeAnalysis(), moves:BASE})).fallbackReason;
+  const ask = async () => (await coach.explain({userId:'learner-a', analysis:fakeAnalysis(), moves:BASE, serverKey:true})).fallbackReason;
   assert.deepEqual([await ask(), await ask()], [null, 'rate_limited']);
   clock += 3600000;
   assert.equal(await ask(), null, 'The refused request left the second daily explanation unspent');
   clock += 3600000;
   assert.equal(await ask(), 'daily_limit');
-  assert.equal((await coach.explain({userId:'learner-b', analysis:fakeAnalysis(), moves:BASE, serverKey:false})).fallbackReason, 'not_covered');
+  assert.equal((await coach.explain({userId:'learner-b', analysis:fakeAnalysis(), moves:BASE})).fallbackReason, 'not_covered', 'A caller that does not say the account is covered spends nothing');
   assert.equal(client.calls.length, 2);
+});
+
+test('a daily refusal hands back its hourly unit, so the first explanation after 00:00 UTC is answered', async () => {
+  let clock = Date.UTC(2026, 9, 9, 23, 30);
+  const client = fakeClient(() => answer('[[g6]] keeps the position balanced at this depth.'));
+  const coach = createCoach({client, config:testConfig({maxPerHour:3, maxPerDay:1}), logger:silentLogger(), nowMs:() => clock});
+  const ask = async () => (await coach.explain({userId:'learner-a', analysis:fakeAnalysis(), moves:BASE, serverKey:true})).fallbackReason;
+  assert.deepEqual([await ask(), await ask(), await ask(), await ask()], [null, 'daily_limit', 'daily_limit', 'daily_limit']);
+  clock = Date.UTC(2026, 9, 10, 0, 5);
+  assert.equal(await ask(), null);
+  assert.equal(client.calls.length, 2);
+});
+
+test('on a hosted server the daily cap counts per coach code, so a second account on one code shares it', async () => {
+  const client = fakeClient(() => answer('[[g6]] keeps the position balanced at this depth.'));
+  const security = securityConfig({APP_ORIGIN:'https://app.example.com', COACH_AI_INVITE_CODES:'family-asha-5c1e9a07,family-ravi-8f40b6e2'});
+  const f = await fixture({client, config:testConfig({maxPerDay:2}), security});
+  try {
+    const asha = await f.register('coach_asha', 'family-asha-5c1e9a07'), spare = await f.register('coach_spare', 'family-asha-5c1e9a07');
+    const ravi = await f.register('coach_ravi', 'family-ravi-8f40b6e2');
+    const ask = async cookie => (await f.request('/api/coach/explain', {cookie, body:{moves:BASE}})).body;
+    assert.deepEqual([(await ask(asha)).source, (await ask(spare)).source], ['claude', 'claude']);
+    assert.deepEqual([(await ask(spare)).fallbackReason, (await ask(asha)).fallbackReason], ['daily_limit', 'daily_limit']);
+    assert.equal((await ask(ravi)).source, 'claude', 'Another code keeps its own allowance');
+    assert.equal(client.calls.length, 3);
+  } finally { await f.close(); }
 });
 
 test('why-not questions compute the asked move with the engine before Claude explains it', async () => {

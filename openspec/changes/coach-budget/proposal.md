@@ -12,19 +12,19 @@ On 9 October 2026 Claude for Startups paused its API credits for new members, so
 - At sign-up an account stores a SHA-256 digest of the invite code it used, never the code. Databases from before this change gain the column empty.
 - A local server (no `APP_ORIGIN`) covers every account, as before. A hosted server covers only accounts whose stored digest matches a current `COACH_AI_INVITE_CODES` code. Removing a code and restarting stops covering the accounts that used it; they keep signing in and keep the engine summary.
 - `/api/me` reports `coachAi` per account, and the review panel shows "Explain why" only when the server has a key and the account is covered. An uncovered account that calls the endpoint gets the engine summary with the reason `not_covered`, and the server keeps no explanation evidence for it.
-- `COACH_AI_MAX_PER_DAY` (default 50) caps explanations per account per UTC day. The count lives in SQLite, so a restart does not reset it. The hourly quota is checked first, so an hourly refusal never spends a daily explanation. Over the cap the learner gets the engine summary with the reason `daily_limit`.
+- `COACH_AI_MAX_PER_DAY` (default 50) caps explanations per UTC day: per coach code on a hosted server, shared by every account created with that code, and per account on a local server. The count lives in SQLite, so a restart does not reset it. The hourly quota is checked first, so an hourly refusal never spends a daily explanation, and a daily refusal hands its hourly unit back. Over the cap the learner gets the engine summary with the reason `daily_limit`.
 - `docs/deploy-beta.md` explains who the key pays for, per-person codes, and running the key on a Max plan's monthly API credits with auto-reload off and a workspace spend limit.
 
 ## Non-goals
 
 - Bring-your-own-key, Sign in with ChatGPT or any other way for an uncovered account to reach a model.
 - A total budget across accounts. The Console workspace spend limit is the total cap.
-- An admin page for codes or usage. Codes are edited in the environment; usage can be read from the `coach_usage` table.
+- An admin page for codes or usage. Codes are edited in the environment; usage can be read from the `coach_daily` table.
 - Changing what an explanation contains or how it is verified.
 
 ## Status
 
-Implemented with automated tests using a fake Claude client: hosted coverage by code, revocation by removing a code, the daily cap across a restart and a UTC day boundary, hourly-before-daily ordering, invite digests and the schema upgrade. No live Claude request has been made and nothing has been deployed.
+Implemented with automated tests using a fake Claude client: hosted coverage by code, revocation by removing a code, the daily cap across a restart and a UTC day boundary, one cap shared by the accounts on a code, hourly-before-daily ordering and the hourly unit returned on a daily refusal, invite digests and the schema upgrade. No live Claude request has been made and nothing has been deployed.
 
 ## Open decisions
 

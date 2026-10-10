@@ -244,12 +244,12 @@ export function coachConfig(env = process.env) {
   };
 }
 
-// Explanations on the server's key per account and UTC day. The app passes a SQLite store so a restart keeps the count.
+// Explanations on the server's key per budget and UTC day. The app passes a SQLite store so a restart keeps the count.
 export function memoryDailyUsage() {
   const counts = new Map();
   return {
-    take(userId, day, max) {
-      const key = `${day} ${userId}`, used = counts.get(key) ?? 0;
+    take(budget, day, max) {
+      const key = `${day} ${budget}`, used = counts.get(key) ?? 0;
       if (used >= max) return false;
       if (counts.size > 10000) for (const id of counts.keys()) if (!id.startsWith(`${day} `)) counts.delete(id);
       counts.set(key, used + 1);
@@ -282,6 +282,11 @@ export function createCoach({client, config = coachConfig(), nowMs = Date.now, l
     if (bucket.count >= config.maxPerHour) return false;
     bucket.count++;
     return true;
+  }
+
+  function returnQuota(userId) {
+    const bucket = quotas.get(userId);
+    if (bucket?.count > 0) bucket.count--;
   }
 
   const requestKey = ({moves = [], initialFen = null, variant, playedMove = null}) => JSON.stringify([moves, initialFen ?? null, variant || 'standard', playedMove ?? null]);
@@ -335,8 +340,9 @@ export function createCoach({client, config = coachConfig(), nowMs = Date.now, l
       if (!entry || entry.userId !== userId || entry.until <= nowMs() || entry.key !== requestKey(request)) return null;
       return entry.analysis;
     },
-    // serverKey says whether this account may spend the server's key; usage counts its explanations per day.
-    async explain({userId, analysis, moves = [], initialFen = null, variant, asked = null, serverKey = true, usage = dailyUsage, signal}) {
+    // serverKey says whether this account may spend the server's key, so a caller that leaves it out spends nothing.
+    // budget names what the daily cap counts against: the account, or on a hosted server the invite code it used.
+    async explain({userId, analysis, moves = [], initialFen = null, variant, asked = null, serverKey = false, budget = userId, usage = dailyUsage, signal}) {
       try { gameVariant(variant); } catch (error) { throw failure(400, error.message); }
       const bundle = buildEvidence(analysis, {moves, initialFen, variant, asked:Boolean(asked)});
       const receipt = {engine:bundle.evidence.engine.name, movetimeMs:bundle.evidence.engine.movetimeMs, depth:bundle.evidence.engine.depth, lines:bundle.evidence.candidateLines.length};
@@ -347,10 +353,14 @@ export function createCoach({client, config = coachConfig(), nowMs = Date.now, l
       if (!serverKey) return engineAnswer('not_covered');
       // Check capacity before quota so a busy fallback costs the learner nothing. Nothing awaits between
       // this check and inFlight++, so concurrent requests cannot both pass it. The hourly quota comes before
-      // the stored daily count, so an hourly refusal never spends one of the day's explanations.
+      // the stored daily count, so an hourly refusal never spends one of the day's explanations, and a daily
+      // refusal hands its hourly unit back.
       if (inFlight >= maxConcurrent) return engineAnswer('busy');
       if (!takeQuota(userId)) return engineAnswer('rate_limited');
-      if (!usage.take(userId, new Date(nowMs()).toISOString().slice(0, 10), config.maxPerDay)) return engineAnswer('daily_limit');
+      if (!usage.take(budget, new Date(nowMs()).toISOString().slice(0, 10), config.maxPerDay)) {
+        returnQuota(userId);
+        return engineAnswer('daily_limit');
+      }
       const task = asked ? `Task: the learner asks "why not [[${asked.san}]]?" Answer from the evidence, comparing it with the engine's first candidate line.`
         : bundle.evidence.playedMove ? `Task: explain the played move [[${bundle.evidence.playedMove.san}]] to the learner, comparing it with the engine's first candidate line.`
         : `Task: explain the engine's first candidate move [[${bundle.best}]] in this position to the learner.`;

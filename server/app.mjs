@@ -51,7 +51,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
  CREATE TABLE IF NOT EXISTS game_reviews (game_id TEXT PRIMARY KEY REFERENCES games(id), data TEXT NOT NULL);
  CREATE TABLE IF NOT EXISTS progress (user_id TEXT NOT NULL REFERENCES users(id), kind TEXT NOT NULL, item_id TEXT NOT NULL, PRIMARY KEY(user_id,kind,item_id));
  CREATE TABLE IF NOT EXISTS bot_results (user_id TEXT NOT NULL REFERENCES users(id), bot_id TEXT NOT NULL, crowns INTEGER NOT NULL CHECK(crowns BETWEEN 1 AND 3), PRIMARY KEY(user_id,bot_id));
- CREATE TABLE IF NOT EXISTS coach_usage (user_id TEXT NOT NULL REFERENCES users(id), day TEXT NOT NULL, count INTEGER NOT NULL, PRIMARY KEY(user_id,day));`);
+ CREATE TABLE IF NOT EXISTS coach_daily (budget TEXT NOT NULL, day TEXT NOT NULL, count INTEGER NOT NULL, PRIMARY KEY(budget,day));`);
  // Accounts record a digest of the invite code they signed up with; databases from before this column gain it empty.
  if (!db.prepare('PRAGMA table_info(users)').all().some(column=>column.name==='invite_digest')) db.exec('ALTER TABLE users ADD COLUMN invite_digest TEXT');
  const app = express(); app.disable('x-powered-by');
@@ -106,8 +106,10 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
  // COACH_AI_INVITE_CODES code; removing a code from that list stops paying for the accounts that used it.
  const coachCodes = new Set(config.coachInviteCodes.map(inviteDigest));
  const coachCovered = user => !config.hosted || coachCodes.has(user?.inviteDigest);
- const takeCoachDay = db.prepare('INSERT INTO coach_usage VALUES (?,?,1) ON CONFLICT(user_id,day) DO UPDATE SET count=count+1 WHERE count<?');
- const coachUsage = {take:(userId,day,max)=>takeCoachDay.run(userId,day,max).changes>0};
+ // On a hosted server every account made with one coach code shares that code's daily cap, so extra accounts add nothing.
+ const coachBudget = user => config.hosted ? `code:${user.inviteDigest}` : `user:${user.id}`;
+ const takeCoachDay = db.prepare('INSERT INTO coach_daily VALUES (?,?,1) ON CONFLICT(budget,day) DO UPDATE SET count=count+1 WHERE count<?');
+ const coachUsage = {take:(budget,day,max)=>takeCoachDay.run(budget,day,max).changes>0};
  const me = user => ({user:user ? {id:user.id,username:user.username,coachAi:coachCovered(user)} : null,progress:progress(user?.id)});
  function requireUser(req,res,next) { if (!req.user) return res.status(401).json({error:'Sign in to save your game and progress.'}); next(); }
  function setSession(res,userId) {
@@ -407,7 +409,7 @@ export function createApp({databasePath = process.env.CHESSLAB_DB || resolve('da
    const analysis=recalled||(!asked&&reviewedEvidence(req,{gameId,...position}))
     ||await engineApi.analyze({...position,movetime:coach.engineMovetime,lines:3},{signal:controller.signal});
    if((position.playedMove??null)!==(analysis.played?.move??null))fail(503,'The engine evidence does not match this move. Try again.');
-   res.json(await coach.explain({userId:req.user.id,analysis,moves,initialFen,variant,asked,serverKey:coachCovered(req.user),usage:coachUsage,signal:controller.signal}));
+   res.json(await coach.explain({userId:req.user.id,analysis,moves,initialFen,variant,asked,serverKey:coachCovered(req.user),budget:coachBudget(req.user),usage:coachUsage,signal:controller.signal}));
   }finally{res.removeListener('close',cancel);}
  });
  app.post('/api/lessons/:id/answer',(req,res)=>{
