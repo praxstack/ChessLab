@@ -1,0 +1,13 @@
+# Railway reads this file for the hosted private beta. See docs/deploy-beta.md, Option C.
+# Settings and secrets live in the Railway service, not here.
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+# Rebuild only when something the image contains changes.
+watchPatterns = ["Dockerfile", "docker/**", "package.json", "package-lock.json", "vite.config.mjs", "server/**", "shared/**", "web/**"]
+
+[deploy]
+healthcheckPath = "/healthz"
+healthcheckTimeout = 120
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 5

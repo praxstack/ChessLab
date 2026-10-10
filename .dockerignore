@@ -1,4 +1,4 @@
-# The image copies only package files, server/, shared/, web/ and vite.config.mjs.
+# The image copies only package files, server/, shared/, web/, docker/ and vite.config.mjs.
 # Keep secrets, local data and large reference material out of the build context.
 **/.DS_Store
 .git

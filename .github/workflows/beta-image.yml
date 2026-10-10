@@ -1,0 +1,77 @@
+name: Beta image
+
+# Builds the production image and checks it the way a host runs it: a root-owned
+# volume at /data, the server as the node user, Stockfish answering, and data
+# surviving a restart. Run it by hand with a URL to check the live beta.
+on:
+  pull_request:
+    paths: [Dockerfile, docker/**, .dockerignore, railway.toml, package.json, package-lock.json, server/**, shared/**, web/**, .github/workflows/beta-image.yml]
+  push:
+    branches: [main]
+    paths: [Dockerfile, docker/**, .dockerignore, railway.toml, package.json, package-lock.json, server/**, shared/**, web/**, .github/workflows/beta-image.yml]
+  workflow_dispatch:
+    inputs:
+      url:
+        description: Live origin to check instead of building, such as https://app.askthemove.online
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  image:
+    if: ${{ !inputs.url }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      BASE: http://127.0.0.1:8770
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: docker build -t chesslab:ci .
+      - name: Start on a root-owned volume
+        run: |
+          sudo install -d -o root -g root -m 755 "$RUNNER_TEMP/data"
+          docker run -d --name chesslab -p 127.0.0.1:8770:8770 \
+            -e BETA_INVITE_CODES=ci-invite-code-2026 \
+            -v "$RUNNER_TEMP/data:/data" chesslab:ci
+      - name: Wait for health
+        run: |
+          for i in $(seq 1 30); do curl -fsS "$BASE/healthz" && exit 0; sleep 2; done
+          docker logs chesslab; exit 1
+      - name: Server runs as node, never root
+        run: |
+          uid=$(docker exec chesslab sh -c "awk '/^Uid:/{print \$2}' /proc/1/status")
+          echo "server uid: $uid"
+          test "$uid" = "$(docker exec chesslab id -u node)"
+      - name: Stockfish answers and invites are required
+        run: |
+          curl -fsS "$BASE/api/status" | tee status.json
+          jq -e '.engine.available == true and (.engine.name | test("Stockfish")) and .inviteRequired == true' status.json
+      - name: Sign-up needs a code, and the account survives a restart
+        run: |
+          post() { curl -sS -o out.json -w '%{http_code}' -H 'Content-Type: application/json' -H "Origin: $BASE" "$BASE$1" -d "$2"; }
+          test "$(post /api/register '{"username":"ci_nocode","password":"ci-password-2026"}')" = 403
+          test "$(post /api/register '{"username":"ci_tester","password":"ci-password-2026","inviteCode":"ci-invite-code-2026"}')" = 201
+          docker restart chesslab
+          for i in $(seq 1 30); do curl -fsS "$BASE/healthz" >/dev/null && break; sleep 2; done
+          test "$(post /api/login '{"username":"ci_tester","password":"ci-password-2026"}')" = 200
+          sudo stat -c '%U %n' "$RUNNER_TEMP/data"/chesslab.sqlite*
+      - name: Logs
+        if: always()
+        run: docker logs chesslab 2>&1 | tail -50
+
+  live:
+    if: ${{ inputs.url }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check the live beta
+        env:
+          URL: ${{ inputs.url }}
+        run: |
+          curl -fsS -D headers.txt "$URL/healthz"; echo
+          grep -i '^strict-transport-security' headers.txt
+          grep -i '^content-security-policy' headers.txt >/dev/null && echo "content-security-policy present"
+          curl -fsS "$URL/api/status" | tee status.json; echo
+          jq -e '.engine.available == true and .hosted == true and .inviteRequired == true and .archives == false' status.json
