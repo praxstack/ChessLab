@@ -247,7 +247,7 @@ test('a hosted server spends its Claude key only on accounts created with a coac
     const covered = await f.request('/api/coach/explain', {cookie:friend, body:{moves:BASE, playedMove:'g8f6', evidenceId:analysis.body.evidenceId}});
     assert.deepEqual([covered.body.source, client.calls.length], ['claude', 1]);
     await f.restart(securityConfig(hosted));
-    const revoked = await f.request('/api/coach/explain', {cookie:friend, body:{moves:BASE, playedMove:'g8f6'}});
+    const revoked = await f.request('/api/coach/explain', {cookie:friend, body:{moves:BASE, playedMove:'g8f6', evidenceId:analysis.body.evidenceId}});
     assert.deepEqual([revoked.body.fallbackReason, client.calls.length], ['not_covered', 1], 'Removing the code stops paying for the accounts that used it');
     assert.equal((await f.request('/api/me', {cookie:friend})).body.user.coachAi, false);
   } finally { await f.close(); }

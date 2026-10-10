@@ -89,7 +89,7 @@ Caddy adds the client address to `X-Forwarded-For`, so `TRUST_PROXY=1` is correc
 
 Both can build from the `Dockerfile`. Keep one instance with one persistent volume.
 
-**Fly.io.** Create one volume and mount it at `/data`. Point the HTTP service at internal port 8770, force HTTPS, and add an HTTP check on `/healthz`. Pin the app to one machine, because a volume belongs to one machine. Keep that machine running rather than stopped when idle; a cold start also restarts Stockfish. Put `ANTHROPIC_API_KEY` and `BETA_INVITE_CODES` in `fly secrets`. Set `APP_ORIGIN` and `TRUST_PROXY=1` as plain environment values.
+**Fly.io.** Create one volume and mount it at `/data`. Point the HTTP service at internal port 8770, force HTTPS, and add an HTTP check on `/healthz`. Pin the app to one machine, because a volume belongs to one machine. Keep that machine running rather than stopped when idle; a cold start also restarts Stockfish. Put `ANTHROPIC_API_KEY`, `BETA_INVITE_CODES` and `COACH_AI_INVITE_CODES` in `fly secrets`. Set `APP_ORIGIN` and `TRUST_PROXY=1` as plain environment values.
 
 **Render.** Create a Docker web service with a persistent disk mounted at `/data`. Persistent disks need a paid instance and limit the service to one instance. Set the health check path to `/healthz`. Add the settings as environment variables or a secret file.
 
@@ -123,7 +123,7 @@ The marketing site can live at the apex domain or `www` independently. Both are 
 
 ## Before inviting testers
 
-- `APP_ORIGIN`, `TRUST_PROXY` and `BETA_INVITE_CODES` are set. `/api/status` reports `"hosted":true`, `"inviteRequired":true` and `"archives":false`.
+- `APP_ORIGIN`, `TRUST_PROXY` and `BETA_INVITE_CODES` or `COACH_AI_INVITE_CODES` are set. `/api/status` reports `"hosted":true`, `"inviteRequired":true` and `"archives":false`.
 - `/healthz` returns `{"status":"ok"}` through HTTPS, and the response carries `Strict-Transport-Security` and `Content-Security-Policy`.
 - Sign-up without a code is refused, and sign-up with a code works.
 - An account created with a `COACH_AI_INVITE_CODES` code sees "Explain why"; one created with a `BETA_INVITE_CODES` code does not.
