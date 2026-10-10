@@ -21,15 +21,17 @@ export function parseTrustProxy(value) {
   return entries.length === 1 ? entries[0] : entries;
 }
 
-export function parseInviteCodes(value) {
+export function parseInviteCodes(value, name = 'BETA_INVITE_CODES') {
   if (!value) return [];
   // An empty entry (",", a trailing comma or only spaces) must not leave an empty list that turns the gate off.
   const codes = value.split(',').map(code => code.trim());
-  if (codes.some(code => code.length < 8 || code.length > 128 || /\s/.test(code))) throw new Error('Each BETA_INVITE_CODES entry needs 8 to 128 characters without spaces.');
+  if (codes.some(code => code.length < 8 || code.length > 128 || /\s/.test(code))) throw new Error(`Each ${name} entry needs 8 to 128 characters without spaces.`);
   return codes;
 }
 
 const digest = value => createHash('sha256').update(value).digest();
+// Stored with the account so a code can later grant or lose the server's Claude key without keeping the code itself.
+export const inviteDigest = code => digest(code.trim()).toString('hex');
 export function inviteAccepted(codes, supplied) {
   if (!codes.length) return true;
   if (typeof supplied !== 'string' || !supplied.trim() || supplied.length > 128) return false;
@@ -43,6 +45,8 @@ export function securityConfig(env = process.env) {
   // PUBLIC_ORIGIN belongs to the earlier owner-private Sites tunnel. Two different origins would refuse one of them.
   if (appOrigin && env.PUBLIC_ORIGIN && env.PUBLIC_ORIGIN !== appOrigin) throw new Error('APP_ORIGIN and PUBLIC_ORIGIN name different origins. PUBLIC_ORIGIN is for the earlier private Sites tunnel; unset it for the hosted beta.');
   const https = appOrigin?.startsWith('https:') ?? false;
+  // Accounts created with a COACH_AI_INVITE_CODES code use the server's Claude key; each such code also admits sign-up.
+  const coachInviteCodes = parseInviteCodes(env.COACH_AI_INVITE_CODES, 'COACH_AI_INVITE_CODES');
   return {
     appOrigin,
     hosted:Boolean(appOrigin),
@@ -50,7 +54,8 @@ export function securityConfig(env = process.env) {
     cookieSecure:env.COOKIE_SECURE === '1' || https,
     hsts:https,
     contentSecurityPolicy:env.NODE_ENV === 'production' || Boolean(appOrigin),
-    inviteCodes:parseInviteCodes(env.BETA_INVITE_CODES),
+    inviteCodes:[...new Set([...parseInviteCodes(env.BETA_INVITE_CODES), ...coachInviteCodes])],
+    coachInviteCodes,
     serveArchives:env.SERVE_ARCHIVES ? env.SERVE_ARCHIVES === '1' : !appOrigin,
   };
 }

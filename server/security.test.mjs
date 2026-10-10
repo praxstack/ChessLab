@@ -1,11 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtempSync, rmSync} from 'node:fs';
+import {scryptSync} from 'node:crypto';
+import {DatabaseSync} from 'node:sqlite';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createApp} from './app.mjs';
 import {createCoach} from './coach-explain.mjs';
-import {securityConfig, securityHeaders, parseTrustProxy, parseInviteCodes, canonicalOrigin, inviteAccepted} from './security.mjs';
+import {securityConfig, securityHeaders, parseTrustProxy, parseInviteCodes, canonicalOrigin, inviteAccepted, inviteDigest} from './security.mjs';
 
 async function fixture(env = {}) {
   const temp = mkdtempSync(join(tmpdir(), 'chesslab-security-'));
@@ -22,9 +24,9 @@ async function fixture(env = {}) {
 const account = (username, extra = {}) => ({username, password:'test-password-123', ...extra});
 
 test('hosting settings fail closed on unsafe values and stay local by default', () => {
-  assert.deepEqual(securityConfig({}), {appOrigin:null, hosted:false, trustProxy:false, cookieSecure:false, hsts:false, contentSecurityPolicy:false, inviteCodes:[], serveArchives:true});
+  assert.deepEqual(securityConfig({}), {appOrigin:null, hosted:false, trustProxy:false, cookieSecure:false, hsts:false, contentSecurityPolicy:false, inviteCodes:[], coachInviteCodes:[], serveArchives:true});
   const hosted = securityConfig({APP_ORIGIN:'https://app.example.com', TRUST_PROXY:'1', BETA_INVITE_CODES:'first-cohort-2026, second-cohort-2026', NODE_ENV:'production'});
-  assert.deepEqual(hosted, {appOrigin:'https://app.example.com', hosted:true, trustProxy:1, cookieSecure:true, hsts:true, contentSecurityPolicy:true, inviteCodes:['first-cohort-2026', 'second-cohort-2026'], serveArchives:false});
+  assert.deepEqual(hosted, {appOrigin:'https://app.example.com', hosted:true, trustProxy:1, cookieSecure:true, hsts:true, contentSecurityPolicy:true, inviteCodes:['first-cohort-2026', 'second-cohort-2026'], coachInviteCodes:[], serveArchives:false});
   assert.equal(securityConfig({APP_ORIGIN:'https://app.example.com', SERVE_ARCHIVES:'1'}).serveArchives, true);
   for (const origin of ['http://app.example.com', 'https://app.example.com/', 'https://app.example.com/path', 'app.example.com']) assert.throws(() => canonicalOrigin(origin), /APP_ORIGIN/, origin);
   assert.equal(canonicalOrigin('http://127.0.0.1:8770'), 'http://127.0.0.1:8770');
@@ -125,6 +127,41 @@ test('beta invite codes gate registration only when configured', async () => {
     assert.equal((await f.request('/api/login', {body:account('invited')})).status, 200, 'Existing accounts sign in without a code');
   } finally { await f.close(); }
   assert.throws(() => securityConfig({BETA_INVITE_CODES:'abc'}), /8 to 128/);
+});
+
+test('coach invite codes also admit sign-up, and the account keeps only a digest of its code', async () => {
+  const config = securityConfig({BETA_INVITE_CODES:'tester-cohort-1, family-and-friends-1', COACH_AI_INVITE_CODES:'family-and-friends-1'});
+  assert.deepEqual([config.inviteCodes, config.coachInviteCodes], [['tester-cohort-1', 'family-and-friends-1'], ['family-and-friends-1']], 'A code in both lists is listed once');
+  assert.throws(() => securityConfig({COACH_AI_INVITE_CODES:'family,'}), /COACH_AI_INVITE_CODES entry needs 8 to 128/);
+  const temp = mkdtempSync(join(tmpdir(), 'chesslab-invite-'));
+  const engineApi = {engineStatus:async () => ({available:true}), analyze:async () => ({})};
+  const state = createApp({databasePath:join(temp, 'db.sqlite'), engineApi, config:securityConfig({COACH_AI_INVITE_CODES:'family-and-friends-1'}), coach:createCoach({config:{apiKey:''}})});
+  const server = state.app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
+  try {
+    const register = body => fetch(`http://127.0.0.1:${server.address().port}/api/register`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+    assert.equal((await register(account('no_code'))).status, 403, 'A coach code alone turns the invite gate on');
+    assert.equal((await register(account('family', {inviteCode:' family-and-friends-1 '}))).status, 201);
+    const row = state.db.prepare('SELECT * FROM users WHERE username=?').get('family');
+    assert.equal(row.invite_digest, inviteDigest('family-and-friends-1'));
+    assert.ok(!JSON.stringify(row).includes('family-and-friends-1'), 'The code itself is not stored');
+  } finally { await new Promise(resolve => server.close(resolve)); state.close(); rmSync(temp, {recursive:true, force:true}); }
+});
+
+test('a database from before invite digests gains the column and its accounts still sign in', async () => {
+  const temp = mkdtempSync(join(tmpdir(), 'chesslab-migrate-')), path = join(temp, 'db.sqlite');
+  const old = new DatabaseSync(path), salt = 'a'.repeat(32);
+  old.exec('CREATE TABLE users (id TEXT PRIMARY KEY, username TEXT NOT NULL COLLATE NOCASE UNIQUE, salt TEXT NOT NULL, password_hash TEXT NOT NULL, created_at TEXT NOT NULL)');
+  old.prepare('INSERT INTO users VALUES (?,?,?,?,?)').run('old-account', 'old_timer', salt, scryptSync('test-password-123', salt, 64).toString('hex'), '2026-09-01T00:00:00.000Z');
+  old.close();
+  const engineApi = {engineStatus:async () => ({available:true}), analyze:async () => ({})};
+  const state = createApp({databasePath:path, engineApi, config:securityConfig({}), coach:createCoach({config:{apiKey:''}})});
+  const server = state.app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
+  try {
+    assert.ok(state.db.prepare('PRAGMA table_info(users)').all().some(column => column.name === 'invite_digest'));
+    const login = await fetch(`http://127.0.0.1:${server.address().port}/api/login`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(account('old_timer'))});
+    assert.equal(login.status, 200);
+    assert.deepEqual((await login.json()).user, {id:'old-account', username:'old_timer', coachAi:true}, 'A local server covers every account');
+  } finally { await new Promise(resolve => server.close(resolve)); state.close(); rmSync(temp, {recursive:true, force:true}); }
 });
 
 test('JSON body limits and content type remain enforced', async () => {
