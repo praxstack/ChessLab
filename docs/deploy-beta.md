@@ -129,7 +129,7 @@ The marketing site can live at the apex domain or `www` independently. Both are 
 - An account created with a `COACH_AI_INVITE_CODES` code sees "Explain why"; one created with a `BETA_INVITE_CODES` code does not.
 - If the key is set, one "Explain why" answer is labelled as AI-generated and names the model. With a bad key, the page shows the engine summary and a short notice. Logs record only the fallback reason, never the key or prompt.
 - A backup has been taken and restored on a scratch copy.
-- The key's Console workspace has a monthly spend limit and auto-reload is off. The per-account hourly and daily limits cap each person, not the total across people.
+- The key's Console workspace has a monthly spend limit and auto-reload is off. The hourly limit is per account and the daily limit is per coach code, shared by every account created with it; neither caps the total across codes.
 
 ## Known gaps
 
