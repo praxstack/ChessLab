@@ -15,7 +15,10 @@ test('valid signup returns ok and stores one normalised row', async () => {
   assert.equal(res.status, 200);
   assert.equal(res.headers.get('cache-control'), 'no-store');
   assert.match(res.headers.get('content-type'), /application\/json/);
-  assert.deepEqual(await res.json(), { ok: true });
+  const body = await res.json();
+  assert.equal(body.ok, true);
+  assert.match(body.pulse, /^[0-9a-f]{32}$/, 'a sign-up gets a pulse code for the market pulse');
+  assert.ok(!('manage' in body), 'the private manage link is never returned to the page');
   const rows = env.DB.rows('waitlist');
   assert.equal(rows.length, 1);
   const [row] = rows;
@@ -25,19 +28,36 @@ test('valid signup returns ok and stores one normalised row', async () => {
   assert.equal(row.source, 'hero');
   assert.deepEqual(JSON.parse(row.utm), { utm_source: 'reddit', referrer: 'https://news.ycombinator.com/' });
   assert.ok(row.consent_at && row.created_at);
+  assert.equal(row.pulse_token, body.pulse);
+  assert.match(row.manage_token, /^[0-9a-f]{32}$/);
+  assert.notEqual(row.manage_token, row.pulse_token);
+  assert.deepEqual(JSON.parse(row.lists), { beta: row.consent_at, letter: null, research: null });
+  assert.equal(row.lists_updated_at, row.consent_at);
+  assert.equal(row.answers, null);
   assert.ok(!('ip_hash' in row), 'the IP hash stays in the rate-limit table, not with the email');
   assert.ok(!JSON.stringify(row).includes('203.0.113.7'), 'raw IP must not be stored');
   const [counter] = env.DB.rows('rate_limits');
   assert.match(counter.ip_hash, /^[0-9a-f]{64}$/);
 });
 
-test('duplicate email gets the same answer as a new one and adds no row', async () => {
+test('duplicate email gets an answer of the same shape as a new one, and nothing is stored or changed', async () => {
   const env = makeEnv();
   const first = await call(postJson(good), env);
-  const res = await call(postJson({ ...good, email: '  LEARNER@gmail.com ' }), env);
+  const before = env.DB.rows('waitlist')[0];
+  const res = await call(postJson({ ...good, email: '  LEARNER@gmail.com ', rating: '1600-plus' }), env);
   assert.equal(res.status, first.status);
-  assert.deepEqual(await res.json(), await first.json());
-  assert.equal(env.DB.rows('waitlist').length, 1);
+  assert.equal(res.status, 200);
+  const a = await first.json();
+  const b = await res.json();
+  assert.deepEqual(Object.keys(a), ['ok', 'pulse']);
+  assert.deepEqual(Object.keys(b), ['ok', 'pulse']);
+  assert.match(b.pulse, /^[0-9a-f]{32}$/);
+  assert.notEqual(a.pulse, b.pulse);
+  // Nothing about the second answer says the address was already there.
+  const rows = env.DB.rows('waitlist');
+  assert.equal(rows.length, 1);
+  assert.deepEqual(rows[0], before, 'an existing row is never touched by the public form');
+  assert.notEqual(rows[0].pulse_token, b.pulse, 'the throwaway pulse code matches nothing');
 });
 
 test('without IP_HASH_SALT sign-ups are refused and nothing is stored', async () => {
@@ -71,11 +91,13 @@ test('multipart posts keep their case-sensitive boundary', async () => {
   assert.equal(broken.status, 400);
 });
 
-test('honeypot returns 200 and stores nothing at all', async () => {
+test('honeypot returns 200, shaped like a real sign-up, and stores nothing at all', async () => {
   const env = makeEnv();
   const res = await call(postJson({ ...good, website: 'http://spam.example' }), env);
   assert.equal(res.status, 200);
-  assert.deepEqual(await res.json(), { ok: true });
+  const body = await res.json();
+  assert.deepEqual(Object.keys(body), ['ok', 'pulse']);
+  assert.match(body.pulse, /^[0-9a-f]{32}$/);
   assert.equal(env.DB.rows('waitlist').length, 0);
   assert.equal(env.DB.rows('rate_limits').length, 0);
 });
@@ -315,13 +337,17 @@ test('export returns CSV with escaping and formula guard', async () => {
   assert.match(res.headers.get('content-disposition'), /attachment; filename="askthemove-waitlist-\d{4}-\d{2}-\d{2}\.csv"/);
   assert.equal(res.headers.get('cache-control'), 'no-store');
   const lines = (await res.text()).trim().split('\r\n');
-  assert.equal(lines[0], 'email,created_at,fields,source,utm');
+  assert.equal(lines[0], 'email,created_at,fields,source,utm,lists,answers,manage_url');
   assert.equal(lines.length, 3);
   assert.ok(lines[1].startsWith('first@gmail.com,'));
   assert.ok(lines[1].includes(`"{""rating"":""800-1200""}"`));
   assert.ok(lines[1].includes(",'=cmd|calc,"));
   assert.ok(lines[2].includes('"footer, bottom"'));
   assert.ok(!lines.join('').includes('ip_hash'));
+  // The lists JSON and the full manage link, built from the request's own origin.
+  const [first] = env.DB.rows('waitlist');
+  assert.ok(lines[1].includes(`"{""beta"":""${first.consent_at}"",""letter"":null,""research"":null}"`));
+  assert.ok(lines[1].endsWith(`,,https://askthemove.pages.dev/manage/?t=${first.manage_token}`), lines[1]);
 });
 
 test('export rejects other methods with 405', async () => {

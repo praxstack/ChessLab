@@ -53,13 +53,26 @@
           <p class="slip__status join__status" id="join-status" role="status" aria-live="polite"></p>
           <p class="slip__status slip__result" id="joined">You’re on the list. We’ll email you when your beta invite is ready.</p>
           <p class="slip__status slip__result is-error" id="join-error">We couldn’t add you to the list. Check that your email address is complete and the box is ticked, then try again. If it still fails, wait ten minutes and try again.</p>
-          <p class="slip__fine">Your email is used only for beta news. <a href="/privacy/">Privacy notice</a>.</p>
+          <p class="slip__fine">Your email is used for beta news, and for anything else only if you tick it. <a href="/privacy/">Privacy notice</a>.</p>
           <noscript><p class="slip__fine">{{NOSCRIPT_NOTE}}</p></noscript>
         </form>
         <div class="slip__done" id="join-done" hidden>
           <i class="glyph glyph--tick" data-mark="tick"></i>
           <p class="slip__done-title" id="join-done-title" tabindex="-1">You’re on the list.</p>
           <p class="slip__done-body" id="join-done-body">We’ll email you when your beta invite is ready.</p>
+        </div>
+        <div class="slip__after" id="join-after" hidden>
+          <p class="slip__manage">Every email we send carries your private link, to change what you get or delete your sign-up.</p>
+          <form class="slip__pulse" id="pulse-form" action="/api/waitlist/pulse" method="post">
+            <input type="hidden" name="p" value="">
+            <p class="slip__title">While you’re here <span class="optional">Optional, one minute</span></p>
+            <!-- @pulse home -->
+            <div class="check"><input id="join-letter" name="letter" type="checkbox"><label for="join-letter">Also send me the AskTheMove letter, about once a month.</label></div>
+            <div class="check"><input id="join-research" name="research" type="checkbox"><label for="join-research">I’m happy to answer the occasional question about how I study.</label></div>
+            <p class="slip__status join__status" id="pulse-status" role="status" aria-live="polite"></p>
+            <p class="slip__actions"><button class="btn btn--pen" type="submit"><span class="btn__label">Send answers</span></button> <button class="btn btn--plain" type="button" id="pulse-skip">Skip</button></p>
+          </form>
+          <p class="slip__thanks" id="pulse-thanks" role="status" tabindex="-1" hidden>Thank you. That helps more than you’d think.</p>
         </div>
       </div>
     </div>
@@ -285,7 +298,7 @@
       </details>
       <details>
         <summary><span>What happens to my email?</span><i class="glyph glyph--plus" data-mark="plus"></i></summary>
-        <p>It’s stored in a Cloudflare D1 database and used only to send beta news. It isn’t sold or shared. Ask for it to be deleted at any time. The <a href="/privacy/">privacy notice</a> has the details.</p>
+        <p>It’s stored in a Cloudflare D1 database and used to send beta news. The monthly letter and the occasional research question go only to people who tick those boxes. It isn’t sold or shared. Every email carries a private link to change what you get or delete your sign-up on the spot. The <a href="/privacy/">privacy notice</a> has the details.</p>
       </details>
       <details>
         <summary><span>Who is building it?</span><i class="glyph glyph--plus" data-mark="plus"></i></summary>

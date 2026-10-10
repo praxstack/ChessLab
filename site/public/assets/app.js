@@ -302,6 +302,7 @@ function initWaitlist() {
 
   form.noValidate = true;
   html.classList.add('has-js');
+  const visitKey = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, '0')).join('');
 
   // Where the visitor came from: campaign tags and referrer, both optional.
   const params = new URLSearchParams(window.location.search);
@@ -351,6 +352,66 @@ function initWaitlist() {
     if (tick && moving()) new Timeline().draw(tick);
   };
 
+  // Every sign-up answer carries a pulse code, so the market pulse can be
+  // offered right away. The private manage link only ever arrives by email.
+  const after = document.getElementById('join-after');
+  const pulse = document.getElementById('pulse-form');
+  const pulseStatus = document.getElementById('pulse-status');
+  const thanks = document.getElementById('pulse-thanks');
+  const showAfter = (code) => {
+    if (!after || !pulse || typeof code !== 'string' || !/^[0-9a-f]{32}$/.test(code)) return;
+    pulse.elements.namedItem('p').value = code;
+    after.hidden = false;
+  };
+  if (pulse) {
+    pulse.noValidate = true;
+    const pulseButton = pulse.querySelector('button[type="submit"]');
+    const pulseLabel = pulseButton.querySelector('.btn__label');
+    document.getElementById('pulse-skip').addEventListener('click', () => {
+      pulse.hidden = true;
+      // The button that had focus is gone with the form; land somewhere sensible.
+      doneTitle.focus();
+    });
+    pulse.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const data = Object.fromEntries(new FormData(pulse));
+      pulseButton.disabled = true;
+      pulseButton.setAttribute('aria-busy', 'true');
+      pulseLabel.textContent = 'Sending…';
+      pulseStatus.textContent = '';
+      pulseStatus.classList.remove('is-error');
+      try {
+        const res = await fetch(pulse.action, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', accept: 'application/json' },
+          body: JSON.stringify(data),
+          credentials: 'same-origin',
+        });
+        let body = {};
+        try {
+          body = await res.json();
+        } catch {
+          /* non-JSON error page */
+        }
+        if (res.ok && body.ok) {
+          pulse.hidden = true;
+          thanks.hidden = false;
+          thanks.focus();
+          return;
+        }
+        pulseStatus.textContent = body.error || ERROR_MESSAGES.server;
+        pulseStatus.classList.add('is-error');
+      } catch {
+        pulseStatus.textContent = 'We couldn’t reach the server. Check your connection and try again.';
+        pulseStatus.classList.add('is-error');
+      } finally {
+        pulseButton.disabled = false;
+        pulseButton.removeAttribute('aria-busy');
+        pulseLabel.textContent = 'Send answers';
+      }
+    });
+  }
+
   // After a plain (no-fetch) form post, the server redirects back here.
   if (params.get('joined') === '1') {
     showDone('');
@@ -386,6 +447,9 @@ function initWaitlist() {
 
     const data = Object.fromEntries(new FormData(form));
     data.consent = true;
+    // One random key per visit. If the answer is lost and the visitor retries,
+    // the server hands back the same pulse code, so their answers still count.
+    data.k = visitKey;
     button.disabled = true;
     button.setAttribute('aria-busy', 'true');
     label.textContent = 'Joining…';
@@ -405,6 +469,7 @@ function initWaitlist() {
       }
       if (res.ok && body.ok) {
         showDone(value.toLowerCase());
+        showAfter(body.pulse);
         return;
       }
       const message = body.error || ERROR_MESSAGES.server;
