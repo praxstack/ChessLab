@@ -1,0 +1,169 @@
+{
+ "meta": {
+  "title": "AskTheMove",
+  "subtitle": "Product demo",
+  "format": "general",
+  "chapters": [
+   "AskTheMove",
+   "Import",
+   "Review",
+   "The blunder",
+   "Your line",
+   "Practice",
+   "Play",
+   "More",
+   "Join"
+  ],
+  "voice": "af_heart",
+  "speed": 1.0,
+  "music": "calm",
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "lead": 0.25,
+  "pad": 0.35,
+  "chapter_gap": 0.6,
+  "chapter_lead": 0.7,
+  "sentence_pause": 0.3
+ },
+ "lines": [
+  {
+   "id": "h1",
+   "chapter": 0,
+   "cap": "You lost a game, and you want to know why.",
+   "say": "You lost a game, and you want to know why."
+  },
+  {
+   "id": "h2",
+   "chapter": 0,
+   "cap": "AskTheMove reviews it move by move, with engine evidence you can check.",
+   "say": "Ask The Move reviews it, move by move, with engine evidence you can check yourself."
+  },
+  {
+   "id": "i1",
+   "chapter": 1,
+   "cap": "Paste in the game. Here, Maya played Black and was mated in seven moves.",
+   "say": "Paste in the game. Here, Maya played Black, and was mated in seven moves."
+  },
+  {
+   "id": "i2",
+   "chapter": 1,
+   "cap": "One click imports it. Flip the board to your side and play it through to the mate.",
+   "say": "One click imports it. Flip the board to your side, and play it through to the mate."
+  },
+  {
+   "id": "r1",
+   "chapter": 2,
+   "cap": "Then Stockfish 18 reviews every move, for both players.",
+   "say": "Then Stockfish eighteen reviews every move, for both players."
+  },
+  {
+   "id": "r2",
+   "chapter": 2,
+   "cap": "It names the opening, the Philidor Defense, and graphs who was ahead.",
+   "say": "It names the opening, the Philidor Defense, and graphs who was ahead after every move."
+  },
+  {
+   "id": "r3",
+   "chapter": 2,
+   "cap": "Every move gets a grade, and the key moves are pulled out for you.",
+   "say": "Every move gets a grade, and the key moves are pulled out for you."
+  },
+  {
+   "id": "k1",
+   "chapter": 3,
+   "cap": "On move 5, Maya's bishop took White's queen. AskTheMove marks it a blunder.",
+   "say": "On move five, Maya's bishop took White's queen. Ask The Move marks it a blunder."
+  },
+  {
+   "id": "k2",
+   "chapter": 3,
+   "cap": "Why? After that capture, Stockfish finds mate in 2 for White.",
+   "say": "Why? Because after that capture, Stockfish finds mate in two for White."
+  },
+  {
+   "id": "k3",
+   "chapter": 3,
+   "cap": "Bishop takes f7, check. King e7. Knight d5, mate. The line is right there on the card.",
+   "say": "Bishop takes f seven, check. King e seven. Knight d five, mate. The line is right there on the card."
+  },
+  {
+   "id": "k4",
+   "chapter": 3,
+   "cap": "The engine, the search time and the depth are printed, so you can check it.",
+   "say": "The engine, the search time and the depth are printed under it, so you can check it."
+  },
+  {
+   "id": "v1",
+   "chapter": 4,
+   "cap": "So what should Maya have played? Compare before the move: Stockfish wanted dxe5.",
+   "say": "So what should Maya have played? Compare before the move. Stockfish wanted pawn takes e five."
+  },
+  {
+   "id": "v2",
+   "chapter": 4,
+   "cap": "Try that line yourself: 5…dxe5, then 6.Qxg4.",
+   "say": "Try that line yourself. Pawn takes e five, then queen takes g four."
+  },
+  {
+   "id": "v3",
+   "chapter": 4,
+   "cap": "Stockfish checks your line too: White is better, +1.89, but there is no mate.",
+   "say": "Stockfish checks your line too. White is better, by about two pawns, but there is no mate."
+  },
+  {
+   "id": "p1",
+   "chapter": 5,
+   "cap": "Then practice. Your key moves come back as positions to solve, with the answer hidden.",
+   "say": "Then practice. Your key moves come back as positions to solve, with the answer hidden."
+  },
+  {
+   "id": "p2",
+   "chapter": 5,
+   "cap": "Maya finds the engine's move in the first two.",
+   "say": "Maya finds the engine's move in the first two."
+  },
+  {
+   "id": "p3",
+   "chapter": 5,
+   "cap": "In the third, she grabs the queen again, and the review shows her why that fails.",
+   "say": "In the third, she grabs the queen again, and the review shows her why that fails."
+  },
+  {
+   "id": "p4",
+   "chapter": 5,
+   "cap": "One hint later, she plays dxe5. Found it.",
+   "say": "One hint later, she plays pawn takes e five. Found it."
+  },
+  {
+   "id": "b1",
+   "chapter": 6,
+   "cap": "When you're ready, play a bot. There are 43, each with a rating and a personality.",
+   "say": "When you're ready, play a bot. There are forty three, each with a rating and a personality."
+  },
+  {
+   "id": "b2",
+   "chapter": 6,
+   "cap": "Here it's Barnaby, rated 1050, on a 10-minute clock.",
+   "say": "Here it's Barnaby, rated ten fifty, on a ten minute clock."
+  },
+  {
+   "id": "m1",
+   "chapter": 7,
+   "cap": "There are guided lessons, 3,810 named openings, 24 endgame positions and board vision drills too.",
+   "say": "There are guided lessons, three thousand eight hundred and ten named openings, twenty four endgame positions, and board vision drills too."
+  },
+  {
+   "id": "e1",
+   "chapter": 8,
+   "cap": "Invited beta players can also ask an AI coach to explain any move, from the same evidence.",
+   "say": "Invited beta players can also ask an AI coach to explain any move in plain words, from the same evidence."
+  },
+  {
+   "id": "e2",
+   "chapter": 8,
+   "cap": "AskTheMove. Join the beta at askthemove.online",
+   "say": "Ask The Move. Join the beta at ask the move dot online."
+  }
+ ]
+}

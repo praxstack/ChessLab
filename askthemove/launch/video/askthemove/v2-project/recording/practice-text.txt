@@ -1,0 +1,20 @@
+LEARN FROM YOUR GAME
+Every position revisited.
+
+Your original game, notes and variations are preserved.
+
+2
+First try, no hints
+1
+Solved with practice
+0
+Revealed
+0
+Skipped
+Practice as
+Both sides
+White
+Black
+Start practice again
+
+Starting again replaces this practice run. Your source game stays intact.

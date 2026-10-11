@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>06 Your own line</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #root {
+          position: absolute;
+          inset: 0;
+        }
+      </style>
+      <div
+        id="root"
+        data-composition-id="f06-your-line"
+        data-width="1920"
+        data-height="1080"
+        data-duration="8.5"
+      >
+        <div id="f06-page" class="nb-page">
+          <div class="nb-paper"></div>
+          <div class="nb-fig">
+            <div id="f06-stage" class="nb-stage">
+              <!-- A: "Compare before move": the position before 5...Bxd1, with the engine's
+                   candidate arrow d6 to e5 (source 1.6 to 4.6 s). -->
+              <video
+                id="f06-a"
+                class="nb-vid"
+                src="assets/footage/04-variation-note.mp4"
+                muted
+                playsinline
+                data-start="0"
+                data-duration="3"
+                data-media-start="1.6"
+                data-track-index="0"
+              ></video>
+              <!-- B: "Try a variation", then 5...dxe5 6.Qxg4 played on the board, at 4.4x
+                   (source 4.6 to 15.6 s). -->
+              <video
+                id="f06-b"
+                class="nb-vid"
+                src="assets/footage/04-variation-note.mp4"
+                muted
+                playsinline
+                data-start="3"
+                data-duration="2.5"
+                data-media-start="4.6"
+                data-playback-rate="4.4"
+                data-track-index="0"
+                data-hf-media-start-basis="local"
+              ></video>
+              <!-- C: the Variation lab card for 6.Qxg4, held at 0.8x (source 21.0 to 23.4 s). -->
+              <video
+                id="f06-c"
+                class="nb-vid"
+                src="assets/footage/04-variation-note.mp4"
+                muted
+                playsinline
+                data-start="5.5"
+                data-duration="3"
+                data-media-start="21"
+                data-playback-rate="0.8"
+                data-track-index="0"
+                data-hf-media-start-basis="local"
+              ></video>
+              <div class="nb-mask nb-mask--side"></div>
+              <svg id="f06-ink" class="nb-ink" viewBox="0 0 1920 1080" aria-hidden="true"></svg>
+            </div>
+          </div>
+          <div id="f06-col" class="nb-col">
+            <p class="nb-label"><span class="nb-count">5 / 7</span><span>Your own line</span></p>
+            <p id="f06-n1" class="nb-note">Before the move, Stockfish wanted 5…dxe5.</p>
+            <p id="f06-n2" class="nb-note">So try that line yourself.</p>
+            <p id="f06-n3" class="nb-note">Stockfish checks it too: +1.86, not mate in 2.</p>
+          </div>
+        </div>
+      </div>
+      <script>
+        (function () {
+          var NB = window.NB;
+          var tl = gsap.timeline({ paused: true });
+          var stage = document.getElementById('f06-stage');
+          var ink = document.getElementById('f06-ink');
+
+          var board = NB.fit([455, 88, 1196, 800]);
+          var card = NB.fit([1350, 130, 1870, 545]);
+
+          NB.enter(tl, '#f06-page');
+          NB.pose(tl, stage, board);
+          tl.fromTo('#f06-col .nb-label', { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'none' }, 0.1);
+
+          // The engine's candidate: take back on e5.
+          var e5 = NB.mark(ink, 'ring', { cx: 797, cy: 487, rx: 54, ry: 52 }, { seed: 'e5', px: 7, scale: board.scale });
+          NB.draw(tl, e5, 0.7, { max: 0.55 });
+          NB.write(tl, document.getElementById('f06-n1'), 0.85);
+
+          // The variation is played; the ring belongs to the position before it.
+          e5.strokes.forEach(function (s) {
+            tl.to(s.el, { opacity: 0, duration: 0.2, ease: 'none' }, 3.6);
+          });
+          NB.write(tl, document.getElementById('f06-n2'), 3.15);
+
+          // The card for the variation: Stockfish's score for 6.Qxg4.
+          tl.set(stage, { x: card.x, y: card.y, scale: card.scale }, 5.5);
+          var score = NB.mark(ink, 'ring', { cx: 1436, cy: 398, rx: 54, ry: 16, tilt: 0 }, { seed: 'plus186', px: 7, scale: card.scale });
+          NB.draw(tl, score, 5.65, { max: 0.5 });
+          NB.write(tl, document.getElementById('f06-n3'), 5.85);
+
+          NB.leave(tl, '#f06-col', 8.5);
+          window.__timelines['f06-your-line'] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

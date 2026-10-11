@@ -1,0 +1,1547 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>AskTheMove Launch Checklist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Kalam:wght@400;700&family=Vollkorn:ital,wght@0,400..900;1,400..700&display=swap">
+<style>
+/* Layout: one sheet of quad-ruled lesson-notebook paper with a red double margin rule down the left.
+   A single working column sits right of the rule: the pawn's e-file across the top, the coach's
+   "your move" slip, then each phase as a ruled list. Night theme: the same notebook under a desk lamp. */
+:root {
+  --paper: oklch(98.4% 0.008 95);
+  --paper-2: oklch(96.5% 0.014 88);
+  --card: oklch(99.3% 0.004 95);
+  --ink: oklch(23% 0.025 265);
+  --ink-2: oklch(40% 0.02 265);
+  --graphite: oklch(46% 0.006 270);
+  --graphite-2: oklch(62% 0.006 270);
+  --rule: oklch(80% 0.012 260);
+  --rule-soft: oklch(88% 0.01 260);
+  --grid: oklch(86% 0.045 235 / 0.4);
+  --margin: oklch(70% 0.12 15);
+  --red: oklch(54% 0.2 27);
+  --blue: oklch(44% 0.17 264);
+  --blue-deep: oklch(36% 0.15 264);
+  --highlight: oklch(91% 0.15 102);
+  --wood: oklch(84% 0.06 75);
+  --sq-tint: oklch(94% 0.016 245);
+  --sq-light: oklch(99.3% 0.004 95);
+  --sq-dark: oklch(94% 0.016 245);
+  --hatch: oklch(62% 0.03 255 / 0.28);
+  --on-blue: oklch(99.3% 0.004 95);
+  --piece-fill: oklch(99.6% 0.003 95);
+  --piece-line: oklch(23% 0.025 265);
+  --shadow: oklch(23% 0.025 265 / 0.16);
+  --focus: oklch(44% 0.17 264);
+
+  --f-book: "Vollkorn", "Iowan Old Style", Georgia, serif;
+  --f-hand: "Kalam", "Segoe Print", "Bradley Hand", cursive;
+  --f-type: "Courier Prime", "Courier New", ui-monospace, monospace;
+
+  --fs-h1: clamp(2.6rem, 1.7rem + 3.6vw, 4.4rem);
+  --fs-h2: clamp(1.6rem, 1.3rem + 1.2vw, 2.15rem);
+  --fs-body: 1.0625rem;
+  --fs-small: 0.9375rem;
+  --fs-label: 0.75rem;
+  --measure: 46rem;
+  --ease-stroke: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --head-gap: 96px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: oklch(21% 0.02 262);
+    --paper-2: oklch(18% 0.018 262);
+    --card: oklch(25.5% 0.022 262);
+    --ink: oklch(93% 0.014 88);
+    --ink-2: oklch(83% 0.014 88);
+    --graphite: oklch(72% 0.012 260);
+    --graphite-2: oklch(52% 0.012 260);
+    --rule: oklch(42% 0.02 260);
+    --rule-soft: oklch(31% 0.02 260);
+    --grid: oklch(62% 0.06 235 / 0.13);
+    --margin: oklch(58% 0.13 18 / 0.8);
+    --red: oklch(70% 0.18 27);
+    --blue: oklch(77% 0.11 262);
+    --blue-deep: oklch(85% 0.08 262);
+    --highlight: oklch(42% 0.085 100);
+    --wood: oklch(48% 0.05 70);
+    --sq-tint: oklch(23.5% 0.03 250);
+    --sq-light: oklch(29% 0.02 260);
+    --sq-dark: oklch(23.5% 0.03 250);
+    --hatch: oklch(70% 0.04 255 / 0.16);
+    --on-blue: oklch(19% 0.03 262);
+    --piece-fill: oklch(95% 0.012 88);
+    --piece-line: oklch(16% 0.02 262);
+    --shadow: oklch(8% 0.02 262 / 0.6);
+    --focus: oklch(77% 0.11 262);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: oklch(21% 0.02 262);
+  --paper-2: oklch(18% 0.018 262);
+  --card: oklch(25.5% 0.022 262);
+  --ink: oklch(93% 0.014 88);
+  --ink-2: oklch(83% 0.014 88);
+  --graphite: oklch(72% 0.012 260);
+  --graphite-2: oklch(52% 0.012 260);
+  --rule: oklch(42% 0.02 260);
+  --rule-soft: oklch(31% 0.02 260);
+  --grid: oklch(62% 0.06 235 / 0.13);
+  --margin: oklch(58% 0.13 18 / 0.8);
+  --red: oklch(70% 0.18 27);
+  --blue: oklch(77% 0.11 262);
+  --blue-deep: oklch(85% 0.08 262);
+  --highlight: oklch(42% 0.085 100);
+  --wood: oklch(48% 0.05 70);
+  --sq-tint: oklch(23.5% 0.03 250);
+  --sq-light: oklch(29% 0.02 260);
+  --sq-dark: oklch(23.5% 0.03 250);
+  --hatch: oklch(70% 0.04 255 / 0.16);
+  --on-blue: oklch(19% 0.03 262);
+  --piece-fill: oklch(95% 0.012 88);
+  --piece-line: oklch(16% 0.02 262);
+  --shadow: oklch(8% 0.02 262 / 0.6);
+  --focus: oklch(77% 0.11 262);
+  color-scheme: dark;
+}
+
+[hidden] { display: none !important; }
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--ink);
+  font-family: var(--f-book);
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+a:hover { color: var(--blue-deep); }
+.ext { font-family: var(--f-type); font-size: 0.8em; margin-inline-start: 0.12em; text-decoration: none; display: inline-block; }
+code { font-family: var(--f-type); font-size: 0.9em; background: var(--paper-2); color: var(--ink); padding: 0.05em 0.3em; border-radius: 2px; overflow-wrap: anywhere; }
+strong { font-weight: 700; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.label { font-family: var(--f-type); font-size: var(--fs-label); letter-spacing: 0.06em; text-transform: uppercase; color: var(--graphite); }
+.hand { font-family: var(--f-hand); }
+
+/* sheet + margin rule */
+.sheet { position: relative; min-height: 100vh; padding-inline: 30px 16px; padding-block: 18px 72px; }
+.sheet::before { content: ""; position: absolute; inset-block: 0; left: 11px; width: 6px; border-inline: 1.5px solid var(--margin); pointer-events: none; }
+@media (min-width: 760px) {
+  .sheet { padding-inline: 96px 32px; padding-block: 28px 96px; }
+  .sheet::before { left: 58px; }
+}
+.wrap { max-width: 58rem; }
+
+/* masthead */
+.masthead { padding-block: 8px 18px; border-bottom: 4px double var(--ink); max-width: 56rem; }
+.mast-kicker { margin: 0 0 6px; }
+h1 { margin: 0; font-size: var(--fs-h1); font-weight: 800; line-height: 0.98; letter-spacing: -0.012em; text-wrap: balance; }
+.hl { background: linear-gradient(transparent 55%, var(--highlight) 55%, var(--highlight) 90%, transparent 90%); padding-inline: 0.06em; color: inherit; }
+.lede { margin: 14px 0 0; font-size: clamp(1.125rem, 1rem + 0.5vw, 1.35rem); line-height: 1.45; color: var(--ink-2); max-width: 36rem; text-wrap: pretty; }
+.lede-tick { display: inline-block; width: 1.3em; height: 1.1em; vertical-align: -0.15em; margin-inline-start: 0.15em; overflow: visible; }
+.lede-tick path { fill: none; stroke: var(--red); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+
+/* sticky running head: count, per-step cells, sync */
+.runhead { max-width: 56rem; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--paper); border-bottom: 1px solid var(--rule); padding-block: 10px 10px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; column-gap: 18px; row-gap: 8px; }
+.rh-count { margin: 0; font-size: 1.0625rem; white-space: nowrap; font-variant-numeric: lining-nums tabular-nums; }
+.rh-count strong { font-size: 1.35rem; font-weight: 800; }
+.cells { display: flex; gap: 7px; min-width: 0; }
+.cg { display: flex; gap: 2px; min-width: 0; }
+.cell { flex: 1 1 0; min-width: 0; height: 12px; border: 1px solid var(--rule); background: var(--card); border-radius: 1px; transition: background-color 0.3s var(--ease-out), border-color 0.3s var(--ease-out); }
+.cell.on { background: var(--blue); border-color: var(--blue); }
+.sync { margin: 0; display: inline-flex; align-items: center; gap: 7px; font-family: var(--f-type); font-size: 0.78rem; color: var(--graphite); white-space: nowrap; }
+.sync-dot { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--graphite); flex: none; }
+.sync[data-state="synced"] .sync-dot { background: var(--blue); border-color: var(--blue); }
+.sync[data-state="saving"] .sync-dot, .sync[data-state="connecting"] .sync-dot { border-style: dashed; }
+.sync[data-state="error"] .sync-dot { border-color: var(--red); background: var(--red); }
+@media (max-width: 639px) {
+  .runhead { grid-template-columns: auto auto; justify-content: space-between; }
+  .cells { grid-column: 1 / -1; grid-row: 2; gap: 5px; }
+}
+.notes { max-width: var(--measure); }
+.inline-note { margin: 10px 0 0; font-size: var(--fs-small); color: var(--ink-2); display: flex; gap: 8px; align-items: baseline; }
+.inline-note .label { flex: none; }
+.inline-note--warn .label { color: var(--red); }
+.step-alert { margin-top: 8px; }
+
+/* section headings */
+.sec { margin-top: 44px; scroll-margin-top: var(--head-gap); }
+.sec-h { margin: 0; font-size: var(--fs-h2); font-weight: 750; line-height: 1.1; text-wrap: balance; }
+.sec-sub { margin: 6px 0 0; color: var(--ink-2); max-width: var(--measure); }
+
+/* the pawn's journey: an e-file, e2 to e8 */
+.journey { margin-top: 30px; }
+.journey-top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; max-width: 56rem; margin-bottom: 12px; }
+.journey-h { margin: 0; font-size: 1.375rem; font-weight: 650; }
+.journey-note { margin: 0; font-family: var(--f-hand); color: var(--blue); font-size: 1.125rem; line-height: 1.3; }
+.board { max-width: 56rem; }
+.file { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.sq { min-width: 0; }
+.sq-btn { appearance: none; border: 0; background: none; padding: 0; margin: 0; width: 100%; text-align: left; cursor: pointer; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "cell" "coord"; color: var(--ink); }
+.sq--start .sq-btn { cursor: default; }
+.sq-btn:focus-visible { outline: none; }
+.sq-btn:focus-visible .sq-cell { outline: 2px solid var(--focus); outline-offset: -5px; }
+.sq-cell { grid-area: cell; aspect-ratio: 1 / 1; position: relative; background: var(--sq-light); border-block: 3px double var(--ink); display: grid; place-items: center; }
+.sq:first-child .sq-cell { border-left: 3px double var(--ink); }
+.sq:last-child .sq-cell { border-right: 3px double var(--ink); }
+.sq--dark .sq-cell { background-color: var(--sq-dark); background-image: repeating-linear-gradient(135deg, var(--hatch) 0 1px, transparent 1px 7px); }
+.sq.is-current .sq-cell { background: var(--highlight); }
+.sq-head { grid-area: cell; align-self: start; display: flex; justify-content: space-between; align-items: baseline; padding: 8px 10px 0; position: relative; z-index: 1; pointer-events: none; }
+.sq-head .label { font-size: 0.6875rem; color: var(--ink-2); }
+.sq-q { font-family: var(--f-hand); font-weight: 700; color: var(--red); font-size: 1.05rem; line-height: 1; }
+.sq.is-current .sq-q, .sq.is-done .sq-q { color: var(--ink-2); }
+.sq-label { grid-area: cell; align-self: end; padding: 0 10px 8px; position: relative; z-index: 1; display: flex; flex-direction: column; gap: 1px; pointer-events: none; min-width: 0; }
+.sq-name { font-weight: 650; font-size: 0.95rem; line-height: 1.15; overflow-wrap: anywhere; }
+.sq-pn { display: none; }
+.sq-count { font-family: var(--f-type); font-size: 0.78rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.sq.is-done .sq-name { color: var(--graphite); }
+.sq-coord { grid-area: coord; text-align: center; font-family: var(--f-hand); color: var(--graphite); font-size: 1rem; padding-top: 3px; }
+.sq-mark { position: absolute; inset: 24px 0 62px; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.sq-tick { height: 100%; width: auto; max-height: 56px; aspect-ratio: 1 / 1; overflow: visible; }
+.sq-tick path, .tick path { fill: none; stroke: var(--red); stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1 2; stroke-dashoffset: 1.01; opacity: 0; }
+.sq-tick path { stroke-width: 2.8; }
+.sq.is-done .sq-tick path { stroke-dashoffset: 0; opacity: 1; }
+.sq.has-piece .sq-tick { display: none; }
+.sq-slot { position: absolute; inset: 22px 0 60px; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.piece { height: 100%; max-height: 62px; aspect-ratio: 1 / 1; display: block; filter: drop-shadow(0 2px 0 var(--shadow)); }
+.piece svg { width: 100%; height: 100%; display: block; }
+.pc { fill: var(--piece-fill); stroke: var(--piece-line); stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
+.pc-line { fill: none; stroke: var(--piece-line); stroke-width: 1.4; stroke-linecap: round; }
+.sq-btn:hover .sq-name { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+.journey-cap { margin: 12px 0 0; max-width: 56rem; font-size: var(--fs-small); color: var(--ink-2); }
+.journey-cap strong { color: var(--ink); }
+@media (max-width: 999px) {
+  .board { max-width: 34rem; }
+  .file { display: flex; flex-direction: column-reverse; }
+  .sq-btn { grid-template-columns: 1.4rem 3rem minmax(0, 1fr); grid-template-areas: "coord cell label"; align-items: center; column-gap: 12px; }
+  .sq-cell { border-block: 0; border-inline: 3px double var(--ink); }
+  .sq:first-child .sq-cell { border-left: 3px double var(--ink); border-bottom: 3px double var(--ink); }
+  .sq:last-child .sq-cell { border-right: 3px double var(--ink); border-top: 3px double var(--ink); }
+  .sq-head { display: none; }
+  .sq-label { grid-area: label; align-self: center; padding: 0; flex-direction: row; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .sq-pn { display: inline; color: var(--graphite); font-weight: 400; }
+  .sq.is-current .sq-name { background: linear-gradient(transparent 55%, var(--highlight) 55%, var(--highlight) 92%, transparent 92%); }
+  .sq-coord { padding-top: 0; text-align: right; }
+  .sq-mark, .sq-slot { inset: 0; }
+  .sq-tick { height: 62%; }
+  .piece { height: 70%; }
+}
+
+/* the coach's slip: up next */
+.upnext { margin-top: 34px; max-width: var(--measure); scroll-margin-top: var(--head-gap); }
+.slip { background: var(--card); border: 1.5px solid var(--ink); border-radius: 3px; padding: 20px 22px 22px; box-shadow: 0 1px 0 var(--rule), 0 18px 30px -22px var(--shadow); }
+@media (max-width: 639px) { .slip { padding: 16px 16px 18px; } }
+.slip-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; }
+.your-move { font-family: var(--f-hand); font-weight: 700; color: var(--blue); font-size: 1.6rem; line-height: 1; }
+.slip-title { margin: 8px 0 0; font-size: clamp(1.35rem, 1.15rem + 0.8vw, 1.7rem); font-weight: 750; line-height: 1.15; text-wrap: balance; }
+.slip-body { margin-top: 4px; }
+.slip-body.enter { animation: enter 0.38s var(--ease-out); }
+@keyframes enter { from { opacity: 0.25; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.slip-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-top: 18px; }
+.btn-primary { appearance: none; border: 0; background: var(--blue); color: var(--on-blue); font-family: var(--f-book); font-weight: 700; font-size: 1.125rem; min-height: 52px; padding: 0 26px 0 20px; border-radius: 3px; display: inline-flex; align-items: center; gap: 10px; cursor: pointer; transition: transform 0.16s var(--ease-out), background-color 0.16s; }
+.btn-primary svg { width: 22px; height: 22px; overflow: visible; }
+.btn-primary svg path { fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.btn-primary:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) { .btn-primary:hover { background: var(--blue-deep); } }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-text { appearance: none; border: 0; background: none; padding: 8px 2px; min-height: 44px; color: var(--blue); cursor: pointer; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.18em; font-size: var(--fs-small); }
+.claude-next { margin: 12px 0 0; font-size: var(--fs-small); color: var(--ink-2); display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.claude-next strong { color: var(--ink); font-weight: 650; }
+.slip-empty { margin: 10px 0 0; color: var(--ink-2); }
+
+/* filters */
+.filters { margin-top: 36px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; max-width: var(--measure); }
+.filters .label { margin-right: 4px; }
+.chip { appearance: none; min-height: 44px; padding: 0 14px; border: 1px solid var(--rule); background: var(--card); color: var(--ink); border-radius: 2px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: var(--fs-small); }
+.chip .n { font-family: var(--f-type); font-size: 0.78rem; color: var(--graphite); font-variant-numeric: tabular-nums; }
+.chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.chip[aria-pressed="true"] .n { color: var(--paper); }
+@media (hover: hover) and (pointer: fine) { .chip[aria-pressed="false"]:hover { border-color: var(--ink-2); } }
+
+/* phases */
+.phase { margin-top: 40px; max-width: var(--measure); scroll-margin-top: var(--head-gap); }
+.phase-head { border-top: 1.5px solid var(--ink); padding-top: 12px; }
+.phase-h { margin: 0; }
+.toggle { appearance: none; border: 0; background: none; padding: 0; margin: 0; width: 100%; text-align: left; cursor: pointer; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 14px; color: var(--ink); }
+.toggle-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.phase-kicker { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.phase-name { font-size: var(--fs-h2); font-weight: 750; line-height: 1.1; text-wrap: balance; }
+.here { display: inline-flex; align-items: center; gap: 4px; font-family: var(--f-hand); color: var(--blue); font-size: 1rem; text-transform: none; letter-spacing: 0; }
+.here svg { width: 18px; height: 18px; }
+.stamp { display: inline-flex; align-items: center; gap: 2px; color: var(--red); font-family: var(--f-hand); font-size: 1.05rem; text-transform: none; letter-spacing: 0; font-weight: 700; }
+.stamp svg { width: 20px; height: 18px; overflow: visible; }
+.stamp svg path { fill: none; stroke: var(--red); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.pm { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--rule); border-radius: 2px; background: var(--card); flex: none; }
+.pm svg, .plus { width: 18px; height: 18px; overflow: visible; }
+.pm path, .plus path { fill: none; stroke: var(--ink-2); stroke-width: 2; stroke-linecap: round; }
+[aria-expanded="true"] > .pm .pv, [aria-expanded="true"] .plus .pv { display: none; }
+@media (hover: hover) and (pointer: fine) { .toggle:hover .pm { border-color: var(--ink-2); } }
+.phase-stat { margin: 10px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-family: var(--f-type); font-size: 0.82rem; color: var(--graphite); font-variant-numeric: tabular-nums; }
+.phase-stat .pcount { color: var(--ink); }
+.pcells { display: flex; gap: 2px; width: min(12rem, 40vw); }
+.pcells .cell { height: 9px; }
+.phase-intro { margin: 10px 0 0; color: var(--ink-2); }
+.coach { margin: 8px 0 0; font-family: var(--f-hand); color: var(--blue); font-size: 1.15rem; line-height: 1.35; }
+.coach--red { color: var(--red); }
+.phase-body { margin-top: 6px; }
+.empty-note { margin: 14px 0 0; color: var(--graphite); font-style: italic; }
+
+/* steps: ruled lines, a box per step */
+.steps { list-style: none; margin: 6px 0 0; padding: 0; }
+.step { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 10px; padding-block: 12px 14px; border-bottom: 1px solid var(--rule-soft); scroll-margin-top: var(--head-gap); }
+.step.flash { animation: flash 1.6s var(--ease-out); }
+@keyframes flash { 0%, 30% { background: var(--highlight); } 100% { background: transparent; } }
+.check { position: relative; width: 44px; height: 44px; display: grid; place-items: center; cursor: pointer; }
+.check input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.check input:disabled { cursor: not-allowed; }
+.box { width: 22px; height: 22px; border: 1.5px solid var(--ink-2); background: var(--card); border-radius: 2px; transition: border-color 0.16s; }
+.check input:focus-visible + .box { outline: 2px solid var(--focus); outline-offset: 3px; }
+@media (hover: hover) and (pointer: fine) { .check:hover .box { border-color: var(--blue); } }
+.tick { position: absolute; left: 8px; top: 0; width: 34px; height: 34px; overflow: visible; pointer-events: none; }
+.tick path { stroke-width: 2.8; }
+.step.is-done .tick path { stroke-dashoffset: 0; opacity: 1; }
+.step.is-done .box { border-color: var(--graphite-2); }
+.step-main { min-width: 0; }
+.step-title { margin: 0; padding-top: 9px; font-size: 1.125rem; font-weight: 650; line-height: 1.3; text-wrap: pretty; }
+.step-toggle { appearance: none; border: 0; background: none; padding: 0; margin: 0; text-align: left; cursor: pointer; color: inherit; font: inherit; display: inline; }
+.step-toggle .plus { display: inline-block; width: 15px; height: 15px; margin-inline-start: 8px; vertical-align: -0.08em; }
+@media (hover: hover) and (pointer: fine) { .step-toggle:hover .tt { text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: var(--graphite-2); text-underline-offset: 0.18em; } }
+.step.is-done .tt { color: var(--graphite); text-decoration: line-through; text-decoration-thickness: 1px; text-decoration-color: var(--graphite-2); }
+.step-meta { margin: 5px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font-family: var(--f-type); font-size: 0.8rem; color: var(--graphite); }
+.owner { font-family: var(--f-type); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 1px 6px; border: 1px solid currentColor; border-radius: 2px; line-height: 1.5; white-space: nowrap; }
+.owner--you { color: var(--blue); }
+.owner--claude { color: var(--graphite); border-style: dashed; }
+.owner--both { color: var(--blue); border-style: double; border-width: 3px; padding: 0 5px; }
+.waits { color: var(--ink-2); }
+.waits::before { content: "\2192\00a0"; color: var(--graphite); }
+.step-why, .step-post { margin: 6px 0 0; color: var(--ink-2); max-width: 42rem; }
+.step.is-done .step-why, .step.is-done .step-post, .step.is-done .step-row-cmds, .step.is-done .done-when--inline { display: none; }
+.step-detail { margin-top: 8px; }
+
+/* sub-steps, commands, notes */
+.sub { list-style: none; counter-reset: sub; margin: 8px 0 0; padding: 0; }
+.sub > li { counter-increment: sub; position: relative; padding-left: 30px; margin-top: 6px; }
+.sub > li::before { content: counter(sub); position: absolute; left: 4px; top: -0.08em; font-family: var(--f-hand); font-weight: 700; color: var(--blue); font-size: 1.2rem; line-height: 1.4; }
+.note { margin: 10px 0 0; font-size: var(--fs-small); color: var(--ink-2); }
+.note .label, .done-when .label { margin-right: 6px; }
+.done-when { margin: 10px 0 0; font-size: var(--fs-small); color: var(--ink); }
+.done-when .label { color: var(--red); }
+.cmd { margin-top: 8px; max-width: 42rem; }
+.cmd-cap { margin: 0 0 4px; font-size: var(--fs-small); color: var(--ink-2); }
+.cmd-line { display: flex; align-items: stretch; background: var(--paper-2); border: 1px solid var(--rule-soft); border-top: 1px dashed var(--rule); border-radius: 0 0 2px 2px; min-width: 0; }
+.cmd-prompt { padding: 10px 0 10px 12px; font-family: var(--f-type); color: var(--graphite); user-select: none; flex: none; }
+.cmd-scroll { flex: 1 1 auto; min-width: 0; overflow-x: auto; padding: 10px 12px 10px 8px; }
+.cmd-scroll code { background: none; padding: 0; white-space: pre; overflow-wrap: normal; font-size: 0.9rem; display: block; }
+.copy { appearance: none; flex: none; border: 0; border-left: 1px solid var(--rule-soft); background: transparent; color: var(--blue); cursor: pointer; padding: 0 14px; min-height: 44px; min-width: 76px; font-family: var(--f-type); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.copy.is-copied { color: var(--red); }
+@media (max-width: 639px) { .copy { min-width: 64px; padding: 0 10px; } .cmd-scroll code { font-size: 0.85rem; } }
+@media (hover: hover) and (pointer: fine) { .copy:hover { background: var(--card); } }
+.chipval { display: inline-flex; align-items: stretch; max-width: 100%; border: 1px solid var(--rule); border-radius: 2px; background: var(--paper-2); vertical-align: middle; margin-block: 2px; }
+.chipval code { background: none; padding: 3px 7px; display: flex; align-items: center; }
+.copy--sm { min-height: 32px; min-width: 0; padding: 0 9px; font-size: 0.68rem; border-left: 1px solid var(--rule); }
+
+/* launch kit */
+.kit { margin-top: 26px; padding-top: 16px; border-top: 3px double var(--rule); }
+.kit-h { margin: 0; font-size: 1.375rem; font-weight: 700; }
+.kit-sub { margin: 4px 0 0; font-size: var(--fs-small); color: var(--ink-2); }
+.kit-group { margin-top: 18px; }
+.kit-group > h4 { margin: 0 0 6px; }
+.kit-item { margin-top: 10px; background: var(--paper-2); border: 1px solid var(--rule-soft); border-radius: 2px; }
+.kit-item-head { display: flex; align-items: stretch; gap: 12px; padding-left: 12px; border-bottom: 1px dashed var(--rule); }
+.kh-left { flex: 1 1 auto; min-width: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; padding-block: 10px; }
+.kit-item-head .label { color: var(--ink-2); }
+.kit-hint { font-size: 0.875rem; color: var(--graphite); line-height: 1.35; }
+.xcount { align-self: center; font-family: var(--f-type); font-size: 0.78rem; color: var(--graphite); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.xcount.over { color: var(--red); font-weight: 700; }
+.kit-text { margin: 0; padding: 10px 12px 12px; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; }
+.kit-text--mono { font-family: var(--f-type); font-size: 0.95rem; }
+.kit-warn { margin: 0; padding: 0 12px 10px; font-size: var(--fs-small); color: var(--red); }
+
+/* application answers */
+.fields { margin: 14px 0 0; padding: 0; border-top: 1px solid var(--rule); }
+.field { display: grid; grid-template-columns: 12.5rem minmax(0, 1fr); column-gap: 18px; padding-block: 10px; border-bottom: 1px dotted var(--rule); align-items: start; }
+.field dt { padding-top: 0.55em; }
+.field dd { margin: 0; min-width: 0; }
+.val-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-width: 0; }
+.val { font-size: 1.0625rem; font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.val-row .copy { border: 1px solid var(--rule-soft); border-radius: 2px; min-height: 40px; }
+.fill { color: var(--ink-2); font-style: italic; border-bottom: 1.5px dashed var(--graphite-2); padding-bottom: 1px; }
+.fill-tag { font-family: var(--f-type); font-style: normal; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--red); margin-right: 6px; }
+.hint { margin: 2px 0 0; font-size: 0.9rem; color: var(--graphite); }
+@media (max-width: 639px) {
+  .field { grid-template-columns: minmax(0, 1fr); row-gap: 2px; }
+  .field dt { padding-top: 0; }
+}
+.long { margin-top: 26px; }
+.long h3 { margin: 0; font-size: 1.1875rem; font-weight: 700; }
+.long-box { margin-top: 8px; background: var(--paper-2); border: 1px solid var(--rule-soft); border-radius: 2px; }
+.long-text { margin: 0; padding: 12px 14px; line-height: 1.55; }
+.long-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; border-top: 1px dashed var(--rule); padding-left: 14px; }
+.long-foot .copy { border-left: 1px solid var(--rule-soft); }
+.seg { display: inline-flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.seg button { appearance: none; min-height: 40px; padding: 0 12px; border: 1px solid var(--rule); background: var(--card); border-radius: 2px; cursor: pointer; font-size: 0.9rem; color: var(--ink); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.ph-fill { background: linear-gradient(transparent 50%, var(--highlight) 50%, var(--highlight) 92%, transparent 92%); }
+
+/* collapsible reference sections */
+.ref { max-width: var(--measure); margin-top: 26px; border-top: 1.5px solid var(--ink); padding-top: 10px; scroll-margin-top: var(--head-gap); }
+.ref .phase-name { font-size: clamp(1.35rem, 1.2rem + 0.7vw, 1.7rem); }
+.ref--main { margin-top: 56px; border-top-width: 4px; border-top-style: double; }
+.ref--main .phase-name { font-size: var(--fs-h2); }
+.ref-body { margin-top: 10px; }
+.ref-body > p { max-width: 42rem; }
+
+/* what Anthropic weighs */
+.weigh { list-style: none; margin: 10px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 28px; }
+.weigh li { display: grid; grid-template-columns: 30px minmax(0, 1fr); column-gap: 8px; padding-block: 10px; border-bottom: 1px dotted var(--rule); }
+.weigh .mk { width: 26px; height: 26px; overflow: visible; margin-top: 1px; }
+.mk-tick path { fill: none; stroke: var(--red); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.mk-open circle { fill: none; stroke: var(--graphite); stroke-width: 1.6; stroke-dasharray: 3 3; }
+.weigh b { display: block; font-weight: 650; line-height: 1.3; }
+.weigh .st { font-size: var(--fs-small); color: var(--ink-2); }
+.weigh .st button { appearance: none; border: 0; background: none; padding: 0; color: var(--blue); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.15em; cursor: pointer; font-size: inherit; }
+@media (max-width: 639px) { .weigh { grid-template-columns: minmax(0, 1fr); } }
+.blunders-h { margin-top: 18px; line-height: 1.2; text-wrap: balance; }
+.blunders { list-style: none; margin: 8px 0 0; padding: 0; }
+.blunders li { display: grid; grid-template-columns: 34px minmax(0, 1fr); padding-block: 5px; }
+.qq { font-family: var(--f-hand); font-weight: 700; color: var(--red); font-size: 1.2rem; line-height: 1.25; }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 32px; }
+@media (max-width: 639px) { .two { grid-template-columns: minmax(0, 1fr); } }
+.two h3 { margin: 6px 0 0; font-size: 1.125rem; }
+.two ol, .two ul { margin: 8px 0 0; padding-left: 1.3rem; }
+.two li { margin-top: 6px; }
+.two li::marker { color: var(--graphite); font-family: var(--f-type); font-size: 0.85em; }
+.aside { color: var(--graphite); font-style: italic; }
+
+.foot { margin-top: 56px; padding-top: 12px; border-top: 4px double var(--ink); max-width: var(--measure); font-family: var(--f-type); font-size: 0.82rem; color: var(--graphite); }
+
+/* motion: the pen draws, nothing bounces */
+.anim .tick path, .anim .sq-tick path { transition: stroke-dashoffset 0.42s var(--ease-stroke); }
+.no-anim .tick path, .no-anim .sq-tick path, .no-anim .cell { transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+}
+</style>
+
+<div class="sheet">
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="mast-kicker label">Lesson notebook &middot; 8 Oct 2026</p>
+    <h1>AskTheMove <span class="hl">launch</span></h1>
+    <p class="lede">Everything between today and pressing Apply on Claude for Startups, one tick at a time.<svg class="lede-tick" viewBox="0 0 32 28" aria-hidden="true"><path d="M4 15.5c2.2 1.3 4.4 3.8 6.4 7.4 3.6-8.4 8.6-15.2 17-20.6"/></svg></p>
+  </header>
+
+  <div class="runhead" id="runhead">
+    <p class="rh-count"><strong id="done-n">0</strong> of <span id="total-n">0</span> done</p>
+    <div class="cells" id="cells" role="progressbar" aria-label="Launch progress" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0"></div>
+    <p class="sync" id="sync" data-state="local"><span class="sync-dot" aria-hidden="true"></span><span id="sync-text">Saved in this browser</span></p>
+  </div>
+  <div class="notes">
+    <p class="inline-note" id="note-local" hidden><span class="label">Note</span><span>Ticks are saved in this browser only.</span></p>
+    <p class="inline-note inline-note--warn" id="note-ro" hidden><span class="label">View only</span><span>You can view this checklist but not tick it.</span></p>
+    <p class="inline-note inline-note--warn" id="note-err" hidden><span class="label">Not saved</span><span>That tick didn’t save. Try again in a moment.</span></p>
+  </div>
+
+  <section class="journey" aria-labelledby="journey-h">
+    <div class="journey-top">
+      <h2 class="journey-h" id="journey-h">The pawn’s journey</h2>
+      <p class="journey-note">e2 to e8: six phases, then it promotes.</p>
+    </div>
+    <div class="board"><ol class="file" id="file"></ol></div>
+    <p class="journey-cap" id="journey-cap"></p>
+  </section>
+
+  <section class="upnext" id="upnext" aria-labelledby="upnext-title">
+    <div class="slip" id="slip"></div>
+    <p class="claude-next" id="claude-next"></p>
+  </section>
+
+  <div class="filters" role="group" aria-label="Show steps">
+    <span class="label">Show</span>
+    <button type="button" class="chip" data-filter="all" aria-pressed="true">All <span class="n" data-n="all"></span></button>
+    <button type="button" class="chip" data-filter="todo" aria-pressed="false">To do <span class="n" data-n="todo"></span></button>
+    <button type="button" class="chip" data-filter="you" aria-pressed="false">Your steps <span class="n" data-n="you"></span></button>
+    <button type="button" class="chip" data-filter="claude" aria-pressed="false">Claude’s steps <span class="n" data-n="claude"></span></button>
+  </div>
+
+  <div id="phases"></div>
+
+  <section class="ref ref--main" id="answers" data-sec="answers">
+    <h2 class="phase-h"><button type="button" class="toggle" aria-expanded="true" aria-controls="answers-body"><span class="toggle-text"><span class="label">For Phase 6</span><span class="phase-name">Application answers</span></span><span class="pm" aria-hidden="true"><svg viewBox="0 0 20 20"><path class="pv" d="M10 3.5c.2 4.3.1 8.6-.2 13"/><path d="M3.6 10.3c4.2-.3 8.5-.4 12.8-.1"/></svg></span></button></h2>
+    <div class="ref-body" id="answers-body">
+      <p class="sec-sub">Copy each value into the form. Never round up a number. The highlighted ones you fill in yourself.</p>
+      <dl class="fields">
+        <div class="field"><dt class="label">Your name</dt><dd><div class="val-row"><span class="val fill"><span class="fill-tag">Fill in</span>your full legal name</span></div><p class="hint">Must match your ID if they ask for the affidavit.</p></dd></div>
+        <div class="field" data-copyblock><dt class="label">Job title</dt><dd><div class="val-row"><span class="val" data-copysrc>Founder</span><button type="button" class="copy">Copy</button></div></dd></div>
+        <div class="field" data-copyblock><dt class="label">Business email</dt><dd><div class="val-row"><span class="val" data-copysrc>prax@askthemove.online</span><button type="button" class="copy">Copy</button></div><p class="hint">The same address as your Console login.</p></dd></div>
+        <div class="field" data-copyblock><dt class="label">Company name</dt><dd><div class="val-row"><span class="val" data-copysrc>AskTheMove</span><button type="button" class="copy">Copy</button></div></dd></div>
+        <div class="field" data-copyblock><dt class="label">Company website</dt><dd><div class="val-row"><span class="val" data-copysrc>https://askthemove.online</span><button type="button" class="copy">Copy</button></div><p class="hint">It must load before you submit.</p></dd></div>
+        <div class="field" data-copyblock><dt class="label">Country</dt><dd><div class="val-row"><span class="val" data-copysrc>India</span><button type="button" class="copy">Copy</button></div></dd></div>
+        <div class="field"><dt class="label">Date of birth</dt><dd><div class="val-row"><span class="val fill"><span class="fill-tag">Fill in</span>yours</span></div><p class="hint">Asked by the earlier form.</p></dd></div>
+        <div class="field"><dt class="label">Organization ID</dt><dd><div class="val-row"><span class="val fill"><span class="fill-tag">Fill in</span>from the Console’s organization settings</span></div><p class="hint">The credits land on this organization.</p></dd></div>
+        <div class="field" data-copyblock><dt class="label">Founded</dt><dd><div class="val-row"><span class="val" data-copysrc>September 2026</span><button type="button" class="copy">Copy</button></div><p class="hint">The repo was created on 6 Sept 2026.</p></dd></div>
+        <div class="field" data-copyblock><dt class="label">Funding stage</dt><dd><div class="val-row"><span class="val" data-copysrc>Bootstrapped</span><button type="button" class="copy">Copy</button></div><p class="hint">Leave lead investors blank.</p></dd></div>
+        <div class="field" data-copyblock><dt class="label">Team size</dt><dd><div class="val-row"><span class="val" data-copysrc>1</span><button type="button" class="copy">Copy</button></div><p class="hint">Solo founder.</p></dd></div>
+        <div class="field"><dt class="label">Current total LLM spend</dt><dd><div class="val-row"><span class="val fill"><span class="fill-tag">Fill in</span>your real Console spend, for example “under $20 so far, pre-launch”</span></div><p class="hint">Read it off the Console. Don’t estimate.</p></dd></div>
+      </dl>
+
+      <div class="long" data-copyblock>
+        <h3>What are you building?</h3>
+        <div class="seg" role="group" aria-label="Which version">
+          <button type="button" data-variant="before" aria-pressed="true">Before Phase 4</button>
+          <button type="button" data-variant="after" aria-pressed="false">After Phase 4</button>
+        </div>
+        <div class="long-box">
+          <p class="long-text" data-copysrc id="building-text"></p>
+          <div class="long-foot"><span class="hint" id="building-hint"></span><button type="button" class="copy">Copy</button></div>
+        </div>
+        <p class="hint">“In private testing” is only true once Phase 4 is done. Before that, it says the coach “is built and being tested”.</p>
+      </div>
+
+      <div class="long" data-copyblock>
+        <h3>How do you use Claude?</h3>
+        <div class="long-box">
+          <p class="long-text" data-copysrc>The "Explain why" and "Why not this move?" features call the Claude API with structured engine evidence only, never account data or free text. Before an answer is shown, the server checks that every move and every "mate in N" it cites appears in that evidence; if not, the app shows the plain engine summary instead. Each account is limited to 30 explanations an hour. If the API credits return, they would run the private beta and let us measure which model and effort level stays correct at the lowest cost per explanation.</p>
+          <div class="long-foot"><span class="hint"></span><button type="button" class="copy">Copy</button></div>
+        </div>
+      </div>
+
+      <div class="long" data-copyblock>
+        <h3>Where do you want support from Anthropic?</h3>
+        <div class="long-box">
+          <p class="long-text" data-copysrc>Office hours on keeping explanations faithful to engine evidence: how to evaluate explanation quality at scale, and how to keep cost per explanation low as the beta grows.</p>
+          <div class="long-foot"><span class="hint"></span><button type="button" class="copy">Copy</button></div>
+        </div>
+      </div>
+
+      <div class="long" data-copyblock>
+        <h3>Traction <span class="label">only if asked</span></h3>
+        <div class="long-box">
+          <p class="long-text" data-copysrc>Pre-launch. The waitlist opened on <span class="ph-fill">[date]</span> and has <span class="ph-fill">[N]</span> sign-ups. Demo video: <span class="ph-fill">[link]</span>.</p>
+          <div class="long-foot"><span class="hint">Replace the brackets with real values. Use the real count from the CSV.</span><button type="button" class="copy">Copy</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ref" id="weighs" data-sec="weighs">
+    <h2 class="phase-h"><button type="button" class="toggle" aria-expanded="false" aria-controls="weighs-body"><span class="toggle-text"><span class="label">Reference</span><span class="phase-name">What Anthropic weighs</span></span><span class="pm" aria-hidden="true"><svg viewBox="0 0 20 20"><path class="pv" d="M10 3.5c.2 4.3.1 8.6-.2 13"/><path d="M3.6 10.3c4.2-.3 8.5-.4 12.8-.1"/></svg></span></button></h2>
+    <div class="ref-body" id="weighs-body" hidden>
+      <ul class="weigh" id="weigh-list"></ul>
+      <p>Selection is at Anthropic’s sole discretion; nobody can guarantee it. Most applications are decided within minutes; the rest take 2 to 3 business days.</p>
+      <p><strong>Since 9 Oct:</strong> the Claude Team year and the $1,000 API credits are paused (“over capacity”), while the Startup Stack, Applied AI office hours and events stay. Anthropic is re-reviewing all applications so the program stays “of, by and for startup founders”. The tighter criteria aren’t published.</p>
+      <h3 class="journey-h blunders-h">The four mistakes most likely to sink it</h3>
+      <ul class="blunders">
+        <li><span class="qq" aria-hidden="true">??</span><span>Applying before the site loads on askthemove.online.</span></li>
+        <li><span class="qq" aria-hidden="true">??</span><span>Signing up for the Console with Gmail.</span></li>
+        <li><span class="qq" aria-hidden="true">??</span><span>A Console organization with zero Claude usage.</span></li>
+        <li><span class="qq" aria-hidden="true">??</span><span>Any invented number.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="ref" id="after" data-sec="after">
+    <h2 class="phase-h"><button type="button" class="toggle" aria-expanded="false" aria-controls="after-body"><span class="toggle-text"><span class="label">Reference</span><span class="phase-name">After the decision</span></span><span class="pm" aria-hidden="true"><svg viewBox="0 0 20 20"><path class="pv" d="M10 3.5c.2 4.3.1 8.6-.2 13"/><path d="M3.6 10.3c4.2-.3 8.5-.4 12.8-.1"/></svg></span></button></h2>
+    <div class="ref-body" id="after-body" hidden>
+      <div class="two">
+        <div>
+          <h3>If approved</h3>
+          <ol>
+            <li>If the Team offer is back (paused since 9 Oct), claim the Team year. Before you confirm, check the seat type, number of seats, billing period and amount due.</li>
+            <li>If the credit offer is back (paused since 9 Oct), claim the $1,000 API credit and confirm it shows in the AskTheMove organization. Keep the spend limit on.</li>
+            <li>If they ask, return the affidavit and the publicity release within 14 days.</li>
+            <li>Register for Applied AI office hours.</li>
+            <li>If you got them, set reminders for the credit expiring (6 months after it’s granted) and for the Team renewal.</li>
+          </ol>
+        </div>
+        <div>
+          <h3>If not approved</h3>
+          <ul>
+            <li>There are no published reasons and no published rule for reapplying.</li>
+            <li>Don’t open a second account.</li>
+            <li>Grow sign-ups and real Claude usage. Then ask Console support, from the same account, whether you can reapply. <span class="aside">This is Claude’s suggestion, not a documented path.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ref" id="later" data-sec="later">
+    <h2 class="phase-h"><button type="button" class="toggle" aria-expanded="false" aria-controls="later-body"><span class="toggle-text"><span class="label">Reference</span><span class="phase-name">Praxmodoro: later</span></span><span class="pm" aria-hidden="true"><svg viewBox="0 0 20 20"><path class="pv" d="M10 3.5c.2 4.3.1 8.6-.2 13"/><path d="M3.6 10.3c4.2-.3 8.5-.4 12.8-.1"/></svg></span></button></h2>
+    <div class="ref-body" id="later-body" hidden>
+      <p>Apply for Praxmodoro only after AskTheMove has a decision and Praxmodoro ships an opt-in Claude feature. It needs its own domain, email, site and Console organization.</p>
+    </div>
+  </section>
+
+  <footer class="foot">Last updated 9 Oct 2026 · Claude ticks steps it can verify (PR merges, DNS); you tick the rest.</footer>
+</div>
+</div>
+<div class="sr-only" aria-live="polite" id="live"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /*
+   * Steps already done when this page was written (8 Oct 2026). None of them is hardcoded as done:
+   * every tick comes from the "steps" collection in the artifact database at runtime.
+   *   p1-merge-17  (PR #17 merged 8 Oct, 15:13 UTC)
+   *   p2-buy       (askthemove.online bought on Cloudflare Registrar)
+   *   p2-zoho      (Zoho Mail Forever Free, domain verified)
+   *   p2-dns       (MX, SPF, DKIM, DMARC in Cloudflare DNS)
+   *   p2-mailbox   (prax@askthemove.online tested both ways)
+   *
+   * Data model: collection "steps", one document per step id: { done: boolean, updatedAt: ISO string, by: "page" }.
+   * A missing document means "not done".
+   */
+
+  var GH = 'https://github.com/praxstack/ChessLab/pull/';
+  // The token is read at a hidden prompt and handed to curl on stdin, so it never lands in shell history.
+  var CURL = 'printf \'Admin token: \'; read -rs ADMIN_TOKEN; echo\n' +
+    'printf \'header = "Authorization: Bearer %s"\\n\' "$ADMIN_TOKEN" \\\n' +
+    '  | curl -fsS -K - https://askthemove.online/api/waitlist/export -o waitlist.csv\n' +
+    'unset ADMIN_TOKEN';
+
+  var PHASES = [
+    { n: 1, sq: 'e3', short: 'Code on main', title: 'Code on main',
+      intro: 'The coach, the original art and the AskTheMove name land on main.',
+      steps: [
+        { id: 'p1-merge-17', owner: 'you', time: '1 min', min: 1, short: 'PR #17',
+          title: 'Merge PR #17: the Claude coach',
+          why: 'Adds “Explain why” and “Why not this move?”.',
+          sub: ['Open [PR #17](' + GH + '17).', 'Click **Merge pull request**, then **Confirm merge**.'],
+          doneWhen: 'The PR shows a purple **Merged** badge.' },
+        { id: 'p1-merge-19', owner: 'you', time: '1 min', min: 1, short: 'PR #19',
+          title: 'Merge PR #19: original pieces, icons and bots',
+          why: 'They replace the Chess.com art.',
+          sub: ['Open [PR #19](' + GH + '19).',
+                'At the bottom it should say **This branch has no conflicts with the base branch**.',
+                'Click **Merge pull request**, then **Confirm merge**.'],
+          note: 'One review thread is still open, about old proof screenshots in `docs/verification`. It doesn’t block the merge: those files are already on main, and Claude removes them in a follow-up PR.',
+          doneWhen: 'The PR shows a purple **Merged** badge.' },
+        { id: 'p1-merge-21', owner: 'you', time: '1 min', min: 1, short: 'PR #21', after: ['p1-merge-19'],
+          title: 'Merge PR #21: the app shows the AskTheMove name',
+          sub: ['Once #19 is merged, open [PR #21](' + GH + '21).',
+                'Check the line under the title. It should say it wants to merge into `main`.',
+                'If it still says `claude/original-assets`, click **Edit** next to the title, change the base to `main`, and confirm.',
+                'Click **Merge pull request**, then **Confirm merge**.'],
+          doneWhen: 'PR #21 is merged into main.' },
+        { id: 'p1-cleanup', owner: 'claude', short: 'the screenshot clean-up', after: ['p1-merge-21'],
+          title: 'Remove the old proof screenshots from docs/verification',
+          why: '712 files, about 270 MB, all showing the old copied art.',
+          sub: ['Claude opens a small PR that deletes them.', 'You merge it, the same way as #19.'],
+          doneWhen: 'The clean-up PR is merged.' },
+        { id: 'p1-merge-18', owner: 'claude', short: 'PR #18',
+          title: 'Merge PR #18: the landing page and waitlist',
+          why: 'Claude merges it once the review is clean.',
+          sub: ['Claude checks that the review on [PR #18](' + GH + '18) is clean.', 'Claude merges it into `main`.'],
+          doneWhen: 'PR #18 shows a purple **Merged** badge.' }
+      ] },
+
+    { n: 2, sq: 'e4', short: 'Domain & email', title: 'Domain & email',
+      intro: 'The domain is bought and mail works. A few small settings are left.',
+      steps: [
+        { id: 'p2-buy', owner: 'you', title: 'Buy askthemove.online',
+          why: 'Cloudflare Registrar, $4.99 the first year. It renews at $27.70 on 8 Oct 2027, and auto-renew is off.',
+          post: ['Move to askthemove.com only if AskTheMove takes off. Decide before the renewal.'] },
+        { id: 'p2-registrant', owner: 'you', time: '3 min', min: 3,
+          title: 'Verify the registrant email and check the contact details',
+          why: 'An unverified domain can be suspended under ICANN rules.',
+          sub: ['Find Cloudflare’s registrant verification email and click the verification link.',
+                'In the [Cloudflare dashboard](https://dash.cloudflare.com), open **Domain registration** → **Manage domains** → **askthemove.online** → **Contacts**.',
+                'Make sure the contact details are accurate.'],
+          doneWhen: 'No verification warning on the domain.' },
+        { id: 'p2-zoho', owner: 'you', title: 'Zoho Mail Forever Free: organization AskTheMove, domain verified' },
+        { id: 'p2-dns', owner: 'you', title: 'Mail records in Cloudflare DNS',
+          why: 'MX `mx.zoho.in` 10, `mx2.zoho.in` 20, `mx3.zoho.in` 50, plus SPF, DKIM and DMARC.' },
+        { id: 'p2-mailbox', owner: 'you', title: 'prax@askthemove.online sends and receives',
+          why: 'Tested from Gmail both ways.' },
+        { id: 'p2-hello', owner: 'you', time: '1 min', min: 1,
+          title: 'Add hello@askthemove.online as an alias',
+          why: 'The website shows this address.',
+          sub: ['In the Zoho Mail Admin Console, open **Users** → your name → **Mailbox Settings** → **Email Alias** → **Add**.',
+                'Type {{hello}} and **Save**.',
+                'Optional: add {{beta}} and {{info}} the same way. The free plan allows aliases on your own domain.'],
+          doneWhen: 'A mail from Gmail to {{hello@askthemove.online}} lands in your Zoho inbox.' },
+        { id: 'p2-2fa', owner: 'you', time: '3 min', min: 3,
+          title: 'Turn on two-step sign-in for Zoho and fix your display name',
+          why: 'Anthropic’s decision and your Console sign-in codes land in this inbox.',
+          sub: ['Open [Zoho Accounts](https://accounts.zoho.in) → **Multi-Factor Authentication**.',
+                'Set it up with the Zoho OneAuth app or an authenticator app.',
+                'Then open **Profile** and fix the spelling of your display name. Zoho currently shows “Parthasathi”.'],
+          doneWhen: 'Zoho asks for a second step when you sign in, and your name is spelled right.' },
+        { id: 'p2-app', owner: 'you', time: '2 min', min: 2,
+          title: 'Install the Zoho Mail app on your phone and turn on notifications',
+          why: 'The free plan has no IMAP, POP or ActiveSync, so this mail won’t appear in Gmail or Apple Mail.',
+          doneWhen: 'A test mail to prax@askthemove.online shows up as a notification.' }
+      ] },
+
+    { n: 3, sq: 'e5', short: 'Website live', title: 'Website live on askthemove.online',
+      intro: 'In Terminal on your Mac, and free. The commands take about 20 minutes; each one is its own step.',
+      steps: [
+        { id: 'p3-node', owner: 'you', time: '1 min', min: 1, title: 'Check Node',
+          cmd: ['node -v'],
+          post: ['It must print v22 or higher. If not, install the current LTS from [nodejs.org](https://nodejs.org).'] },
+        { id: 'p3-clone', owner: 'you', time: '3 min', min: 3, title: 'Get the site code',
+          cmd: ['git clone https://github.com/praxstack/ChessLab.git', 'cd ChessLab/site && npm install'],
+          post: ['Already have the repo? In it, run `git checkout main && git pull` first, then `cd site && npm install`.',
+                 'If PR #18 isn’t merged yet, run `git checkout claude/beta-waitlist-site` before `cd site`.'],
+          doneWhen: '`npm install` finishes without errors.' },
+        { id: 'p3-login', owner: 'you', time: '1 min', min: 1, title: 'Sign in to Cloudflare',
+          cmd: ['npx wrangler login'],
+          post: ['Then press **Allow** in the browser window it opens.'] },
+        { id: 'p3-d1', owner: 'you', time: '2 min', min: 2, short: 'the waitlist database', title: 'Create the waitlist database',
+          cmd: ['npx wrangler d1 create askthemove-waitlist'],
+          sub: ['Copy the `database_id` it prints.',
+                'In `wrangler.toml`, paste it over the zeros: `00000000-0000-0000-0000-000000000000`.',
+                'Paste the id to Claude in the thread too.'],
+          doneWhen: '`wrangler.toml` has your id instead of the zeros, and Claude has it.' },
+        { id: 'p3-migrate', owner: 'you', time: '1 min', min: 1, title: 'Create its tables',
+          cmd: ['npm run db:migrate:remote'],
+          post: ['Answer `y` when it asks.'] },
+        { id: 'p3-pages', owner: 'you', time: '1 min', min: 1, title: 'Create the Pages project',
+          cmd: ['npx wrangler pages project create askthemove --production-branch main'],
+          post: ['If the name is taken, use `askthemove-beta`: change `name` in `wrangler.toml` and `siteUrl` in `site.config.json` to match, run `npm run build`, and use that name wherever a later step says `askthemove`, including both secrets and the `pages.dev` address.'] },
+        { id: 'p3-secrets', owner: 'you', time: '3 min', min: 3, title: 'Make two secrets',
+          cmd: [{ c: 'openssl rand -hex 32', cap: 'Run this twice and keep both strings.' },
+                { c: 'npx wrangler pages secret put ADMIN_TOKEN --project-name askthemove', cap: 'Paste the first string when it asks.' },
+                { c: 'npx wrangler pages secret put IP_HASH_SALT --project-name askthemove', cap: 'Paste the second string.' }],
+          post: ['Keep ADMIN_TOKEN in your password manager: it unlocks the waitlist download.'] },
+        { id: 'p3-deploy', owner: 'you', time: '2 min', min: 2, title: 'Deploy',
+          cmd: ['npm run deploy'],
+          post: ['Then open [askthemove.pages.dev](https://askthemove.pages.dev) and join with your Gmail.'],
+          doneWhen: 'The site loads and takes your sign-up.' },
+        { id: 'p3-domain', owner: 'you', time: '3 min', min: 3, title: 'Connect the domain',
+          sub: ['In the [Cloudflare dashboard](https://dash.cloudflare.com), open **Compute** → **Workers & Pages** → **askthemove** → **Custom domains**.',
+                'Choose **Set up a custom domain**, enter {{askthemove.online}} and press **Activate**.',
+                'Do the same for {{www.askthemove.online}}.'],
+          doneWhen: 'Both domains show as active.' },
+        { id: 'p3-siteurl', owner: 'you', time: '2 min', min: 2, title: 'Point the links at the domain',
+          why: 'In `site.config.json`, set {{"siteUrl": "https://askthemove.online"}}, then:',
+          cmd: ['npm run build && npm run deploy'] },
+        { id: 'p3-phone', owner: 'you', time: '1 min', min: 1, short: 'the site on your phone',
+          title: 'Open askthemove.online on your phone',
+          why: '[askthemove.online](https://askthemove.online)',
+          doneWhen: 'It loads over HTTPS, with the padlock.' },
+        { id: 'p3-csv', owner: 'you', time: '3 min', min: 3, title: 'Join your own waitlist once and download the CSV',
+          why: 'Proves the whole path works, from the form to the database to the export.',
+          sub: ['Join the waitlist on [askthemove.online](https://askthemove.online).',
+                { t: 'Download the list. Paste your ADMIN_TOKEN when it asks; nothing shows as you paste:', cmd: [CURL] },
+                'Open `waitlist.csv`. It has one row per person: email, when they joined, their rating answer, the form they used and any campaign tags.'],
+          doneWhen: 'Your sign-up is a row in `waitlist.csv`.' },
+        { id: 'p3-legal', owner: 'both', time: '10 min', min: 10, title: 'Read the privacy notice and the terms',
+          why: 'Both pages are drafts with a “not yet reviewed” banner.',
+          sub: ['Read the [privacy notice](https://askthemove.online/privacy/) and the [terms](https://askthemove.online/terms/).',
+                'Tell Claude anything that doesn’t match what you do.',
+                'Claude fixes it and removes both banners.'],
+          doneWhen: 'Neither page shows the banner.' },
+        { id: 'p3-pr18', owner: 'claude', after: ['p3-d1'],
+          title: 'Open a small PR with your database_id and the askthemove.online address',
+          why: 'Claude uses the database_id you pasted in the thread.',
+          doneWhen: 'The PR is open on GitHub.' }
+      ] },
+
+    { n: 4, sq: 'e6', short: 'Real Claude usage', title: 'Real Claude usage on the Console',
+      intro: 'A Console organization on your company email, with real Claude calls in it.',
+      steps: [
+        { id: 'p4-signup', owner: 'you', time: '5 min', min: 5, title: 'Sign up for the Claude Console with your company email',
+          sub: ['Go to [platform.claude.com](https://platform.claude.com) and sign up with {{prax@askthemove.online}}. Not Gmail.',
+                'Name the organization {{AskTheMove}}.'],
+          doneWhen: 'The Console shows the AskTheMove organization, signed in as prax@askthemove.online.' },
+        { id: 'p4-key', owner: 'you', time: '5 min', min: 5, title: 'Add a small prepaid credit, create an API key and set a monthly spend limit',
+          why: 'The free API credits are paused since 9 Oct, so you pay for every explanation: about 2 to 4 cents each on Claude Opus 5.5 (Claude’s estimate). When the limit is reached, the app shows the plain engine summary instead.',
+          sub: ['Add about $10 of prepaid credit in the Console’s billing settings.',
+                'Create an API key. Keep it in your password manager.',
+                'Go to **Settings > Billing > Spend limits** and set a monthly limit of $10.'],
+          doneWhen: 'The key is saved and the spend limit is on.' },
+        { id: 'p4-run', owner: 'both', time: '30 min', min: 30, title: 'Use “Explain why” on 10 to 20 real positions',
+          why: 'Run the app with `ANTHROPIC_API_KEY` set. Claude gives you the exact commands.',
+          sub: ['Ask Claude in the thread for the commands.',
+                'Open positions from your own games and use **Explain why** on 10 to 20 of them.',
+                'Send Claude any explanation that looks wrong.'],
+          doneWhen: 'The Console shows real usage on the AskTheMove organization.' },
+        { id: 'p4-orgid', owner: 'you', time: '1 min', min: 1, title: 'Copy the Organization ID',
+          why: 'It’s in the Console’s organization settings. The application form may ask for it.',
+          doneWhen: 'The ID is saved somewhere you’ll find it when you apply.' },
+        { id: 'p4-clip', owner: 'both', title: 'Re-record the game-review clip with the coach on',
+          why: 'Claude recuts the demo video to show a real Claude explanation.',
+          doneWhen: 'The new demo video is ready.' }
+      ] },
+
+    { n: 5, sq: 'e7', short: 'Soft launch', title: 'Soft launch on X and LinkedIn',
+      intro: 'On X from @AskTheMove, reposted from @0xPraxLannister, then LinkedIn the same day. The exact text is in the launch kit below the steps.',
+      coach: 'Only after askthemove.online loads.',
+      steps: [
+        { id: 'p5-profile', owner: 'you', time: '3 min', min: 3, after: ['p3-phone'],
+          title: 'Finish the @AskTheMove profile and point your own bio at it',
+          why: 'On your own account change only the bio and website: X removes the blue check for a re-review when you change your display name, username or profile photo.',
+          sub: ['@AskTheMove: name AskTheMove, the logo mark as the photo, the brand bio and askthemove.online from the launch kit.', 'Your own account: the bio from the kit, with “Building @AskTheMove”. Keep the location as “Shahjahanpur, India”.'],
+          doneWhen: 'Both profiles show askthemove.online, and your bio links to @AskTheMove.' },
+        { id: 'p5-thread', owner: 'you', time: '5 min', min: 5, short: 'the X thread', after: ['p3-phone'],
+          title: 'Post the 5-post thread from @AskTheMove with the demo video, pin post 1, and repost it from your own account',
+          sub: ['Attach `launch/video/askthemove/askthemove-demo.mp4` to post 1.',
+                'Paste posts 1 to 5 from the launch kit. The link is only in post 5 and your bio.',
+                'Pin post 1 to your profile.'],
+          doneWhen: 'The thread is live and post 1 is pinned.' },
+        { id: 'p5-replies', owner: 'you', time: '60 min', min: 60, after: ['p3-phone'],
+          title: 'Stay for the first hour and reply to everyone',
+          why: 'Early replies help the post travel.' },
+        { id: 'p5-linkedin', owner: 'you', time: '5 min', min: 5, short: 'the LinkedIn post', after: ['p3-phone'],
+          title: 'Post on LinkedIn the same day and add “Founder, AskTheMove” to your headline',
+          why: 'Upload the demo video straight to LinkedIn, not as a link, so it plays in the feed.',
+          sub: ['Add the headline from the launch kit to the front of yours.',
+                'Start a post, upload `askthemove-demo.mp4`, and paste the LinkedIn post from the kit.'],
+          doneWhen: 'The post is live and the video plays in the feed.' },
+        { id: 'p5-share', owner: 'you', time: 'next few days', after: ['p3-phone'],
+          title: 'Share the video and link where adult improvers are',
+          why: 'Read each place’s self-promotion rules first.',
+          sub: ['[r/chessbeginners](https://www.reddit.com/r/chessbeginners/)', 'The [Lichess forum](https://lichess.org/forum)', 'Chess Discords you’re in.'],
+          doneWhen: 'Posted in each place whose rules allow it.' },
+        { id: 'p5-handle', owner: 'you', time: '2 min', min: 2, after: ['p3-phone'],
+          title: 'Claim the @AskTheMove handle',
+          why: 'Done on 9 October, on the company email and a business number.' },
+        { id: 'p5-count', owner: 'you', time: '2 min', min: 2, short: 'the sign-up count', after: ['p3-phone'],
+          title: 'Count the real sign-ups from the CSV',
+          why: 'Do this before you apply. Use the real number, even if it’s small.',
+          sub: [{ t: 'Download the list again, pasting your ADMIN_TOKEN when it asks:', cmd: [CURL] },
+                { t: 'Count the rows, leaving out the header line:', cmd: ['tail -n +2 waitlist.csv | wc -l'] },
+                'Take away your own test sign-ups.'],
+          doneWhen: 'You have the real number written down.' }
+      ] },
+
+    { n: 6, sq: 'e8', short: 'Apply', title: 'Apply',
+      intro: 'Apply only after the site is live, the X and LinkedIn launch is done, and some sign-ups have come in. Since 9 Oct the Team year and the $1,000 API credits are paused; the Startup Stack, office hours and events are still offered, and every application is re-reviewed.',
+      coach: 'Don’t apply again from another account while it’s pending.', coachRed: true,
+      steps: [
+        { id: 'p6-signin', owner: 'you', time: '1 min', min: 1, short: 'the Console sign-in',
+          after: ['p3-phone', 'p5-thread', 'p5-linkedin', 'p5-count'],
+          title: 'Sign in to the Claude Console as prax@askthemove.online',
+          why: 'With the AskTheMove organization selected.' },
+        { id: 'p6-open', owner: 'you', time: '1 min', min: 1, short: 'opening the form', after: ['p6-signin'],
+          title: 'Open the Claude for Startups page and press Apply now',
+          why: '[claude.com/programs/startups](https://claude.com/programs/startups). Read the FAQ first to see whether the Team and credit offers are open again.' },
+        { id: 'p6-paste', owner: 'you', time: '10 min', min: 10, short: 'pasting the answers', after: ['p6-open'],
+          title: 'Paste the answers from Application answers',
+          why: 'Never round up a number.',
+          sub: ['Open [Application answers](#answers) further down this page.',
+                'Copy each value into the form. Fill in your name, date of birth, Organization ID and real spend yourself.',
+                'For “What are you building?”, use the version that matches where Phase 4 is.'],
+          doneWhen: 'Every field is filled with a true value.' },
+        { id: 'p6-submit', owner: 'you', time: '5 min', min: 5, after: ['p6-paste'],
+          title: 'Read the program terms, submit, and keep the confirmation email',
+          sub: ['Read the [program terms](https://www.anthropic.com/startup-program-official-terms).',
+                'Submit the form.',
+                'Keep the confirmation email in your Zoho inbox.'],
+          doneWhen: 'The confirmation email is in your inbox.' }
+      ] }
+  ];
+
+  var K = {
+    bio: 'Building AskTheMove ♟️: a chess coach that shows you why a move was a mistake. Built systems at Amazon scale. Logging agentic AI, system design, LLM inference.',
+    bioShort: 'Building AskTheMove ♟️, a chess coach that explains why your move was a mistake. Stockfish finds it, Claude explains it. Built systems at Amazon scale.',
+    website: 'askthemove.online',
+    email: 'hello@askthemove.online',
+    posts: [
+      'I\'m building AskTheMove ♟️\n\nA chess coach that shows you why your move was a mistake, in plain words and arrows on the board. Not just "Nf5 was best, +2.3".\n\nStockfish finds the facts. Claude explains them.\n\nHere\'s a one-minute look 👇',
+      'Engines are brilliant and silent. They name the best move but never say what you missed, so the same mistake comes back next game.\n\nAskTheMove is for adult improvers, roughly 800 to 1600, who want the why.',
+      'How it stays honest: the coach only sees verified engine evidence (lines, mate distance, material, threats).\n\nBefore you see an explanation, the server checks every move and "mate in N" it cites against that evidence. If anything doesn\'t match, you get the plain engine summary.',
+      'Working today: import your games, full Stockfish review, variations and study notes, and 43 original bots on a 22-level strength ladder.\n\nThe Claude coach is being tested now. The waitlist decides who gets in first.',
+      'The beta is free. Join the waitlist: askthemove.online\n\nQuestions or ideas: hello@askthemove.online, or just reply here. I read everything.'
+    ],
+    postHints: ['with the video', '', '', '', 'the link goes here'],
+    one: 'I\'m building AskTheMove ♟️, a chess coach that shows you why your move was a mistake, not just the engine\'s best move.\n\nStockfish finds the facts, Claude explains them, and each move it cites is checked against the engine.\n\nFree beta waitlist: askthemove.online',
+    liHeadline: 'Founder, AskTheMove (a chess coach built on Stockfish and Claude)',
+    liPost: 'I\'m building AskTheMove ♟️\n\nChess engines are brilliant and silent. They tell you "Nf5 was best, +2.3", but not what you missed, so the same mistake comes back next game.\n\nAskTheMove is a chess coach for adult improvers, roughly 800 to 1600, that shows you why a move was a mistake, in plain words and arrows on the board.\n\nHow it works:\n• Stockfish and a chess rules library produce verified evidence: engine lines, mate distance, material and threats.\n• Claude turns that evidence into a few plain sentences.\n• Before you see an explanation, the server checks every move and every "mate in N" it cites against that evidence. If anything doesn\'t match, you get the plain engine summary instead.\n\nWorking today: game import, full Stockfish review, variations and study notes, and 43 original bots on a 22-level strength ladder. The Claude coach is being tested now.\n\nThe beta is free. Join the waitlist at askthemove.online, and if you know someone learning chess, I\'d love it if you passed this on.\n\nQuestions or ideas: hello@askthemove.online\n\n#chess #buildinpublic #AI'
+  };
+
+  var BUILDING = {
+    after: 'AskTheMove is a chess coach for adult improvers, rated about 800 to 1600, that explains why a move was a mistake instead of only naming the engine\'s best move. Stockfish and a chess rules library produce verified evidence (engine lines, mate distance, material, threats), and the Claude API turns that evidence into a few plain sentences. Game import, Stockfish game review, variations, study notes and rated bot opponents already work; the Claude coach is in private testing.',
+    before: 'AskTheMove is a chess coach for adult improvers, rated about 800 to 1600, that explains why a move was a mistake instead of only naming the engine\'s best move. Stockfish and a chess rules library produce verified evidence (engine lines, mate distance, material, threats), and the Claude API turns that evidence into a few plain sentences. Game import, Stockfish game review, variations, study notes and rated bot opponents already work; the Claude coach is built and being tested.'
+  };
+
+  /* ---------- index ---------- */
+  var STEPS = [], BYID = {};
+  PHASES.forEach(function (p) { p.steps.forEach(function (s) { s.phase = p; STEPS.push(s); BYID[s.id] = s; }); });
+
+  /* ---------- small helpers ---------- */
+  var $ = function (sel, root) { return (root || document).querySelector(sel); };
+  var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function fmt(s) {
+    var h = esc(s);
+    h = h.replace(/\{\{(.+?)\}\}/g, function (m, v) {
+      return '<span class="chipval"><code>' + v + '</code><button type="button" class="copy copy--sm" data-copy="' + v + '" aria-label="Copy ' + v + '">Copy</button></span>';
+    });
+    h = h.replace(/`([^`]+)`/g, '<code>$1</code>');
+    h = h.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    h = h.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, function (m, label, url) {
+      if (url.charAt(0) === '#') return '<a href="' + url + '" data-jump="' + url.slice(1) + '">' + label + '</a>';
+      return '<a href="' + url + '" target="_blank" rel="noopener">' + label + '<span class="ext" aria-hidden="true">↗</span></a>';
+    });
+    return h;
+  }
+  function lsGet(k) { try { var v = window.localStorage.getItem(k); return v == null ? null : JSON.parse(v); } catch (e) { return null; } }
+  function lsSet(k, v) { try { window.localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage blocked */ } }
+  var reduced = false;
+  try { reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+
+  var TICK_PATH = 'M5 17.5c2.1 1.2 4.3 3.6 6.4 7.2 3.4-8.2 8.4-15.2 15.6-20.4';
+  var TICK = '<svg class="tick" viewBox="0 0 32 32" aria-hidden="true"><path pathLength="1" d="' + TICK_PATH + '"/></svg>';
+  var PLUS = '<svg class="plus" viewBox="0 0 20 20" aria-hidden="true"><path class="pv" d="M10 3.5c.2 4.3.1 8.6-.2 13"/><path d="M3.6 10.3c4.2-.3 8.5-.4 12.8-.1"/></svg>';
+  var PM = '<span class="pm" aria-hidden="true"><svg viewBox="0 0 20 20"><path class="pv" d="M10 3.5c.2 4.3.1 8.6-.2 13"/><path d="M3.6 10.3c4.2-.3 8.5-.4 12.8-.1"/></svg></span>';
+  var STAMP = '<svg viewBox="0 0 32 28" aria-hidden="true"><path d="M4 15.5c2.2 1.3 4.4 3.8 6.4 7.4 3.6-8.4 8.6-15.2 17-20.6"/></svg>';
+  var PAWN = '<svg viewBox="0 0 45 45" aria-hidden="true">' +
+    '<path class="pc" d="M15.6 37.6C16.6 31.4 19 27.6 19.6 23h5.8c.6 4.6 3 8.4 4 14.6z"/>' +
+    '<path class="pc" d="M16.4 22.9c0-2.4 12.2-2.4 12.2 0s-12.2 2.4-12.2 0z"/>' +
+    '<circle class="pc" cx="22.5" cy="14.8" r="5.6"/>' +
+    '<path class="pc" d="M11.6 37.6h21.8c1.2 0 1.6.8 1.6 1.8v1.1H10v-1.1c0-1 .4-1.8 1.6-1.8z"/></svg>';
+  var QUEEN = '<svg viewBox="0 0 45 45" aria-hidden="true">' +
+    '<path class="pc" d="M12.2 36.6c1-5.4.6-9.8-1.6-17.6l6.2 6.2-.2-11.2 4.6 9.8 1.3-12 1.3 12 4.6-9.8-.2 11.2 6.2-6.2c-2.2 7.8-2.6 12.2-1.6 17.6z"/>' +
+    '<circle class="pc" cx="10.5" cy="17.4" r="2.2"/><circle class="pc" cx="16.6" cy="12.6" r="2.2"/><circle class="pc" cx="22.5" cy="10.4" r="2.2"/><circle class="pc" cx="28.4" cy="12.6" r="2.2"/><circle class="pc" cx="34.5" cy="17.4" r="2.2"/>' +
+    '<path class="pc-line" d="M13.4 31.6c6-1.4 12.2-1.4 18.2 0"/>' +
+    '<path class="pc" d="M11.4 36.6h22.2c1.2 0 1.6.8 1.6 1.8v1.4H9.8v-1.4c0-1 .4-1.8 1.6-1.8z"/></svg>';
+  var MINI_PAWN = '<svg viewBox="0 0 45 45" aria-hidden="true"><path class="pc" d="M15.6 37.6C16.6 31.4 19 27.6 19.6 23h5.8c.6 4.6 3 8.4 4 14.6z"/><circle class="pc" cx="22.5" cy="14.8" r="5.6"/><path class="pc" d="M11.6 37.6h21.8c1.2 0 1.6.8 1.6 1.8v1.1H10v-1.1c0-1 .4-1.8 1.6-1.8z"/></svg>';
+
+  function ownerChip(o) { return '<span class="owner owner--' + o + '">' + (o === 'you' ? 'You' : o === 'claude' ? 'Claude' : 'You + Claude') + '</span>'; }
+  function cmdBlock(c) {
+    var o = typeof c === 'string' ? { c: c } : c;
+    return '<div class="cmd" data-copyblock>' + (o.cap ? '<p class="cmd-cap">' + fmt(o.cap) + '</p>' : '') +
+      '<div class="cmd-line"><span class="cmd-prompt" aria-hidden="true">$</span><div class="cmd-scroll" tabindex="0" role="region" aria-label="Command"><code data-copysrc>' + esc(o.c) + '</code></div>' +
+      '<button type="button" class="copy">Copy</button></div></div>';
+  }
+  function subList(sub) {
+    return '<ol class="sub">' + sub.map(function (x) {
+      if (typeof x === 'string') return '<li>' + fmt(x) + '</li>';
+      return '<li>' + fmt(x.t) + (x.cmd || []).map(cmdBlock).join('') + '</li>';
+    }).join('') + '</ol>';
+  }
+  function doneWhenHTML(s, cls) { return s.doneWhen ? '<p class="done-when ' + (cls || '') + '"><span class="label">Done when</span>' + fmt(s.doneWhen) + '</p>' : ''; }
+  function postHTML(s) { return (s.post || []).map(function (p) { return '<p class="step-post">' + fmt(p) + '</p>'; }).join(''); }
+  function hasDetail(s) { return !!(s.sub || s.note); }
+
+  function stepHTML(s) {
+    var tt = '<span class="tt" id="t-' + s.id + '">' + fmt(s.title) + '</span>';
+    var title = hasDetail(s)
+      ? '<button type="button" class="step-toggle" aria-expanded="false" aria-controls="d-' + s.id + '">' + tt + PLUS + '</button>'
+      : tt;
+    var html = '<li class="step" id="step-' + s.id + '" data-id="' + s.id + '">' +
+      '<label class="check"><input type="checkbox" class="cb" data-id="' + s.id + '" id="cb-' + s.id + '" aria-labelledby="t-' + s.id + '"><span class="box" aria-hidden="true"></span>' + TICK + '</label>' +
+      '<div class="step-main"><h3 class="step-title">' + title + '</h3>' +
+      '<p class="step-meta">' + ownerChip(s.owner) + (s.time ? '<span>' + esc(s.time) + '</span>' : '') + '<span class="waits" hidden></span></p>' +
+      (s.why ? '<p class="step-why">' + fmt(s.why) + '</p>' : '') +
+      (s.cmd ? '<div class="step-row-cmds">' + s.cmd.map(cmdBlock).join('') + '</div>' : '') +
+      postHTML(s);
+    if (hasDetail(s)) {
+      html += '<div class="step-detail" id="d-' + s.id + '" hidden>' + (s.sub ? subList(s.sub) : '') +
+        (s.note ? '<p class="note"><span class="label">Note</span>' + fmt(s.note) + '</p>' : '') + doneWhenHTML(s) + '</div>';
+    } else {
+      html += doneWhenHTML(s, 'done-when--inline');
+    }
+    return html + '</div></li>';
+  }
+
+  /* ---------- X / LinkedIn counting ---------- */
+  var PICTO = null;
+  try { PICTO = new RegExp('\\p{Extended_Pictographic}', 'u'); } catch (e) { PICTO = null; }
+  function cpWeight(cp) { return (cp <= 4351 || (cp >= 8192 && cp <= 8205) || (cp >= 8208 && cp <= 8223) || (cp >= 8242 && cp <= 8247)) ? 1 : 2; }
+  function xCount(text) {
+    // X counts each link as 23 characters, each emoji as 2, and most other characters as 1.
+    var urls = 0;
+    var t = text.normalize ? text.normalize('NFC') : text;
+    t = t.replace(/(^|[^@\w.\-])((?:https?:\/\/)?(?:[a-z0-9\-]+\.)+(?:online|com|org|net|dev|app|io|ai)(?:\/[^\s]*)?)(?![\w\-])/gi, function (m, pre) { urls++; return pre; });
+    var n = 0, parts = null;
+    if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+      try { parts = Array.from(new Intl.Segmenter('en', { granularity: 'grapheme' }).segment(t), function (x) { return x.segment; }); } catch (e) { parts = null; }
+    }
+    if (!parts) parts = Array.from(t);
+    parts.forEach(function (g) {
+      if (PICTO && PICTO.test(g)) { n += 2; return; }
+      Array.from(g).forEach(function (ch) { var cp = ch.codePointAt(0); if (cp !== 0xFE0F && cp !== 0x200D) n += cpWeight(cp); });
+    });
+    return n + urls * 23;
+  }
+  function plainCount(text) { return Array.from(text).length; }
+
+  function kitItem(label, hint, text, opts) {
+    opts = opts || {};
+    var count = '';
+    var warn = '';
+    if (opts.limit) {
+      var n = opts.x ? xCount(text) : plainCount(text);
+      var over = n > opts.limit;
+      count = '<span class="xcount' + (over ? ' over' : '') + '">' + n + ' / ' + opts.limit + (over ? ' over' : '') + '</span>';
+      if (over) warn = '<p class="kit-warn">X counts askthemove.online as 23 characters, so this is ' + (n - opts.limit) + ' over. Trim a word before posting, or X cuts it off behind “Show more”.</p>';
+    }
+    return '<div class="kit-item" data-copyblock><div class="kit-item-head"><span class="kh-left"><span class="label">' + esc(label) + '</span>' +
+      (hint ? '<span class="kit-hint">' + esc(hint) + '</span>' : '') + '</span>' + count +
+      '<button type="button" class="copy">Copy</button></div>' +
+      '<p class="kit-text' + (opts.mono ? ' kit-text--mono' : '') + '" data-copysrc>' + esc(text) + '</p>' + warn + '</div>';
+  }
+  function kitHTML() {
+    var h = '<div class="kit" id="kit"><h3 class="kit-h">Launch kit</h3>' +
+      '<p class="kit-sub">The exact text for X and LinkedIn. Counts follow X’s rules: a link counts as 23 characters and an emoji as 2.</p>';
+    h += '<div class="kit-group"><h4 class="label">X profile</h4>' +
+      kitItem('Bio', 'recommended', K.bio, { limit: 160 }) +
+      kitItem('Bio', 'shorter alternative', K.bioShort, { limit: 160 }) +
+      kitItem('Website', '', K.website, { mono: true }) +
+      kitItem('Public email', 'keep prax@ for Anthropic, the Console and Cloudflare', K.email, { mono: true }) + '</div>';
+    h += '<div class="kit-group"><h4 class="label">X thread</h4>' +
+      K.posts.map(function (p, i) { return kitItem('Post ' + (i + 1), K.postHints[i], p, { limit: 280, x: true }); }).join('') +
+      kitItem('One-post version', 'if you’d rather not do a thread', K.one, { limit: 280, x: true }) + '</div>';
+    h += '<div class="kit-group"><h4 class="label">LinkedIn</h4>' +
+      kitItem('Headline', 'add to the front of yours', K.liHeadline) +
+      kitItem('Post', 'upload the video, don’t link it', K.liPost, { limit: 3000 }) + '</div>';
+    return h + '</div>';
+  }
+
+  /* ---------- build the page once ---------- */
+  var els = { step: {}, cb: {}, waits: {}, phase: {}, sq: {} };
+
+  function buildPhases() {
+    var html = PHASES.map(function (p) {
+      var cells = p.steps.map(function () { return '<span class="cell"></span>'; }).join('');
+      return '<section class="phase" id="phase-' + p.n + '" data-phase="' + p.n + '">' +
+        '<div class="phase-head"><h2 class="phase-h"><button type="button" class="toggle" aria-expanded="true" aria-controls="phase-' + p.n + '-body">' +
+        '<span class="toggle-text"><span class="phase-kicker label"><span>Phase ' + p.n + ' &middot; ' + p.sq + '</span><span class="here" hidden>' + MINI_PAWN + 'the pawn is here</span><span class="stamp" hidden>' + STAMP + 'done</span></span>' +
+        '<span class="phase-name">' + esc(p.title) + '</span></span>' + PM + '</button></h2>' +
+        '<p class="phase-stat"><span class="pcount"></span><span class="pcells" aria-hidden="true">' + cells + '</span><span class="pleft"></span></p>' +
+        '<p class="phase-intro">' + fmt(p.intro) + '</p>' +
+        (p.coach ? '<p class="coach' + (p.coachRed ? ' coach--red' : '') + '">' + fmt(p.coach) + '</p>' : '') + '</div>' +
+        '<div class="phase-body" id="phase-' + p.n + '-body"><ol class="steps">' + p.steps.map(stepHTML).join('') + '</ol>' +
+        '<p class="empty-note" hidden></p>' + (p.n === 5 ? kitHTML() : '') + '</div></section>';
+    }).join('');
+    $('#phases').innerHTML = html;
+    STEPS.forEach(function (s) {
+      els.step[s.id] = document.getElementById('step-' + s.id);
+      els.cb[s.id] = document.getElementById('cb-' + s.id);
+      els.waits[s.id] = $('.waits', els.step[s.id]);
+    });
+    PHASES.forEach(function (p) {
+      var sec = document.getElementById('phase-' + p.n);
+      els.phase[p.n] = { sec: sec, toggle: $('.toggle', sec), body: $('.phase-body', sec), count: $('.pcount', sec),
+        cells: $$('.pcells .cell', sec), left: $('.pleft', sec), here: $('.here', sec), stamp: $('.stamp', sec), empty: $('.empty-note', sec) };
+    });
+  }
+
+  function buildFile() {
+    var items = [{ start: true, rank: 2, sq: 'e2' }].concat(PHASES.map(function (p, i) { return { p: p, rank: i + 3, sq: p.sq }; }));
+    $('#file').innerHTML = items.map(function (it) {
+      var dark = (5 + it.rank) % 2 === 0;
+      var cls = 'sq' + (dark ? ' sq--dark' : '');
+      if (it.start) {
+        return '<li class="' + cls + ' sq--start"><div class="sq-btn" role="img" aria-label="e2, the start"><span class="sq-cell"><span class="sq-slot"></span></span>' +
+          '<span class="sq-head"><span class="label">Start</span></span>' +
+          '<span class="sq-label"><span class="sq-name">Start</span><span class="sq-count">8 Oct</span></span>' +
+          '<span class="sq-coord" aria-hidden="true">e2</span></div></li>';
+      }
+      var p = it.p;
+      return '<li class="' + cls + '" data-phase="' + p.n + '"><button type="button" class="sq-btn" data-goto="' + p.n + '">' +
+        '<span class="sq-cell"><span class="sq-mark"><svg class="sq-tick" viewBox="0 0 32 32" aria-hidden="true"><path pathLength="1" d="' + TICK_PATH + '"/></svg></span><span class="sq-slot"></span></span>' +
+        '<span class="sq-head"><span class="label">Phase ' + p.n + '</span>' + (p.n === 6 ? '<span class="sq-q" aria-hidden="true">=Q</span>' : '') + '</span>' +
+        '<span class="sq-label"><span class="sq-name"><span class="sq-pn">' + p.n + ' &middot; </span>' + esc(p.short) + '</span><span class="sq-count"></span></span>' +
+        '<span class="sq-coord" aria-hidden="true">' + p.sq + '</span></button></li>';
+    }).join('');
+    PHASES.forEach(function (p) {
+      var li = $('#file li[data-phase="' + p.n + '"]');
+      els.sq[p.n] = { li: li, btn: $('.sq-btn', li), count: $('.sq-count', li), slot: $('.sq-slot', li) };
+    });
+  }
+
+  function buildCells() {
+    var total = STEPS.length;
+    $('#total-n').textContent = total;
+    var cellsEl = $('#cells');
+    cellsEl.setAttribute('aria-valuemax', total);
+    cellsEl.innerHTML = PHASES.map(function (p) {
+      return '<span class="cg" data-steps="' + p.steps.length + '">' + p.steps.map(function (s) { return '<span class="cell" data-cell="' + s.id + '"></span>'; }).join('') + '</span>';
+    }).join('');
+    $$('.cg', cellsEl).forEach(function (g) { g.style.flex = g.getAttribute('data-steps') + ' 1 0'; });
+    els.cells = {};
+    $$('[data-cell]', cellsEl).forEach(function (c) { els.cells[c.getAttribute('data-cell')] = c; });
+  }
+
+  /* ---------- state ---------- */
+  var LS_STEPS = 'atm-launch-steps', LS_FILTER = 'atm-launch-filter', LS_OPEN = 'atm-launch-open';
+  function cleanMap(m) { var o = {}; if (m && typeof m === 'object') Object.keys(m).forEach(function (k) { if (BYID[k] && m[k] === true) o[k] = true; }); return o; }
+
+  var mode = 'local';          // 'connecting' | 'db' | 'local'
+  var base = cleanMap(lsGet(LS_STEPS));   // what the source of truth says (browser storage, then the database)
+  var optimistic = {};         // this viewer's ticks that haven't been confirmed yet
+  var pending = {};            // ticks made while the database was still connecting
+  var writers = {};
+  var readOnly = false, gotSnapshot = false, subDead = false, lastMeta = null;
+  var dbNs = null, unsub = null, resubTries = 0;
+  var filter = 'all';
+  var openPref = lsGet(LS_OPEN); if (!openPref || typeof openPref !== 'object') openPref = {};
+  var defaultsApplied = false;
+  var upId = undefined;
+  var variantChoice = null;
+
+  function has(o, k) { return Object.prototype.hasOwnProperty.call(o, k); }
+  function isDone(id) { return has(optimistic, id) ? optimistic[id] : !!base[id]; }
+  function blockers(s) { return (s.after || []).filter(function (a) { return !isDone(a); }); }
+  function phaseDone(p) { return p.steps.filter(function (s) { return isDone(s.id); }).length; }
+  function phaseComplete(p) { return phaseDone(p) === p.steps.length; }
+  function isYours(s) { return s.owner !== 'claude'; }
+  function isClaudes(s) { return s.owner !== 'you'; }
+  function matches(s) {
+    if (filter === 'todo') return !isDone(s.id);
+    if (filter === 'you') return isYours(s);
+    if (filter === 'claude') return isClaudes(s);
+    return true;
+  }
+  function nextYou() { for (var i = 0; i < STEPS.length; i++) { var s = STEPS[i]; if (!isDone(s.id) && isYours(s) && !blockers(s).length) return s; } return null; }
+  function firstYouOpen() { for (var i = 0; i < STEPS.length; i++) { var s = STEPS[i]; if (!isDone(s.id) && isYours(s)) return s; } return null; }
+  function nextClaude() { for (var i = 0; i < STEPS.length; i++) { var s = STEPS[i]; if (!isDone(s.id) && s.owner === 'claude') return s; } return null; }
+  function shortOf(id) { var s = BYID[id]; return s.short || s.title; }
+
+  /* ---------- open / closed ---------- */
+  function setOpen(toggle, body, open) {
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    body.hidden = !open;
+  }
+  function applyDefaultOpen() {
+    PHASES.forEach(function (p) {
+      var key = 'phase-' + p.n, ph = els.phase[p.n];
+      setOpen(ph.toggle, ph.body, has(openPref, key) ? !!openPref[key] : !phaseComplete(p));
+    });
+  }
+  function initRefSections() {
+    $$('.ref').forEach(function (sec) {
+      var key = sec.getAttribute('data-sec'), t = $('.toggle', sec), b = document.getElementById(t.getAttribute('aria-controls'));
+      if (has(openPref, key)) setOpen(t, b, !!openPref[key]);
+    });
+  }
+
+  /* ---------- render ---------- */
+  var piece = document.createElement('span');
+  piece.className = 'piece';
+
+  function placePiece(n, kind, animate) {
+    var slot = els.sq[n].slot;
+    var first = piece.isConnected ? piece.getBoundingClientRect() : null;
+    var moved = piece.parentNode !== slot;
+    if (piece.getAttribute('data-kind') !== kind) { piece.setAttribute('data-kind', kind); piece.innerHTML = kind === 'queen' ? QUEEN : PAWN; }
+    if (!moved) return;
+    slot.appendChild(piece);
+    if (first && animate && !reduced && piece.animate) {
+      var last = piece.getBoundingClientRect();
+      var dx = first.left - last.left, dy = first.top - last.top;
+      if (dx || dy) piece.animate([{ transform: 'translate(' + dx + 'px,' + dy + 'px)' }, { transform: 'translate(0,0)' }], { duration: 560, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' });
+    }
+  }
+
+  function render(animate) {
+    var body = document.body;
+    if (!animate) body.classList.add('no-anim');
+    var done = 0;
+    STEPS.forEach(function (s) {
+      var d = isDone(s.id);
+      if (d) done++;
+      var li = els.step[s.id];
+      li.classList.toggle('is-done', d);
+      els.cb[s.id].checked = d;
+      els.cb[s.id].disabled = readOnly;
+      els.cells[s.id].classList.toggle('on', d);
+      var b = d ? [] : blockers(s), w = els.waits[s.id];
+      w.hidden = !b.length;
+      if (b.length) w.textContent = 'Waits for ' + b.map(shortOf).join(', ');
+      li.hidden = !matches(s);
+    });
+    $('#done-n').textContent = done;
+    var cellsEl = $('#cells');
+    cellsEl.setAttribute('aria-valuenow', done);
+    cellsEl.setAttribute('aria-valuetext', done + ' of ' + STEPS.length + ' steps done');
+
+    var current = null;
+    PHASES.forEach(function (p) { if (!current && !phaseComplete(p)) current = p; });
+    var promoted = phaseComplete(PHASES[5]);
+    var pieceAt = promoted ? 6 : (current ? current.n : 6);
+
+    PHASES.forEach(function (p, i) {
+      var dn = phaseDone(p), tot = p.steps.length, complete = dn === tot, ph = els.phase[p.n], sq = els.sq[p.n];
+      ph.count.textContent = dn + ' of ' + tot + ' done';
+      p.steps.forEach(function (s, j) { ph.cells[j].classList.toggle('on', isDone(s.id)); });
+      var mins = 0;
+      p.steps.forEach(function (s) { if (!isDone(s.id) && isYours(s) && s.min) mins += s.min; });
+      ph.left.textContent = mins ? 'about ' + (mins >= 90 ? Math.round(mins / 6) / 10 + ' h' : mins + ' min') + ' of your time left' : '';
+      ph.here.hidden = pieceAt !== p.n || promoted;
+      ph.stamp.hidden = !complete;
+      ph.sec.classList.toggle('is-complete', complete);
+      var vis = p.steps.filter(matches).length;
+      ph.empty.hidden = vis > 0;
+      if (!vis) ph.empty.textContent = filter === 'todo' ? 'Every step in this phase is done.' : filter === 'you' ? 'No steps for you in this phase.' : 'Nothing for Claude in this phase.';
+
+      sq.li.classList.toggle('is-done', complete);
+      sq.li.classList.toggle('is-current', pieceAt === p.n && !promoted);
+      sq.li.classList.toggle('has-piece', pieceAt === p.n);
+      sq.count.textContent = dn + '/' + tot;
+      sq.btn.setAttribute('aria-label', 'Phase ' + p.n + ', ' + p.title + ': ' + dn + ' of ' + tot + ' done' + (pieceAt === p.n ? (promoted ? '. The pawn has promoted here.' : '. The pawn is here.') : '') + ' Go to this phase.');
+    });
+    placePiece(pieceAt, promoted ? 'queen' : 'pawn', animate);
+
+    var cap = $('#journey-cap');
+    if (promoted) cap.innerHTML = '<strong>Promoted on e8.</strong> Every step of Apply is ticked. ' + done + ' of ' + STEPS.length + ' steps done in all.';
+    else {
+      var cp = PHASES[pieceAt - 1];
+      cap.innerHTML = 'The pawn is on <strong>' + cp.sq + '</strong>: Phase ' + cp.n + ', ' + esc(cp.title) + '. ' + phaseDone(cp) + ' of ' + cp.steps.length + ' done. It moves up a rank when every step in the phase is ticked.';
+    }
+
+    renderUpNext();
+    renderClaudeNext();
+    renderChips(done);
+    renderWeighs();
+    renderBuilding();
+
+    if (!animate) { void body.offsetWidth; body.classList.remove('no-anim'); }
+  }
+
+  function renderChips(done) {
+    var counts = { all: STEPS.length, todo: STEPS.length - done, you: STEPS.filter(isYours).length, claude: STEPS.filter(isClaudes).length };
+    $$('[data-n]').forEach(function (n) { n.textContent = counts[n.getAttribute('data-n')]; });
+    $$('.chip').forEach(function (c) { c.setAttribute('aria-pressed', c.getAttribute('data-filter') === filter ? 'true' : 'false'); });
+  }
+
+  function renderUpNext() {
+    var s = nextYou();
+    var id = s ? s.id : null;
+    var slip = $('#slip');
+    var key = id || ('none:' + (firstYouOpen() ? firstYouOpen().id + ':' + blockers(firstYouOpen()).join(',') : 'all'));
+    if (key === upId) { var btn = $('#up-done'); if (btn) btn.disabled = readOnly; return; }
+    var changed = upId !== undefined;
+    upId = key;
+    var html;
+    if (s) {
+      var p = s.phase;
+      html = '<div class="slip-top"><span class="your-move">Your move</span><span class="label">Up next &middot; Phase ' + p.n + ' &middot; ' + p.sq + '</span></div>' +
+        '<div class="slip-body' + (changed ? ' enter' : '') + '">' +
+        '<h2 class="slip-title" id="upnext-title">' + fmt(s.title) + '</h2>' +
+        '<p class="step-meta">' + ownerChip(s.owner) + (s.time ? '<span>' + esc(s.time) + '</span>' : '') + '</p>' +
+        (s.why ? '<p class="step-why">' + fmt(s.why) + '</p>' : '') +
+        (s.cmd ? s.cmd.map(cmdBlock).join('') : '') + postHTML(s) +
+        (s.sub ? subList(s.sub) : '') +
+        (s.note ? '<p class="note"><span class="label">Note</span>' + fmt(s.note) + '</p>' : '') + doneWhenHTML(s) +
+        '<div class="slip-actions"><button type="button" class="btn-primary" id="up-done" data-id="' + s.id + '"' + (readOnly ? ' disabled' : '') + '>' +
+        '<svg viewBox="0 0 32 28" aria-hidden="true"><path d="M4 15.5c2.2 1.3 4.4 3.8 6.4 7.4 3.6-8.4 8.6-15.2 17-20.6"/></svg>Mark done</button>' +
+        '<button type="button" class="btn-text" id="up-find" data-id="' + s.id + '">Find it in the list</button></div></div>';
+    } else {
+      var f = firstYouOpen();
+      html = '<div class="slip-top"><span class="your-move">' + (f ? 'Waiting' : 'Promoted') + '</span><span class="label">Up next</span></div>' +
+        '<h2 class="slip-title" id="upnext-title">' + (f ? 'Nothing is waiting on you right now' : 'Every one of your steps is done') + '</h2>' +
+        '<p class="slip-empty">' + (f ? 'Your next step, ' + esc(f.title) + ', waits for ' + esc(blockers(f).map(shortOf).join(', ')) + '.' : 'The application is in. See “After the decision” below.') + '</p>';
+    }
+    slip.innerHTML = html;
+  }
+
+  function renderClaudeNext() {
+    var c = nextClaude(), el = $('#claude-next');
+    if (!c) { el.innerHTML = ownerChip('claude') + '<span>Nothing left for Claude.</span>'; return; }
+    var b = blockers(c);
+    el.innerHTML = ownerChip('claude') + '<span>doing next:</span><strong>' + fmt(c.title) + '</strong>' + (b.length ? '<span class="waits">once ' + esc(b.map(shortOf).join(', ')) + ' is done</span>' : '');
+  }
+
+  var MK_TICK = '<svg class="mk mk-tick" viewBox="0 0 32 28" aria-hidden="true"><path d="M4 15.5c2.2 1.3 4.4 3.8 6.4 7.4 3.6-8.4 8.6-15.2 17-20.6"/></svg>';
+  var MK_OPEN = '<svg class="mk mk-open" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>';
+  function phLink(n) { return '<button type="button" data-goto="' + n + '">Phase ' + n + '</button>'; }
+  function renderWeighs() {
+    var traction = isDone('p3-phone') && isDone('p5-thread');
+    var rows = [
+      ['Founded in the last 5 years', true, 'Yes. September 2026.'],
+      ['Company email on the site’s domain', true, 'prax@askthemove.online works.'],
+      ['Claude Console with company email', isDone('p4-signup'), isDone('p4-signup') ? 'Signed up as prax@askthemove.online.' : 'Not yet (' + phLink(4) + ').'],
+      ['Business traction', traction, traction ? 'Waitlist live and launched.' : isDone('p3-phone') ? 'Waitlist live; launch next (' + phLink(5) + ').' : 'Waitlist not live yet (' + phLink(3) + ' and ' + phLink(5) + ').'],
+      ['Funding', true, 'Bootstrapped, which is allowed.'],
+      ['Claude integration and usage', isDone('p4-run'), isDone('p4-run') ? 'Coach built and making real Claude calls.' : 'Coach built, no live calls yet (' + phLink(4) + ').']
+    ];
+    $('#weigh-list').innerHTML = rows.map(function (r) {
+      return '<li>' + (r[1] ? MK_TICK : MK_OPEN) + '<span><b>' + r[0] + '</b><span class="st"><span class="sr-only">' + (r[1] ? 'Met. ' : 'Not met yet. ') + '</span>' + r[2] + '</span></span></li>';
+    }).join('');
+  }
+
+  function renderBuilding() {
+    var auto = isDone('p4-run') ? 'after' : 'before';
+    var v = variantChoice || auto;
+    $('#building-text').textContent = BUILDING[v];
+    $$('[data-variant]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-variant') === v ? 'true' : 'false'); });
+    $('#building-hint').textContent = variantChoice ? 'You picked this version.' : 'Picked from your ticks: Phase 4’s real usage is ' + (auto === 'after' ? 'done.' : 'not done yet.');
+  }
+
+  /* ---------- sync status ---------- */
+  function setSync() {
+    var el = $('#sync'), txt = $('#sync-text'), state, label;
+    var busy = Object.keys(writers).some(function (k) { return writers[k].busy; });
+    if (mode === 'connecting') { state = 'connecting'; label = 'Connecting…'; }
+    else if (mode === 'local') { state = 'local'; label = 'Saved in this browser'; }
+    else if (readOnly) { state = 'local'; label = 'View only'; }
+    else if (subDead) { state = 'error'; label = 'Not syncing'; }
+    else if (busy) { state = 'saving'; label = 'Saving…'; }
+    else if (!gotSnapshot || (lastMeta && lastMeta.fromCache)) { state = 'connecting'; label = 'Syncing…'; }
+    else { state = 'synced'; label = 'Synced'; }
+    el.setAttribute('data-state', state);
+    txt.textContent = label;
+    $('#note-local').hidden = mode !== 'local';
+    $('#note-ro').hidden = !readOnly;
+  }
+
+  var errTimer = null;
+  function showErr() {
+    var n = $('#note-err'); n.hidden = false;
+    clearTimeout(errTimer); errTimer = setTimeout(function () { n.hidden = true; }, 6000);
+  }
+  var lastSource = {};
+  function alertAt(id, ro) {
+    var text = ro ? 'You can view this checklist but not tick it.' : 'That tick didn’t save. Try again in a moment.';
+    var html = '<span class="label">' + (ro ? 'View only' : 'Not saved') + '</span><span>' + text + '</span>';
+    // One note under the step in the list, and one in the "your move" slip when the tick came from there.
+    var places = [$('.step-main', els.step[id])];
+    if (lastSource[id] === 'slip') places.push($('#slip .slip-body') || $('#slip'));
+    places.forEach(function (place) {
+      if (!place) return;
+      var n = null;
+      for (var i = 0; i < place.children.length; i++) if (place.children[i].classList.contains('step-alert')) n = place.children[i];
+      if (!n) { n = document.createElement('p'); n.className = 'inline-note inline-note--warn step-alert'; place.appendChild(n); }
+      n.innerHTML = html;
+      if (!ro) setTimeout(function () { if (n.parentNode) n.parentNode.removeChild(n); }, 6000);
+    });
+    announce(text);
+  }
+
+  function announce(msg) { var l = $('#live'); l.textContent = ''; setTimeout(function () { l.textContent = msg; }, 30); }
+
+  /* ---------- writes ---------- */
+  function saveLocal() { lsSet(LS_STEPS, cleanMap(base)); }
+
+  function setDone(id, val) {
+    if (readOnly) { render(false); return; }
+    if (isDone(id) === val) return;
+    announce((val ? 'Done: ' : 'Not done: ') + BYID[id].title.replace(/[`*]/g, ''));
+    if (mode === 'local') {
+      if (val) base[id] = true; else delete base[id];
+      saveLocal(); render(true); setSync(); return;
+    }
+    optimistic[id] = val;
+    render(true);
+    if (mode === 'connecting') { pending[id] = true; return; }
+    queueWrite(id);
+  }
+
+  function queueWrite(id) {
+    var w = writers[id] || (writers[id] = { busy: false, want: undefined });
+    w.want = optimistic[id];
+    if (!w.busy) pump(id);
+    setSync();
+  }
+
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  function writeDoc(id, val) {
+    var ref = dbNs.collection('steps').doc(id);
+    var body = { done: val, updatedAt: new Date().toISOString(), by: 'page' };
+    return ref.set(body).catch(function (e) {
+      if (e && e.code === 'unavailable') return sleep(300 + Math.random() * 900).then(function () { return ref.set(body); });
+      throw e;
+    });
+  }
+
+  function pump(id) {
+    var w = writers[id];
+    w.busy = true; setSync();
+    var val = w.want; w.want = undefined;
+    writeDoc(id, val).then(function () {
+      if (w.want !== undefined && w.want !== val) { pump(id); return; }
+      w.want = undefined; w.busy = false;
+      if (val) base[id] = true; else delete base[id];
+      if (has(optimistic, id) && optimistic[id] === val) delete optimistic[id];
+      setSync(); render(true);
+    }, function (e) {
+      w.want = undefined; w.busy = false;
+      delete optimistic[id];
+      var code = e && e.code;
+      var ro = ['invalid_argument', 'not_granted', 'revoked', 'capability_disabled', 'capability_removed', 'transform_error'].indexOf(code) !== -1;
+      if (ro) readOnly = true; else showErr();
+      setSync(); render(true);
+      alertAt(id, ro);
+    });
+  }
+
+  /* ---------- database ---------- */
+  function goLocal() {
+    mode = 'local';
+    Object.keys(pending).forEach(function (id) {
+      if (has(optimistic, id)) { if (optimistic[id]) base[id] = true; else delete base[id]; delete optimistic[id]; }
+    });
+    pending = {};
+    saveLocal(); setSync(); render(false);
+  }
+
+  function onSnapshot(snap) {
+    var next = {};
+    var docs = (snap && snap.docs) || [];
+    docs.forEach(function (d) {
+      if (!d || !BYID[d.id]) return;
+      var data; try { data = d.data(); } catch (e) { data = null; }
+      if (data && data.done === true) next[d.id] = true;
+    });
+    var first = !gotSnapshot;
+    gotSnapshot = true; subDead = false; resubTries = 0;
+    lastMeta = (snap && snap.metadata) || null;
+    base = next;
+    Object.keys(optimistic).forEach(function (id) {
+      var busy = writers[id] && writers[id].busy;
+      if (!busy && !pending[id] && optimistic[id] === !!base[id]) delete optimistic[id];
+    });
+    if (first && !defaultsApplied) { defaultsApplied = true; applyDefaultOpen(); }
+    setSync(); render(!first);
+  }
+
+  function onSnapError(err) {
+    var code = err && err.code;
+    unsub = null;
+    if (code === 'unavailable' && resubTries < 3) {
+      resubTries++; subDead = true; setSync();
+      setTimeout(subscribe, 1500 * resubTries);
+      return;
+    }
+    subDead = true;
+    if (code === 'revoked') readOnly = true;
+    setSync(); render(false);
+  }
+
+  function subscribe() {
+    try { unsub = dbNs.collection('steps').onSnapshot(onSnapshot, onSnapError); }
+    catch (e) { onSnapError(e); }
+  }
+
+  function connect() {
+    var p;
+    try { p = window.claude.use('db'); } catch (e) { p = null; }
+    Promise.resolve(p).then(function (ns) {
+      if (!ns) { goLocal(); return; }
+      dbNs = ns; mode = 'db';
+      setSync();
+      subscribe();
+      Object.keys(pending).forEach(function (id) { if (has(optimistic, id)) queueWrite(id); });
+      pending = {};
+    }, function () { goLocal(); });
+  }
+
+  /* ---------- interactions ---------- */
+  function scrollToEl(el) {
+    try { el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' }); } catch (e) { el.scrollIntoView(); }
+  }
+  function openPhase(n, persist) {
+    var ph = els.phase[n];
+    setOpen(ph.toggle, ph.body, true);
+    if (persist) { openPref['phase-' + n] = true; lsSet(LS_OPEN, openPref); }
+  }
+  function gotoPhase(n) { openPhase(n, false); scrollToEl(els.phase[n].sec); }
+  function gotoSection(id) {
+    var sec = document.getElementById(id); if (!sec) return;
+    if (/^phase-\d$/.test(id)) { gotoPhase(+id.slice(6)); return; }
+    var t = $('.toggle', sec);
+    if (t) setOpen(t, document.getElementById(t.getAttribute('aria-controls')), true);
+    scrollToEl(sec);
+  }
+  function findStep(id) {
+    var s = BYID[id];
+    if (!matches(s)) { filter = 'all'; lsSet(LS_FILTER, filter); render(false); }
+    openPhase(s.phase.n, false);
+    var li = els.step[id];
+    var t = $('.step-toggle', li);
+    if (t) { t.setAttribute('aria-expanded', 'true'); document.getElementById(t.getAttribute('aria-controls')).hidden = false; }
+    scrollToEl(li);
+    li.classList.remove('flash'); void li.offsetWidth; li.classList.add('flash');
+  }
+
+  function selectText(el) {
+    try { var r = document.createRange(); r.selectNodeContents(el); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); } catch (e) {}
+  }
+  function flashCopy(btn, label) {
+    if (!btn.getAttribute('data-label')) btn.setAttribute('data-label', btn.textContent);
+    btn.textContent = label; btn.classList.add('is-copied');
+    clearTimeout(btn._t);
+    btn._t = setTimeout(function () { btn.textContent = btn.getAttribute('data-label'); btn.classList.remove('is-copied'); }, 1600);
+  }
+  function doCopy(btn) {
+    var text, src;
+    if (btn.hasAttribute('data-copy')) { text = btn.getAttribute('data-copy'); src = btn.previousElementSibling; }
+    else {
+      var block = btn.closest('[data-copyblock]');
+      src = block && $('[data-copysrc]', block);
+      text = src ? src.textContent : '';
+    }
+    function fallback() { if (src) selectText(src); flashCopy(btn, 'Selected'); announce('Selected. Press Control C or Command C to copy.'); }
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { flashCopy(btn, 'Copied'); announce('Copied'); }, fallback);
+      } else fallback();
+    } catch (e) { fallback(); }
+  }
+
+  document.addEventListener('change', function (e) {
+    var cb = e.target;
+    if (cb && cb.classList && cb.classList.contains('cb')) { lastSource[cb.getAttribute('data-id')] = 'list'; setDone(cb.getAttribute('data-id'), cb.checked); }
+  });
+
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    var btn = t.closest && t.closest('button, a[data-jump]');
+    if (!btn) return;
+    if (btn.classList.contains('copy')) { doCopy(btn); return; }
+    if (btn.id === 'up-done') { lastSource[btn.getAttribute('data-id')] = 'slip'; setDone(btn.getAttribute('data-id'), true); return; }
+    if (btn.id === 'up-find') { findStep(btn.getAttribute('data-id')); return; }
+    if (btn.hasAttribute('data-goto')) { gotoPhase(+btn.getAttribute('data-goto')); return; }
+    if (btn.hasAttribute('data-jump')) { e.preventDefault(); gotoSection(btn.getAttribute('data-jump')); return; }
+    if (btn.hasAttribute('data-filter')) {
+      filter = btn.getAttribute('data-filter'); lsSet(LS_FILTER, filter); render(false); return;
+    }
+    if (btn.hasAttribute('data-variant')) { variantChoice = btn.getAttribute('data-variant'); renderBuilding(); return; }
+    if (btn.classList.contains('step-toggle')) {
+      var open = btn.getAttribute('aria-expanded') !== 'true';
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      document.getElementById(btn.getAttribute('aria-controls')).hidden = !open;
+      return;
+    }
+    if (btn.classList.contains('toggle')) {
+      var body = document.getElementById(btn.getAttribute('aria-controls'));
+      var nowOpen = btn.getAttribute('aria-expanded') !== 'true';
+      setOpen(btn, body, nowOpen);
+      var sec = btn.closest('section');
+      var key = sec.getAttribute('data-sec') || sec.id;
+      openPref[key] = nowOpen; lsSet(LS_OPEN, openPref);
+    }
+  });
+
+  /* ---------- boot ---------- */
+  buildPhases();
+  buildFile();
+  buildCells();
+  var savedFilter = lsGet(LS_FILTER);
+  if (['all', 'todo', 'you', 'claude'].indexOf(savedFilter) !== -1) filter = savedFilter;
+  initRefSections();
+
+  var hasClaude = !!(window.claude && typeof window.claude.use === 'function');
+  mode = hasClaude ? 'connecting' : 'local';
+  applyDefaultOpen();
+  if (!hasClaude) defaultsApplied = true;
+  render(false);
+  setSync();
+  if (hasClaude) connect();
+
+  var h = (location.hash || '').slice(1);
+  if (/^(phase-[1-6]|answers|weighs|after|later)$/.test(h)) setTimeout(function () { gotoSection(h); }, 60);
+})();
+</script>
+
+</body></html>

@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>AskTheMove demo</title>
+    <!-- GSAP is vendored locally: the render must not depend on a CDN. -->
+    <script src="assets/vendor/gsap.min.js"></script>
+    <!-- Shared notebook helpers: ink geometry (port of the site's ink.js), camera poses,
+         stroke drawing and handwriting. Used by every frame in compositions/frames/. -->
+    <script src="assets/notebook.js"></script>
+    <style>
+      /* Fonts are the landing page's own files (site/public/assets/fonts). */
+      @font-face {
+        font-family: 'Vollkorn';
+        src: url('assets/fonts/vollkorn-var.woff2') format('woff2');
+        font-weight: 400 900;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: 'Kalam';
+        src: url('assets/fonts/kalam-400.woff2') format('woff2');
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: 'Kalam';
+        src: url('assets/fonts/kalam-700.woff2') format('woff2');
+        font-weight: 700;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: 'Courier Prime';
+        src: url('assets/fonts/courier-prime-400.woff2') format('woff2');
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+
+      /* Tokens: the landing page's DESIGN.md / app.css values. */
+      :root {
+        --paper: oklch(98.4% 0.008 95);
+        --paper-2: oklch(96.5% 0.014 88);
+        --card: oklch(99.3% 0.004 95);
+        --grid: oklch(86% 0.045 235 / 0.4);
+        --margin: oklch(70% 0.12 15);
+        --margin-soft: oklch(70% 0.12 15 / 0.45);
+        --ink: oklch(23% 0.025 265);
+        --ink-2: oklch(40% 0.02 265);
+        --graphite: oklch(46% 0.006 270);
+        --graphite-2: oklch(62% 0.006 270);
+        --red: oklch(54% 0.2 27);
+        --blue: oklch(44% 0.17 264);
+        --blue-deep: oklch(36% 0.15 264);
+        --highlight: oklch(91% 0.15 102);
+        --shadow: oklch(23% 0.025 265 / 0.22);
+        --app: #1b2130;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #fbfaf4;
+      }
+      #main {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        color: var(--ink);
+        font-family: 'Vollkorn', serif;
+        -webkit-font-smoothing: antialiased;
+        font-kerning: normal;
+      }
+
+      /* ---------- The notebook page ---------- */
+
+      /* One sheet of quad-ruled paper with a red double margin rule. */
+      .nb-paper {
+        position: absolute;
+        inset: 0;
+        background-color: var(--paper);
+        background-image: linear-gradient(var(--grid) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+        background-size: 26px 26px;
+        background-position: -1px -1px;
+      }
+      .nb-paper::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 92px;
+        width: 6px;
+        border-left: 2px solid var(--margin);
+        border-right: 1.5px solid var(--margin-soft);
+      }
+      .nb-page {
+        position: absolute;
+        inset: 0;
+      }
+
+      /* The footage, pasted into the page as a figure with a book's double rule. */
+      .nb-fig {
+        position: absolute;
+        left: 132px;
+        top: 64px;
+        width: 1176px;
+        height: 952px;
+        overflow: hidden;
+        background: var(--app);
+        box-shadow: 0 0 0 2px var(--ink), 0 0 0 7px var(--paper), 0 0 0 8.5px var(--ink),
+          0 22px 34px -18px var(--shadow);
+      }
+      .nb-stage {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1920px;
+        height: 1080px;
+        transform-origin: 0 0;
+      }
+      .nb-vid {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1920px;
+        height: 1080px;
+        object-fit: fill;
+      }
+      .nb-mask {
+        position: absolute;
+      }
+      /* The app sidebar carries the old product name in its wordmark: always covered,
+         though no camera pose shows it. Colour sampled from the footage. */
+      .nb-mask--side {
+        left: 0;
+        top: 0;
+        width: 272px;
+        height: 1080px;
+        background: #1e2330;
+      }
+      /* The app's "!" badge on 5...Bxd1 (a known quirk; the move is not brilliant).
+         Covered by a clone patch: a disc over the badge (centre 915.5,109; r 21) that
+         shows the same footage from clean spots with the same colours, so it matches in
+         any decode: the page band above the board (from 45 px to the right), the d1
+         highlight (from the empty, equally highlighted g4 square) and the c1 square
+         (from 57 px to the right). Each frame that shows the board after 5...Bxd1
+         repeats the <video> inside each region. */
+      .nb-patch {
+        position: absolute;
+        left: 894.5px;
+        top: 88px;
+        width: 42px;
+        height: 42px;
+        clip-path: circle(21px at 21px 21px);
+      }
+      .nb-patch > div {
+        position: absolute;
+        overflow: hidden;
+      }
+      .nb-patch__a {
+        left: 0;
+        top: 0;
+        width: 42px;
+        height: 12px;
+      }
+      .nb-patch__b {
+        left: 0;
+        top: 12px;
+        width: 31px;
+        height: 30px;
+      }
+      .nb-patch__c {
+        left: 31px;
+        top: 12px;
+        width: 11px;
+        height: 30px;
+      }
+      .nb-patch__a .nb-vid {
+        left: -939.5px;
+        top: -88px;
+      }
+      .nb-patch__b .nb-vid {
+        left: -594.5px;
+        top: -370px;
+      }
+      .nb-patch__c .nb-vid {
+        left: -982.5px;
+        top: -100px;
+      }
+      .nb-ink {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: visible;
+      }
+      .nb-stroke {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1 2;
+        stroke-dashoffset: 0;
+      }
+
+      /* The coach's note column beside the figure. */
+      .nb-col {
+        position: absolute;
+        left: 1356px;
+        top: 64px;
+        width: 520px;
+        height: 952px;
+      }
+      .nb-label {
+        display: flex;
+        gap: 24px;
+        padding-bottom: 14px;
+        margin-bottom: 36px;
+        border-bottom: 1.5px dashed var(--graphite-2);
+        font-family: 'Courier Prime', monospace;
+        font-size: 40px;
+        line-height: 1.2;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--ink-2);
+        font-variant-numeric: lining-nums tabular-nums;
+      }
+      .nb-count {
+        color: var(--graphite);
+      }
+      .nb-note {
+        margin-bottom: 40px;
+        font-family: 'Kalam', cursive;
+        font-size: 56px;
+        font-weight: 700;
+        line-height: 1.12;
+        color: var(--blue);
+      }
+      .nb-note--red {
+        color: var(--red);
+      }
+      .nb-word {
+        display: inline-block;
+      }
+
+      /* Type voices for the title and end card. */
+      .f-book {
+        font-family: 'Vollkorn', serif;
+      }
+      .f-hand {
+        font-family: 'Kalam', cursive;
+      }
+      .f-print {
+        font-family: 'Courier Prime', monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="main"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="58.8"
+      data-width="1920"
+      data-height="1080"
+    >
+      <!-- Paper under everything, for the whole video. -->
+      <div
+        id="main-paper"
+        class="clip nb-paper"
+        data-start="0"
+        data-duration="58.8"
+        data-track-index="0"
+      ></div>
+
+      <!-- Nine frames. Each one crossfades in over the last 0.3 s of the frame before. -->
+      <div
+        id="f01-title"
+        data-composition-id="f01-title"
+        data-composition-src="compositions/frames/01-title.html"
+        data-start="0"
+        data-duration="4.5"
+        data-track-index="1"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+      <div
+        id="f02-import"
+        data-composition-id="f02-import"
+        data-composition-src="compositions/frames/02-import.html"
+        data-start="4.2"
+        data-duration="8.4"
+        data-track-index="2"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+      <div
+        id="f03-review"
+        data-composition-id="f03-review"
+        data-composition-src="compositions/frames/03-review.html"
+        data-start="12.3"
+        data-duration="7.6"
+        data-track-index="1"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+      <div
+        id="f04-key-move"
+        data-composition-id="f04-key-move"
+        data-composition-src="compositions/frames/04-key-move.html"
+        data-start="19.6"
+        data-duration="5.6"
+        data-track-index="2"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+      <div
+        id="f05-evidence"
+        data-composition-id="f05-evidence"
+        data-composition-src="compositions/frames/05-evidence.html"
+        data-start="24.9"
+        data-duration="6.6"
+        data-track-index="1"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+      <div
+        id="f06-your-line"
+        data-composition-id="f06-your-line"
+        data-composition-src="compositions/frames/06-your-line.html"
+        data-start="31.2"
+        data-duration="8.5"
+        data-track-index="2"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+      <div
+        id="f07-study"
+        data-composition-id="f07-study"
+        data-composition-src="compositions/frames/07-study.html"
+        data-start="39.4"
+        data-duration="5.4"
+        data-track-index="1"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+      <div
+        id="f08-play"
+        data-composition-id="f08-play"
+        data-composition-src="compositions/frames/08-play.html"
+        data-start="44.5"
+        data-duration="8.6"
+        data-track-index="2"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+      <div
+        id="f09-end-card"
+        data-composition-id="f09-end-card"
+        data-composition-src="compositions/frames/09-end-card.html"
+        data-start="52.8"
+        data-duration="6"
+        data-track-index="1"
+        data-width="1920"
+        data-height="1080"
+      ></div>
+    </div>
+    <script>
+      // The root has no motion of its own: each frame owns its timeline.
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

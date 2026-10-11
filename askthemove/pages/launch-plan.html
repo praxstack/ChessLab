@@ -1,0 +1,347 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>ChessLab Launch Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; diagrams and tables break out to full width; board-square palette */
+:root{
+  --bg:#f6f5f1; --surface:#ffffff; --fg:#1d2420; --muted:#5d665f; --line:#d9dbd3;
+  --board-dark:#4f7a5a; --board-light:#e9e3cf; --wood:#a8744a; --accent:#2f6b45;
+  --warn:#a3561c; --bad:#a33a2c; --good:#2f6b45;
+  --bar-bg:#e6e7e0;
+  --f-display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --surface:#1c2320; --fg:#e6ebe5; --muted:#9aa59d; --line:#2f3934;
+  --board-dark:#5f9270; --board-light:#3a3528; --wood:#d39b6c; --accent:#7cc495;
+  --warn:#e09a5c; --bad:#e2786a; --good:#7cc495; --bar-bg:#27302b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --surface:#1c2320; --fg:#e6ebe5; --muted:#9aa59d; --line:#2f3934;
+  --board-dark:#5f9270; --board-light:#3a3528; --wood:#d39b6c; --accent:#7cc495;
+  --warn:#e09a5c; --bad:#e2786a; --good:#7cc495; --bar-bg:#27302b; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.6}
+.wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(2rem,5vw,3.1rem);font-weight:700}
+h2{font-size:1.6rem;font-weight:700}
+h3{font-size:1.1rem;font-weight:600}
+p{margin:0;max-width:68ch}
+.eyebrow{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+section{display:grid;gap:18px;min-width:0}
+.lede{font-size:1.15rem;color:var(--muted)}
+.scroll{overflow-x:auto;min-width:0}
+table{border-collapse:collapse;width:100%;font-size:.92rem;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-mono);font-weight:500;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+tr.win td{background:color-mix(in srgb,var(--board-dark) 12%,transparent)}
+.pill{display:inline-block;font-family:var(--f-mono);font-size:.72rem;padding:2px 8px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.pill.good{color:var(--good)} .pill.warn{color:var(--warn)} .pill.bad{color:var(--bad)}
+.bar{display:flex;align-items:center;gap:8px}
+.bar span.track{flex:1;min-width:80px;height:8px;background:var(--bar-bg);border-radius:4px;overflow:hidden}
+.bar span.fill{display:block;height:100%;background:var(--board-dark)}
+.callout{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--wood);padding:18px 20px;border-radius:6px;display:grid;gap:10px}
+.qs{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;display:grid;gap:6px}
+.q b{font-family:var(--f-display)}
+ol.steps{margin:0;padding-left:1.4em;display:grid;gap:10px}
+ol.steps li::marker{font-family:var(--f-mono);color:var(--accent)}
+code,.mono{font-family:var(--f-mono);font-size:.88em}
+.draft{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px 20px;display:grid;gap:12px}
+.draft blockquote{margin:0;font-size:1.02rem}
+button.copy{justify-self:start;font:500 .85rem var(--f-body);background:var(--accent);color:var(--bg);border:0;border-radius:4px;padding:8px 14px;cursor:pointer}
+button.copy:focus-visible{outline:2px solid var(--wood);outline-offset:2px}
+svg text{font-family:var(--f-body)}
+.src{font-size:.85rem;color:var(--muted)}
+.src a{color:var(--accent)}
+ul{margin:0;padding-left:1.2em;display:grid;gap:6px}
+</style>
+
+<div class="wrap">
+
+<header style="display:grid;gap:14px">
+  <div class="eyebrow">praxstack · startup plan · 8 Oct 2026</div>
+  <h1>ChessLab is your startup. Here is the path to Claude for Startups.</h1>
+  <p class="lede">I reviewed all 19 original public repos on github.com/praxstack (the other ~300 are forks), checked live domain availability, and mapped the application. Update, 8 Oct 2026: Prax bought <b>askthemove.online</b>; everything below now points at it. Part 4 adds a second application for Praxmodoro, and both landing pages are built.</p>
+</header>
+
+<!-- ============ MAP ============ -->
+<section>
+  <div class="eyebrow">The whole path at a glance</div>
+  <div class="scroll">
+  <svg viewBox="0 0 940 230" width="100%" style="min-width:720px" role="img" aria-label="Path from repo to approved application">
+    <defs>
+      <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker>
+    </defs>
+    <g font-size="13">
+      <!-- nodes -->
+      <g>
+        <rect x="10" y="40" width="140" height="70" rx="6" fill="var(--board-dark)"/>
+        <text x="80" y="70" text-anchor="middle" fill="#fff" font-weight="600">1. Pick repo</text>
+        <text x="80" y="90" text-anchor="middle" fill="#fff" font-size="12">ChessLab</text>
+      </g>
+      <g>
+        <rect x="195" y="40" width="140" height="70" rx="6" fill="var(--board-light)" stroke="var(--line)"/>
+        <text x="265" y="70" text-anchor="middle" fill="var(--fg)" font-weight="600">2. Name + domain</text>
+        <text x="265" y="90" text-anchor="middle" fill="var(--muted)" font-size="12">askthemove.online &#10003;</text>
+      </g>
+      <g>
+        <rect x="380" y="40" width="140" height="70" rx="6" fill="var(--board-light)" stroke="var(--line)"/>
+        <text x="450" y="70" text-anchor="middle" fill="var(--fg)" font-weight="600">3. Company email</text>
+        <text x="450" y="90" text-anchor="middle" fill="var(--muted)" font-size="12">Zoho free · ₹0</text>
+      </g>
+      <g>
+        <rect x="565" y="40" width="140" height="70" rx="6" fill="var(--board-light)" stroke="var(--line)"/>
+        <text x="635" y="70" text-anchor="middle" fill="var(--fg)" font-weight="600">4. Landing page</text>
+        <text x="635" y="90" text-anchor="middle" fill="var(--muted)" font-size="12">Cloudflare Pages · ₹0</text>
+      </g>
+      <g>
+        <rect x="750" y="40" width="180" height="70" rx="6" fill="var(--wood)"/>
+        <text x="840" y="70" text-anchor="middle" fill="#fff" font-weight="600">5. Apply in Console</text>
+        <text x="840" y="90" text-anchor="middle" fill="#fff" font-size="12">minutes to 3 business days</text>
+      </g>
+      <g stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ar)">
+        <line x1="150" y1="75" x2="192" y2="75"/>
+        <line x1="335" y1="75" x2="377" y2="75"/>
+        <line x1="520" y1="75" x2="562" y2="75"/>
+        <line x1="705" y1="75" x2="747" y2="75"/>
+      </g>
+      <!-- the matching rule -->
+      <path d="M265 112 C265 175, 450 175, 450 112" fill="none" stroke="var(--accent)" stroke-dasharray="4 4"/>
+      <path d="M265 112 C265 200, 635 200, 635 112" fill="none" stroke="var(--accent)" stroke-dasharray="4 4"/>
+      <text x="450" y="218" text-anchor="middle" fill="var(--accent)" font-size="12.5">Same domain everywhere: you@domain must match the website domain, or the application stalls</text>
+      <text x="840" y="140" text-anchor="middle" fill="var(--muted)" font-size="12">→ Team year + $1,000 API credit</text>
+      <text x="840" y="158" text-anchor="middle" fill="var(--muted)" font-size="12">(credit expires in 6 months)</text>
+    </g>
+  </svg>
+  </div>
+  <p>Total cash cost for steps 2 to 4: <b>$4.99 for the first year</b>, already paid for askthemove.online. It renews at $27.70 on 8 Oct 2027; email and hosting stay free.</p>
+</section>
+
+<!-- ============ QUESTIONS ============ -->
+<section>
+  <div class="eyebrow">Three choices that are yours</div>
+  <div class="qs">
+    <div class="q"><b>Which repo?</b><span>I recommend ChessLab. Praxmodoro is the runner-up if you'd rather build an ADHD focus product.</span></div>
+    <div class="q"><b>Budget for the domain?</b><span>A .com is ~$10/yr. A .ai is $160 for the required 2 years. I recommend the .com.</span></div>
+    <div class="q"><b>How will you pay?</b><span>Cloudflare needs a card with international payments enabled (or PayPal). If you only have UPI, use an Indian registrar for a .in instead.</span></div>
+  </div>
+</section>
+
+<!-- ============ RANKING ============ -->
+<section>
+  <div class="eyebrow">Part 1 · Repo ranking</div>
+  <h2>Which repo has startup potential</h2>
+  <p>Scored 1 to 5 on five axes: is the problem real, is the market big enough, is there traction, how complete is it, and how naturally does it use the Claude API. Traction is 1 everywhere because none of these has public users yet; star counts couldn't be read from this environment.</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>Repo</th><th>What it is</th><th>Problem</th><th>Market</th><th>Built</th><th>Claude fit</th><th style="min-width:150px">Total / 25</th></tr></thead>
+    <tbody>
+      <tr class="win"><td><b>ChessLab</b></td><td>Play bots, review a game, branch "what if" lines; coach explains Stockfish evidence. Node + React + SQLite, about 95 tests.</td><td>4</td><td>4</td><td>4</td><td>5</td><td><div class="bar"><span class="track"><span class="fill" style="width:72%"></span></span>18</div></td></tr>
+      <tr><td><b>Praxmodoro</b></td><td>Native macOS focus timer and ADHD-aware coach. M1 and M2 done, not yet released.</td><td>4</td><td>3</td><td>4</td><td>3</td><td><div class="bar"><span class="track"><span class="fill" style="width:60%"></span></span>15</div></td></tr>
+      <tr><td><b>agent-org</b></td><td>Reviewer/coder gated loop around Claude Code with an unfakeable test gate.</td><td>3</td><td>3</td><td>3</td><td>4</td><td><div class="bar"><span class="track"><span class="fill" style="width:56%"></span></span>14</div></td></tr>
+      <tr><td><b>audio-transcription-pipeline</b></td><td>Audio to speaker-labelled Markdown transcript. Uses Bedrock today.</td><td>3</td><td>3</td><td>3</td><td>4</td><td><div class="bar"><span class="track"><span class="fill" style="width:56%"></span></span>14</div></td></tr>
+      <tr><td>ai-visual-code-review</td><td>Local GitHub-style diff viewer with AI review export.</td><td>3</td><td>2</td><td>3</td><td>3</td><td><div class="bar"><span class="track"><span class="fill" style="width:48%"></span></span>12</div></td></tr>
+      <tr><td>skills-and-personas</td><td>38 linted Agent Skills. Great portfolio, hard to sell.</td><td>2</td><td>2</td><td>3</td><td>4</td><td><div class="bar"><span class="track"><span class="fill" style="width:48%"></span></span>12</div></td></tr>
+      <tr><td>kaizen-board</td><td>Solo-dev sprint tracker.</td><td>2</td><td>2</td><td>3</td><td>2</td><td><div class="bar"><span class="track"><span class="fill" style="width:40%"></span></span>10</div></td></tr>
+      <tr><td>markdown-viewer-app</td><td>Markdown viewer with themes, Mermaid, KaTeX.</td><td>2</td><td>2</td><td>4</td><td>1</td><td><div class="bar"><span class="track"><span class="fill" style="width:40%"></span></span>10</div></td></tr>
+      <tr><td>warp-byok-proxy</td><td>Routes Warp's AI calls to your own Bedrock account.</td><td colspan="5"><span class="pill bad">not a startup</span> It works around another company's paid plan, which is a terms-of-service risk.</td></tr>
+      <tr><td>Others (10)</td><td>Prax-Resume, redis-server-java, goodnotes-templates, cursor-cli-guide, tech-demos, jules-*, developer-workflow, unifyapps-fdse-assignment, profile README</td><td colspan="5"><span class="pill warn">portfolio</span> Learning projects or personal tools.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="callout">
+    <h3>Why ChessLab wins</h3>
+    <ul>
+      <li><b>Real, specific pain.</b> Adult improvers (roughly 800 to 1600 rated) run game review, see "best move: Nf5", and still don't know <i>why</i>. Engines give answers; nobody gives reasons you can question.</li>
+      <li><b>The Claude fit is the product.</b> Your own design rule is that the engine produces verified evidence and the language model only explains it. That is a clean, honest use of the Claude API and an easy story for reviewers.</li>
+      <li><b>It already runs.</b> Bot play, clocks, game review, saved variations, PGN import/export, accounts, lessons and puzzles all exist with tests. The Claude tutor is the next layer, which is exactly what the $1,000 credit pays for.</li>
+      <li><b>Big market.</b> Online chess has hundreds of millions of players, and improvers already pay for coaching and premium review.</li>
+    </ul>
+    <h3>Fix before you go public</h3>
+    <ul>
+      <li>The repo describes the goal as "Chess.com parity" and mirrors their bot roster. Anthropic may list your company publicly, so position it as <b>your own</b> product, keep only original bot names and art, and never mention Chess.com on the site.</li>
+      <li>The name "ChessLab" is taken on .com, .ai, .app, .dev and .co, so pick a new brand (below).</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ DOMAINS ============ -->
+<section>
+  <div class="eyebrow">Part 2 · Domain and email</div>
+  <h2>Cheapest reliable setup</h2>
+
+  <h3>Registrars (.com)</h3>
+  <div class="scroll">
+  <svg viewBox="0 0 640 190" width="100%" style="min-width:520px" role="img" aria-label="First year vs renewal price for .com">
+    <g font-size="12.5" fill="var(--fg)">
+      <!-- scale: $0..$22 → 0..400px starting x=150 -->
+      <g stroke="var(--line)">
+        <line x1="150" y1="20" x2="150" y2="160"/><line x1="241" y1="20" x2="241" y2="160"/><line x1="332" y1="20" x2="332" y2="160"/><line x1="423" y1="20" x2="423" y2="160"/><line x1="514" y1="20" x2="514" y2="160"/>
+      </g>
+      <g fill="var(--muted)" font-size="11" text-anchor="middle"><text x="150" y="178">$0</text><text x="241" y="178">$5</text><text x="332" y="178">$10</text><text x="423" y="178">$15</text><text x="514" y="178">$20</text></g>
+      <text x="140" y="38" text-anchor="end" font-weight="600">Cloudflare</text>
+      <rect x="150" y="26" width="190" height="10" fill="var(--board-dark)"/><rect x="150" y="38" width="190" height="10" fill="var(--wood)"/>
+      <text x="346" y="44" fill="var(--muted)">$10.44 / $10.44</text>
+      <text x="140" y="72" text-anchor="end">Porkbun</text>
+      <rect x="150" y="60" width="201" height="10" fill="var(--board-dark)"/><rect x="150" y="72" width="201" height="10" fill="var(--wood)"/>
+      <text x="357" y="78" fill="var(--muted)">$11.06 / $11.06</text>
+      <text x="140" y="106" text-anchor="end">Namecheap</text>
+      <rect x="150" y="94" width="109" height="10" fill="var(--board-dark)"/><rect x="150" y="106" width="254" height="10" fill="var(--wood)"/>
+      <text x="410" y="112" fill="var(--muted)">$5.98 / $13.98</text>
+      <text x="140" y="140" text-anchor="end">GoDaddy</text>
+      <rect x="150" y="128" width="73" height="10" fill="var(--board-dark)"/><rect x="150" y="140" width="400" height="10" fill="var(--wood)"/>
+      <text x="556" y="146" fill="var(--muted)">~$4 / $21.99</text>
+      <g font-size="11"><rect x="460" y="4" width="10" height="10" fill="var(--board-dark)"/><text x="474" y="13">first year</text><rect x="540" y="4" width="10" height="10" fill="var(--wood)"/><text x="554" y="13">renewal</text></g>
+    </g>
+  </svg>
+  </div>
+  <p><b>Pick Cloudflare Registrar.</b> It sells at wholesale cost with no renewal jump, includes free WHOIS privacy, and you get DNS, free Email Routing and free Pages hosting in the same dashboard. Over three years it's the cheapest; Namecheap's $5.98 only wins year one. Porkbun is the fallback if Cloudflare rejects your card.</p>
+
+  <h3>Email on your domain</h3>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>Option</th><th>Cost</th><th>Send as you@domain</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr class="win"><td><b>Zoho Mail Forever Free</b></td><td>₹0</td><td><span class="pill good">yes</span></td><td>Up to 5 users, 5 GB each, one domain. Web and Zoho mobile app only (no IMAP). Enough to apply and run the company.</td></tr>
+      <tr><td>Cloudflare Email Routing</td><td>₹0</td><td><span class="pill warn">receive only</span></td><td>Forwards hello@domain to your Gmail. Replying "as" the domain needs a separate SMTP sender, so it's fiddly.</td></tr>
+      <tr><td>Zoho Mail Lite</td><td>₹59/user/mo</td><td><span class="pill good">yes</span></td><td>Upgrade path when you need IMAP for Apple Mail or Outlook.</td></tr>
+      <tr><td>Google Workspace</td><td>paid per seat</td><td><span class="pill good">yes</span></td><td>Best Gmail experience, but you pay from day one. Not needed yet.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Brand and domain options</h3>
+  <p>Checked against the live registry on 8 Oct 2026 (07:30 UTC). Re-check right before buying; good names go fast.</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>Domain</th><th>Status</th><th>Price</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr class="win"><td><b>askthemove.online</b></td><td><span class="pill good">bought 8 Oct</span></td><td>$4.99 first year, renews $27.70</td><td>The live domain for the site, email and application.</td></tr>
+      <tr><td>askthemove.com</td><td><span class="pill good">available</span></td><td>~$10.44/yr</td><td>Same name on .com. Move here later if AskTheMove takes off.</td></tr>
+      <tr><td><b>rookwise.ai</b></td><td><span class="pill good">available</span></td><td>$160 for 2 yrs</td><td>Short, brandable, "wise" signals coaching. Rookwise.com is taken.</td></tr>
+      <tr><td>knightwise.app</td><td><span class="pill good">available</span></td><td>$9.99, renews $15</td><td>Brandable; .app forces HTTPS, which is fine.</td></tr>
+      <tr><td>knightwise.ai</td><td><span class="pill good">available</span></td><td>$160 for 2 yrs</td><td>Same brand on .ai.</td></tr>
+      <tr><td>getchesslab.com</td><td><span class="pill good">available</span></td><td>~$10.44/yr</td><td>Keeps the ChessLab name, but other ChessLab sites already exist.</td></tr>
+      <tr><td>branchchess.com</td><td><span class="pill good">available</span></td><td>~$10.44/yr</td><td>Names the "explore a branch" idea.</td></tr>
+      <tr><td>chesswhy.ai · gambitcoach.ai</td><td><span class="pill good">available</span></td><td>$160 for 2 yrs</td><td>Descriptive alternatives.</td></tr>
+      <tr><td>chesslab.com/.ai/.app/.dev/.co, rookwise.com, pawnder.*, gambitcoach.com</td><td><span class="pill bad">taken</span></td><td>n/a</td><td></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ APPLICATION ============ -->
+<section>
+  <div class="eyebrow">Part 3 · Claude for Startups</div>
+  <h2>Application kit</h2>
+
+  <div class="callout">
+    <h3>Eligibility check</h3>
+    <ul>
+      <li><span class="pill good">pass</span> Founded in the last 5 years: ChessLab started in Sept 2026.</li>
+      <li><span class="pill good">pass</span> No VC funding needed; bootstrapped is welcome.</li>
+      <li><span class="pill good">pass</span> India is on the supported-country list.</li>
+      <li><span class="pill warn">to do</span> Company website on your own domain.</li>
+      <li><span class="pill warn">to do</span> Company email on that same domain.</li>
+      <li><span class="pill warn">to do</span> Claude Console account created with that company email.</li>
+      <li><span class="pill warn">check</span> The live form may ask for company details. Formal incorporation isn't listed as a requirement on the official page; enter accurate details and don't claim a registration you don't have.</li>
+    </ul>
+  </div>
+
+  <div class="draft">
+    <div class="eyebrow">Draft description (edit the brand name)</div>
+    <blockquote id="desc">AskTheMove is a chess coach for adult improvers that explains why a move was a mistake, not just which move the engine prefers. Stockfish and a chess rules library produce verified evidence (legal lines, material, threats), and the Claude API turns that evidence into plain explanations the learner can question at any branch of their own game. Bot play, game review and saved variations already work; we are now building the Claude-powered conversational tutor.</blockquote>
+    <button class="copy" id="copyBtn" type="button">Copy description</button>
+  </div>
+
+  <h3>Step by step</h3>
+  <ol class="steps">
+    <li>Done: the brand is <b>AskTheMove</b> on <code>askthemove.online</code>.</li>
+    <li>Done: <code>askthemove.online</code> is registered on Cloudflare (WHOIS privacy included). Click the registrant verification email Cloudflare sends, or ICANN puts the domain on hold.</li>
+    <li>Sign up for <b>Zoho Mail → Forever Free</b>, add the domain, and paste Zoho's TXT verification, MX, SPF and DKIM records into Cloudflare DNS. Create <code>prax@askthemove.online</code> (or your name) and <code>hello@</code>.</li>
+    <li>Publish a one-page site on <b>Cloudflare Pages</b> (free) at the domain: the product line, a screenshot of the review board, the "explains why" promise, and a contact address. No Chess.com mentions.</li>
+    <li>Wait until mail works both ways (send a test to your Gmail and reply to it).</li>
+    <li>Create a <b>Claude Console</b> account with the company email. Make sure the right organization is selected.</li>
+    <li>Go to <a href="https://claude.com/programs/startups" style="color:var(--accent)">claude.com/programs/startups</a> → <b>Apply now</b>. Paste the description. Keep every number truthful: no invented users or funding.</li>
+    <li>When approved: claim the Team year (check seats and amount due at checkout), claim the $1,000 API credit in the org your app uses, and set a spend limit.</li>
+    <li>Set two reminders: credit expiry (6 months after grant) and Team renewal (a few weeks before 12 months).</li>
+  </ol>
+
+  <div class="callout">
+    <h3>Terms to know before submitting</h3>
+    <ul>
+      <li><b>Publicity:</b> Anthropic may name you and show your logo as a member.</li>
+      <li><b>Credits expire 6 months</b> after they're granted, have no cash value and can't be transferred.</li>
+      <li><b>First-party API only.</b> Your transcription pipeline and other repos use AWS Bedrock; credits won't work there. Point ChessLab at the Anthropic API directly.</li>
+      <li><b>Residuals:</b> describe the product clearly but keep anything you consider a trade secret out of the form.</li>
+      <li><b>Tax:</b> you decide whether credits create a tax obligation in India.</li>
+      <li>Partner offers each run on the partner's own terms; redeem only what you'll use.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ SECOND APPLICATION ============ -->
+<section id="praxmodoro">
+  <div class="eyebrow">Part 4 · Second application</div>
+  <h2>Praxmodoro kit</h2>
+  <p>Benefits go to "the account for the company identified in your application", so each product is its own application with its own domain, email, website and Console organization. The program terms set no limit of one application per founder, but Anthropic decides eligibility at its discretion and weighs "Claude integration and usage". Apply with AskTheMove first and Praxmodoro second.</p>
+
+  <div class="scroll">
+  <table>
+    <thead><tr><th></th><th>AskTheMove (ChessLab)</th><th>Praxmodoro</th></tr></thead>
+    <tbody>
+      <tr><td>Domain</td><td><code>askthemove.online</code> · bought 8 Oct 2026</td><td><code>praxmodoro.com</code> · available (also .app, .ai)</td></tr>
+      <tr><td>Email</td><td><code>hello@askthemove.online</code> (Zoho free)</td><td><code>hello@praxmodoro.com</code> (Zoho free, on a separate Zoho account)</td></tr>
+      <tr><td>Website</td><td>Ready: <code>launch/askthemove/</code></td><td>Ready: <code>launch/praxmodoro/</code></td></tr>
+      <tr><td>Claude in the product</td><td><span class="pill good">core</span> explains engine evidence</td><td><span class="pill warn">add-on</span> no AI today; planned opt-in step breakdown</td></tr>
+      <tr><td>Market</td><td>Large, few "explain why" tools</td><td>Crowded (Focusmo, Session, Focused Work); its own research notes subscription fatigue</td></tr>
+      <tr><td>Platform</td><td>Web, any device</td><td>macOS only</td></tr>
+      <tr><td>Odds of approval</td><td>Higher</td><td>Lower until a Claude feature ships</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="draft">
+    <div class="eyebrow">Praxmodoro description</div>
+    <blockquote id="desc2">Praxmodoro is a native macOS focus companion for people who struggle to start tasks, including many adults with ADHD. It runs one calm loop (begin, focus, gentle check-in, adaptive break, review) and keeps all data on the device. We are adding an opt-in Claude API feature that turns a stuck, vague task into one concrete first step and suggests the next step after each check-in.</blockquote>
+    <button class="copy" id="copyBtn2" type="button">Copy description</button>
+  </div>
+
+  <div class="callout">
+    <h3>Stronger Praxmodoro application</h3>
+    <ul>
+      <li>Ship the "first step" Claude feature, even as a small beta, before you apply. Reviewers weigh real Claude usage.</li>
+      <li>Keep "non-clinical" in all copy. Don't claim it treats ADHD.</li>
+      <li>Same steps 2 to 9 as above, using a separate Zoho account and a separate Console organization.</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="src">
+  Sources: <a href="https://claude.com/programs/startups">Claude for Startups</a> ·
+  <a href="https://www.anthropic.com/startup-program-official-terms">Program terms</a> ·
+  <a href="https://devtoolpicks.com/blog/namecheap-vs-porkbun-vs-cloudflare-registrar-vs-godaddy-indie-hackers-2026">Registrar prices (devtoolpicks, 2026)</a> ·
+  <a href="https://cloudfysystems.com/blog/zoho-mail-free-forever-plan-india">Zoho Free plan limits (Aug 2026)</a> ·
+  <a href="https://porkbun.com/about/domain-cost-calculator">Porkbun cost calculator</a>.
+  Domain availability and .ai/.app prices from a live registry lookup on 8 Oct 2026. Repo facts from cloning each public repo.
+</footer>
+
+</div>
+<script>
+function wire(btn,src){document.getElementById(btn).addEventListener('click', async (e) => {
+  const el=document.getElementById(src);
+  try { await navigator.clipboard.writeText(el.innerText); e.target.textContent = 'Copied'; }
+  catch (_) { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); e.target.textContent = 'Selected, press Ctrl+C'; }
+});}
+wire('copyBtn2','desc2');
+document.getElementById('copyBtn').addEventListener('click', async (e) => {
+  const t = document.getElementById('desc').innerText;
+  try { await navigator.clipboard.writeText(t); e.target.textContent = 'Copied'; }
+  catch (_) { const r = document.createRange(); r.selectNodeContents(document.getElementById('desc')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); e.target.textContent = 'Selected, press Ctrl+C'; }
+});
+</script>
+
+</body></html>

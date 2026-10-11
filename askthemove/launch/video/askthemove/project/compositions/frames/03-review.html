@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>03 Game review</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #root {
+          position: absolute;
+          inset: 0;
+        }
+      </style>
+      <div
+        id="root"
+        data-composition-id="f03-review"
+        data-width="1920"
+        data-height="1080"
+        data-duration="7.6"
+      >
+        <div id="f03-page" class="nb-page">
+          <div class="nb-paper"></div>
+          <div class="nb-fig">
+            <div id="f03-stage" class="nb-stage">
+              <!-- A: the review panel before the review starts (source 3.7 to 4.7 s). -->
+              <video
+                id="f03-a"
+                class="nb-vid"
+                src="assets/footage/03-game-review.mp4"
+                muted
+                playsinline
+                data-start="0"
+                data-duration="1"
+                data-media-start="3.7"
+                data-track-index="0"
+              ></video>
+              <!-- B: the review runs in real time in the recording; here at 10x
+                   (source 4.7 to 48.7 s). -->
+              <video
+                id="f03-b"
+                class="nb-vid"
+                src="assets/footage/03-game-review.mp4"
+                muted
+                playsinline
+                data-start="1"
+                data-duration="4.4"
+                data-media-start="4.7"
+                data-playback-rate="10"
+                data-track-index="0"
+                data-hf-media-start-basis="local"
+              ></video>
+              <!-- C: review complete, the graph's last move (source 48.7 to 50.9 s). -->
+              <video
+                id="f03-c"
+                class="nb-vid"
+                src="assets/footage/03-game-review.mp4"
+                muted
+                playsinline
+                data-start="5.4"
+                data-duration="2.2"
+                data-media-start="48.7"
+                data-track-index="0"
+                data-hf-media-start-basis="local"
+              ></video>
+              <div class="nb-mask nb-mask--side"></div>
+              <svg id="f03-ink" class="nb-ink" viewBox="0 0 1920 1080" aria-hidden="true"></svg>
+            </div>
+          </div>
+          <div id="f03-col" class="nb-col">
+            <p class="nb-label"><span class="nb-count">2 / 7</span><span>Game review</span></p>
+            <p id="f03-n1" class="nb-note">Stockfish 18 reviews every move.</p>
+            <p id="f03-n2" class="nb-note">It names the opening: Philidor Defense, C41.</p>
+            <p id="f03-n3" class="nb-note">And graphs who was ahead.</p>
+          </div>
+        </div>
+      </div>
+      <script>
+        (function () {
+          var NB = window.NB;
+          var tl = gsap.timeline({ paused: true });
+          var stage = document.getElementById('f03-stage');
+          var ink = document.getElementById('f03-ink');
+
+          // The review panel, read at 2x: first its head, then the advantage graph.
+          var head = NB.fit([1316, 62, 1904, 538], { scale: 2 });
+          var graph = NB.fit([1316, 232, 1904, 708], { scale: 2 });
+
+          NB.enter(tl, '#f03-page');
+          NB.pose(tl, stage, head);
+          tl.fromTo('#f03-col .nb-label', { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'none' }, 0.1);
+
+          NB.write(tl, document.getElementById('f03-n1'), 0.3);
+
+          // The opening, named on the banner.
+          var opening = NB.mark(ink, 'ring', { cx: 1511, cy: 163, rx: 128, ry: 40, tilt: 0 }, { seed: 'c41', px: 7, scale: head.scale });
+          NB.draw(tl, opening, 1.45, { max: 0.6 });
+          NB.write(tl, document.getElementById('f03-n2'), 2.0);
+
+          // Down to the graph while it fills in.
+          NB.move(tl, stage, graph, 2.9, 0.8);
+          NB.write(tl, document.getElementById('f03-n3'), 3.8);
+
+          // Review complete: the line leaps at the end of the game.
+          var jump = NB.mark(ink, 'ring', { cx: 1757, cy: 572, rx: 92, ry: 36, tilt: -0.1 }, { seed: 'graph-end', px: 7, scale: graph.scale });
+          NB.draw(tl, jump, 5.7, { max: 0.6 });
+
+          NB.leave(tl, '#f03-col', 7.6);
+          window.__timelines['f03-review'] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

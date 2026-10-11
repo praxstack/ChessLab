@@ -1,0 +1,289 @@
+<title>AskTheMove Credits Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: four gates left-to-right (what unlocks each group), then the order to apply, then the full sortable list. */
+:root{
+  --bg:#f6f5ef; --panel:#ffffff; --ink:#1d2421; --muted:#5d6762; --line:#d9dbd2;
+  --accent:#2f6b4f; --accent-soft:#e3efe7;
+  --now:#2f6b4f; --now-bg:#e3efe7;
+  --launch:#8a5a12; --launch-bg:#f6ead3;
+  --company:#3b5aa8; --company-bg:#e2e8f7;
+  --investor:#8b3a3a; --investor-bg:#f4e1e0;
+  --no:#6b6b6b; --no-bg:#ececea;
+  --display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --body:"Newsreader", Georgia, "Times New Roman", serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --panel:#1c2320; --ink:#e7ebe6; --muted:#9aa59f; --line:#2f3934;
+  --accent:#7cc39d; --accent-soft:#1f3329;
+  --now:#7cc39d; --now-bg:#1f3329; --launch:#e3b86a; --launch-bg:#3a2e17;
+  --company:#9db3f0; --company-bg:#222c46; --investor:#e79b9b; --investor-bg:#3d2323;
+  --no:#a3a3a0; --no-bg:#2a2e2c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --panel:#1c2320; --ink:#e7ebe6; --muted:#9aa59f; --line:#2f3934;
+  --accent:#7cc39d; --accent-soft:#1f3329;
+  --now:#7cc39d; --now-bg:#1f3329; --launch:#e3b86a; --launch-bg:#3a2e17;
+  --company:#9db3f0; --company-bg:#222c46; --investor:#e79b9b; --investor-bg:#3d2323;
+  --no:#a3a3a0; --no-bg:#2a2e2c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:28px 64px;display:grid;gap:44px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+h1{font-size:clamp(30px,5vw,46px);line-height:1.05}
+h2{font-size:26px}
+h3{font-size:17px}
+p{margin:0}
+a{color:var(--accent)}
+.lede{max-width:68ch;color:var(--muted);font-size:18px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+header{display:grid;gap:12px}
+.verdict{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;display:grid;gap:8px;max-width:820px}
+.verdict strong{font-family:var(--display)}
+
+/* gates */
+.gates{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;position:relative}
+.gate{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.gate-h{padding:14px 16px;display:grid;gap:4px}
+.gate-h .lock{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase}
+.gate ul{list-style:none;margin:0;padding:6px 10px 14px;display:grid;gap:6px}
+.gate li{display:flex;justify-content:space-between;gap:10px;padding:7px 8px;border-radius:6px;font-size:15px;line-height:1.3}
+.gate li span.amt{font-family:var(--mono);font-size:12.5px;white-space:nowrap;color:var(--muted);font-variant-numeric:tabular-nums}
+.gate li.hi{font-weight:500}
+.gate li.hi::before{content:"♞";margin-right:6px;color:var(--accent)}
+.g-now .gate-h{background:var(--now-bg)} .g-now .lock{color:var(--now)}
+.g-launch .gate-h{background:var(--launch-bg)} .g-launch .lock{color:var(--launch)}
+.g-company .gate-h{background:var(--company-bg)} .g-company .lock{color:var(--company)}
+.g-investor .gate-h{background:var(--investor-bg)} .g-investor .lock{color:var(--investor)}
+.arrowrow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.arrowrow div{border-top:2px solid var(--line);padding-top:6px}
+.legend{font-size:14px;color:var(--muted)}
+
+/* sequence */
+.seq{display:grid;gap:0;counter-reset:s;max-width:900px}
+.step{display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+.step::before{counter-increment:s;content:counter(s);font-family:var(--display);font-size:22px;font-weight:700;color:var(--accent);text-align:right}
+.step .when{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.step h3{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
+.step p{color:var(--ink);max-width:70ch}
+
+/* table */
+.controls{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--mono);font-size:12.5px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:6px 11px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip:focus-visible,.sortbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:860px;font-size:15px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;position:sticky;top:0;background:var(--panel)}
+td.amt{font-family:var(--mono);font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}
+td .name{font-family:var(--display);font-weight:500}
+td .note{color:var(--muted);font-size:14px}
+.pill{display:inline-block;font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.p-now{background:var(--now-bg);color:var(--now)} .p-launch{background:var(--launch-bg);color:var(--launch)}
+.p-company{background:var(--company-bg);color:var(--company)} .p-investor{background:var(--investor-bg);color:var(--investor)}
+.p-no{background:var(--no-bg);color:var(--no)}
+.rel{font-family:var(--mono);font-size:12px}
+.sortbtn{all:unset;cursor:pointer}
+
+/* posts */
+.posts{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.post{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:6px;align-content:start;min-width:0}
+.post .h{font-family:var(--mono);font-size:12.5px;overflow-wrap:anywhere}
+.post p{font-size:15px}
+.cav{max-width:780px;display:grid;gap:10px;font-size:16px}
+.cav li{margin-bottom:6px}
+footer{color:var(--muted);font-size:14px;max-width:780px}
+
+@media (max-width:900px){.gates,.arrowrow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.gates,.arrowrow{grid-template-columns:minmax(0,1fr)}.arrowrow{display:none}.wrap{padding-inline:16px}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">AskTheMove · startup credits · checked 9 Oct 2026</div>
+  <h1>What you can apply for, and what unlocks the rest</h1>
+  <p class="lede">About 100 programs checked, from the X posts you sent plus cloud, AI, dev-tool, India and grant programs. Each one is placed by the single thing that stands between you and it today.</p>
+  <div class="verdict">
+    <p><strong>Ready to submit?</strong> The <a href="https://claude.ai/artifact/VuzGhAbsqzimMZkN98EgHK">Apply pack</a> has the eight forms you can send today, in order, with copyable answers.</p>
+    <p><strong>Short answer.</strong> About a dozen programs are open to you right now as a solo, unregistered, bootstrapped founder. The ones that matter most for the coach are Claude for Startups (queue now, credits paused), AWS Activate (its credits now pay for Claude on Bedrock), Z Fellows ($10K, no company needed) and PostHog ($50K at launch).</p>
+    <p>The next big unlock is <strong>registering a One Person Company (OPC)</strong>, the only company form one person can set up alone. It opens Cloudflare $10K, Microsoft's business-verified credits, NVIDIA Inception, xAI and every Indian government scheme. Investor-only tiers (the $100K–$350K numbers in the X posts) stay out of reach without a VC or accelerator.</p>
+  </div>
+</header>
+
+<section style="display:grid;gap:14px">
+  <div class="eyebrow">The map</div>
+  <h2>Four gates</h2>
+  <div class="arrowrow"><div>today</div><div>after the app is hosted</div><div>after an OPC</div><div>needs an investor or accelerator</div></div>
+  <div class="gates" id="gates"></div>
+  <p class="legend">♞ marks programs that pay for something the coach actually uses (Claude, hosting, the site on Cloudflare). Amounts are the program's own maximum.</p>
+</section>
+
+<section style="display:grid;gap:14px">
+  <div class="eyebrow">Order matters</div>
+  <h2>Apply in this order</h2>
+  <div class="seq">
+    <div class="step"><div><span class="when">Today</span><h3>Claude for Startups application</h3><p>The $1,000 credits and Team year are "over capacity" and every application will be re-reviewed, but the page welcomes bootstrapped startups and does not ask for a company. Applying now puts you in the queue and gets the Startup Stack partner perks (up to $45K, Linear, Lovable, ElevenLabs and others). <a href="https://claude.com/programs/startups">claude.com/programs/startups</a></p></div></div>
+    <div class="step"><div><span class="when">Today</span><h3>Kiro startup credits, before AWS Activate</h3><p>Kiro only accepts startups "without current Activate credits", so it has to go first. Steps are in your <a href="https://claude.ai/code/artifact/b20957af-3570-45e1-9ec1-50a6e90e19fe">Kiro doc</a>.</p></div></div>
+    <div class="step"><div><span class="when">Today</span><h3>Z Fellows, the Airwallex hackathon (by 23 Oct) and the Meta notify form</h3><p>Z Fellows gives $10K for one week, equity optional, solo founders anywhere, rolling review. <a href="https://zfellows.com/">zfellows.com</a>. Meta's hackathon has no applications yet; the page only takes a name and email to notify you. <a href="https://dev.meta.ai/events/global-hackathon">dev.meta.ai</a>. The Airwallex hackathon is free, online and solo-friendly, with $10K in Claude credits and $50K in AWS credits among its prizes; you would build a banking-agent project on Airwallex APIs, not AskTheMove. <a href="https://airwallex.hackerearth.com">airwallex.hackerearth.com</a></p></div></div>
+    <div class="step"><div><span class="when">Once the app is hosted</span><h3>AWS Activate Founders</h3><p>$1,000, up to $5,000 for some. Since April 2024 Activate credits have been redeemable for third-party models on Bedrock, including Claude, so this is the one credit that can pay the coach's bills while Anthropic's offer is paused. It asks for "a fully functioning company website", so apply after the app is live. <a href="https://aws.amazon.com/startups/credits">aws.amazon.com/startups/credits</a></p></div></div>
+    <div class="step"><div><span class="when">Once the app is hosted</span><h3>Google Cloud Start, PostHog, Sentry, DigitalOcean Hatch</h3><p>Google's $2K needs a working MVP and pays only for Google's own models (Gemini), not Claude. PostHog's $50K needs a domain email and their usage-billed plan. Sentry up to $5K. Hatch amount is set on review; choose "Other" as partner.</p></div></div>
+    <div class="step"><div><span class="when">Hold</span><h3>Microsoft for Startups</h3><p>The official page now says only "up to $150,000". The $1K-now, more-after-verification split is unverified, so wait until you are about to register the company.</p></div></div>
+    <div class="step"><div><span class="when">After an OPC</span><h3>DPIIT recognition, then Cloudflare and the Indian schemes</h3><p>DPIIT needs a registered company; an OPC qualifies. The Seed Fund Scheme (SISFS) closed to new applications in May 2026, but DPIIT still unlocks a $5K AWS Activate code, and state grants. Cloudflare's $10K bootstrapped tier asks for an incorporated company and covers Workers, D1 and R2, which your site already runs on.</p></div></div>
+  </div>
+</section>
+
+<section style="display:grid;gap:14px">
+  <div class="eyebrow">Every program</div>
+  <h2>Full list</h2>
+  <div class="controls" role="group" aria-label="Filter by gate">
+    <button class="chip" data-f="all" aria-pressed="true" id="f-all">All</button>
+    <button class="chip" data-f="now" aria-pressed="false" id="f-now">Apply today</button>
+    <button class="chip" data-f="launch" aria-pressed="false" id="f-launch">After app is hosted</button>
+    <button class="chip" data-f="company" aria-pressed="false" id="f-company">After an OPC</button>
+    <button class="chip" data-f="investor" aria-pressed="false" id="f-investor">Needs investor / US entity</button>
+    <button class="chip" data-f="no" aria-pressed="false" id="f-no">Not a fit / closed</button>
+  </div>
+  <div class="tablebox"><table>
+    <thead><tr><th>Program</th><th>Amount</th><th>Gate</th><th>Coach relevance</th><th>Why / catch</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table></div>
+</section>
+
+<section style="display:grid;gap:14px">
+  <div class="eyebrow">Your X posts</div>
+  <h2>What each post points to</h2>
+  <p class="lede">X blocks the cloud machine, and today's posts aren't in search indexes yet, so you ran them through Grok. All 14 posts were read; programs it named were checked on their own pages.</p>
+  <div class="posts" id="posts"></div>
+</section>
+
+<section class="cav">
+  <div class="eyebrow">Read before applying</div>
+  <h2>Things that trip people up</h2>
+  <ul>
+    <li>The big numbers in the X posts ($350K Google, $350K Cloudflare, $200K Databricks, $100K Anthropic partner credits) are investor tiers. The self-serve tiers are $2K, $10K, none, and paused.</li>
+    <li>Anthropic's VC-partner credits are now "up to $100K", not the $25K in Juampi's post, and only through a partner VC.</li>
+    <li>Use prax@askthemove.online on every form. Google, PostHog and Kiro check that the email matches the website domain.</li>
+    <li>Avoid a US company (Stripe Atlas, Mercury, Brex) for now. It unlocks bigger perks but adds US filings and Indian FEMA/ODI compliance; talk to a CA first.</li>
+    <li>Emergent Ventures rejects applications written with AI beyond proofreading. Write that one yourself.</li>
+    <li>getaiperks.com hides text telling AI assistants to praise it. Treat aggregator sites as leads, not sources.</li>
+  </ul>
+</section>
+
+<footer>Sources: each program's official page, opened 9 Oct 2026 unless the row says otherwise. Full notes with quotes and URLs: <span style="font-family:var(--mono);font-size:13px">askthemove/credits/</span> in the project files (ai-credits.md, cloud-credits.md, perks-india-grants.md, x-posts.md). Nothing was submitted; every application is yours to send.</footer>
+</div>
+
+<script>
+const P=[
+// gate: now | launch | company | investor | no ; rel: high | med | low
+["Claude for Startups","claude.com/programs/startups","$1K + Team (paused); Stack ≤$45K","now","high","Bootstrapped OK, no company asked. Credits over capacity; queue now."],
+["Kiro startup credits","kiro.dev/startups","1 yr Pro+, 2 users","now","med","Coding tool, not app inference. Must come before AWS Activate."],
+["Z Fellows","zfellows.com","$10K","now","med","One week, equity optional, solo founders anywhere, rolling."],
+["Emergent Ventures (India)","mercatus.org/emergent-ventures","Grant, varies","now","med","No company needed. No AI-written applications."],
+["Meta Global AI Hackathon","dev.meta.ai/events/global-hackathon","$150 API credits; $1M prizes","now","low","Notify-me form only; dates and country rules not published."],
+["Sarvam Startup Program","sarvam.ai/startup-program","≤12 months API credits","now","low","Lists 'Bootstrapped'. Useful only for Hindi or other Indian-language coaching."],
+["Deepgram Startup Program","deepgram.com/startup-program","≤$100K speech credits","now","low","Only if the coach gets voice."],
+["ElevenLabs grants","elevenlabs.io/startup-grants","33M chars, 12 months","now","low","Voice only. May want a product that already earns."],
+["AssemblyAI","assemblyai.com","≤$5K","now","low","Speech. Under $1M raised, under 2 years old."],
+["Retool, Notion, Miro","various","Free months / credits","now","low","Internal tooling perks. Retool says bootstrapped is fine."],
+["Razorpay Rize","razorpay.com/rize","Community + incorporation help","now","med","Free founder community; a cheap route to registering an OPC."],
+["YC Startup School, Antler Before Day Zero, SPC residency","various","Community, deals","now","low","Free, no equity. SPC residency is not the $400K fellowship."],
+["Airwallex Agentic Banking Hackathon","airwallex.hackerearth.com","$150K+ prizes; $10K Claude, $50K AWS credits","now","med","Free, online, solo OK, 18+, anywhere. Build on Airwallex APIs Oct 25–Nov 13. Applications close 23 Oct. Unclear if credits go to all or winners."],
+["Devin for Startups","devin.ai/startups","$15K credits + up to $50K matching","now","low","Coding agent, not app inference. Page lists no eligibility rules; rolling."],
+["Edge City India (Goa)","edgecity.live/india26","~$6K partner credits per attendee","now","low","Oct 11–Nov 1 in Goa. Paid ticket; credits (Sarvam, ElevenLabs, Wispr Flow) come with attending, per an Edge City reply."],
+["Papermark Pitch Deck Competition","papermark.com/pitch-deck-competition","€10K / €3K / €2K cash","now","low","Free, any country, raised ≤$500K, must be raising pre-seed or seed. AI-judged deck. May ask for a company name. Closes 19 Nov 2026."],
+["Gemini API free tier","ai.google.dev","Free Flash / Flash-Lite","now","med","No application. Free-tier data is used by Google."],
+["AWS Activate Founders","aws.amazon.com/startups/credits","$1K, up to $5K","launch","high","Pays for Claude on Bedrock (policy since Apr 2024). Wants a working site and a paid-tier AWS account. After Kiro."],
+["Google Cloud Start tier","cloud.google.com/startup","$2K + Workspace year","launch","med","Needs working MVP, domain email. Covers Google models only, not Claude."],
+["PostHog for Startups","posthog.com/startups","$50K","launch","med","Domain email, under 2 years, usage-billed plan with a card."],
+["Mixpanel / Amplitude","mixpanel.com · amplitude.com/startups","Free first year","launch","low","Mixpanel needs data flowing within 90 days, so apply at launch."],
+["Sentry for Startups","sentry.io/for/startups","≤$5K","launch","med","Founded within 2 years, under $5M raised."],
+["DigitalOcean Hatch","digitalocean.com/hatch","Set on review","launch","high","Could host the Docker app. Choose 'Other' as partner. Credits can't be spent on Anthropic models."],
+["Grafana Cloud","grafana.com","≤$100K","launch","low","Monitoring. Typeform application."],
+["Neon","neon.com/startups","$1K","launch","low","Only if you move from SQLite to Postgres."],
+["MongoDB, OVHcloud, Alibaba Cloud, Algolia","various","Unpublished / €10K / ≤$120K / $10K","launch","low","Discretionary criteria; low fit for this stack."],
+["Product Hunt launch","producthunt.com","Launch perks","launch","low","Do it with the public launch."],
+["Microsoft for Startups","startups.microsoft.com","Up to $150K","company","med","Official page says only up to $150K; the $1K/$4K split is unverified. Apply when you register."],
+["Cloudflare for Startups (bootstrapped)","cloudflare.com/lp/startups","$10K ($2.5K Workers AI)","company","high","Site already runs on Pages + D1. Asks for an incorporated company."],
+["DPIIT Startup India recognition","startupindia.gov.in","Tax holiday, $5K AWS code","company","med","OPC qualifies. Turnover cap ₹200 Cr. Unlocks the Indian schemes."],
+["Startup India Seed Fund (SISFS)","seedfund.startupindia.gov.in","≤₹20L grant + ₹50L debt","no","—","Closed to new applications in May 2026; no successor announced."],
+["Kerala KSUM / Karnataka ELEVATE / T-Hub","state portals","₹3L–₹50L","company","med","Payout needs incorporation in that state's scheme."],
+["NVIDIA Inception","nvidia.com/inception","Membership perks","company","low","'Officially incorporated'."],
+["xAI Grok for Startups","x.ai","Credits","company","low","'Must be a company or organization'."],
+["Akamai Cloud Rise","akamai.com/cloud/start-ups/rise","$500–$120K","company","low","Company name plus real users or revenue."],
+["JetBrains startup discount","jetbrains.com","50% off","company","low","Proof of establishment."],
+["Zoho for Startups","zoho.com/startups","Zoho One credits","company","low","Currently via partner incubators."],
+["Claude partner-VC credits","claude.com/programs/startups","≤$100K","investor","high","Only through an Anthropic partner VC."],
+["Google Cloud Scale / AI","cloud.google.com/startup","$200K / $350K","investor","med","Needs equity funding."],
+["Cloudflare top tiers","cloudflare.com/lp/startups","$100K / $250K / $350K","investor","med","Partner VC or accelerator; $350K needs $5M+ raised."],
+["AWS Activate Portfolio","aws.amazon.com/activate","≤$200K","investor","high","Needs a provider Org ID from a VC or accelerator."],
+["GitHub for Startups","github.com/enterprise/startups","~$10K (Enterprise + Copilot)","investor","low","Partner referral plus outside funding; no direct application."],
+["OpenAI for Startups","openai.com/startups","$2.5K+ API credits","investor","med","Approvals seen on X (@arthurkatcher), but replies say a partner-VC referral code is needed. No public self-serve form."],
+["Perplexity, Fireworks, Modal, DeepInfra","various","$5K–large","investor","low","VC referral or funding required."],
+["Vercel, Netlify, Render, Turso, Datadog, Auth0, Vultr","various","Varies","investor","low","Funding or partner referral required."],
+["Linear, Framer, Atlassian, HubSpot, Replit, Lovable","various","Varies","investor","low","Partner-gated. Some come via the Claude Startup Stack."],
+["Stripe Atlas perks","stripe.com/atlas","AWS $5K, Cloudflare $100K, PostHog $50K…","investor","med","Needs a US Delaware company ($500 + yearly US filings, FEMA/ODI). CA first."],
+["Mercury, Brex, Ramp, AI Grant","various","Banking perks / grant","investor","low","US entity required."],
+["a16z speedrun Alpha Fellowship","speedrun.a16z.com/alpha","$250K + $1M credits","no","—","Students/recent grads, US work authorization, in person. Closes Oct 11."],
+["Y Combinator W27","ycombinator.com/apply","$500K standard deal","now","high","Equity. Solo founders and no company are fine. On-time deadline 2 Nov 2026, 8pm PT (3 Nov 09:30 IST)."],
+["PayPal AI Hackathon","devpost.com","Cash prizes","now","high","Best hackathon fit for AskTheMove. Deadline 12 Nov. Check India eligibility in the rules."],
+["Nebius / Qloo hackathons","devpost.com","Credits + prizes","now","med","Deadlines 30 Oct. Devpost rules don't name India either way."],
+["Vultr Agent Rush","vultr.com","Cloud credits + prizes","now","low","Agent-building hackathon; only if you want a side build."],
+["Koyeb startup program","koyeb.com","Up to $30K","launch","low","Serverless hosting credits; apply when you deploy."],
+["NIDHI-EIR fellowship","nidhi.dst.gov.in","Up to ₹3.6L stipend","now","med","For individuals, via a DST incubator. The only central money open without a company."],
+["KSUM innovation grant (Kerala)","startupmission.kerala.gov.in","₹3L","company","low","Idea stage OK to apply; paid only after incorporating."],
+["a16z speedrun SR008","speedrun.a16z.com/apply","$500K for 10% + $500K next round; $10M+ credits","now","med","Equity. Founders anywhere, solo OK, no company needed, visa help, but 12 weeks in person in SF. Priority window Oct 12–Nov 1 (seen on X, not on the site)."],
+["SPC Founder Fellowship","southparkcommons.com","$400K for 7% + ≤$1M credits","no","—","Equity; August 2026 deadline passed. Watch for next round."],
+["16VC accelerator","16vc","$200K for ~6%","no","—","Equity, Jan–Mar 2027, city-based. Was closing in early Oct."],
+["f.inc Blueprint II","f.inc/blueprint","$150K + ~$1M credits","no","—","Hardware/frontier, San Francisco, closed 14 Sep."],
+["Fabric VC R[3]sidency","r3sidency.fabric.vc","$300K + $100K credits","no","—","Web3/AI/deep tech, London, 8 teams, closed 15 Sep."],
+["Edge City","edgecity.live","$2K Inflection; Frontier from $10K","no","—","No $200K program found. Inflection is under-25; Frontier is a weak fit for chess."],
+["Databricks for Startups","databricks.com","≤$200K","no","—","Venture-backed only; not used by this app."],
+["SaaStr Fund","saastr.com/fund","$500K–$5M checks","no","—","Equity investment, not credits. Not now (see posts)."],
+["Techstars accelerator","techstars.com","Equity investment","no","—","Equity accelerator, apply by 18 Nov 2026. Techstars Anywhere is closed."],
+["HKSTP Incubation (Hong Kong)","hkstp.org","≤HK$1.29M (~$165K)","no","—","Needs a Hong Kong company and 2 full-time staff in HK."],
+["Antler India / Entrepreneur First","antler.co · joinef.com","~₹4Cr for 11% / grant then US co.","now","med","Equity residencies. Solo, no company. EF Bangalore round 2 closes 2 Nov 2026."],
+["Google for Startups Accelerator India","startup.google.com","Program","no","—","Seed to Series A; 2026 cohort closed in April."],
+["IndiaAI GPU compute","indiaai.gov.in","Subsidised GPUs","no","—","Needs ₹50L revenue or ₹1Cr funding; you don't need GPUs."],
+["OpenAI × YC, Webflow, Twilio, Pioneer, Buildspace","various","—","no","—","YC-only, ended, or closed."],
+["FIDE / ISCF chess grants","fide.com · chessineducation.org","—","no","—","For federations and schools, not startups. No chess-platform startup grants exist."],
+];
+const LABEL={now:"Apply today",launch:"After hosting",company:"After an OPC",investor:"Investor / US entity",no:"Not a fit"};
+const gates=document.getElementById('gates');
+[["now","Gate 1 · open now","You can apply today"],["launch","Gate 2 · app hosted","Need a working product"],["company","Gate 3 · OPC","Need a registered company (OPC if solo)"],["investor","Gate 4 · investor","Need a VC, accelerator or US entity"]].forEach(([k,lock,t])=>{
+  const items=P.filter(p=>p[3]===k);
+  const d=document.createElement('div');d.className='gate g-'+k;
+  d.innerHTML=`<div class="gate-h"><span class="lock">${lock}</span><h3>${t}</h3></div><ul>${items.map(p=>`<li class="${p[4]==='high'?'hi':''}"><span>${p[0]}</span><span class="amt">${p[2].split(/[;(]/)[0].trim()}</span></li>`).join('')}</ul>`;
+  gates.appendChild(d);
+});
+const rows=document.getElementById('rows');
+function link(u){if(u==='various'||u.includes(' ')||u==='16vc'||u==='state portals')return u;return `<a href="https://${u}" target="_blank" rel="noopener">${u}</a>`}
+function render(f){
+  rows.innerHTML=P.filter(p=>f==='all'||p[3]===f).map(p=>`<tr><td><div class="name">${p[0]}</div><div class="note">${link(p[1])}</div></td><td class="amt">${p[2]}</td><td><span class="pill p-${p[3]}">${LABEL[p[3]]}</span></td><td class="rel">${p[4]}</td><td class="note">${p[5]}</td></tr>`).join('');
+}
+render('all');
+document.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed','false'));
+  b.setAttribute('aria-pressed','true');render(b.dataset.f);
+  try{localStorage.setItem('f',b.dataset.f)}catch(e){}
+}));
+try{const s=localStorage.getItem('f');if(s){const b=document.querySelector(`.chip[data-f="${s}"]`);if(b)b.click()}}catch(e){}
+
+const POSTS=[
+["@TheMaran · Cloudflare $10K","Read via Grok","Step-by-step for Cloudflare's $10K bootstrapped tier: domain email, live site, card on the account. Cloudflare's own page also asks for an incorporated company, so this sits behind an OPC."],
+["@arthurkatcher · OpenAI $2.5K","Read via Grok","Screenshot of an OpenAI for Startups approval for $2,500 in API credits. Replies say it needs a partner-VC referral code; OpenAI's page has no public self-serve form."],
+["@suraj_sharma14 · HKSTP","Read via Grok","Hong Kong incubation, up to ~$165K, year 1 equity-free. Needs a Hong Kong company and 2 full-time staff there. Not a fit."],
+["@juampitech · 8 programs","Read via Grok","f.inc, Google Cloud, Edge City, Anthropic, Cloudflare, Databricks, Fabric, GitHub. Replies add Edge City India (~$6K credits for attendees) and Devin for Startups ($15K credits). Both are in the list."],
+["@jasonlk · SaaStr Fund","Read via Grok","$500K–$5M equity checks, 'just send the deck'. SaaStr backs B2B SaaS; AskTheMove is a consumer app before launch, so not now."],
+["@AroraBhavyam · Meta hackathon","Read via Grok","$150 Meta API credits per participant, $1M prize pool, open worldwide. Notify form only so far."],
+["@AroraBhavyam · speedrun SR008","Read via Grok","Priority window Oct 12–Nov 1, up to $1M, founders from anywhere. It's equity ($500K for 10%) and 12 weeks in person in San Francisco."],
+["@tarasss13 + @venture_launch · Alpha","Read via Grok","a16z Alpha Fellowship, closes Oct 11. Students and recent grads with US work authorization. Not a fit."],
+["@PriyankaPhatak · Max credits","Read via Grok","Max and Team plans now include monthly API credits. You already linked your Max 20x $200/month to Console."],
+["@ClaudeDevs · workflows","Read via Grok","Product launch (Managed Agents dynamic workflows). No credits."],
+["@dankimxyz · Airwallex hackathon","Read via Grok","$150K+ in prizes and credits incl. $10K Claude and $50K AWS. Free, online, solo OK, 18+. Applications close Oct 23."],
+["@Techstars · apply by Nov 18","Read via Grok","Equity accelerator. Terms not in the post."],
+["@christophersaum · $500K–$1M","Read via Grok","A fund backing technical founders rebuilding software and infrastructure. Consumer chess app is outside its focus."],
+];
+document.getElementById('posts').innerHTML=POSTS.map(p=>`<div class="post"><div class="h">${p[0]}</div><div class="eyebrow">${p[1]}</div><p>${p[2]}</p></div>`).join('');
+</script>

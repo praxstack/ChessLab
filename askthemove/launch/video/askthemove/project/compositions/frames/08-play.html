@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>08 Play a bot</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #root {
+          position: absolute;
+          inset: 0;
+        }
+      </style>
+      <div
+        id="root"
+        data-composition-id="f08-play"
+        data-width="1920"
+        data-height="1080"
+        data-duration="8.6"
+      >
+        <div id="f08-page" class="nb-page">
+          <div class="nb-paper"></div>
+          <div class="nb-fig">
+            <div id="f08-stage" class="nb-stage">
+              <!-- A: the bot roster; Barnaby picked (source 9.2 to 11.4 s). -->
+              <video
+                id="f08-a"
+                class="nb-vid"
+                src="assets/footage/05-bot-play.mp4"
+                muted
+                playsinline
+                data-start="0"
+                data-duration="2.2"
+                data-media-start="9.2"
+                data-track-index="0"
+              ></video>
+              <!-- B: game options: strength 1050 to 1200, then the 10 min clock, at 1.6x
+                   (source 14.6 to 19.0 s). -->
+              <video
+                id="f08-b"
+                class="nb-vid"
+                src="assets/footage/05-bot-play.mp4"
+                muted
+                playsinline
+                data-start="2.2"
+                data-duration="2.75"
+                data-media-start="14.6"
+                data-playback-rate="1.6"
+                data-track-index="0"
+                data-hf-media-start-basis="local"
+              ></video>
+              <!-- C: the game against Barnaby, clocks running, at 7.5x (source 20.75 to 48.125 s). -->
+              <video
+                id="f08-c"
+                class="nb-vid"
+                src="assets/footage/05-bot-play.mp4"
+                muted
+                playsinline
+                data-start="4.95"
+                data-duration="3.65"
+                data-media-start="20.75"
+                data-playback-rate="7.5"
+                data-track-index="0"
+                data-hf-media-start-basis="local"
+              ></video>
+              <div class="nb-mask nb-mask--side"></div>
+              <svg id="f08-ink" class="nb-ink" viewBox="0 0 1920 1080" aria-hidden="true"></svg>
+            </div>
+          </div>
+          <div id="f08-col" class="nb-col">
+            <p class="nb-label"><span class="nb-count">7 / 7</span><span>Play a bot</span></p>
+            <p id="f08-n1" class="nb-note">Then play a bot. Each one has a rating.</p>
+            <p id="f08-n2" class="nb-note">Barnaby, set to 1200, on a 10-minute clock.</p>
+          </div>
+        </div>
+      </div>
+      <script>
+        (function () {
+          var NB = window.NB;
+          var tl = gsap.timeline({ paused: true });
+          var stage = document.getElementById('f08-stage');
+          var ink = document.getElementById('f08-ink');
+
+          var roster = NB.fit([1350, 195, 1870, 672]);
+          var options = NB.fit([1360, 300, 1860, 760]);
+          var game = NB.fit([455, 108, 1196, 978]);
+
+          NB.enter(tl, '#f08-page');
+          NB.pose(tl, stage, roster);
+          tl.fromTo('#f08-col .nb-label', { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'none' }, 0.1);
+          NB.write(tl, document.getElementById('f08-n1'), 0.3);
+
+          var tile = NB.mark(ink, 'ring', { cx: 1780, cy: 595, rx: 62, ry: 60 }, { seed: 'barnaby', px: 7, scale: roster.scale });
+          NB.draw(tl, tile, 1.05, { max: 0.5 });
+          tile.strokes.forEach(function (s) {
+            tl.set(s.el, { opacity: 0 }, 2.2);
+          });
+
+          // Options: strength and clock.
+          tl.set(stage, { x: options.x, y: options.y, scale: options.scale }, 2.2);
+          var strength = NB.mark(ink, 'ring', { cx: 1803, cy: 367, rx: 44, ry: 25 }, { seed: 'strength', px: 7, scale: options.scale });
+          NB.draw(tl, strength, 3.15, { max: 0.45 });
+          NB.write(tl, document.getElementById('f08-n2'), 3.2);
+          var clock = NB.mark(ink, 'ring', { cx: 1609, cy: 626, rx: 82, ry: 34 }, { seed: 'ten-min', px: 7, scale: options.scale });
+          NB.draw(tl, clock, 4.1, { max: 0.45 });
+          [strength, clock].forEach(function (m) {
+            m.strokes.forEach(function (s) {
+              tl.set(s.el, { opacity: 0 }, 4.95);
+            });
+          });
+
+          // The game: Barnaby's clock.
+          tl.set(stage, { x: game.x, y: game.y, scale: game.scale }, 4.95);
+          var bclock = NB.mark(ink, 'ring', { cx: 1065, cy: 141, rx: 72, ry: 40 }, { seed: 'barnaby-clock', px: 7, scale: game.scale });
+          NB.draw(tl, bclock, 5.6, { max: 0.5 });
+
+          NB.leave(tl, '#f08-col', 8.6);
+          window.__timelines['f08-play'] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

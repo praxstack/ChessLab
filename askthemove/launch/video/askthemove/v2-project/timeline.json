@@ -1,0 +1,209 @@
+[
+ {
+  "id": "h1",
+  "start": 0.65,
+  "dur": 2.556,
+  "chapter": "AskTheMove",
+  "text": "You lost a game, and you want to know why.",
+  "say": "You lost a game, and you want to know why.",
+  "pause": 0.3
+ },
+ {
+  "id": "h2",
+  "start": 3.456,
+  "dur": 5.205,
+  "chapter": "AskTheMove",
+  "text": "AskTheMove reviews it move by move, with engine evidence you can check.",
+  "say": "Ask The Move reviews it, move by move, with engine evidence you can check yourself.",
+  "pause": 0.3
+ },
+ {
+  "id": "i1",
+  "start": 9.961,
+  "dur": 4.895,
+  "chapter": "Import",
+  "text": "Paste in the game. Here, Maya played Black and was mated in seven moves.",
+  "say": "Paste in the game. Here, Maya played Black, and was mated in seven moves.",
+  "pause": 0.3
+ },
+ {
+  "id": "i2",
+  "start": 15.106,
+  "dur": 4.884,
+  "chapter": "Import",
+  "text": "One click imports it. Flip the board to your side and play it through to the mate.",
+  "say": "One click imports it. Flip the board to your side, and play it through to the mate.",
+  "pause": 0.3
+ },
+ {
+  "id": "r1",
+  "start": 21.29,
+  "dur": 3.79,
+  "chapter": "Review",
+  "text": "Then Stockfish 18 reviews every move, for both players.",
+  "say": "Then Stockfish eighteen reviews every move, for both players.",
+  "pause": 0.3
+ },
+ {
+  "id": "r2",
+  "start": 25.33,
+  "dur": 5.233,
+  "chapter": "Review",
+  "text": "It names the opening, the Philidor Defense, and graphs who was ahead.",
+  "say": "It names the opening, the Philidor Defense, and graphs who was ahead after every move.",
+  "pause": 0.3
+ },
+ {
+  "id": "r3",
+  "start": 30.813,
+  "dur": 3.759,
+  "chapter": "Review",
+  "text": "Every move gets a grade, and the key moves are pulled out for you.",
+  "say": "Every move gets a grade, and the key moves are pulled out for you.",
+  "pause": 0.3
+ },
+ {
+  "id": "k1",
+  "start": 35.873,
+  "dur": 5.001,
+  "chapter": "The blunder",
+  "text": "On move 5, Maya's bishop took White's queen. AskTheMove marks it a blunder.",
+  "say": "On move five, Maya's bishop took White's queen. Ask The Move marks it a blunder.",
+  "pause": 0.3
+ },
+ {
+  "id": "k2",
+  "start": 41.124,
+  "dur": 4.87,
+  "chapter": "The blunder",
+  "text": "Why? After that capture, Stockfish finds mate in 2 for White.",
+  "say": "Why? Because after that capture, Stockfish finds mate in two for White.",
+  "pause": 0.3
+ },
+ {
+  "id": "k3",
+  "start": 46.244,
+  "dur": 7.059,
+  "chapter": "The blunder",
+  "text": "Bishop takes f7, check. King e7. Knight d5, mate. The line is right there on the card.",
+  "say": "Bishop takes f seven, check. King e seven. Knight d five, mate. The line is right there on the card.",
+  "pause": 0.3
+ },
+ {
+  "id": "k4",
+  "start": 53.553,
+  "dur": 4.593,
+  "chapter": "The blunder",
+  "text": "The engine, the search time and the depth are printed, so you can check it.",
+  "say": "The engine, the search time and the depth are printed under it, so you can check it.",
+  "pause": 0.3
+ },
+ {
+  "id": "v1",
+  "start": 59.446,
+  "dur": 5.842,
+  "chapter": "Your line",
+  "text": "So what should Maya have played? Compare before the move: Stockfish wanted dxe5.",
+  "say": "So what should Maya have played? Compare before the move. Stockfish wanted pawn takes e five.",
+  "pause": 0.3
+ },
+ {
+  "id": "v2",
+  "start": 65.538,
+  "dur": 4.784,
+  "chapter": "Your line",
+  "text": "Try that line yourself: 5…dxe5, then 6.Qxg4.",
+  "say": "Try that line yourself. Pawn takes e five, then queen takes g four.",
+  "pause": 0.3
+ },
+ {
+  "id": "v3",
+  "start": 70.572,
+  "dur": 5.304,
+  "chapter": "Your line",
+  "text": "Stockfish checks your line too: White is better, +1.89, but there is no mate.",
+  "say": "Stockfish checks your line too. White is better, by about two pawns, but there is no mate.",
+  "pause": 0.3
+ },
+ {
+  "id": "p1",
+  "start": 77.176,
+  "dur": 5.578,
+  "chapter": "Practice",
+  "text": "Then practice. Your key moves come back as positions to solve, with the answer hidden.",
+  "say": "Then practice. Your key moves come back as positions to solve, with the answer hidden.",
+  "pause": 0.3
+ },
+ {
+  "id": "p2",
+  "start": 83.004,
+  "dur": 2.74,
+  "chapter": "Practice",
+  "text": "Maya finds the engine's move in the first two.",
+  "say": "Maya finds the engine's move in the first two.",
+  "pause": 0.3
+ },
+ {
+  "id": "p3",
+  "start": 85.994,
+  "dur": 4.656,
+  "chapter": "Practice",
+  "text": "In the third, she grabs the queen again, and the review shows her why that fails.",
+  "say": "In the third, she grabs the queen again, and the review shows her why that fails.",
+  "pause": 0.3
+ },
+ {
+  "id": "p4",
+  "start": 90.9,
+  "dur": 3.986,
+  "chapter": "Practice",
+  "text": "One hint later, she plays dxe5. Found it.",
+  "say": "One hint later, she plays pawn takes e five. Found it.",
+  "pause": 0.3
+ },
+ {
+  "id": "b1",
+  "start": 96.186,
+  "dur": 5.464,
+  "chapter": "Play",
+  "text": "When you're ready, play a bot. There are 43, each with a rating and a personality.",
+  "say": "When you're ready, play a bot. There are forty three, each with a rating and a personality.",
+  "pause": 0.3
+ },
+ {
+  "id": "b2",
+  "start": 101.9,
+  "dur": 3.695,
+  "chapter": "Play",
+  "text": "Here it's Barnaby, rated 1050, on a 10-minute clock.",
+  "say": "Here it's Barnaby, rated ten fifty, on a ten minute clock.",
+  "pause": 0.3
+ },
+ {
+  "id": "m1",
+  "start": 106.895,
+  "dur": 8.494,
+  "chapter": "More",
+  "text": "There are guided lessons, 3,810 named openings, 24 endgame positions and board vision drills too.",
+  "say": "There are guided lessons, three thousand eight hundred and ten named openings, twenty four endgame positions, and board vision drills too.",
+  "pause": 0.3
+ },
+ {
+  "id": "e1",
+  "start": 116.689,
+  "dur": 7.412,
+  "chapter": "Join",
+  "text": "Invited beta players can also ask an AI coach to explain any move, from the same evidence.",
+  "say": "Invited beta players can also ask an AI coach to explain any move in plain words, from the same evidence.",
+  "pause": 0.3
+ },
+ {
+  "id": "e2",
+  "start": 124.351,
+  "dur": 5.397,
+  "chapter": "Join",
+  "text": "AskTheMove. Join the beta at askthemove.online",
+  "say": "Ask The Move. Join the beta at ask the move dot online.",
+  "pause": 0.3
+ }
+]

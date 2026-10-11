@@ -1,0 +1,1257 @@
+{
+ "style": {
+  "look": "paper",
+  "brand": "AskTheMove",
+  "mark": "AM",
+  "tag": "Product demo"
+ },
+ "shots": [
+  {
+   "at": "h1",
+   "type": "title",
+   "kicker": "AskTheMove · product demo",
+   "title": "You lost a game. *Why?*",
+   "sub": "A real game, reviewed in the real app"
+  },
+  {
+   "at": "h2",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "clips": {
+      "import": {
+       "dir": "footage/01-import",
+       "fps": 30,
+       "frames": 1018
+      },
+      "review": {
+       "dir": "footage/02-review",
+       "fps": 30,
+       "frames": 2052
+      },
+      "variation": {
+       "dir": "footage/03-variation",
+       "fps": 30,
+       "frames": 712
+      },
+      "practice": {
+       "dir": "footage/04-practice",
+       "fps": 30,
+       "frames": 1590
+      },
+      "bots": {
+       "dir": "footage/05-bots",
+       "fps": 30,
+       "frames": 1697
+      },
+      "tour": {
+       "dir": "footage/06-tour",
+       "fps": 30,
+       "frames": 847
+      }
+     },
+     "clip": "review",
+     "from": 63.4,
+     "view": [
+      1170,
+      440,
+      1400
+     ],
+     "cues": [
+      {
+       "do": "play",
+       "at": "h2",
+       "from": 63.4,
+       "to": 65.4,
+       "until": "h2.end -0.1"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "kicker": "AskTheMove",
+     "text": "Every move, with *evidence*"
+    }
+   ]
+  },
+  {
+   "at": "i1",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "cues": [
+      {
+       "do": "play",
+       "at": "i1",
+       "clip": "import",
+       "from": 3.4,
+       "to": 6.0,
+       "until": "i1.end -0.1"
+      },
+      {
+       "do": "view",
+       "at": "i1",
+       "box": [
+        960,
+        560,
+        1250
+       ],
+       "d": 0.6
+      },
+      {
+       "do": "underline",
+       "at": "i1:maya played black",
+       "box": [
+        600,
+        550,
+        140,
+        26
+       ],
+       "tone": "accent"
+      },
+      {
+       "do": "circle",
+       "at": "i1:mated in seven moves",
+       "box": [
+        1232,
+        634,
+        80,
+        30
+       ],
+       "tone": "bad"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "kicker": "Import",
+     "text": "Paste the game you *lost*"
+    }
+   ]
+  },
+  {
+   "at": "i2",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "cues": [
+      {
+       "do": "play",
+       "at": "i2",
+       "from": 6.0,
+       "to": 10.4,
+       "until": "i2:and play it -0.1"
+      },
+      {
+       "do": "view",
+       "at": "i2",
+       "box": [
+        960,
+        540,
+        1920
+       ],
+       "d": 0.7
+      },
+      {
+       "do": "circle",
+       "at": "i2:flip the board",
+       "box": [
+        1130,
+        896,
+        48,
+        44
+       ],
+       "tone": "accent",
+       "out": "i2:and play it -0.15"
+      },
+      {
+       "do": "play",
+       "at": "i2:and play it",
+       "from": 26.0,
+       "to": 31.0,
+       "until": "i2.end -0.1"
+      },
+      {
+       "do": "view",
+       "at": "i2:and play it",
+       "box": [
+        840,
+        440,
+        1250
+       ],
+       "d": 0.5
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "Flip it to *your side*"
+    }
+   ]
+  },
+  {
+   "at": "r1",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "cues": [
+      {
+       "do": "play",
+       "at": "r1",
+       "clip": "review",
+       "from": 3.6,
+       "to": 52.2,
+       "until": "r2.end -0.25"
+      },
+      {
+       "do": "view",
+       "at": "r1",
+       "box": [
+        960,
+        540,
+        1920
+       ],
+       "d": 0.6
+      },
+      {
+       "do": "view",
+       "at": "r1:reviews every move",
+       "box": [
+        1600,
+        410,
+        1010
+       ],
+       "d": 1.0
+      },
+      {
+       "do": "circle",
+       "at": "r1:for both players",
+       "box": [
+        1378,
+        252,
+        462,
+        62
+       ],
+       "tone": "accent"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "kicker": "Review",
+     "text": "Stockfish 18 checks *every move*"
+    }
+   ]
+  },
+  {
+   "at": "r2",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "cues": [
+      {
+       "do": "circle",
+       "at": "r2:philidor",
+       "box": [
+        1378,
+        122,
+        462,
+        78
+       ],
+       "tone": "accent"
+      },
+      {
+       "do": "circle",
+       "at": "r2:graphs",
+       "box": [
+        1378,
+        475,
+        462,
+        216
+       ],
+       "tone": "accent"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "Opening named, lead *graphed*"
+    }
+   ]
+  },
+  {
+   "at": "r3",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "cues": [
+      {
+       "do": "play",
+       "at": "r3",
+       "from": 52.2,
+       "to": 58.4,
+       "until": "r3:grade"
+      },
+      {
+       "do": "circle",
+       "at": "r3:grade",
+       "box": [
+        1378,
+        192,
+        462,
+        190
+       ],
+       "tone": "accent",
+       "out": "r3:pulled out"
+      },
+      {
+       "do": "circle",
+       "at": "r3:key moves",
+       "box": [
+        1378,
+        458,
+        462,
+        188
+       ],
+       "tone": "bad"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "Every move *graded*"
+    }
+   ]
+  },
+  {
+   "at": "k1",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "cues": [
+      {
+       "do": "play",
+       "at": "k1",
+       "from": 58.4,
+       "to": 64.6,
+       "until": "k1:marks it"
+      },
+      {
+       "do": "view",
+       "at": "k1",
+       "box": [
+        1170,
+        440,
+        1400
+       ],
+       "d": 0.8
+      },
+      {
+       "do": "circle",
+       "at": "k1:took white's queen",
+       "box": [
+        833,
+        98,
+        90,
+        90
+       ],
+       "tone": "bad"
+      },
+      {
+       "do": "circle",
+       "at": "k1:marks it",
+       "box": [
+        1736,
+        172,
+        74,
+        33
+       ],
+       "tone": "bad"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "kicker": "The blunder",
+     "text": "5…Bxd1 is a *blunder*"
+    }
+   ]
+  },
+  {
+   "at": "k2",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "cues": [
+      {
+       "do": "play",
+       "at": "k2",
+       "from": 64.6,
+       "to": 65.6,
+       "until": "k2.end -0.1"
+      },
+      {
+       "do": "view",
+       "at": "k2",
+       "box": [
+        1600,
+        350,
+        700
+       ],
+       "d": 0.8
+      },
+      {
+       "do": "underline",
+       "at": "k2:stockfish finds",
+       "box": [
+        1393,
+        356,
+        158,
+        25
+       ],
+       "tone": "bad"
+      },
+      {
+       "do": "circle",
+       "at": "k2:mate in two",
+       "box": [
+        1390,
+        418,
+        90,
+        52
+       ],
+       "tone": "bad"
+      },
+      {
+       "do": "note",
+       "at": "k2:for white",
+       "text": "mate in 2!",
+       "near": [
+        1640,
+        444
+       ],
+       "tone": "bad"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "White has *mate in 2*"
+    }
+   ]
+  },
+  {
+   "at": "k3",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "cues": [
+      {
+       "do": "play",
+       "at": "k3",
+       "clip": "import",
+       "from": 27.95,
+       "to": 30.9,
+       "until": "k3:the line -0.1"
+      },
+      {
+       "do": "view",
+       "at": "k3",
+       "box": [
+        840,
+        440,
+        1250
+       ],
+       "d": 0.6
+      },
+      {
+       "do": "circle",
+       "at": "k3:knight d five",
+       "box": [
+        750,
+        606,
+        90,
+        92
+       ],
+       "tone": "bad",
+       "out": "k3:the line -0.15"
+      },
+      {
+       "do": "play",
+       "at": "k3:the line",
+       "clip": "review",
+       "from": 66.0,
+       "to": 66.6,
+       "until": "k3.end -0.1"
+      },
+      {
+       "do": "view",
+       "at": "k3:the line",
+       "box": [
+        1600,
+        300,
+        700
+       ],
+       "d": 0.6
+      },
+      {
+       "do": "underline",
+       "at": "k3:right there",
+       "box": [
+        1597,
+        226,
+        195,
+        20
+       ],
+       "tone": "accent"
+      },
+      {
+       "do": "underline",
+       "at": "k3:on the card",
+       "box": [
+        1393,
+        258,
+        115,
+        20
+       ],
+       "tone": "accent"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "Bxf7+, Ke7, *Nd5#*"
+    }
+   ]
+  },
+  {
+   "at": "k4",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "cues": [
+      {
+       "do": "play",
+       "at": "k4",
+       "from": 66.6,
+       "to": 67.6,
+       "until": "k4.end -0.1"
+      },
+      {
+       "do": "view",
+       "at": "k4",
+       "box": [
+        1600,
+        400,
+        700
+       ],
+       "d": 0.6
+      },
+      {
+       "do": "circle",
+       "at": "k4:the engine",
+       "box": [
+        1390,
+        482,
+        240,
+        26
+       ],
+       "tone": "accent"
+      },
+      {
+       "do": "note",
+       "at": "k4:so you can check",
+       "text": "check it yourself",
+       "near": [
+        1600,
+        570
+       ],
+       "tone": "accent"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "Engine, time, depth: *printed*"
+    }
+   ]
+  },
+  {
+   "at": "v1",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "cues": [
+      {
+       "do": "play",
+       "at": "v1",
+       "clip": "variation",
+       "from": 0.0,
+       "to": 3.8,
+       "until": "v1:pawn takes"
+      },
+      {
+       "do": "view",
+       "at": "v1",
+       "box": [
+        1160,
+        470,
+        1450
+       ],
+       "d": 0.7
+      },
+      {
+       "do": "circle",
+       "at": "v1:pawn takes e five",
+       "box": [
+        1398,
+        742,
+        118,
+        36
+       ],
+       "tone": "accent"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "kicker": "Your line",
+     "text": "Stockfish wanted *dxe5*"
+    }
+   ]
+  },
+  {
+   "at": "v2",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "cues": [
+      {
+       "do": "play",
+       "at": "v2",
+       "from": 8.6,
+       "to": 10.2,
+       "until": "v2:then queen -0.2"
+      },
+      {
+       "do": "view",
+       "at": "v2",
+       "box": [
+        840,
+        440,
+        1250
+       ],
+       "d": 0.7
+      },
+      {
+       "do": "circle",
+       "at": "v2:pawn takes e five",
+       "box": [
+        750,
+        437,
+        90,
+        92
+       ],
+       "tone": "accent",
+       "out": "v2:queen takes -0.1"
+      },
+      {
+       "do": "play",
+       "at": "v2:then queen -0.2",
+       "from": 10.2,
+       "to": 15.0,
+       "until": "v2.end -0.15"
+      },
+      {
+       "do": "circle",
+       "at": "v2:queen takes g four",
+       "box": [
+        580,
+        352,
+        90,
+        92
+       ],
+       "tone": "accent"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "Try *your own* line"
+    }
+   ]
+  },
+  {
+   "at": "v3",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "cues": [
+      {
+       "do": "play",
+       "at": "v3",
+       "from": 15.0,
+       "to": 20.0,
+       "until": "v3:white is better"
+      },
+      {
+       "do": "view",
+       "at": "v3",
+       "box": [
+        1600,
+        380,
+        760
+       ],
+       "d": 0.8
+      },
+      {
+       "do": "circle",
+       "at": "v3:two pawns",
+       "box": [
+        1392,
+        385,
+        92,
+        44
+       ],
+       "tone": "accent"
+      },
+      {
+       "do": "note",
+       "at": "v3:no mate",
+       "text": "no mate",
+       "near": [
+        1720,
+        404
+       ],
+       "tone": "accent"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "+1.89 for White, *no mate*"
+    }
+   ]
+  },
+  {
+   "at": "p1",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "cues": [
+      {
+       "do": "play",
+       "at": "p1",
+       "clip": "practice",
+       "from": 0.3,
+       "to": 6.0,
+       "until": "p1:with the answer"
+      },
+      {
+       "do": "view",
+       "at": "p1",
+       "box": [
+        960,
+        540,
+        1920
+       ],
+       "d": 0.6
+      },
+      {
+       "do": "view",
+       "at": "p1:come back",
+       "box": [
+        900,
+        560,
+        1500
+       ],
+       "d": 0.9
+      },
+      {
+       "do": "circle",
+       "at": "p1:to solve",
+       "box": [
+        348,
+        170,
+        310,
+        100
+       ],
+       "tone": "accent"
+      },
+      {
+       "do": "circle",
+       "at": "p1:with the answer",
+       "box": [
+        1060,
+        350,
+        420,
+        85
+       ],
+       "tone": "accent"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "kicker": "Practice",
+     "text": "Your key moves, *answer hidden*"
+    }
+   ]
+  },
+  {
+   "at": "p2",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "cues": [
+      {
+       "do": "play",
+       "at": "p2",
+       "from": 6.0,
+       "to": 21.0,
+       "until": "p2.end -0.1"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "First two: *found*"
+    }
+   ]
+  },
+  {
+   "at": "p3",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "cues": [
+      {
+       "do": "play",
+       "at": "p3",
+       "from": 22.4,
+       "to": 26.0,
+       "until": "p3:and the review -0.15"
+      },
+      {
+       "do": "play",
+       "at": "p3:and the review",
+       "from": 31.9,
+       "to": 36.0,
+       "until": "p3.end -0.1"
+      },
+      {
+       "do": "circle",
+       "at": "p3:the review +0.2",
+       "box": [
+        680,
+        318,
+        86,
+        88
+       ],
+       "tone": "bad"
+      },
+      {
+       "do": "circle",
+       "at": "p3:shows her",
+       "box": [
+        1058,
+        446,
+        424,
+        56
+       ],
+       "tone": "bad"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "Bxd1 again? *Mate in 2*"
+    }
+   ]
+  },
+  {
+   "at": "p4",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "cues": [
+      {
+       "do": "play",
+       "at": "p4",
+       "from": 39.6,
+       "to": 46.6,
+       "until": "p4:found it"
+      },
+      {
+       "do": "circle",
+       "at": "p4:one hint +0.2",
+       "box": [
+        1062,
+        450,
+        478,
+        58
+       ],
+       "tone": "accent",
+       "out": "p4:pawn takes e five"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "One hint, then *dxe5*"
+    }
+   ]
+  },
+  {
+   "at": "b1",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "cues": [
+      {
+       "do": "play",
+       "at": "b1",
+       "clip": "bots",
+       "from": 0.5,
+       "to": 10.2,
+       "until": "b1.end -0.1"
+      },
+      {
+       "do": "view",
+       "at": "b1",
+       "box": [
+        960,
+        540,
+        1920
+       ],
+       "d": 0.6
+      },
+      {
+       "do": "view",
+       "at": "b1:there are",
+       "box": [
+        1610,
+        450,
+        900
+       ],
+       "d": 0.9
+      },
+      {
+       "do": "circle",
+       "at": "b1:forty three",
+       "box": [
+        1378,
+        338,
+        230,
+        46
+       ],
+       "tone": "accent"
+      },
+      {
+       "do": "circle",
+       "at": "b1:each with",
+       "box": [
+        1462,
+        205,
+        384,
+        78
+       ],
+       "tone": "accent"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "kicker": "Play",
+     "text": "*43* bots to play"
+    }
+   ]
+  },
+  {
+   "at": "b2",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "cues": [
+      {
+       "do": "play",
+       "at": "b2",
+       "from": 21.0,
+       "to": 34.0,
+       "until": "b2.end -0.1"
+      },
+      {
+       "do": "view",
+       "at": "b2",
+       "box": [
+        830,
+        545,
+        1550
+       ],
+       "d": 0.6
+      },
+      {
+       "do": "circle",
+       "at": "b2:rated ten fifty",
+       "box": [
+        532,
+        116,
+        216,
+        54
+       ],
+       "tone": "accent"
+      },
+      {
+       "do": "circle",
+       "at": "b2:ten minute clock",
+       "box": [
+        1004,
+        112,
+        116,
+        60
+       ],
+       "tone": "accent"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "text": "Barnaby, rated *1050*"
+    }
+   ]
+  },
+  {
+   "at": "m1",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "cues": [
+      {
+       "do": "play",
+       "at": "m1",
+       "clip": "tour",
+       "from": 5.9,
+       "to": 11.3,
+       "until": "m1:three thousand -0.3"
+      },
+      {
+       "do": "view",
+       "at": "m1",
+       "box": [
+        960,
+        540,
+        1920
+       ],
+       "d": 0.6
+      },
+      {
+       "do": "play",
+       "at": "m1:three thousand -0.3",
+       "from": 11.3,
+       "to": 16.5,
+       "until": "m1:twenty four -0.2"
+      },
+      {
+       "do": "circle",
+       "at": "m1:eight hundred",
+       "box": [
+        1700,
+        236,
+        172,
+        70
+       ],
+       "tone": "accent",
+       "out": "m1:twenty four -0.25"
+      },
+      {
+       "do": "play",
+       "at": "m1:twenty four -0.2",
+       "from": 16.5,
+       "to": 21.8,
+       "until": "m1:and board vision -0.1"
+      },
+      {
+       "do": "circle",
+       "at": "m1:twenty four +0.1",
+       "box": [
+        1700,
+        136,
+        172,
+        66
+       ],
+       "tone": "accent",
+       "out": "m1:and board vision -0.15"
+      },
+      {
+       "do": "play",
+       "at": "m1:and board vision -0.1",
+       "from": 21.8,
+       "to": 27.6,
+       "until": "m1.end -0.1"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "kicker": "More",
+     "text": "Lessons, openings, endgames, *vision*"
+    }
+   ]
+  },
+  {
+   "at": "e1",
+   "split": [
+    2.3,
+    1
+   ],
+   "blocks": [
+    {
+     "type": "screen",
+     "id": "app",
+     "cues": [
+      {
+       "do": "play",
+       "at": "e1",
+       "clip": "review",
+       "from": 66.0,
+       "to": 68.0,
+       "until": "e1.end -0.4"
+      },
+      {
+       "do": "view",
+       "at": "e1",
+       "box": [
+        1170,
+        440,
+        1400
+       ],
+       "d": 0.8
+      },
+      {
+       "do": "note",
+       "at": "e1:ai coach",
+       "text": "AI coach: beta invite",
+       "near": [
+        990,
+        745
+       ],
+       "tone": "accent"
+      }
+     ]
+    },
+    {
+     "type": "text",
+     "kicker": "In the beta",
+     "text": "An AI coach, for *invited* players"
+    }
+   ]
+  },
+  {
+   "at": "e2",
+   "type": "end",
+   "title": "Learn from the games you *lose*",
+   "handle": "askthemove.online",
+   "cta": "Join the beta"
+  }
+ ]
+}

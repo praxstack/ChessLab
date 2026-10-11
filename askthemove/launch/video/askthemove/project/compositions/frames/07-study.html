@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>07 Study notes</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #root {
+          position: absolute;
+          inset: 0;
+        }
+      </style>
+      <div
+        id="root"
+        data-composition-id="f07-study"
+        data-width="1920"
+        data-height="1080"
+        data-duration="5.4"
+      >
+        <div id="f07-page" class="nb-page">
+          <div class="nb-paper"></div>
+          <div class="nb-fig">
+            <div id="f07-stage" class="nb-stage">
+              <!-- A: a position note typed into the variation, at 3x (source 28.0 to 35.5 s). -->
+              <video
+                id="f07-a"
+                class="nb-vid"
+                src="assets/footage/04-variation-note.mp4"
+                muted
+                playsinline
+                data-start="0"
+                data-duration="2.5"
+                data-media-start="28"
+                data-playback-rate="3"
+                data-track-index="0"
+              ></video>
+              <!-- B: saved; the "Study saved." toast (source 35.5 to 38.4 s). The clip's
+                   footer and cut-off board after 38.5 s are never used. -->
+              <video
+                id="f07-b"
+                class="nb-vid"
+                src="assets/footage/04-variation-note.mp4"
+                muted
+                playsinline
+                data-start="2.5"
+                data-duration="2.9"
+                data-media-start="35.5"
+                data-track-index="0"
+                data-hf-media-start-basis="local"
+              ></video>
+              <div class="nb-mask nb-mask--side"></div>
+              <svg id="f07-ink" class="nb-ink" viewBox="0 0 1920 1080" aria-hidden="true"></svg>
+            </div>
+          </div>
+          <div id="f07-col" class="nb-col">
+            <p class="nb-label"><span class="nb-count">6 / 7</span><span>Study notes</span></p>
+            <p id="f07-n1" class="nb-note">Write down what you learned.</p>
+            <p id="f07-n2" class="nb-note">Saved as a study.</p>
+          </div>
+        </div>
+      </div>
+      <script>
+        (function () {
+          var NB = window.NB;
+          var tl = gsap.timeline({ paused: true });
+          var stage = document.getElementById('f07-stage');
+          var ink = document.getElementById('f07-ink');
+
+          var notes = NB.fit([1360, 600, 1860, 1080]);
+          var toast = NB.fit([640, 720, 1300, 1080], { alignBottom: true });
+
+          NB.enter(tl, '#f07-page');
+          NB.pose(tl, stage, notes);
+          tl.fromTo('#f07-col .nb-label', { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'none' }, 0.1);
+          NB.write(tl, document.getElementById('f07-n1'), 0.3);
+
+          // Saved: over to the toast, and tick it.
+          NB.move(tl, stage, toast, 2.45, 0.6);
+          var tick = NB.mark(ink, 'tick', { x: 1058, y: 935, w: 50, h: 46 }, { seed: 'saved', px: 8, scale: toast.scale });
+          NB.draw(tl, tick, 3.3, { max: 0.45 });
+          NB.write(tl, document.getElementById('f07-n2'), 3.45);
+
+          NB.leave(tl, '#f07-col', 5.4);
+          window.__timelines['f07-study'] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>
