@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>01 Title</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #root {
+          position: absolute;
+          inset: 0;
+        }
+        #f01-mast {
+          position: absolute;
+          left: 132px;
+          top: 56px;
+          width: 1732px;
+          display: flex;
+          align-items: center;
+          gap: 22px;
+          padding-bottom: 22px;
+          border-bottom: 3px solid var(--ink);
+          box-shadow: 0 6px 0 -4px var(--ink);
+        }
+        #f01-mark {
+          display: block;
+          width: 72px;
+          height: 72px;
+        }
+        #f01-word {
+          font-size: 54px;
+          font-weight: 800;
+          letter-spacing: -0.01em;
+          line-height: 1;
+          color: var(--ink);
+        }
+        #f01-h1 {
+          position: absolute;
+          left: 126px;
+          top: 318px;
+          width: 1740px;
+          font-size: 192px;
+          font-weight: 800;
+          line-height: 0.95;
+          letter-spacing: -0.03em;
+          color: var(--ink);
+        }
+        #f01-why {
+          position: relative;
+          display: inline-block;
+          margin-left: 0.12em;
+        }
+        #f01-ring {
+          position: absolute;
+          left: -0.17em;
+          top: -0.12em;
+          width: calc(100% + 0.36em);
+          height: 1.32em;
+          overflow: visible;
+        }
+        #f01-note {
+          position: absolute;
+          left: 132px;
+          top: 652px;
+          width: 1400px;
+          font-size: 66px;
+          font-weight: 700;
+          line-height: 1.16;
+          color: var(--blue);
+        }
+      </style>
+      <div
+        id="root"
+        data-composition-id="f01-title"
+        data-width="1920"
+        data-height="1080"
+        data-duration="4.5"
+      >
+        <div id="f01-page" class="nb-page">
+          <div class="nb-paper"></div>
+          <div id="f01-mast">
+            <img id="f01-mark" src="assets/brand/askthemove-mark.svg" alt="" />
+            <span id="f01-word" class="f-book">AskTheMove</span>
+          </div>
+          <h1 id="f01-h1" class="f-book">
+            Ask the move
+            <span id="f01-why">why<svg id="f01-ring" viewBox="0 0 160 110" preserveAspectRatio="none" aria-hidden="true"></svg></span>
+          </h1>
+          <p id="f01-note" class="f-hand">
+            Your games, reviewed move by move, with Stockfish evidence you can check.
+          </p>
+        </div>
+      </div>
+      <script>
+        (function () {
+          var tl = gsap.timeline({ paused: true });
+          var NB = window.NB;
+
+          // The page is printed matter: the masthead and the title are already on the page
+          // at the first frame (so the first frame works as a thumbnail); they are not written.
+          tl.set(['#f01-mast', '#f01-h1'], { opacity: 1 }, 0);
+
+          // The coach circles "why" in red pen, then writes the note in blue ink.
+          var ring = NB.mark(
+            document.getElementById('f01-ring'),
+            'ring',
+            { cx: 80, cy: 55, rx: 78, ry: 52, tilt: -0.03 },
+            { seed: 'title-why', px: 3.2, color: 'var(--red)' }
+          );
+          var t = NB.draw(tl, ring, 0.45, { max: 0.6 });
+          NB.write(tl, document.getElementById('f01-note'), t + 0.05, { ms: 20 });
+
+          window.__timelines['f01-title'] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>02 Import a game</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #root {
+          position: absolute;
+          inset: 0;
+        }
+        /* Masks over the footage (source px). The camera never shows these areas, but the
+           masks stay in place so no zoom or pan can ever reveal the old product name. */
+        #f02-mask-side {
+          left: 0;
+          top: 0;
+          width: 272px;
+          height: 1080px;
+          background: #1e2330;
+        }
+        #f02-mask-modal1 {
+          left: 585px;
+          top: 238px;
+          width: 752px;
+          height: 72px;
+          background: #212937;
+        }
+        #f02-mask-modal2 {
+          left: 585px;
+          top: 414px;
+          width: 280px;
+          height: 38px;
+          background: #212937;
+        }
+      </style>
+      <div
+        id="root"
+        data-composition-id="f02-import"
+        data-width="1920"
+        data-height="1080"
+        data-duration="8.4"
+      >
+        <div id="f02-page" class="nb-page">
+          <div class="nb-paper"></div>
+          <div class="nb-fig">
+            <div id="f02-stage" class="nb-stage">
+              <!-- A: the import modal, just after the PGN is pasted (source 4.45 to 7.45 s). -->
+              <video
+                id="f02-a"
+                class="nb-vid"
+                src="assets/footage/02-pgn-import.mp4"
+                muted
+                playsinline
+                data-start="0"
+                data-duration="3"
+                data-media-start="4.45"
+                data-track-index="0"
+                data-hf-media-start-basis="local"
+              ></video>
+              <!-- B: autoplay of the imported game at 5x (source 18.0 to 31.0 s). The import
+                   toast (7.6 to 12.5 s) is cut. -->
+              <video
+                id="f02-b"
+                class="nb-vid"
+                src="assets/footage/02-pgn-import.mp4"
+                muted
+                playsinline
+                data-start="3"
+                data-duration="2.6"
+                data-media-start="18"
+                data-playback-rate="5"
+                data-track-index="0"
+                data-hf-media-start-basis="local"
+              ></video>
+              <!-- C: the final position, 7.Nd5# (source 31.0 to 33.8 s). -->
+              <video
+                id="f02-c"
+                class="nb-vid"
+                src="assets/footage/02-pgn-import.mp4"
+                muted
+                playsinline
+                data-start="5.6"
+                data-duration="2.8"
+                data-media-start="31"
+                data-track-index="0"
+                data-hf-media-start-basis="local"
+              ></video>
+              <div id="f02-mask-side" class="nb-mask"></div>
+              <div id="f02-mask-modal1" class="nb-mask"></div>
+              <div id="f02-mask-modal2" class="nb-mask"></div>
+              <svg id="f02-ink" class="nb-ink" viewBox="0 0 1920 1080" aria-hidden="true"></svg>
+            </div>
+          </div>
+          <div id="f02-col" class="nb-col">
+            <p class="nb-label"><span class="nb-count">1 / 7</span><span>Import a game</span></p>
+            <p id="f02-n1" class="nb-note">Paste in a game you lost.</p>
+            <p id="f02-n2" class="nb-note">Mated in seven moves. Why?</p>
+          </div>
+        </div>
+      </div>
+      <script>
+        (function () {
+          var NB = window.NB;
+          var tl = gsap.timeline({ paused: true });
+          var stage = document.getElementById('f02-stage');
+          var ink = document.getElementById('f02-ink');
+
+          var modal = NB.fit([575, 452, 1345, 1080]);
+          var board = NB.fit([455, 88, 1196, 800]);
+
+          NB.enter(tl, '#f02-page');
+          NB.pose(tl, stage, modal);
+          tl.fromTo('#f02-col .nb-label', { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'none' }, 0.1);
+
+          // A: the pasted PGN, underlined in red pen.
+          NB.write(tl, document.getElementById('f02-n1'), 0.35);
+          var pgn = NB.mark(ink, 'underline', { x0: 603, x1: 1306, y: 670, dy: -3 }, { seed: 'pgn', px: 7, scale: modal.scale });
+          NB.draw(tl, pgn, 1.0);
+          // The underline and the modal masks belong to shot A only.
+          pgn.strokes.forEach(function (s) {
+            tl.set(s.el, { opacity: 0 }, 3);
+          });
+          tl.set(['#f02-mask-modal1', '#f02-mask-modal2'], { autoAlpha: 0 }, 3);
+
+          // B and C: the game plays out on the board, to mate.
+          tl.set(stage, { x: board.x, y: board.y, scale: board.scale }, 3);
+          var king = NB.mark(ink, 'ring', { cx: 797, cy: 655, rx: 56, ry: 54 }, { seed: 'mated-king', px: 7, scale: board.scale });
+          NB.draw(tl, king, 5.68, { max: 0.6 });
+          NB.write(tl, document.getElementById('f02-n2'), 5.9);
+
+          NB.leave(tl, '#f02-col', 8.4);
+          window.__timelines['f02-import'] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

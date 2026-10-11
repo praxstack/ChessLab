@@ -1,0 +1,892 @@
+<title>AskTheMove Apply Pack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a run sheet. Order strip on top, then one card per application with copyable answers. */
+:root{
+  --bg:#f6f5ef; --panel:#ffffff; --ink:#1d2421; --muted:#5d6762; --line:#d9dbd2;
+  --accent:#2f6b4f; --accent-soft:#e3efe7; --warn:#8a5a12; --warn-bg:#f6ead3; --you:#3b5aa8; --you-bg:#e2e8f7;
+  --display:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif;
+  --body:"Newsreader",Georgia,serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141917; --panel:#1c2320; --ink:#e7ebe6; --muted:#9aa59f; --line:#2f3934;
+  --accent:#7cc39d; --accent-soft:#1f3329; --warn:#e3b86a; --warn-bg:#3a2e17; --you:#9db3f0; --you-bg:#222c46; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --panel:#1c2320; --ink:#e7ebe6; --muted:#9aa59f; --line:#2f3934;
+  --accent:#7cc39d; --accent-soft:#1f3329; --warn:#e3b86a; --warn-bg:#3a2e17; --you:#9db3f0; --you-bg:#222c46; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5}
+.wrap{max-width:920px;margin:0 auto;padding-inline:18px;padding-block:26px 64px;display:grid;gap:34px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(28px,5vw,42px);line-height:1.05}
+h2{font-size:23px}
+p{margin:0}
+a{color:var(--accent)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lede{color:var(--muted);max-width:66ch}
+.order{display:grid;gap:0;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden}
+.order a{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:11px 14px;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.order a:last-child{border-bottom:0}
+.order .n{font-family:var(--display);font-weight:700;color:var(--accent);font-size:19px}
+.order .t{font-family:var(--display);font-weight:500}
+.order .d{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+.order small{display:block;font-family:var(--body);color:var(--muted);font-size:14px;font-weight:400}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:14px;scroll-margin-top:12px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-family:var(--mono);font-size:11.5px;padding:3px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.tag.w{background:var(--warn-bg);color:var(--warn)}
+.you{background:var(--you-bg);border-radius:8px;padding:10px 12px;font-size:15.5px}
+.you b{font-family:var(--display);color:var(--you)}
+.you ol{margin:6px 0 0;padding-left:20px}
+.f{display:grid;gap:6px;border-top:1px solid var(--line);padding-top:12px}
+.f .q{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.f .q span{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.ans{white-space:pre-wrap;font-size:16px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-wrap:anywhere}
+.ans.ph{color:var(--muted);font-style:italic}
+button.copy{font-family:var(--mono);font-size:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:5px 10px;border-radius:6px;cursor:pointer;white-space:nowrap}
+button.copy:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.note{font-size:15px;color:var(--muted)}
+.later{display:grid;gap:8px}
+.later div{border-left:3px solid var(--line);padding-left:12px;font-size:15.5px}
+footer{color:var(--muted);font-size:14px}
+.pfgrid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.pf{display:grid;gap:4px;font-size:13px;color:var(--muted)}
+.pf textarea{font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;resize:vertical;min-height:38px}
+.ans.tpl{max-height:260px;overflow:auto;font-family:var(--mono);font-size:12.5px}
+</style>
+
+<div class="wrap">
+<header style="display:grid;gap:12px">
+  <div class="eyebrow">AskTheMove · open to you today · 10 Oct 2026</div>
+  <h1>Apply pack</h1>
+  <p class="lede">Eight applications you can send without a company or an investor, in the order to send them. Each card has the link, what only you can do, and answers you can copy. Fill the grey bracketed parts with your own facts. I submit nothing; every form is yours.</p>
+</header>
+
+<section style="display:grid;gap:10px">
+  <div class="eyebrow">Send in this order</div>
+  <nav class="order">
+    <a href="#meta"><span class="n">1</span><span class="t">Meta AI hackathon, notify me<small>2 minutes. Name and email.</small></span><span class="d">today</span></a>
+    <a href="#kiro"><span class="n">2</span><span class="t">Kiro startup credits<small>Needs an AWS account on prax@. Must come before AWS Activate.</small></span><span class="d">by 31 Dec</span></a>
+    <a href="#claude"><span class="n">3</span><span class="t">Claude for Startups<small>Credits paused; applying gets you in the re-review queue.</small></span><span class="d">rolling</span></a>
+    <a href="#zf"><span class="n">4</span><span class="t">Z Fellows, $10K<small>Google Form, no account. Personal answers are yours.</small></span><span class="d">rolling</span></a>
+    <a href="#airwallex"><span class="n">5</span><span class="t">Airwallex hackathon<small>Only if you'll build for 3 weeks (Oct 25–Nov 13). A side project, not AskTheMove.</small></span><span class="d">by 23 Oct</span></a>
+    <a href="#yc"><span class="n">6</span><span class="t">Y Combinator W27<small>Equity. Solo and no company are fine. You record the 1-minute video.</small></span><span class="d">2 Nov</span></a>
+    <a href="#ef"><span class="n">7</span><span class="t">Entrepreneur First, Bangalore<small>Equity. Backs individuals before a co-founder or company.</small></span><span class="d">2 Nov</span></a>
+    <a href="#paypal"><span class="n">8</span><span class="t">PayPal AI Hackathon<small>Best hackathon fit for AskTheMove itself.</small></span><span class="d">12 Nov</span></a>
+    <a href="#speedrun"><span class="n">9</span><span class="t">a16z speedrun SR008<small>Optional. Equity ($500K for 10%), 12 weeks in SF.</small></span><span class="d">Oct 12–Nov 1</span></a>
+    <a href="#aws"><span class="n">10</span><span class="t">AWS Activate Founders, $1K–5K<small>After Kiro replies. Pays for Claude on Bedrock.</small></span><span class="d">after Kiro</span></a>
+    <a href="#ev"><span class="n">11</span><span class="t">Emergent Ventures (India)<small>You must write it yourself; AI-written applications are rejected.</small></span><span class="d">rolling</span></a>
+      <a href="#chrome"><span class="n">★</span><span class="t">Claude in Chrome prompts<small>Fill your details once, then paste one prompt into the extension.</small></span><span class="d">start here</span></a>
+  </nav>
+  <p class="note">Same facts on every form: AskTheMove · https://askthemove.online · prax@askthemove.online · x.com/AskTheMove · India · founded September 2026 · not incorporated · self-funded · team of 1 · no revenue.</p>
+</section>
+
+<section class="card" id="chrome" style="display:grid;gap:12px">
+  <div class="eyebrow">Run it with Claude in Chrome</div>
+  <h2>Prompts for the extension</h2>
+  <p>Fill these once. Every prompt below updates as you type, and the values stay in this browser only. Then paste either the master prompt (all programs in order) or one program's prompt into Claude in Chrome. It stops and hands over for sign-ins, codes, CAPTCHAs, cards, new accounts and videos, and prints a LOG line per submission: paste those back in the thread and I'll keep the log. Emergent Ventures is left out because they reject AI-written applications.</p>
+  <div class="pfgrid"><label class="pf"><span>First name</span><textarea rows="1" data-k="FIRST_NAME"></textarea></label><label class="pf"><span>Last name</span><textarea rows="1" data-k="LAST_NAME"></textarea></label><label class="pf"><span>Birthday (MM/DD/YYYY)</span><textarea rows="1" data-k="BIRTHDAY"></textarea></label><label class="pf"><span>Phone with +91</span><textarea rows="1" data-k="PHONE"></textarea></label><label class="pf"><span>City, state</span><textarea rows="1" data-k="CITY"></textarea></label><label class="pf"><span>Current school or work (where)</span><textarea rows="1" data-k="WORK"></textarea></label><label class="pf"><span>1–2 lines on your engineering background</span><textarea rows="1" data-k="BACKGROUND"></textarea></label><label class="pf"><span>What you&#x27;ve built or shipped before, with links</span><textarea rows="1" data-k="PAST_WORK"></textarea></label><label class="pf"><span>LinkedIn / GitHub / personal links</span><textarea rows="1" data-k="LINKS"></textarea></label><label class="pf"><span>Achievements and prizes (or &#x27;None yet&#x27;)</span><textarea rows="1" data-k="ACHIEVEMENTS"></textarea></label><label class="pf"><span>Waitlist sign-ups (number)</span><textarea rows="1" data-k="WAITLIST_N"></textarea></label><label class="pf"><span>AWS Account ID, 12 digits (blank if no AWS account yet)</span><textarea rows="1" data-k="AWS_ACCOUNT_ID"></textarea></label><label class="pf"><span>Z Fellows: nerdiest thing about you (250 chars)</span><textarea rows="1" data-k="NERDIEST"></textarea></label><label class="pf"><span>Z Fellows: what drives you</span><textarea rows="1" data-k="DRIVES"></textarea></label><label class="pf"><span>Z Fellows: non-traditional things you did growing up</span><textarea rows="1" data-k="GROWING_UP"></textarea></label><label class="pf"><span>Z Fellows: a risk you took or challenge you faced (500)</span><textarea rows="1" data-k="RISK"></textarea></label><label class="pf"><span>Z Fellows: who from your network you&#x27;d co-found with</span><textarea rows="1" data-k="COFOUNDER"></textarea></label><label class="pf"><span>How you heard about these programs (e.g. &#x27;X&#x27;)</span><textarea rows="1" data-k="HEARD"></textarea></label></div>
+  <p class="missing" style="color:var(--muted);font-size:14px"></p>
+  <div class="f"><div class="q"><b>Master prompt: every program in order</b> <small style="color:var(--muted)">one paste</small><button class="copy">Copy</button></div><div class="ans tpl" data-t="You are filling startup program applications in my browser on my behalf. I am Prax, solo founder of AskTheMove. I have read and approved every answer below and I want you to submit without asking me, except at the hand-over points.
+
+RULES
+1. Use only the facts in this prompt. Never invent personal facts, numbers, dates, users, revenue or links. If a REQUIRED field asks for something not given here, stop and ask me in this chat. Leave unknown OPTIONAL fields blank.
+2. If any value still looks like {{SOMETHING}} (an unfilled placeholder), do not type it. Stop and ask me for it.
+3. HAND OVER TO ME (stop, tell me exactly what to do, wait until I say &quot;continue&quot;) for: typing any password or signing in; one-time codes from email, SMS or phone; CAPTCHAs or &quot;I&#x27;m not a robot&quot;; any payment or card form; creating a new account on any site; recording or uploading a video; any statement certifying a fact this prompt does not give.
+4. Tick Terms of Service / privacy checkboxes that are required to submit. Leave marketing and newsletter opt-ins UNTICKED.
+5. Respect character limits. If an answer is too long, shorten it keeping the meaning; never pad it.
+6. Do not change account settings, do not open links from emails, do not pay for anything, do not apply to any program not named in this prompt.
+7. Before submitting, scroll the whole form once and check every field against this prompt. Then submit.
+8. After each submission, write one log line in this chat:  LOG | &lt;program&gt; | &lt;date time IST&gt; | &lt;page URL&gt; | &lt;confirmation text or &quot;no confirmation shown&quot;&gt;
+   If you stopped instead, write:  STOPPED | &lt;program&gt; | &lt;what I need to do&gt;
+
+ABOUT ME (the founder)
+- Name: {{FIRST_NAME}} {{LAST_NAME}}
+- Email for everything: prax@askthemove.online   (never use a gmail address)
+- Birthday: {{BIRTHDAY}}   Phone: {{PHONE}}   Based in: {{CITY}}, India
+- Current school/work: {{WORK}}
+- Background: {{BACKGROUND}}
+- Past work: {{PAST_WORK}}
+- Links: {{LINKS}}   X: https://x.com/AskTheMove
+- Achievements: {{ACHIEVEMENTS}}
+- Technical: Yes. Solo founder, no co-founder.
+- How I heard: {{HEARD}}
+
+ABOUT THE STARTUP
+- Name: AskTheMove   Website: https://askthemove.online   Email: prax@askthemove.online   X: @AskTheMove
+- One line (under 50 chars): Chess coach that explains your mistakes
+- What it is: AskTheMove is a chess coach for improving players. After a game it finds the moment you went wrong and explains why in plain language. Stockfish produces the facts (legal moves, material, best lines); Claude turns them into a short explanation; the server withholds any answer that cites a move, number or mate the engine did not produce.
+- Status: working web app (bot games, full-game review, verified AI explanations). Waitlist live at askthemove.online since October 2026 with {{WAITLIST_N}} sign-ups. No public users yet; private beta next.
+- Founded: September 2026. Not incorporated yet (sole founder). Self-funded/bootstrapped, no outside investment, no investors, no revenue. Based in India.
+- Customers: improving club chess players, starting in India, who review their games but can&#x27;t afford a coach.
+- Competitors: Chess.com coach and Game Review, Duolingo Chess, Take Take Take. Insight: narration isn&#x27;t teaching, and unchecked AI narration is wrong often enough to lose trust. We check every claim against the engine first, then teach in a loop: guess the move, see why yours fell short, retry a similar position.
+- Engineering: built solo, spec-first, 150+ automated tests.
+- Claude use: our server sends Claude the Stockfish evaluation, best line and material change for each critical moment; Claude explains it in a few plain sentences at the player&#x27;s level; the server rejects any answer citing a move or number the engine didn&#x27;t produce. Usage is capped per user per hour and per day.
+- Help wanted: getting the first 100 real players; learning distribution as a solo founder, starting with chess communities and coaches in India.
+
+TASK: Apply to each program below in this order, one browser tab at a time. Finish or log STOPPED for each, then move to the next. At the end, print all LOG and STOPPED lines together.
+Order: 1 Meta notify, 2 Z Fellows, 3 Claude for Startups, 4 Kiro, 5 Y Combinator, 6 Entrepreneur First, 7 PayPal hackathon (register only), 8 a16z speedrun (only if I said yes), 9 Airwallex (only if I said yes), 10 AWS Activate (only after Kiro replies).
+Skip Emergent Ventures entirely: they reject AI-written applications.
+The per-program steps follow.
+
+--- 1. Meta AI hackathon, notify me (today) ---
+TASK: Meta Global AI Developer Hackathon, notify-me form.
+1. Open https://dev.meta.ai/events/global-hackathon
+2. Find the notify / register-interest form. Fill: First name = {{FIRST_NAME}}, Last name = {{LAST_NAME}}, Email = prax@askthemove.online. Leave the Meta marketing checkbox unticked.
+3. Submit and log it. If the page already shows a full application form instead, fill it from the facts above and submit.
+
+--- 2. Z Fellows (today, rolling) ---
+TASK: Z Fellows application (Google Form, no account needed).
+1. Open https://docs.google.com/forms/d/1z5HG9Pj0hIxS2oZL_wcJS5QqDZlcVbkhYGHp5Kp_IGM/viewform  (if it is moved, find &quot;Apply&quot; on https://zfellows.com). If Google asks me to sign in, skip it if a &quot;continue without&quot; option exists; otherwise hand over.
+2. Fill:
+- Email: prax@askthemove.online | First/Last name: {{FIRST_NAME}} / {{LAST_NAME}} | Company or project: AskTheMove
+- Birthday: {{BIRTHDAY}} | Phone: {{PHONE}} | Technical: Yes | Applied before: No
+- Where based: {{CITY}}, India | School or working: {{WORK}}
+- Project and why (500): AskTheMove (askthemove.online) is a chess coach that explains your mistakes in plain words. Stockfish finds where the game turned and the better line, Claude explains it, and the server blocks any sentence citing a move or number the engine didn&#x27;t produce. I&#x27;m building it because engines tell you what was best but never why, and most improving players can&#x27;t afford a human coach.
+- Problem (500): Players review games with an engine and learn little: they see &quot;Nf5 was best, +2.3&quot; and no reason. Human coaching is expensive and scarce. Chatbot coaches explain fluently but invent moves that aren&#x27;t on the board. The missing piece is an explanation that is both readable and provably correct for that exact position.
+- Expertise (500): {{BACKGROUND}} I built AskTheMove alone: bot play, full-game review, lessons, a Claude explanation layer with server-side fact checking, and over 150 automated tests.
+- Competitors and insight (500): Chess.com, Duolingo Chess and Take Take Take all add AI narration to game review. My insight: narration isn&#x27;t teaching, and unchecked narration is wrong often enough to lose trust. AskTheMove checks every claim against the engine first, then teaches in a loop: guess the move, see why yours fell short, retry a similar position.
+- Past work (500): {{PAST_WORK}}
+- Nerdiest thing (250): {{NERDIEST}} | What drives you: {{DRIVES}} | Growing up: {{GROWING_UP}} | Risk/challenge (500): {{RISK}}
+- Website and links: https://askthemove.online, https://x.com/AskTheMove, {{LINKS}}
+- Achievements: {{ACHIEVEMENTS}} | 1-minute video: leave blank (optional)
+- Co-found with: {{COFOUNDER}} | How heard: {{HEARD}}
+- One thing you need help with: Getting the first 100 real players. The product works; I need to learn distribution as a solo founder, starting with chess communities and coaches in India.
+3. Submit and log it.
+
+--- 3. Claude for Startups (today, rolling) ---
+TASK: Anthropic Claude for Startups application.
+1. Open https://platform.claude.com/offers/startups-application  (program page: https://claude.com/programs/startups). If I&#x27;m not signed in to the Claude Console, hand over so I can sign in.
+2. Fill whatever fields appear, from these:
+- Company name: AskTheMove | Website: https://askthemove.online | Company email: prax@askthemove.online
+- Stage: Bootstrapped, pre-launch. Founded September 2026, not yet incorporated. | Funding: none | Partner VC / investor: None (leave blank if optional)
+- How do you use Claude / what are you building: Claude writes AskTheMove&#x27;s chess explanations. For each critical moment in a player&#x27;s game, our server sends Claude the Stockfish evaluation, the best line and what changed in material. Claude explains the mistake in a few plain sentences pitched at the player&#x27;s level. The server then rejects any answer that cites a move, number or mate the engine did not produce, so every explanation is checked before the player sees it. Usage is capped per user per hour and per day. Credits would let us run a private beta without charging testers.
+- Team size: 1 | Country: India
+3. Submit and log it. Note: their $1K credits are paused &quot;over capacity&quot;; applying still puts us in the queue.
+
+--- 4. Kiro startup credits (before AWS Activate) ---
+TASK: Kiro startup credits (Starter tier). This must be done BEFORE any AWS Activate application.
+Needs: an AWS account whose root email is prax@askthemove.online. If {{AWS_ACCOUNT_ID}} is blank or unfilled, STOP and tell me: &quot;Create the AWS account at aws.amazon.com with prax@askthemove.online on the Free plan, paying with UPI AutoPay (debit card as fallback), then give me the 12-digit Account ID.&quot; Do not create the account yourself.
+1. Open https://aws.amazon.com/startups/credits/kiro  (info: https://kiro.dev/startups). Hand over for any sign-in.
+2. Choose the Starter tier (up to 2 users). Fill:
+- Startup name: AskTheMove | Website: https://askthemove.online | Business email: prax@askthemove.online
+- AWS Account ID: {{AWS_ACCOUNT_ID}} | Country: India | Funding stage: Pre-seed, self-funded, no outside investment | Legal entity: Not incorporated yet; sole founder | Number of users: 1
+- What you are building: AskTheMove is a chess coach for improving players. After a game it finds the moment you went wrong and explains why in plain language. Stockfish produces the facts: legal moves, material and the best lines. Claude turns those facts into a short explanation. The server then withholds any answer that cites a move, number or mate the engine did not produce. The web app works end to end today, with bot games, full-game review and AI explanations; a private beta comes next.
+- Traction: Pre-launch. The waitlist at askthemove.online went live in October 2026 and has {{WAITLIST_N}} sign-ups. We are on X as @AskTheMove.
+- How you will use Kiro: We already build spec-first: each feature starts as a written proposal with numbered requirements and test scenarios, and over 150 automated tests guard the app. Kiro&#x27;s specs and hooks match that way of working. We would use them for the next pieces: the learning loop (guess the move, see why yours fell short, retry a similar position) and explanations in Hindi. Hooks would run the test suite on every change.
+3. Submit and log it.
+
+--- 5. Y Combinator W27 (by 2 Nov (3 Nov 09:30 IST)) ---
+TASK: Y Combinator W27 application. Deadline 2 Nov 2026 8pm PT = 3 Nov 09:30 IST.
+1. Open https://www.ycombinator.com/apply. If I need a YC account or sign-in, hand over.
+2. Fill the company and founder sections from the facts above. Key answers:
+- Company name: AskTheMove | URL: https://askthemove.online | Location: {{CITY}}, India
+- 50 characters or less: Chess coach that explains your mistakes
+- What is your company going to make: AskTheMove is a chess coach that explains your mistakes in plain words. Stockfish finds the critical moments in a game, Claude explains them, and the server rejects any explanation that cites a move or number the engine didn&#x27;t produce.
+- Why this idea / what do you understand: Players review games with an engine but can&#x27;t read its numbers, and coaches are expensive. Language models alone invent moves; pairing them with an engine and checking every claim is what makes the explanation trustworthy.
+- How far along: Working web app (bot games, full-game review, verified AI explanations); waitlist live at askthemove.online with {{WAITLIST_N}} sign-ups. Private beta next.
+- Users / revenue: No users yet; no revenue. | How long working on it: since September 2026, full time solo.
+- Competitors: Chess.com&#x27;s coach and Game Review, Duolingo Chess, Take Take Take. We focus on verified, plain-language explanations for improving club players in India.
+- How will you make money: a paid tier for unlimited verified explanations and the training loop; later, tools for chess academies and coaches.
+- Incorporated: No. Investment taken: None. Co-founders: none (solo).
+- Founder profile: name, email, {{BACKGROUND}}, {{PAST_WORK}}, {{LINKS}}, {{ACHIEVEMENTS}}.
+3. The 1-minute founder video: HAND OVER, I record and upload it myself.
+4. Save the application. Submit only after the video is uploaded; otherwise log STOPPED with &quot;upload the founder video&quot;.
+
+--- 6. Entrepreneur First Bangalore (by 2 Nov) ---
+TASK: Entrepreneur First (EF) application, Bangalore cohort. Round 2 closes 2 Nov 2026.
+1. Open https://apply.joinef.com/  Choose Bangalore / India. Hand over for any sign-in.
+2. Fill personal fields from ABOUT ME. Product answer: AskTheMove is a chess coach that explains your mistakes in plain words. Stockfish finds the critical moments in a game, Claude explains them, and the server rejects any explanation that cites a move or number the engine didn&#x27;t produce. Built solo, with 150+ automated tests; waitlist at askthemove.online with {{WAITLIST_N}} sign-ups.
+- Edge / most impressive thing built: {{BACKGROUND}} {{PAST_WORK}}
+- Questions about my personal story or ambitions that ABOUT ME does not answer: stop and ask me; do not write them.
+3. Submit and log it.
+
+--- 7. PayPal AI Hackathon (register by 12 Nov) ---
+TASK: PayPal AI Hackathon on Devpost (deadline 12 Nov 2026).
+1. Go to https://devpost.com/hackathons and search &quot;PayPal AI&quot;. Open the hackathon page.
+2. Read the Rules / Eligibility section. If India or &quot;residents of India&quot; is excluded, STOP and log: STOPPED | PayPal | India not eligible. If unclear, quote the eligibility sentence to me and stop.
+3. If eligible: click Join / Register. Hand over for Devpost sign-in or account creation. Fill registration fields from ABOUT ME. Project idea: AskTheMove, a chess coach that explains your mistakes in plain words (Stockfish facts, Claude explanations, every claim verified). For the hackathon we&#x27;d add a PayPal checkout for the coach&#x27;s paid tier.
+4. Only register now. Do not submit a project entry (that needs a demo video later). Log it.
+
+--- 8. a16z speedrun SR008 (priority 12 Oct–1 Nov) ---
+TASK: a16z speedrun SR008 application. Equity: $500K for 10%, 12 weeks in person in San Francisco. Only run this if I said yes to speedrun.
+1. Open https://speedrun.a16z.com/apply  Enter prax@askthemove.online and Get started. Hand over for any email code.
+2. Fill founder info from ABOUT ME and these answers:
+- What are you building: AskTheMove: a chess coach that explains your mistakes in plain words. A chess engine supplies the facts, Claude explains them, and every claim is checked against the engine before the player sees it.
+- Who is it for: Improving club players who review their games but can&#x27;t afford a coach, starting in India.
+- Why now: Language models can finally explain a chess position in plain words, but on their own they invent moves. Pairing them with an engine and verifying every claim makes the explanations trustworthy, at a cost of cents per game.
+- Why you: {{BACKGROUND}} Built the whole product solo, with 150+ automated tests.
+- What is working: A working web app with bot games, full-game review and verified AI explanations, and a live waitlist at askthemove.online with {{WAITLIST_N}} sign-ups. No public users yet; a private beta is next.
+- Demo link (optional): https://askthemove.online | Deck: none
+3. Submit and log it.
+
+--- 9. Airwallex hackathon (optional) (by 23 Oct) ---
+TASK: Airwallex Agentic Banking Hackathon, idea phase (closes 23 Oct 2026). Only run this if Prax said yes; it is a separate 3-week banking-agent build (Oct 25–Nov 13), not AskTheMove.
+1. Open https://www.hackerearth.com/community/challenges/hackathon/agentic-banking-hackathon/?register=true  Hand over for HackerEarth sign-in or account creation.
+2. Register solo. Track: Dispute Response Agent.
+3. Idea text: Dispute Response Agent. When a customer opens a card dispute, the agent pulls the transaction, order and delivery records through Airwallex APIs, matches them to the dispute&#x27;s reason code, and drafts the evidence response. It lists any evidence that&#x27;s missing, links every statement in the draft to the record it came from, and waits for a human to approve before anything is submitted. The same rule I use in my chess coach applies here: the agent may only say what a source record proves.
+4. Submit the idea and log it. Do not create the Airwallex sandbox account; tell me to do it (sandbox.airwallex.com with prax@askthemove.online).
+
+--- 10. AWS Activate Founders (only after Kiro replies) ---
+TASK: AWS Activate Founders ($1K credits). ONLY run this after Kiro has approved or declined. If I haven&#x27;t told you Kiro replied, STOP and ask.
+1. Open https://aws.amazon.com/startups/credits  Hand over for AWS Builder ID sign-in and account linking. The AWS account must be on the paid tier with a payment method (UPI AutoPay first, debit card as fallback); if it isn&#x27;t, hand over so I upgrade it myself.
+2. Choose Activate Founders. Fill:
+- Product: AskTheMove, a web chess coach. Stockfish finds the critical moments in a player&#x27;s game and Claude explains them in plain language; the server rejects any explanation that cites a move or number the engine didn&#x27;t produce.
+- Target market: Improving club chess players, starting in India, who review their games but can&#x27;t afford a coach.
+- Traction: Pre-launch. Working web app; waitlist at askthemove.online with {{WAITLIST_N}} sign-ups.
+- Funding stage: Self-funded. No outside funding. Last funding date: none (leave blank or &quot;N/A&quot;).
+- Website: https://askthemove.online | Founded: September 2026 | Country: India | AWS Account ID: {{AWS_ACCOUNT_ID}}
+3. This form can&#x27;t be edited after submit: before submitting, show me a summary of every field and wait for &quot;continue&quot;. Then submit and log it.
+"></div></div><div class="f"><div class="q"><b>1. Meta AI hackathon, notify me</b> <small style="color:var(--muted)">today</small><button class="copy">Copy</button></div><div class="ans tpl" data-t="You are filling startup program applications in my browser on my behalf. I am Prax, solo founder of AskTheMove. I have read and approved every answer below and I want you to submit without asking me, except at the hand-over points.
+
+RULES
+1. Use only the facts in this prompt. Never invent personal facts, numbers, dates, users, revenue or links. If a REQUIRED field asks for something not given here, stop and ask me in this chat. Leave unknown OPTIONAL fields blank.
+2. If any value still looks like {{SOMETHING}} (an unfilled placeholder), do not type it. Stop and ask me for it.
+3. HAND OVER TO ME (stop, tell me exactly what to do, wait until I say &quot;continue&quot;) for: typing any password or signing in; one-time codes from email, SMS or phone; CAPTCHAs or &quot;I&#x27;m not a robot&quot;; any payment or card form; creating a new account on any site; recording or uploading a video; any statement certifying a fact this prompt does not give.
+4. Tick Terms of Service / privacy checkboxes that are required to submit. Leave marketing and newsletter opt-ins UNTICKED.
+5. Respect character limits. If an answer is too long, shorten it keeping the meaning; never pad it.
+6. Do not change account settings, do not open links from emails, do not pay for anything, do not apply to any program not named in this prompt.
+7. Before submitting, scroll the whole form once and check every field against this prompt. Then submit.
+8. After each submission, write one log line in this chat:  LOG | &lt;program&gt; | &lt;date time IST&gt; | &lt;page URL&gt; | &lt;confirmation text or &quot;no confirmation shown&quot;&gt;
+   If you stopped instead, write:  STOPPED | &lt;program&gt; | &lt;what I need to do&gt;
+
+ABOUT ME (the founder)
+- Name: {{FIRST_NAME}} {{LAST_NAME}}
+- Email for everything: prax@askthemove.online   (never use a gmail address)
+- Birthday: {{BIRTHDAY}}   Phone: {{PHONE}}   Based in: {{CITY}}, India
+- Current school/work: {{WORK}}
+- Background: {{BACKGROUND}}
+- Past work: {{PAST_WORK}}
+- Links: {{LINKS}}   X: https://x.com/AskTheMove
+- Achievements: {{ACHIEVEMENTS}}
+- Technical: Yes. Solo founder, no co-founder.
+- How I heard: {{HEARD}}
+
+ABOUT THE STARTUP
+- Name: AskTheMove   Website: https://askthemove.online   Email: prax@askthemove.online   X: @AskTheMove
+- One line (under 50 chars): Chess coach that explains your mistakes
+- What it is: AskTheMove is a chess coach for improving players. After a game it finds the moment you went wrong and explains why in plain language. Stockfish produces the facts (legal moves, material, best lines); Claude turns them into a short explanation; the server withholds any answer that cites a move, number or mate the engine did not produce.
+- Status: working web app (bot games, full-game review, verified AI explanations). Waitlist live at askthemove.online since October 2026 with {{WAITLIST_N}} sign-ups. No public users yet; private beta next.
+- Founded: September 2026. Not incorporated yet (sole founder). Self-funded/bootstrapped, no outside investment, no investors, no revenue. Based in India.
+- Customers: improving club chess players, starting in India, who review their games but can&#x27;t afford a coach.
+- Competitors: Chess.com coach and Game Review, Duolingo Chess, Take Take Take. Insight: narration isn&#x27;t teaching, and unchecked AI narration is wrong often enough to lose trust. We check every claim against the engine first, then teach in a loop: guess the move, see why yours fell short, retry a similar position.
+- Engineering: built solo, spec-first, 150+ automated tests.
+- Claude use: our server sends Claude the Stockfish evaluation, best line and material change for each critical moment; Claude explains it in a few plain sentences at the player&#x27;s level; the server rejects any answer citing a move or number the engine didn&#x27;t produce. Usage is capped per user per hour and per day.
+- Help wanted: getting the first 100 real players; learning distribution as a solo founder, starting with chess communities and coaches in India.
+
+TASK: Meta Global AI Developer Hackathon, notify-me form.
+1. Open https://dev.meta.ai/events/global-hackathon
+2. Find the notify / register-interest form. Fill: First name = {{FIRST_NAME}}, Last name = {{LAST_NAME}}, Email = prax@askthemove.online. Leave the Meta marketing checkbox unticked.
+3. Submit and log it. If the page already shows a full application form instead, fill it from the facts above and submit."></div></div><div class="f"><div class="q"><b>2. Z Fellows</b> <small style="color:var(--muted)">today, rolling</small><button class="copy">Copy</button></div><div class="ans tpl" data-t="You are filling startup program applications in my browser on my behalf. I am Prax, solo founder of AskTheMove. I have read and approved every answer below and I want you to submit without asking me, except at the hand-over points.
+
+RULES
+1. Use only the facts in this prompt. Never invent personal facts, numbers, dates, users, revenue or links. If a REQUIRED field asks for something not given here, stop and ask me in this chat. Leave unknown OPTIONAL fields blank.
+2. If any value still looks like {{SOMETHING}} (an unfilled placeholder), do not type it. Stop and ask me for it.
+3. HAND OVER TO ME (stop, tell me exactly what to do, wait until I say &quot;continue&quot;) for: typing any password or signing in; one-time codes from email, SMS or phone; CAPTCHAs or &quot;I&#x27;m not a robot&quot;; any payment or card form; creating a new account on any site; recording or uploading a video; any statement certifying a fact this prompt does not give.
+4. Tick Terms of Service / privacy checkboxes that are required to submit. Leave marketing and newsletter opt-ins UNTICKED.
+5. Respect character limits. If an answer is too long, shorten it keeping the meaning; never pad it.
+6. Do not change account settings, do not open links from emails, do not pay for anything, do not apply to any program not named in this prompt.
+7. Before submitting, scroll the whole form once and check every field against this prompt. Then submit.
+8. After each submission, write one log line in this chat:  LOG | &lt;program&gt; | &lt;date time IST&gt; | &lt;page URL&gt; | &lt;confirmation text or &quot;no confirmation shown&quot;&gt;
+   If you stopped instead, write:  STOPPED | &lt;program&gt; | &lt;what I need to do&gt;
+
+ABOUT ME (the founder)
+- Name: {{FIRST_NAME}} {{LAST_NAME}}
+- Email for everything: prax@askthemove.online   (never use a gmail address)
+- Birthday: {{BIRTHDAY}}   Phone: {{PHONE}}   Based in: {{CITY}}, India
+- Current school/work: {{WORK}}
+- Background: {{BACKGROUND}}
+- Past work: {{PAST_WORK}}
+- Links: {{LINKS}}   X: https://x.com/AskTheMove
+- Achievements: {{ACHIEVEMENTS}}
+- Technical: Yes. Solo founder, no co-founder.
+- How I heard: {{HEARD}}
+
+ABOUT THE STARTUP
+- Name: AskTheMove   Website: https://askthemove.online   Email: prax@askthemove.online   X: @AskTheMove
+- One line (under 50 chars): Chess coach that explains your mistakes
+- What it is: AskTheMove is a chess coach for improving players. After a game it finds the moment you went wrong and explains why in plain language. Stockfish produces the facts (legal moves, material, best lines); Claude turns them into a short explanation; the server withholds any answer that cites a move, number or mate the engine did not produce.
+- Status: working web app (bot games, full-game review, verified AI explanations). Waitlist live at askthemove.online since October 2026 with {{WAITLIST_N}} sign-ups. No public users yet; private beta next.
+- Founded: September 2026. Not incorporated yet (sole founder). Self-funded/bootstrapped, no outside investment, no investors, no revenue. Based in India.
+- Customers: improving club chess players, starting in India, who review their games but can&#x27;t afford a coach.
+- Competitors: Chess.com coach and Game Review, Duolingo Chess, Take Take Take. Insight: narration isn&#x27;t teaching, and unchecked AI narration is wrong often enough to lose trust. We check every claim against the engine first, then teach in a loop: guess the move, see why yours fell short, retry a similar position.
+- Engineering: built solo, spec-first, 150+ automated tests.
+- Claude use: our server sends Claude the Stockfish evaluation, best line and material change for each critical moment; Claude explains it in a few plain sentences at the player&#x27;s level; the server rejects any answer citing a move or number the engine didn&#x27;t produce. Usage is capped per user per hour and per day.
+- Help wanted: getting the first 100 real players; learning distribution as a solo founder, starting with chess communities and coaches in India.
+
+TASK: Z Fellows application (Google Form, no account needed).
+1. Open https://docs.google.com/forms/d/1z5HG9Pj0hIxS2oZL_wcJS5QqDZlcVbkhYGHp5Kp_IGM/viewform  (if it is moved, find &quot;Apply&quot; on https://zfellows.com). If Google asks me to sign in, skip it if a &quot;continue without&quot; option exists; otherwise hand over.
+2. Fill:
+- Email: prax@askthemove.online | First/Last name: {{FIRST_NAME}} / {{LAST_NAME}} | Company or project: AskTheMove
+- Birthday: {{BIRTHDAY}} | Phone: {{PHONE}} | Technical: Yes | Applied before: No
+- Where based: {{CITY}}, India | School or working: {{WORK}}
+- Project and why (500): AskTheMove (askthemove.online) is a chess coach that explains your mistakes in plain words. Stockfish finds where the game turned and the better line, Claude explains it, and the server blocks any sentence citing a move or number the engine didn&#x27;t produce. I&#x27;m building it because engines tell you what was best but never why, and most improving players can&#x27;t afford a human coach.
+- Problem (500): Players review games with an engine and learn little: they see &quot;Nf5 was best, +2.3&quot; and no reason. Human coaching is expensive and scarce. Chatbot coaches explain fluently but invent moves that aren&#x27;t on the board. The missing piece is an explanation that is both readable and provably correct for that exact position.
+- Expertise (500): {{BACKGROUND}} I built AskTheMove alone: bot play, full-game review, lessons, a Claude explanation layer with server-side fact checking, and over 150 automated tests.
+- Competitors and insight (500): Chess.com, Duolingo Chess and Take Take Take all add AI narration to game review. My insight: narration isn&#x27;t teaching, and unchecked narration is wrong often enough to lose trust. AskTheMove checks every claim against the engine first, then teaches in a loop: guess the move, see why yours fell short, retry a similar position.
+- Past work (500): {{PAST_WORK}}
+- Nerdiest thing (250): {{NERDIEST}} | What drives you: {{DRIVES}} | Growing up: {{GROWING_UP}} | Risk/challenge (500): {{RISK}}
+- Website and links: https://askthemove.online, https://x.com/AskTheMove, {{LINKS}}
+- Achievements: {{ACHIEVEMENTS}} | 1-minute video: leave blank (optional)
+- Co-found with: {{COFOUNDER}} | How heard: {{HEARD}}
+- One thing you need help with: Getting the first 100 real players. The product works; I need to learn distribution as a solo founder, starting with chess communities and coaches in India.
+3. Submit and log it."></div></div><div class="f"><div class="q"><b>3. Claude for Startups</b> <small style="color:var(--muted)">today, rolling</small><button class="copy">Copy</button></div><div class="ans tpl" data-t="You are filling startup program applications in my browser on my behalf. I am Prax, solo founder of AskTheMove. I have read and approved every answer below and I want you to submit without asking me, except at the hand-over points.
+
+RULES
+1. Use only the facts in this prompt. Never invent personal facts, numbers, dates, users, revenue or links. If a REQUIRED field asks for something not given here, stop and ask me in this chat. Leave unknown OPTIONAL fields blank.
+2. If any value still looks like {{SOMETHING}} (an unfilled placeholder), do not type it. Stop and ask me for it.
+3. HAND OVER TO ME (stop, tell me exactly what to do, wait until I say &quot;continue&quot;) for: typing any password or signing in; one-time codes from email, SMS or phone; CAPTCHAs or &quot;I&#x27;m not a robot&quot;; any payment or card form; creating a new account on any site; recording or uploading a video; any statement certifying a fact this prompt does not give.
+4. Tick Terms of Service / privacy checkboxes that are required to submit. Leave marketing and newsletter opt-ins UNTICKED.
+5. Respect character limits. If an answer is too long, shorten it keeping the meaning; never pad it.
+6. Do not change account settings, do not open links from emails, do not pay for anything, do not apply to any program not named in this prompt.
+7. Before submitting, scroll the whole form once and check every field against this prompt. Then submit.
+8. After each submission, write one log line in this chat:  LOG | &lt;program&gt; | &lt;date time IST&gt; | &lt;page URL&gt; | &lt;confirmation text or &quot;no confirmation shown&quot;&gt;
+   If you stopped instead, write:  STOPPED | &lt;program&gt; | &lt;what I need to do&gt;
+
+ABOUT ME (the founder)
+- Name: {{FIRST_NAME}} {{LAST_NAME}}
+- Email for everything: prax@askthemove.online   (never use a gmail address)
+- Birthday: {{BIRTHDAY}}   Phone: {{PHONE}}   Based in: {{CITY}}, India
+- Current school/work: {{WORK}}
+- Background: {{BACKGROUND}}
+- Past work: {{PAST_WORK}}
+- Links: {{LINKS}}   X: https://x.com/AskTheMove
+- Achievements: {{ACHIEVEMENTS}}
+- Technical: Yes. Solo founder, no co-founder.
+- How I heard: {{HEARD}}
+
+ABOUT THE STARTUP
+- Name: AskTheMove   Website: https://askthemove.online   Email: prax@askthemove.online   X: @AskTheMove
+- One line (under 50 chars): Chess coach that explains your mistakes
+- What it is: AskTheMove is a chess coach for improving players. After a game it finds the moment you went wrong and explains why in plain language. Stockfish produces the facts (legal moves, material, best lines); Claude turns them into a short explanation; the server withholds any answer that cites a move, number or mate the engine did not produce.
+- Status: working web app (bot games, full-game review, verified AI explanations). Waitlist live at askthemove.online since October 2026 with {{WAITLIST_N}} sign-ups. No public users yet; private beta next.
+- Founded: September 2026. Not incorporated yet (sole founder). Self-funded/bootstrapped, no outside investment, no investors, no revenue. Based in India.
+- Customers: improving club chess players, starting in India, who review their games but can&#x27;t afford a coach.
+- Competitors: Chess.com coach and Game Review, Duolingo Chess, Take Take Take. Insight: narration isn&#x27;t teaching, and unchecked AI narration is wrong often enough to lose trust. We check every claim against the engine first, then teach in a loop: guess the move, see why yours fell short, retry a similar position.
+- Engineering: built solo, spec-first, 150+ automated tests.
+- Claude use: our server sends Claude the Stockfish evaluation, best line and material change for each critical moment; Claude explains it in a few plain sentences at the player&#x27;s level; the server rejects any answer citing a move or number the engine didn&#x27;t produce. Usage is capped per user per hour and per day.
+- Help wanted: getting the first 100 real players; learning distribution as a solo founder, starting with chess communities and coaches in India.
+
+TASK: Anthropic Claude for Startups application.
+1. Open https://platform.claude.com/offers/startups-application  (program page: https://claude.com/programs/startups). If I&#x27;m not signed in to the Claude Console, hand over so I can sign in.
+2. Fill whatever fields appear, from these:
+- Company name: AskTheMove | Website: https://askthemove.online | Company email: prax@askthemove.online
+- Stage: Bootstrapped, pre-launch. Founded September 2026, not yet incorporated. | Funding: none | Partner VC / investor: None (leave blank if optional)
+- How do you use Claude / what are you building: Claude writes AskTheMove&#x27;s chess explanations. For each critical moment in a player&#x27;s game, our server sends Claude the Stockfish evaluation, the best line and what changed in material. Claude explains the mistake in a few plain sentences pitched at the player&#x27;s level. The server then rejects any answer that cites a move, number or mate the engine did not produce, so every explanation is checked before the player sees it. Usage is capped per user per hour and per day. Credits would let us run a private beta without charging testers.
+- Team size: 1 | Country: India
+3. Submit and log it. Note: their $1K credits are paused &quot;over capacity&quot;; applying still puts us in the queue."></div></div><div class="f"><div class="q"><b>4. Kiro startup credits</b> <small style="color:var(--muted)">before AWS Activate</small><button class="copy">Copy</button></div><div class="ans tpl" data-t="You are filling startup program applications in my browser on my behalf. I am Prax, solo founder of AskTheMove. I have read and approved every answer below and I want you to submit without asking me, except at the hand-over points.
+
+RULES
+1. Use only the facts in this prompt. Never invent personal facts, numbers, dates, users, revenue or links. If a REQUIRED field asks for something not given here, stop and ask me in this chat. Leave unknown OPTIONAL fields blank.
+2. If any value still looks like {{SOMETHING}} (an unfilled placeholder), do not type it. Stop and ask me for it.
+3. HAND OVER TO ME (stop, tell me exactly what to do, wait until I say &quot;continue&quot;) for: typing any password or signing in; one-time codes from email, SMS or phone; CAPTCHAs or &quot;I&#x27;m not a robot&quot;; any payment or card form; creating a new account on any site; recording or uploading a video; any statement certifying a fact this prompt does not give.
+4. Tick Terms of Service / privacy checkboxes that are required to submit. Leave marketing and newsletter opt-ins UNTICKED.
+5. Respect character limits. If an answer is too long, shorten it keeping the meaning; never pad it.
+6. Do not change account settings, do not open links from emails, do not pay for anything, do not apply to any program not named in this prompt.
+7. Before submitting, scroll the whole form once and check every field against this prompt. Then submit.
+8. After each submission, write one log line in this chat:  LOG | &lt;program&gt; | &lt;date time IST&gt; | &lt;page URL&gt; | &lt;confirmation text or &quot;no confirmation shown&quot;&gt;
+   If you stopped instead, write:  STOPPED | &lt;program&gt; | &lt;what I need to do&gt;
+
+ABOUT ME (the founder)
+- Name: {{FIRST_NAME}} {{LAST_NAME}}
+- Email for everything: prax@askthemove.online   (never use a gmail address)
+- Birthday: {{BIRTHDAY}}   Phone: {{PHONE}}   Based in: {{CITY}}, India
+- Current school/work: {{WORK}}
+- Background: {{BACKGROUND}}
+- Past work: {{PAST_WORK}}
+- Links: {{LINKS}}   X: https://x.com/AskTheMove
+- Achievements: {{ACHIEVEMENTS}}
+- Technical: Yes. Solo founder, no co-founder.
+- How I heard: {{HEARD}}
+
+ABOUT THE STARTUP
+- Name: AskTheMove   Website: https://askthemove.online   Email: prax@askthemove.online   X: @AskTheMove
+- One line (under 50 chars): Chess coach that explains your mistakes
+- What it is: AskTheMove is a chess coach for improving players. After a game it finds the moment you went wrong and explains why in plain language. Stockfish produces the facts (legal moves, material, best lines); Claude turns them into a short explanation; the server withholds any answer that cites a move, number or mate the engine did not produce.
+- Status: working web app (bot games, full-game review, verified AI explanations). Waitlist live at askthemove.online since October 2026 with {{WAITLIST_N}} sign-ups. No public users yet; private beta next.
+- Founded: September 2026. Not incorporated yet (sole founder). Self-funded/bootstrapped, no outside investment, no investors, no revenue. Based in India.
+- Customers: improving club chess players, starting in India, who review their games but can&#x27;t afford a coach.
+- Competitors: Chess.com coach and Game Review, Duolingo Chess, Take Take Take. Insight: narration isn&#x27;t teaching, and unchecked AI narration is wrong often enough to lose trust. We check every claim against the engine first, then teach in a loop: guess the move, see why yours fell short, retry a similar position.
+- Engineering: built solo, spec-first, 150+ automated tests.
+- Claude use: our server sends Claude the Stockfish evaluation, best line and material change for each critical moment; Claude explains it in a few plain sentences at the player&#x27;s level; the server rejects any answer citing a move or number the engine didn&#x27;t produce. Usage is capped per user per hour and per day.
+- Help wanted: getting the first 100 real players; learning distribution as a solo founder, starting with chess communities and coaches in India.
+
+TASK: Kiro startup credits (Starter tier). This must be done BEFORE any AWS Activate application.
+Needs: an AWS account whose root email is prax@askthemove.online. If {{AWS_ACCOUNT_ID}} is blank or unfilled, STOP and tell me: &quot;Create the AWS account at aws.amazon.com with prax@askthemove.online on the Free plan, paying with UPI AutoPay (debit card as fallback), then give me the 12-digit Account ID.&quot; Do not create the account yourself.
+1. Open https://aws.amazon.com/startups/credits/kiro  (info: https://kiro.dev/startups). Hand over for any sign-in.
+2. Choose the Starter tier (up to 2 users). Fill:
+- Startup name: AskTheMove | Website: https://askthemove.online | Business email: prax@askthemove.online
+- AWS Account ID: {{AWS_ACCOUNT_ID}} | Country: India | Funding stage: Pre-seed, self-funded, no outside investment | Legal entity: Not incorporated yet; sole founder | Number of users: 1
+- What you are building: AskTheMove is a chess coach for improving players. After a game it finds the moment you went wrong and explains why in plain language. Stockfish produces the facts: legal moves, material and the best lines. Claude turns those facts into a short explanation. The server then withholds any answer that cites a move, number or mate the engine did not produce. The web app works end to end today, with bot games, full-game review and AI explanations; a private beta comes next.
+- Traction: Pre-launch. The waitlist at askthemove.online went live in October 2026 and has {{WAITLIST_N}} sign-ups. We are on X as @AskTheMove.
+- How you will use Kiro: We already build spec-first: each feature starts as a written proposal with numbered requirements and test scenarios, and over 150 automated tests guard the app. Kiro&#x27;s specs and hooks match that way of working. We would use them for the next pieces: the learning loop (guess the move, see why yours fell short, retry a similar position) and explanations in Hindi. Hooks would run the test suite on every change.
+3. Submit and log it."></div></div><div class="f"><div class="q"><b>5. Y Combinator W27</b> <small style="color:var(--muted)">by 2 Nov (3 Nov 09:30 IST)</small><button class="copy">Copy</button></div><div class="ans tpl" data-t="You are filling startup program applications in my browser on my behalf. I am Prax, solo founder of AskTheMove. I have read and approved every answer below and I want you to submit without asking me, except at the hand-over points.
+
+RULES
+1. Use only the facts in this prompt. Never invent personal facts, numbers, dates, users, revenue or links. If a REQUIRED field asks for something not given here, stop and ask me in this chat. Leave unknown OPTIONAL fields blank.
+2. If any value still looks like {{SOMETHING}} (an unfilled placeholder), do not type it. Stop and ask me for it.
+3. HAND OVER TO ME (stop, tell me exactly what to do, wait until I say &quot;continue&quot;) for: typing any password or signing in; one-time codes from email, SMS or phone; CAPTCHAs or &quot;I&#x27;m not a robot&quot;; any payment or card form; creating a new account on any site; recording or uploading a video; any statement certifying a fact this prompt does not give.
+4. Tick Terms of Service / privacy checkboxes that are required to submit. Leave marketing and newsletter opt-ins UNTICKED.
+5. Respect character limits. If an answer is too long, shorten it keeping the meaning; never pad it.
+6. Do not change account settings, do not open links from emails, do not pay for anything, do not apply to any program not named in this prompt.
+7. Before submitting, scroll the whole form once and check every field against this prompt. Then submit.
+8. After each submission, write one log line in this chat:  LOG | &lt;program&gt; | &lt;date time IST&gt; | &lt;page URL&gt; | &lt;confirmation text or &quot;no confirmation shown&quot;&gt;
+   If you stopped instead, write:  STOPPED | &lt;program&gt; | &lt;what I need to do&gt;
+
+ABOUT ME (the founder)
+- Name: {{FIRST_NAME}} {{LAST_NAME}}
+- Email for everything: prax@askthemove.online   (never use a gmail address)
+- Birthday: {{BIRTHDAY}}   Phone: {{PHONE}}   Based in: {{CITY}}, India
+- Current school/work: {{WORK}}
+- Background: {{BACKGROUND}}
+- Past work: {{PAST_WORK}}
+- Links: {{LINKS}}   X: https://x.com/AskTheMove
+- Achievements: {{ACHIEVEMENTS}}
+- Technical: Yes. Solo founder, no co-founder.
+- How I heard: {{HEARD}}
+
+ABOUT THE STARTUP
+- Name: AskTheMove   Website: https://askthemove.online   Email: prax@askthemove.online   X: @AskTheMove
+- One line (under 50 chars): Chess coach that explains your mistakes
+- What it is: AskTheMove is a chess coach for improving players. After a game it finds the moment you went wrong and explains why in plain language. Stockfish produces the facts (legal moves, material, best lines); Claude turns them into a short explanation; the server withholds any answer that cites a move, number or mate the engine did not produce.
+- Status: working web app (bot games, full-game review, verified AI explanations). Waitlist live at askthemove.online since October 2026 with {{WAITLIST_N}} sign-ups. No public users yet; private beta next.
+- Founded: September 2026. Not incorporated yet (sole founder). Self-funded/bootstrapped, no outside investment, no investors, no revenue. Based in India.
+- Customers: improving club chess players, starting in India, who review their games but can&#x27;t afford a coach.
+- Competitors: Chess.com coach and Game Review, Duolingo Chess, Take Take Take. Insight: narration isn&#x27;t teaching, and unchecked AI narration is wrong often enough to lose trust. We check every claim against the engine first, then teach in a loop: guess the move, see why yours fell short, retry a similar position.
+- Engineering: built solo, spec-first, 150+ automated tests.
+- Claude use: our server sends Claude the Stockfish evaluation, best line and material change for each critical moment; Claude explains it in a few plain sentences at the player&#x27;s level; the server rejects any answer citing a move or number the engine didn&#x27;t produce. Usage is capped per user per hour and per day.
+- Help wanted: getting the first 100 real players; learning distribution as a solo founder, starting with chess communities and coaches in India.
+
+TASK: Y Combinator W27 application. Deadline 2 Nov 2026 8pm PT = 3 Nov 09:30 IST.
+1. Open https://www.ycombinator.com/apply. If I need a YC account or sign-in, hand over.
+2. Fill the company and founder sections from the facts above. Key answers:
+- Company name: AskTheMove | URL: https://askthemove.online | Location: {{CITY}}, India
+- 50 characters or less: Chess coach that explains your mistakes
+- What is your company going to make: AskTheMove is a chess coach that explains your mistakes in plain words. Stockfish finds the critical moments in a game, Claude explains them, and the server rejects any explanation that cites a move or number the engine didn&#x27;t produce.
+- Why this idea / what do you understand: Players review games with an engine but can&#x27;t read its numbers, and coaches are expensive. Language models alone invent moves; pairing them with an engine and checking every claim is what makes the explanation trustworthy.
+- How far along: Working web app (bot games, full-game review, verified AI explanations); waitlist live at askthemove.online with {{WAITLIST_N}} sign-ups. Private beta next.
+- Users / revenue: No users yet; no revenue. | How long working on it: since September 2026, full time solo.
+- Competitors: Chess.com&#x27;s coach and Game Review, Duolingo Chess, Take Take Take. We focus on verified, plain-language explanations for improving club players in India.
+- How will you make money: a paid tier for unlimited verified explanations and the training loop; later, tools for chess academies and coaches.
+- Incorporated: No. Investment taken: None. Co-founders: none (solo).
+- Founder profile: name, email, {{BACKGROUND}}, {{PAST_WORK}}, {{LINKS}}, {{ACHIEVEMENTS}}.
+3. The 1-minute founder video: HAND OVER, I record and upload it myself.
+4. Save the application. Submit only after the video is uploaded; otherwise log STOPPED with &quot;upload the founder video&quot;."></div></div><div class="f"><div class="q"><b>6. Entrepreneur First Bangalore</b> <small style="color:var(--muted)">by 2 Nov</small><button class="copy">Copy</button></div><div class="ans tpl" data-t="You are filling startup program applications in my browser on my behalf. I am Prax, solo founder of AskTheMove. I have read and approved every answer below and I want you to submit without asking me, except at the hand-over points.
+
+RULES
+1. Use only the facts in this prompt. Never invent personal facts, numbers, dates, users, revenue or links. If a REQUIRED field asks for something not given here, stop and ask me in this chat. Leave unknown OPTIONAL fields blank.
+2. If any value still looks like {{SOMETHING}} (an unfilled placeholder), do not type it. Stop and ask me for it.
+3. HAND OVER TO ME (stop, tell me exactly what to do, wait until I say &quot;continue&quot;) for: typing any password or signing in; one-time codes from email, SMS or phone; CAPTCHAs or &quot;I&#x27;m not a robot&quot;; any payment or card form; creating a new account on any site; recording or uploading a video; any statement certifying a fact this prompt does not give.
+4. Tick Terms of Service / privacy checkboxes that are required to submit. Leave marketing and newsletter opt-ins UNTICKED.
+5. Respect character limits. If an answer is too long, shorten it keeping the meaning; never pad it.
+6. Do not change account settings, do not open links from emails, do not pay for anything, do not apply to any program not named in this prompt.
+7. Before submitting, scroll the whole form once and check every field against this prompt. Then submit.
+8. After each submission, write one log line in this chat:  LOG | &lt;program&gt; | &lt;date time IST&gt; | &lt;page URL&gt; | &lt;confirmation text or &quot;no confirmation shown&quot;&gt;
+   If you stopped instead, write:  STOPPED | &lt;program&gt; | &lt;what I need to do&gt;
+
+ABOUT ME (the founder)
+- Name: {{FIRST_NAME}} {{LAST_NAME}}
+- Email for everything: prax@askthemove.online   (never use a gmail address)
+- Birthday: {{BIRTHDAY}}   Phone: {{PHONE}}   Based in: {{CITY}}, India
+- Current school/work: {{WORK}}
+- Background: {{BACKGROUND}}
+- Past work: {{PAST_WORK}}
+- Links: {{LINKS}}   X: https://x.com/AskTheMove
+- Achievements: {{ACHIEVEMENTS}}
+- Technical: Yes. Solo founder, no co-founder.
+- How I heard: {{HEARD}}
+
+ABOUT THE STARTUP
+- Name: AskTheMove   Website: https://askthemove.online   Email: prax@askthemove.online   X: @AskTheMove
+- One line (under 50 chars): Chess coach that explains your mistakes
+- What it is: AskTheMove is a chess coach for improving players. After a game it finds the moment you went wrong and explains why in plain language. Stockfish produces the facts (legal moves, material, best lines); Claude turns them into a short explanation; the server withholds any answer that cites a move, number or mate the engine did not produce.
+- Status: working web app (bot games, full-game review, verified AI explanations). Waitlist live at askthemove.online since October 2026 with {{WAITLIST_N}} sign-ups. No public users yet; private beta next.
+- Founded: September 2026. Not incorporated yet (sole founder). Self-funded/bootstrapped, no outside investment, no investors, no revenue. Based in India.
+- Customers: improving club chess players, starting in India, who review their games but can&#x27;t afford a coach.
+- Competitors: Chess.com coach and Game Review, Duolingo Chess, Take Take Take. Insight: narration isn&#x27;t teaching, and unchecked AI narration is wrong often enough to lose trust. We check every claim against the engine first, then teach in a loop: guess the move, see why yours fell short, retry a similar position.
+- Engineering: built solo, spec-first, 150+ automated tests.
+- Claude use: our server sends Claude the Stockfish evaluation, best line and material change for each critical moment; Claude explains it in a few plain sentences at the player&#x27;s level; the server rejects any answer citing a move or number the engine didn&#x27;t produce. Usage is capped per user per hour and per day.
+- Help wanted: getting the first 100 real players; learning distribution as a solo founder, starting with chess communities and coaches in India.
+
+TASK: Entrepreneur First (EF) application, Bangalore cohort. Round 2 closes 2 Nov 2026.
+1. Open https://apply.joinef.com/  Choose Bangalore / India. Hand over for any sign-in.
+2. Fill personal fields from ABOUT ME. Product answer: AskTheMove is a chess coach that explains your mistakes in plain words. Stockfish finds the critical moments in a game, Claude explains them, and the server rejects any explanation that cites a move or number the engine didn&#x27;t produce. Built solo, with 150+ automated tests; waitlist at askthemove.online with {{WAITLIST_N}} sign-ups.
+- Edge / most impressive thing built: {{BACKGROUND}} {{PAST_WORK}}
+- Questions about my personal story or ambitions that ABOUT ME does not answer: stop and ask me; do not write them.
+3. Submit and log it."></div></div><div class="f"><div class="q"><b>7. PayPal AI Hackathon</b> <small style="color:var(--muted)">register by 12 Nov</small><button class="copy">Copy</button></div><div class="ans tpl" data-t="You are filling startup program applications in my browser on my behalf. I am Prax, solo founder of AskTheMove. I have read and approved every answer below and I want you to submit without asking me, except at the hand-over points.
+
+RULES
+1. Use only the facts in this prompt. Never invent personal facts, numbers, dates, users, revenue or links. If a REQUIRED field asks for something not given here, stop and ask me in this chat. Leave unknown OPTIONAL fields blank.
+2. If any value still looks like {{SOMETHING}} (an unfilled placeholder), do not type it. Stop and ask me for it.
+3. HAND OVER TO ME (stop, tell me exactly what to do, wait until I say &quot;continue&quot;) for: typing any password or signing in; one-time codes from email, SMS or phone; CAPTCHAs or &quot;I&#x27;m not a robot&quot;; any payment or card form; creating a new account on any site; recording or uploading a video; any statement certifying a fact this prompt does not give.
+4. Tick Terms of Service / privacy checkboxes that are required to submit. Leave marketing and newsletter opt-ins UNTICKED.
+5. Respect character limits. If an answer is too long, shorten it keeping the meaning; never pad it.
+6. Do not change account settings, do not open links from emails, do not pay for anything, do not apply to any program not named in this prompt.
+7. Before submitting, scroll the whole form once and check every field against this prompt. Then submit.
+8. After each submission, write one log line in this chat:  LOG | &lt;program&gt; | &lt;date time IST&gt; | &lt;page URL&gt; | &lt;confirmation text or &quot;no confirmation shown&quot;&gt;
+   If you stopped instead, write:  STOPPED | &lt;program&gt; | &lt;what I need to do&gt;
+
+ABOUT ME (the founder)
+- Name: {{FIRST_NAME}} {{LAST_NAME}}
+- Email for everything: prax@askthemove.online   (never use a gmail address)
+- Birthday: {{BIRTHDAY}}   Phone: {{PHONE}}   Based in: {{CITY}}, India
+- Current school/work: {{WORK}}
+- Background: {{BACKGROUND}}
+- Past work: {{PAST_WORK}}
+- Links: {{LINKS}}   X: https://x.com/AskTheMove
+- Achievements: {{ACHIEVEMENTS}}
+- Technical: Yes. Solo founder, no co-founder.
+- How I heard: {{HEARD}}
+
+ABOUT THE STARTUP
+- Name: AskTheMove   Website: https://askthemove.online   Email: prax@askthemove.online   X: @AskTheMove
+- One line (under 50 chars): Chess coach that explains your mistakes
+- What it is: AskTheMove is a chess coach for improving players. After a game it finds the moment you went wrong and explains why in plain language. Stockfish produces the facts (legal moves, material, best lines); Claude turns them into a short explanation; the server withholds any answer that cites a move, number or mate the engine did not produce.
+- Status: working web app (bot games, full-game review, verified AI explanations). Waitlist live at askthemove.online since October 2026 with {{WAITLIST_N}} sign-ups. No public users yet; private beta next.
+- Founded: September 2026. Not incorporated yet (sole founder). Self-funded/bootstrapped, no outside investment, no investors, no revenue. Based in India.
+- Customers: improving club chess players, starting in India, who review their games but can&#x27;t afford a coach.
+- Competitors: Chess.com coach and Game Review, Duolingo Chess, Take Take Take. Insight: narration isn&#x27;t teaching, and unchecked AI narration is wrong often enough to lose trust. We check every claim against the engine first, then teach in a loop: guess the move, see why yours fell short, retry a similar position.
+- Engineering: built solo, spec-first, 150+ automated tests.
+- Claude use: our server sends Claude the Stockfish evaluation, best line and material change for each critical moment; Claude explains it in a few plain sentences at the player&#x27;s level; the server rejects any answer citing a move or number the engine didn&#x27;t produce. Usage is capped per user per hour and per day.
+- Help wanted: getting the first 100 real players; learning distribution as a solo founder, starting with chess communities and coaches in India.
+
+TASK: PayPal AI Hackathon on Devpost (deadline 12 Nov 2026).
+1. Go to https://devpost.com/hackathons and search &quot;PayPal AI&quot;. Open the hackathon page.
+2. Read the Rules / Eligibility section. If India or &quot;residents of India&quot; is excluded, STOP and log: STOPPED | PayPal | India not eligible. If unclear, quote the eligibility sentence to me and stop.
+3. If eligible: click Join / Register. Hand over for Devpost sign-in or account creation. Fill registration fields from ABOUT ME. Project idea: AskTheMove, a chess coach that explains your mistakes in plain words (Stockfish facts, Claude explanations, every claim verified). For the hackathon we&#x27;d add a PayPal checkout for the coach&#x27;s paid tier.
+4. Only register now. Do not submit a project entry (that needs a demo video later). Log it."></div></div><div class="f"><div class="q"><b>8. a16z speedrun SR008</b> <small style="color:var(--muted)">priority 12 Oct–1 Nov</small><button class="copy">Copy</button></div><div class="ans tpl" data-t="You are filling startup program applications in my browser on my behalf. I am Prax, solo founder of AskTheMove. I have read and approved every answer below and I want you to submit without asking me, except at the hand-over points.
+
+RULES
+1. Use only the facts in this prompt. Never invent personal facts, numbers, dates, users, revenue or links. If a REQUIRED field asks for something not given here, stop and ask me in this chat. Leave unknown OPTIONAL fields blank.
+2. If any value still looks like {{SOMETHING}} (an unfilled placeholder), do not type it. Stop and ask me for it.
+3. HAND OVER TO ME (stop, tell me exactly what to do, wait until I say &quot;continue&quot;) for: typing any password or signing in; one-time codes from email, SMS or phone; CAPTCHAs or &quot;I&#x27;m not a robot&quot;; any payment or card form; creating a new account on any site; recording or uploading a video; any statement certifying a fact this prompt does not give.
+4. Tick Terms of Service / privacy checkboxes that are required to submit. Leave marketing and newsletter opt-ins UNTICKED.
+5. Respect character limits. If an answer is too long, shorten it keeping the meaning; never pad it.
+6. Do not change account settings, do not open links from emails, do not pay for anything, do not apply to any program not named in this prompt.
+7. Before submitting, scroll the whole form once and check every field against this prompt. Then submit.
+8. After each submission, write one log line in this chat:  LOG | &lt;program&gt; | &lt;date time IST&gt; | &lt;page URL&gt; | &lt;confirmation text or &quot;no confirmation shown&quot;&gt;
+   If you stopped instead, write:  STOPPED | &lt;program&gt; | &lt;what I need to do&gt;
+
+ABOUT ME (the founder)
+- Name: {{FIRST_NAME}} {{LAST_NAME}}
+- Email for everything: prax@askthemove.online   (never use a gmail address)
+- Birthday: {{BIRTHDAY}}   Phone: {{PHONE}}   Based in: {{CITY}}, India
+- Current school/work: {{WORK}}
+- Background: {{BACKGROUND}}
+- Past work: {{PAST_WORK}}
+- Links: {{LINKS}}   X: https://x.com/AskTheMove
+- Achievements: {{ACHIEVEMENTS}}
+- Technical: Yes. Solo founder, no co-founder.
+- How I heard: {{HEARD}}
+
+ABOUT THE STARTUP
+- Name: AskTheMove   Website: https://askthemove.online   Email: prax@askthemove.online   X: @AskTheMove
+- One line (under 50 chars): Chess coach that explains your mistakes
+- What it is: AskTheMove is a chess coach for improving players. After a game it finds the moment you went wrong and explains why in plain language. Stockfish produces the facts (legal moves, material, best lines); Claude turns them into a short explanation; the server withholds any answer that cites a move, number or mate the engine did not produce.
+- Status: working web app (bot games, full-game review, verified AI explanations). Waitlist live at askthemove.online since October 2026 with {{WAITLIST_N}} sign-ups. No public users yet; private beta next.
+- Founded: September 2026. Not incorporated yet (sole founder). Self-funded/bootstrapped, no outside investment, no investors, no revenue. Based in India.
+- Customers: improving club chess players, starting in India, who review their games but can&#x27;t afford a coach.
+- Competitors: Chess.com coach and Game Review, Duolingo Chess, Take Take Take. Insight: narration isn&#x27;t teaching, and unchecked AI narration is wrong often enough to lose trust. We check every claim against the engine first, then teach in a loop: guess the move, see why yours fell short, retry a similar position.
+- Engineering: built solo, spec-first, 150+ automated tests.
+- Claude use: our server sends Claude the Stockfish evaluation, best line and material change for each critical moment; Claude explains it in a few plain sentences at the player&#x27;s level; the server rejects any answer citing a move or number the engine didn&#x27;t produce. Usage is capped per user per hour and per day.
+- Help wanted: getting the first 100 real players; learning distribution as a solo founder, starting with chess communities and coaches in India.
+
+TASK: a16z speedrun SR008 application. Equity: $500K for 10%, 12 weeks in person in San Francisco. Only run this if I said yes to speedrun.
+1. Open https://speedrun.a16z.com/apply  Enter prax@askthemove.online and Get started. Hand over for any email code.
+2. Fill founder info from ABOUT ME and these answers:
+- What are you building: AskTheMove: a chess coach that explains your mistakes in plain words. A chess engine supplies the facts, Claude explains them, and every claim is checked against the engine before the player sees it.
+- Who is it for: Improving club players who review their games but can&#x27;t afford a coach, starting in India.
+- Why now: Language models can finally explain a chess position in plain words, but on their own they invent moves. Pairing them with an engine and verifying every claim makes the explanations trustworthy, at a cost of cents per game.
+- Why you: {{BACKGROUND}} Built the whole product solo, with 150+ automated tests.
+- What is working: A working web app with bot games, full-game review and verified AI explanations, and a live waitlist at askthemove.online with {{WAITLIST_N}} sign-ups. No public users yet; a private beta is next.
+- Demo link (optional): https://askthemove.online | Deck: none
+3. Submit and log it."></div></div><div class="f"><div class="q"><b>9. Airwallex hackathon (optional)</b> <small style="color:var(--muted)">by 23 Oct</small><button class="copy">Copy</button></div><div class="ans tpl" data-t="You are filling startup program applications in my browser on my behalf. I am Prax, solo founder of AskTheMove. I have read and approved every answer below and I want you to submit without asking me, except at the hand-over points.
+
+RULES
+1. Use only the facts in this prompt. Never invent personal facts, numbers, dates, users, revenue or links. If a REQUIRED field asks for something not given here, stop and ask me in this chat. Leave unknown OPTIONAL fields blank.
+2. If any value still looks like {{SOMETHING}} (an unfilled placeholder), do not type it. Stop and ask me for it.
+3. HAND OVER TO ME (stop, tell me exactly what to do, wait until I say &quot;continue&quot;) for: typing any password or signing in; one-time codes from email, SMS or phone; CAPTCHAs or &quot;I&#x27;m not a robot&quot;; any payment or card form; creating a new account on any site; recording or uploading a video; any statement certifying a fact this prompt does not give.
+4. Tick Terms of Service / privacy checkboxes that are required to submit. Leave marketing and newsletter opt-ins UNTICKED.
+5. Respect character limits. If an answer is too long, shorten it keeping the meaning; never pad it.
+6. Do not change account settings, do not open links from emails, do not pay for anything, do not apply to any program not named in this prompt.
+7. Before submitting, scroll the whole form once and check every field against this prompt. Then submit.
+8. After each submission, write one log line in this chat:  LOG | &lt;program&gt; | &lt;date time IST&gt; | &lt;page URL&gt; | &lt;confirmation text or &quot;no confirmation shown&quot;&gt;
+   If you stopped instead, write:  STOPPED | &lt;program&gt; | &lt;what I need to do&gt;
+
+ABOUT ME (the founder)
+- Name: {{FIRST_NAME}} {{LAST_NAME}}
+- Email for everything: prax@askthemove.online   (never use a gmail address)
+- Birthday: {{BIRTHDAY}}   Phone: {{PHONE}}   Based in: {{CITY}}, India
+- Current school/work: {{WORK}}
+- Background: {{BACKGROUND}}
+- Past work: {{PAST_WORK}}
+- Links: {{LINKS}}   X: https://x.com/AskTheMove
+- Achievements: {{ACHIEVEMENTS}}
+- Technical: Yes. Solo founder, no co-founder.
+- How I heard: {{HEARD}}
+
+ABOUT THE STARTUP
+- Name: AskTheMove   Website: https://askthemove.online   Email: prax@askthemove.online   X: @AskTheMove
+- One line (under 50 chars): Chess coach that explains your mistakes
+- What it is: AskTheMove is a chess coach for improving players. After a game it finds the moment you went wrong and explains why in plain language. Stockfish produces the facts (legal moves, material, best lines); Claude turns them into a short explanation; the server withholds any answer that cites a move, number or mate the engine did not produce.
+- Status: working web app (bot games, full-game review, verified AI explanations). Waitlist live at askthemove.online since October 2026 with {{WAITLIST_N}} sign-ups. No public users yet; private beta next.
+- Founded: September 2026. Not incorporated yet (sole founder). Self-funded/bootstrapped, no outside investment, no investors, no revenue. Based in India.
+- Customers: improving club chess players, starting in India, who review their games but can&#x27;t afford a coach.
+- Competitors: Chess.com coach and Game Review, Duolingo Chess, Take Take Take. Insight: narration isn&#x27;t teaching, and unchecked AI narration is wrong often enough to lose trust. We check every claim against the engine first, then teach in a loop: guess the move, see why yours fell short, retry a similar position.
+- Engineering: built solo, spec-first, 150+ automated tests.
+- Claude use: our server sends Claude the Stockfish evaluation, best line and material change for each critical moment; Claude explains it in a few plain sentences at the player&#x27;s level; the server rejects any answer citing a move or number the engine didn&#x27;t produce. Usage is capped per user per hour and per day.
+- Help wanted: getting the first 100 real players; learning distribution as a solo founder, starting with chess communities and coaches in India.
+
+TASK: Airwallex Agentic Banking Hackathon, idea phase (closes 23 Oct 2026). Only run this if Prax said yes; it is a separate 3-week banking-agent build (Oct 25–Nov 13), not AskTheMove.
+1. Open https://www.hackerearth.com/community/challenges/hackathon/agentic-banking-hackathon/?register=true  Hand over for HackerEarth sign-in or account creation.
+2. Register solo. Track: Dispute Response Agent.
+3. Idea text: Dispute Response Agent. When a customer opens a card dispute, the agent pulls the transaction, order and delivery records through Airwallex APIs, matches them to the dispute&#x27;s reason code, and drafts the evidence response. It lists any evidence that&#x27;s missing, links every statement in the draft to the record it came from, and waits for a human to approve before anything is submitted. The same rule I use in my chess coach applies here: the agent may only say what a source record proves.
+4. Submit the idea and log it. Do not create the Airwallex sandbox account; tell me to do it (sandbox.airwallex.com with prax@askthemove.online)."></div></div><div class="f"><div class="q"><b>10. AWS Activate Founders</b> <small style="color:var(--muted)">only after Kiro replies</small><button class="copy">Copy</button></div><div class="ans tpl" data-t="You are filling startup program applications in my browser on my behalf. I am Prax, solo founder of AskTheMove. I have read and approved every answer below and I want you to submit without asking me, except at the hand-over points.
+
+RULES
+1. Use only the facts in this prompt. Never invent personal facts, numbers, dates, users, revenue or links. If a REQUIRED field asks for something not given here, stop and ask me in this chat. Leave unknown OPTIONAL fields blank.
+2. If any value still looks like {{SOMETHING}} (an unfilled placeholder), do not type it. Stop and ask me for it.
+3. HAND OVER TO ME (stop, tell me exactly what to do, wait until I say &quot;continue&quot;) for: typing any password or signing in; one-time codes from email, SMS or phone; CAPTCHAs or &quot;I&#x27;m not a robot&quot;; any payment or card form; creating a new account on any site; recording or uploading a video; any statement certifying a fact this prompt does not give.
+4. Tick Terms of Service / privacy checkboxes that are required to submit. Leave marketing and newsletter opt-ins UNTICKED.
+5. Respect character limits. If an answer is too long, shorten it keeping the meaning; never pad it.
+6. Do not change account settings, do not open links from emails, do not pay for anything, do not apply to any program not named in this prompt.
+7. Before submitting, scroll the whole form once and check every field against this prompt. Then submit.
+8. After each submission, write one log line in this chat:  LOG | &lt;program&gt; | &lt;date time IST&gt; | &lt;page URL&gt; | &lt;confirmation text or &quot;no confirmation shown&quot;&gt;
+   If you stopped instead, write:  STOPPED | &lt;program&gt; | &lt;what I need to do&gt;
+
+ABOUT ME (the founder)
+- Name: {{FIRST_NAME}} {{LAST_NAME}}
+- Email for everything: prax@askthemove.online   (never use a gmail address)
+- Birthday: {{BIRTHDAY}}   Phone: {{PHONE}}   Based in: {{CITY}}, India
+- Current school/work: {{WORK}}
+- Background: {{BACKGROUND}}
+- Past work: {{PAST_WORK}}
+- Links: {{LINKS}}   X: https://x.com/AskTheMove
+- Achievements: {{ACHIEVEMENTS}}
+- Technical: Yes. Solo founder, no co-founder.
+- How I heard: {{HEARD}}
+
+ABOUT THE STARTUP
+- Name: AskTheMove   Website: https://askthemove.online   Email: prax@askthemove.online   X: @AskTheMove
+- One line (under 50 chars): Chess coach that explains your mistakes
+- What it is: AskTheMove is a chess coach for improving players. After a game it finds the moment you went wrong and explains why in plain language. Stockfish produces the facts (legal moves, material, best lines); Claude turns them into a short explanation; the server withholds any answer that cites a move, number or mate the engine did not produce.
+- Status: working web app (bot games, full-game review, verified AI explanations). Waitlist live at askthemove.online since October 2026 with {{WAITLIST_N}} sign-ups. No public users yet; private beta next.
+- Founded: September 2026. Not incorporated yet (sole founder). Self-funded/bootstrapped, no outside investment, no investors, no revenue. Based in India.
+- Customers: improving club chess players, starting in India, who review their games but can&#x27;t afford a coach.
+- Competitors: Chess.com coach and Game Review, Duolingo Chess, Take Take Take. Insight: narration isn&#x27;t teaching, and unchecked AI narration is wrong often enough to lose trust. We check every claim against the engine first, then teach in a loop: guess the move, see why yours fell short, retry a similar position.
+- Engineering: built solo, spec-first, 150+ automated tests.
+- Claude use: our server sends Claude the Stockfish evaluation, best line and material change for each critical moment; Claude explains it in a few plain sentences at the player&#x27;s level; the server rejects any answer citing a move or number the engine didn&#x27;t produce. Usage is capped per user per hour and per day.
+- Help wanted: getting the first 100 real players; learning distribution as a solo founder, starting with chess communities and coaches in India.
+
+TASK: AWS Activate Founders ($1K credits). ONLY run this after Kiro has approved or declined. If I haven&#x27;t told you Kiro replied, STOP and ask.
+1. Open https://aws.amazon.com/startups/credits  Hand over for AWS Builder ID sign-in and account linking. The AWS account must be on the paid tier with a payment method (UPI AutoPay first, debit card as fallback); if it isn&#x27;t, hand over so I upgrade it myself.
+2. Choose Activate Founders. Fill:
+- Product: AskTheMove, a web chess coach. Stockfish finds the critical moments in a player&#x27;s game and Claude explains them in plain language; the server rejects any explanation that cites a move or number the engine didn&#x27;t produce.
+- Target market: Improving club chess players, starting in India, who review their games but can&#x27;t afford a coach.
+- Traction: Pre-launch. Working web app; waitlist at askthemove.online with {{WAITLIST_N}} sign-ups.
+- Funding stage: Self-funded. No outside funding. Last funding date: none (leave blank or &quot;N/A&quot;).
+- Website: https://askthemove.online | Founded: September 2026 | Country: India | AWS Account ID: {{AWS_ACCOUNT_ID}}
+3. This form can&#x27;t be edited after submit: before submitting, show me a summary of every field and wait for &quot;continue&quot;. Then submit and log it."></div></div>
+</section>
+
+<!-- 1 META -->
+<article class="card" id="meta">
+  <div class="eyebrow">1 · today</div>
+  <h2>Meta Global AI Developer Hackathon</h2>
+  <div class="meta"><span class="tag">$150 Meta API credits each</span><span class="tag">$1M prize pool</span><span class="tag w">applications not open yet</span></div>
+  <p><a href="https://dev.meta.ai/events/global-hackathon">dev.meta.ai/events/global-hackathon</a>. This is only the notify-me form. When applications open, come back here and I'll draft the entry.</p>
+  <div class="f"><div class="q"><b>First name / Last name</b></div><div class="ans ph">[your name]</div></div>
+  <div class="f"><div class="q"><b>Email</b><button class="copy">Copy</button></div><div class="ans">prax@askthemove.online</div></div>
+  <p class="note">The marketing checkbox is optional.</p>
+</article>
+
+<!-- 2 KIRO -->
+<article class="card" id="kiro">
+  <div class="eyebrow">2 · before AWS Activate</div>
+  <h2>Kiro startup credits</h2>
+  <div class="meta"><span class="tag">1 year Kiro Pro+, up to 2 users (~$960)</span><span class="tag">window to 31 Dec 2026</span></div>
+  <div class="you"><b>Only you can do</b><ol>
+    <li>Create an AWS account at aws.amazon.com with <b>prax@askthemove.online</b> as the root email, on the Free plan. Pay with UPI AutoPay (AWS India accepts it at sign-up since Nov 2025); a debit card is the fallback (₹2 refundable check). Set a $1 budget alert.</li>
+    <li>Copy your 12-digit AWS Account ID from the top-right menu.</li>
+    <li>Apply at <a href="https://aws.amazon.com/startups/credits/kiro">aws.amazon.com/startups/credits/kiro</a>, Starter tier.</li>
+  </ol></div>
+  <p class="note">Full steps and sources: your <a href="https://claude.ai/code/artifact/b20957af-3570-45e1-9ec1-50a6e90e19fe">Kiro doc</a>. AWS blocks automated readers, so these answers cover the usual fields.</p>
+  <div class="f"><div class="q"><b>Startup name</b><button class="copy">Copy</button></div><div class="ans">AskTheMove</div></div>
+  <div class="f"><div class="q"><b>Website</b><button class="copy">Copy</button></div><div class="ans">https://askthemove.online</div></div>
+  <div class="f"><div class="q"><b>AWS Account ID</b></div><div class="ans ph">[12 digits]</div></div>
+  <div class="f"><div class="q"><b>Funding stage</b><button class="copy">Copy</button></div><div class="ans">Pre-seed, self-funded, no outside investment</div></div>
+  <div class="f"><div class="q"><b>Legal entity</b><button class="copy">Copy</button></div><div class="ans">Not incorporated yet; sole founder</div></div>
+  <div class="f"><div class="q"><b>What you are building</b><button class="copy">Copy</button></div><div class="ans">AskTheMove is a chess coach for improving players. After a game it finds the moment you went wrong and explains why in plain language. Stockfish produces the facts: legal moves, material and the best lines. Claude turns those facts into a short explanation. The server then withholds any answer that cites a move, number or mate the engine did not produce. The web app works end to end today, with bot games, full-game review and AI explanations; a private beta comes next.</div></div>
+  <div class="f"><div class="q"><b>Traction</b><button class="copy">Copy</button></div><div class="ans">Pre-launch. The waitlist at askthemove.online went live in October 2026 and has [N] sign-ups. We are on X as @AskTheMove.</div></div>
+  <div class="f"><div class="q"><b>How you will use Kiro</b><button class="copy">Copy</button></div><div class="ans">We already build spec-first: each feature starts as a written proposal with numbered requirements and test scenarios, and over 150 automated tests guard the app. Kiro's specs and hooks match that way of working. We would use them for the next pieces: the learning loop (guess the move, see why yours fell short, retry a similar position) and explanations in Hindi. Hooks would run the test suite on every change.</div></div>
+</article>
+
+<!-- 3 CLAUDE -->
+<article class="card" id="claude">
+  <div class="eyebrow">3 · rolling</div>
+  <h2>Claude for Startups</h2>
+  <div class="meta"><span class="tag w">$1K credits + Team: over capacity</span><span class="tag">Startup Stack perks up to $45K</span></div>
+  <div class="you"><b>Only you can do</b><ol>
+    <li>Sign in to the Claude Console (your Max-linked org is fine).</li>
+    <li>Open <a href="https://platform.claude.com/offers/startups-application">platform.claude.com/offers/startups-application</a> and fill it in.</li>
+  </ol></div>
+  <p class="note">The form is behind the login, so field names may differ. A secondary source reports: company email, website, how you use Claude, partner VC (optional).</p>
+  <div class="f"><div class="q"><b>Company name / website / email</b><button class="copy">Copy</button></div><div class="ans">AskTheMove · https://askthemove.online · prax@askthemove.online</div></div>
+  <div class="f"><div class="q"><b>Stage</b><button class="copy">Copy</button></div><div class="ans">Bootstrapped, pre-launch. Founded September 2026, not yet incorporated.</div></div>
+  <div class="f"><div class="q"><b>How do you use Claude?</b><button class="copy">Copy</button></div><div class="ans">Claude writes AskTheMove's chess explanations. For each critical moment in a player's game, our server sends Claude the Stockfish evaluation, the best line and what changed in material. Claude explains the mistake in a few plain sentences pitched at the player's level. The server then rejects any answer that cites a move, number or mate the engine did not produce, so every explanation is checked before the player sees it. Usage is capped per user per hour and per day. Credits would let us run a private beta without charging testers.</div></div>
+  <div class="f"><div class="q"><b>Partner VC</b><button class="copy">Copy</button></div><div class="ans">None</div></div>
+</article>
+
+<!-- 4 ZF -->
+<article class="card" id="zf">
+  <div class="eyebrow">4 · rolling</div>
+  <h2>Z Fellows</h2>
+  <div class="meta"><span class="tag">$10K, equity optional</span><span class="tag">1 week</span><span class="tag">no account</span></div>
+  <div class="you"><b>Only you can do</b><ol>
+    <li>Open the form from <a href="https://zfellows.com/">zfellows.com</a>.</li>
+    <li>Fill contact details, birthday, phone, location, school/work, links, achievements, co-founder names, and the personal questions (nerdiest thing, what drives you, growing up, a risk you took). Those are about you, so I've left them blank.</li>
+    <li>Optional: a 1-minute YouTube video of yourself.</li>
+  </ol></div>
+  <div class="f"><div class="q"><b>Project name</b><button class="copy">Copy</button></div><div class="ans">AskTheMove</div></div>
+  <div class="f"><div class="q"><b>Are you technical?</b></div><div class="ans">Yes</div></div>
+  <div class="f"><div class="q"><b>What's your project and why? <span>(500)</span></b><button class="copy">Copy</button></div><div class="ans">AskTheMove (askthemove.online) is a chess coach that explains your mistakes in plain words. Stockfish finds where the game turned and the better line, Claude explains it, and the server blocks any sentence citing a move or number the engine didn't produce. I'm building it because engines tell you what was best but never why, and most improving players can't afford a human coach.</div></div>
+  <div class="f"><div class="q"><b>What problem are you solving? <span>(500)</span></b><button class="copy">Copy</button></div><div class="ans">Players review games with an engine and learn little: they see "Nf5 was best, +2.3" and no reason. Human coaching is expensive and scarce. Chatbot coaches explain fluently but invent moves that aren't on the board. The missing piece is an explanation that is both readable and provably correct for that exact position.</div></div>
+  <div class="f"><div class="q"><b>Your expertise <span>(500)</span></b><button class="copy">Copy</button></div><div class="ans">[One or two lines on your engineering background.] I built AskTheMove alone: bot play, full-game review, lessons, a Claude explanation layer with server-side fact checking, and over 150 automated tests.</div></div>
+  <div class="f"><div class="q"><b>Competitors and your insight <span>(500)</span></b><button class="copy">Copy</button></div><div class="ans">Chess.com, Duolingo Chess and Take Take Take all add AI narration to game review. My insight: narration isn't teaching, and unchecked narration is wrong often enough to lose trust. AskTheMove checks every claim against the engine first, then teaches in a loop: guess the move, see why yours fell short, retry a similar position.</div></div>
+  <div class="f"><div class="q"><b>Past work <span>(500)</span></b></div><div class="ans ph">[What you've built or shipped before, with links.]</div></div>
+  <div class="f"><div class="q"><b>One thing you need help with <span>(500, optional)</span></b><button class="copy">Copy</button></div><div class="ans">Getting the first 100 real players. The product works; I need to learn distribution as a solo founder, starting with chess communities and coaches in India.</div></div>
+</article>
+
+<!-- 5 AIRWALLEX -->
+<article class="card" id="airwallex">
+  <div class="eyebrow">5 · closes 23 Oct</div>
+  <h2>Airwallex Agentic Banking Hackathon</h2>
+  <div class="meta"><span class="tag">$150K+ prizes and credits</span><span class="tag">$10K Claude, $50K AWS credits</span><span class="tag w">3-week build</span></div>
+  <p>Only worth it if you'll spend Oct 25 to Nov 13 building a banking agent instead of AskTheMove. Oct 5–23 is the idea phase; accepted teams hear on Oct 25. Final submission is a working demo, a video under 5 minutes and a repo.</p>
+  <div class="you"><b>Only you can do</b><ol>
+    <li>Sign up on HackerEarth and register: <a href="https://www.hackerearth.com/community/challenges/hackathon/agentic-banking-hackathon/?register=true">hackerearth.com/…/agentic-banking-hackathon</a>.</li>
+    <li>Create a sandbox account at sandbox.airwallex.com with prax@askthemove.online.</li>
+    <li>Pick the <b>Dispute Response Agent</b> track; it is the one that needs no extra access approval. Other tracks need an email to devhelp@airwallex.com and a wait.</li>
+  </ol></div>
+  <p class="note">I couldn't see the idea-submission fields. This idea text fits a typical "describe your project" box; read the track brief first and adjust.</p>
+  <div class="f"><div class="q"><b>Project idea</b><button class="copy">Copy</button></div><div class="ans">Dispute Response Agent. When a customer opens a card dispute, the agent pulls the transaction, order and delivery records through Airwallex APIs, matches them to the dispute's reason code, and drafts the evidence response. It lists any evidence that's missing, links every statement in the draft to the record it came from, and waits for a human to approve before anything is submitted. The same rule I use in my chess coach applies here: the agent may only say what a source record proves.</div></div>
+</article>
+
+<!-- YC -->
+<article class="card" id="yc">
+  <div class="eyebrow">6 · on-time deadline 2 Nov, 8pm PT (3 Nov 09:30 IST)</div>
+  <h2>Y Combinator W27</h2>
+  <div class="meta"><span class="tag">$500K standard deal</span><span class="tag w">equity</span><span class="tag">solo, no company OK</span></div>
+  <p>Needs a YC account and a 1-minute founder video, which only you can record. Form: <a href="https://www.ycombinator.com/apply">ycombinator.com/apply</a>.</p>
+  <div class="f"><div class="q"><b>Describe what your company does in 50 characters or less.</b><button class="copy">Copy</button></div><div class="ans">Chess coach that explains your mistakes</div></div>
+  <div class="f"><div class="q"><b>What is your company going to make?</b><button class="copy">Copy</button></div><div class="ans">AskTheMove is a chess coach that explains your mistakes in plain words. Stockfish finds the critical moments in a game, Claude explains them, and the server rejects any explanation that cites a move or number the engine didn't produce.</div></div>
+  <div class="f"><div class="q"><b>Why did you pick this idea? What do you understand that others don't?</b><button class="copy">Copy</button></div><div class="ans">Players review games with an engine but can't read its numbers, and coaches are expensive. Language models alone invent moves; pairing them with an engine and checking every claim is what makes the explanation trustworthy.</div></div>
+  <div class="f"><div class="q"><b>How far along are you?</b><button class="copy">Copy</button></div><div class="ans">Working web app (bot games, full-game review, verified AI explanations); waitlist live at askthemove.online with [N] sign-ups. Private beta next.</div></div>
+  <div class="f"><div class="q"><b>Competitors</b><button class="copy">Copy</button></div><div class="ans">Chess.com's coach and Game Review, Duolingo Chess, Take Take Take. We focus on verified, plain-language explanations for improving club players in India.</div></div>
+  <div class="f"><div class="q"><b>Founder background and the video</b></div><div class="ans ph">[Your background.] Record the 1-minute video yourself.</div></div>
+</article>
+
+<!-- EF -->
+<article class="card" id="ef">
+  <div class="eyebrow">7 · round 2 closes 2 Nov</div>
+  <h2>Entrepreneur First, Bangalore</h2>
+  <div class="meta"><span class="tag">stipend, then investment</span><span class="tag w">equity, in person in Bangalore</span></div>
+  <p>EF backs individuals before they have a co-founder or company. Form: <a href="https://apply.joinef.com/">apply.joinef.com</a>. Most questions are about you, so they are yours to write; the product line below is reusable.</p>
+  <div class="f"><div class="q"><b>What are you working on?</b><button class="copy">Copy</button></div><div class="ans">AskTheMove is a chess coach that explains your mistakes in plain words. Stockfish finds the critical moments in a game, Claude explains them, and the server rejects any explanation that cites a move or number the engine didn't produce.</div></div>
+  <div class="f"><div class="q"><b>Your edge / most impressive thing you've built</b></div><div class="ans ph">[Your background and past work.]</div></div>
+</article>
+
+<!-- PayPal -->
+<article class="card" id="paypal">
+  <div class="eyebrow">8 · deadline 12 Nov</div>
+  <h2>PayPal AI Hackathon</h2>
+  <div class="meta"><span class="tag">cash prizes</span><span class="tag">best hackathon fit</span><span class="tag w">check India eligibility</span></div>
+  <p>Devpost hackathon; rules don't name India as excluded or allowed, so read the eligibility section first. Needs a Devpost account and a demo video.</p>
+  <div class="f"><div class="q"><b>Project description</b><button class="copy">Copy</button></div><div class="ans">AskTheMove is a chess coach that explains your mistakes in plain words. Stockfish finds the critical moments in a game, Claude explains them, and the server rejects any explanation that cites a move or number the engine didn't produce. For the hackathon we'd add a PayPal checkout for the coach's paid tier.</div></div>
+</article>
+
+<!-- 6 SPEEDRUN -->
+<article class="card" id="speedrun">
+  <div class="eyebrow">9 · priority window Oct 12 – Nov 1</div>
+  <h2>a16z speedrun SR008</h2>
+  <div class="meta"><span class="tag">up to $1M ($500K for 10% + $500K next round)</span><span class="tag w">12 weeks in person, San Francisco</span></div>
+  <p>Founders from anywhere, solo allowed, no company needed, visa help offered. Acceptance is under 0.4%. Apply only if you would move to SF for the program and give up 10%. Form: <a href="https://speedrun.a16z.com/apply">speedrun.a16z.com/apply</a> (email first, then questions). The five questions below are as reported by secondary sources.</p>
+  <div class="f"><div class="q"><b>What are you building?</b><button class="copy">Copy</button></div><div class="ans">AskTheMove: a chess coach that explains your mistakes in plain words. A chess engine supplies the facts, Claude explains them, and every claim is checked against the engine before the player sees it.</div></div>
+  <div class="f"><div class="q"><b>Who is it for?</b><button class="copy">Copy</button></div><div class="ans">Improving club players who review their games but can't afford a coach, starting in India.</div></div>
+  <div class="f"><div class="q"><b>Why now?</b><button class="copy">Copy</button></div><div class="ans">Language models can finally explain a chess position in plain words, but on their own they invent moves. Pairing them with an engine and verifying every claim makes the explanations trustworthy, at a cost of cents per game.</div></div>
+  <div class="f"><div class="q"><b>Why you?</b></div><div class="ans ph">[Your background.] Built the whole product solo, with 150+ automated tests.</div></div>
+  <div class="f"><div class="q"><b>What is working?</b><button class="copy">Copy</button></div><div class="ans">A working web app with bot games, full-game review and verified AI explanations, and a live waitlist at askthemove.online with [N] sign-ups. No public users yet; a private beta is next.</div></div>
+</article>
+
+<!-- 7 AWS -->
+<article class="card" id="aws">
+  <div class="eyebrow">10 · after Kiro replies</div>
+  <h2>AWS Activate Founders</h2>
+  <div class="meta"><span class="tag">$1,000, up to $5,000 for some</span><span class="tag">covers Claude on Bedrock</span><span class="tag w">no edits after submit</span></div>
+  <div class="you"><b>Only you can do</b><ol>
+    <li>Wait until Kiro approves or declines. Activate members can't get Kiro.</li>
+    <li>Use the same AWS account, upgraded to the paid tier (UPI AutoPay, or a debit card as fallback), and an AWS Builder ID on prax@askthemove.online.</li>
+    <li>Apply at <a href="https://aws.amazon.com/startups/credits">aws.amazon.com/startups/credits</a>. It asks for a working website; the app being live helps.</li>
+  </ol></div>
+  <div class="f"><div class="q"><b>Product</b><button class="copy">Copy</button></div><div class="ans">AskTheMove, a web chess coach. Stockfish finds the critical moments in a player's game and Claude explains them in plain language; the server rejects any explanation that cites a move or number the engine didn't produce.</div></div>
+  <div class="f"><div class="q"><b>Target market</b><button class="copy">Copy</button></div><div class="ans">Improving club chess players, starting in India, who review their games but can't afford a coach.</div></div>
+  <div class="f"><div class="q"><b>Traction</b><button class="copy">Copy</button></div><div class="ans">Pre-launch. Working web app; waitlist at askthemove.online with [N] sign-ups.</div></div>
+  <div class="f"><div class="q"><b>Funding stage / last funding date</b><button class="copy">Copy</button></div><div class="ans">Self-funded. No outside funding.</div></div>
+</article>
+
+<!-- 8 EV -->
+<article class="card" id="ev">
+  <div class="eyebrow">11 · rolling</div>
+  <h2>Emergent Ventures (India)</h2>
+  <div class="meta"><span class="tag">grant, size varies</span><span class="tag w">no AI-written text</span></div>
+  <p>Their rule, verbatim: "We will test all submissions and reject those using AI for anything other than proofreading." So I've written no answers here. Write it yourself; I can proofread when you're done. Form: <a href="https://mercatus.tfaforms.net/5099527">mercatus.tfaforms.net/5099527</a>, India tranche.</p>
+  <div class="you"><b>What the form asks</b><ol>
+    <li>Your idea in a tweet.</li>
+    <li>A proposal of up to 1,500 words: your background, one consensus view you agree with, why this is worth funding, team.</li>
+    <li>Estimated budget and a breakdown (API costs, hosting, your time).</li>
+    <li>Up to 4 attachments (no PDFs) and an optional media link.</li>
+  </ol></div>
+</article>
+
+<section style="display:grid;gap:12px">
+  <div class="eyebrow">Not yet, and why</div>
+  <h2>Hold these</h2>
+  <div class="later">
+    <div><b>Google Cloud Start ($2K):</b> needs a working MVP and a Cloud Billing account that's 48 hours old. Pays for Gemini, not Claude. Apply once the app is hosted.</div>
+    <div><b>PostHog ($50K):</b> needs their paid plan with a card on file. Apply at launch, when you'd actually use analytics.</div>
+    <div><b>Papermark deck competition (€10K):</b> needs a pitch deck and scores traction. Closes 19 Nov; enter after the beta.</div>
+    <div><b>Microsoft for Startups:</b> the official page now says only "up to $150K"; the $1K/$4K split is unverified. Apply when you register the company.</div>
+    <div><b>Sarvam:</b> easy form, but you must show "Powered by Sarvam". Only if you add Hindi using their API.</div>
+    <div><b>Devin:</b> needs their paid Team plan first and is reportedly for VC-backed startups. Skip.</div>
+  </div>
+</section>
+
+<footer>Field lists: Z Fellows, Meta, Emergent Ventures and Sarvam were read from the live forms. Kiro, Claude, AWS, speedrun and Airwallex forms sit behind logins, so their fields come from official FAQs or secondary sources. Full map of ~110 programs: <a href="https://claude.ai/artifact/WKe3b7As2Z4jrnMG9qkjhX">AskTheMove Credits Map</a>.</footer>
+</div>
+
+<script>
+document.querySelectorAll('button.copy').forEach(b=>b.addEventListener('click',()=>{
+  const t=b.closest('.f').querySelector('.ans').innerText;
+  const done=()=>{const o=b.textContent;b.textContent='Copied';setTimeout(()=>b.textContent=o,1400)};
+  try{navigator.clipboard.writeText(t).then(done,()=>sel(b))}catch(e){sel(b)}
+}));
+function sel(b){const el=b.closest('.f').querySelector('.ans');const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected';}
+</script>
+<script>
+(function(){
+const KEY='atm-chrome-profile';let vals={};
+try{vals=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+const tas=[...document.querySelectorAll('.pf textarea')];
+const tpls=[...document.querySelectorAll('.ans.tpl')];
+function render(){
+  tas.forEach(t=>vals[t.dataset.k]=t.value.trim());
+  try{localStorage.setItem(KEY,JSON.stringify(vals))}catch(e){}
+  tpls.forEach(el=>{el.textContent=el.dataset.t.replace(/\{\{(\w+)\}\}/g,(m,k)=>vals[k]?vals[k]:m)});
+  const miss=tas.filter(t=>!t.value.trim()).length;
+  document.querySelector('#chrome .missing').textContent=miss?miss+' values still empty. They stay as {{PLACEHOLDERS}}, and the extension will stop and ask for them.':'All values filled.';
+}
+tas.forEach(t=>{t.value=vals[t.dataset.k]||'';t.addEventListener('input',render)});
+render();
+})();
+</script>

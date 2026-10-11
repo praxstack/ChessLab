@@ -1,0 +1,42 @@
+/* brand.css: AskTheMove's notebook on top of the template look (loaded after styles.css). */
+@font-face { font-family: 'Vollkorn'; src: url('vendor/brand/vollkorn-var.woff2') format('woff2'); font-weight: 400 900; font-display: block; }
+@font-face { font-family: 'Kalam'; src: url('vendor/brand/kalam-400.woff2') format('woff2'); font-weight: 400; font-display: block; }
+@font-face { font-family: 'Kalam'; src: url('vendor/brand/kalam-700.woff2') format('woff2'); font-weight: 700; font-display: block; }
+@font-face { font-family: 'Courier Prime'; src: url('vendor/brand/courier-prime-400.woff2') format('woff2'); font-weight: 400; font-display: block; }
+
+/* the page is a sheet of quad-ruled paper with a red double margin rule, like an exercise book */
+#stage .world::before { content: ''; position: absolute; inset: calc(-40px * var(--u)); pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(118, 152, 196, 0.16) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(118, 152, 196, 0.16) 1px, transparent 1px);
+  background-size: calc(36px * var(--u)) calc(36px * var(--u)); }
+#stage .world::after { content: ''; position: absolute; top: calc(-40px * var(--u)); bottom: calc(-40px * var(--u)); left: calc(52px * var(--u));
+  width: calc(7px * var(--u)); border-left: calc(2px * var(--u)) solid rgba(214, 96, 104, 0.55); border-right: calc(2px * var(--u)) solid rgba(214, 96, 104, 0.55); pointer-events: none; }
+
+/* the book's voice: Vollkorn, upright, heavy headings */
+.serif { font-variation-settings: normal; }
+.blk-title .t { font-weight: 800; letter-spacing: -0.015em; font-variation-settings: normal; line-height: 0.98; }
+.blk-text .t.serif { font-weight: 650; letter-spacing: -0.01em; line-height: 1.08; }
+.blk-end .t, .blk-end .title { font-weight: 800; font-variation-settings: normal; }
+/* the highlighter is yellow, as on the site (ink on it 12.8:1) */
+#stage .w.mk { background-image: linear-gradient(#EFE36B, #EFE36B); }
+/* engine facts read as a printout */
+.blk-text .chip { font-family: var(--mono); font-weight: 400; background: var(--bg2); border-style: dashed; }
+
+/* screen: the app's recorded footage in a plain rounded screen (no title bar: DESIGN.md lists mock UI cards with
+   title bars as an anti-pattern), the coach's pen marks on it and handwritten notes on paper slips */
+.blk-screen .vp { position: absolute; overflow: hidden; border-radius: calc(16px * var(--u)); background: #1E2530;
+  box-shadow: 0 0 0 calc(2px * var(--u)) var(--text), 0 calc(26px * var(--u)) calc(60px * var(--u)) calc(-22px * var(--u)) rgba(23, 29, 41, 0.55); }
+.blk-screen .cam { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.blk-screen .fr { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; }
+.blk-screen svg.pen { position: absolute; left: 0; top: 0; overflow: visible; }
+.blk-screen .pen path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.blk-screen .pen path.halo { stroke: rgba(12, 16, 24, 0.5); }
+.blk-screen .notes { position: absolute; inset: 0; pointer-events: none; }
+.blk-screen .note { position: absolute; left: 0; top: 0; font-family: 'Kalam', cursive; font-weight: 700; line-height: 1.12; white-space: nowrap;
+  padding: 0.2em 0.55em 0.12em; background: var(--panel); border-radius: calc(10px * var(--u)); rotate: var(--tilt, -2deg);
+  box-shadow: 0 0 0 calc(2px * var(--u)) currentColor, 0 calc(14px * var(--u)) calc(30px * var(--u)) calc(-10px * var(--u)) rgba(0, 0, 0, 0.6); }
+.blk-screen .note .tx { display: inline-block; }
+
+/* chess notation and ratings read in lining figures: Vollkorn's old-style 1 looks like an I ("Bxd1", "1050") */
+#stage { font-variant-numeric: lining-nums; }

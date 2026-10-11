@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>09 End card</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #root {
+          position: absolute;
+          inset: 0;
+        }
+        #f09-mast {
+          position: absolute;
+          left: 132px;
+          top: 56px;
+          width: 1732px;
+          display: flex;
+          align-items: center;
+          gap: 22px;
+          padding-bottom: 22px;
+          border-bottom: 3px solid var(--ink);
+          box-shadow: 0 6px 0 -4px var(--ink);
+        }
+        #f09-mark {
+          display: block;
+          width: 72px;
+          height: 72px;
+        }
+        #f09-word {
+          font-size: 54px;
+          font-weight: 800;
+          letter-spacing: -0.01em;
+          line-height: 1;
+          color: var(--ink);
+        }
+        #f09-h1 {
+          position: absolute;
+          left: 126px;
+          top: 290px;
+          width: 1300px;
+          font-size: 184px;
+          font-weight: 800;
+          line-height: 0.95;
+          letter-spacing: -0.03em;
+          color: var(--ink);
+        }
+        #f09-cta {
+          position: absolute;
+          left: 130px;
+          top: 532px;
+          width: 1000px;
+          font-size: 118px;
+          font-weight: 750;
+          line-height: 1;
+          letter-spacing: -0.02em;
+          color: var(--ink);
+        }
+        #f09-beta {
+          position: relative;
+          display: inline-block;
+        }
+        /* The word sits after the highlighter in the DOM and is positioned, so it paints
+           on top of the stroke without a negative z-index. */
+        #f09-beta-text {
+          position: relative;
+        }
+        #f09-swipe {
+          position: absolute;
+          left: -0.1em;
+          top: 0.02em;
+          width: calc(100% + 0.2em);
+          height: 0.95em;
+          overflow: visible;
+          mix-blend-mode: multiply;
+        }
+        #f09-url {
+          position: absolute;
+          left: 132px;
+          top: 722px;
+          font-size: 80px;
+          font-weight: 700;
+          line-height: 1.1;
+          letter-spacing: -0.01em;
+          color: var(--blue-deep);
+          font-variant-numeric: lining-nums;
+        }
+        #f09-url-text {
+          position: relative;
+          display: inline-block;
+        }
+        #f09-under {
+          position: absolute;
+          left: -0.04em;
+          top: 1.02em;
+          width: calc(100% + 0.08em);
+          height: 0.3em;
+          overflow: visible;
+        }
+        #f09-note {
+          position: absolute;
+          left: 1190px;
+          top: 560px;
+          width: 660px;
+          font-size: 54px;
+          font-weight: 700;
+          line-height: 1.14;
+          color: var(--blue);
+        }
+        #f09-arrow {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 1920px;
+          height: 1080px;
+          overflow: visible;
+        }
+      </style>
+      <div
+        id="root"
+        data-composition-id="f09-end-card"
+        data-width="1920"
+        data-height="1080"
+        data-duration="6"
+      >
+        <div id="f09-page" class="nb-page">
+          <div class="nb-paper"></div>
+          <div id="f09-mast">
+            <img id="f09-mark" src="assets/brand/askthemove-mark.svg" alt="" />
+            <span id="f09-word" class="f-book">AskTheMove</span>
+          </div>
+
+          <!-- ================= END_CARD: edit the end-card text here =================
+               Headline, call to action, URL and the coach's note, in that order.
+               Keep <span id="f09-beta-text"> around the word that gets the highlighter, and
+               <span id="f09-url-text"> around the URL (it carries the underline).
+               The domain is askthemove.online (registered on Cloudflare, 8 October 2026).
+               The note may only promise what the beta does: keep "in the beta". -->
+          <h1 id="f09-h1" class="f-book">Ask the move.</h1>
+          <p id="f09-cta" class="f-book">Join the <span id="f09-beta"><svg id="f09-swipe" viewBox="0 0 300 100" preserveAspectRatio="none" aria-hidden="true"></svg><span id="f09-beta-text">beta</span></span>.</p>
+          <p id="f09-url" class="f-book"><span id="f09-url-text">askthemove.online<svg id="f09-under" viewBox="0 0 600 30" preserveAspectRatio="none" aria-hidden="true"></svg></span></p>
+          <p id="f09-note" class="f-hand">In the beta, a coach explains each move in plain words, grounded in this evidence.</p>
+          <!-- ================= /END_CARD ================= -->
+
+          <svg id="f09-arrow" viewBox="0 0 1920 1080" aria-hidden="true"></svg>
+        </div>
+      </div>
+      <script>
+        (function () {
+          var NB = window.NB;
+          var tl = gsap.timeline({ paused: true });
+
+          NB.enter(tl, '#f09-page');
+          tl.fromTo('#f09-mast', { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'power1.out' }, 0.1);
+          tl.fromTo('#f09-h1', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 0.2);
+          tl.fromTo('#f09-cta', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out' }, 0.5);
+
+          // The highlighter goes over "beta".
+          var swipe = NB.mark(
+            document.getElementById('f09-swipe'),
+            'swipe',
+            { x0: 4, x1: 296, y: 60 },
+            { seed: 'beta', px: 62, color: 'var(--highlight)' }
+          );
+          swipe.strokes.forEach(function (s) {
+            s.el.style.strokeLinecap = 'butt';
+          });
+          NB.draw(tl, swipe, 1.1, { max: 0.4 });
+
+          // The address, underlined in blue ink.
+          tl.fromTo('#f09-url', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 1.3);
+          var under = NB.mark(
+            document.getElementById('f09-under'),
+            'underline',
+            { x0: 6, x1: 594, y: 17, dy: -3 },
+            { seed: 'url', px: 9, color: 'var(--blue)' }
+          );
+          NB.draw(tl, under, 1.8, { max: 0.5 });
+
+          // The coach's note, then an arrow from it to the call to action.
+          var t = NB.write(tl, document.getElementById('f09-note'), 2.0, { ms: 18 });
+          var arrow = NB.mark(
+            document.getElementById('f09-arrow'),
+            'curvedArrow',
+            { from: [1170, 650], via: [1080, 690], to: [960, 618], head: 26 },
+            { seed: 'to-cta', px: 6, color: 'var(--blue)' }
+          );
+          NB.draw(tl, arrow, t + 0.1, { max: 0.45 });
+
+          window.__timelines['f09-end-card'] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

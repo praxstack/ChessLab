@@ -1,0 +1,81 @@
+[
+  {
+    "name": "04-practice",
+    "frames": 285,
+    "seconds": 126.77,
+    "marks": [
+      {
+        "what": "practice key moves",
+        "t": 0.7
+      },
+      {
+        "what": "start",
+        "t": 3.35
+      },
+      {
+        "what": "position 1: 3… Bg4",
+        "t": 4.66
+      },
+      {
+        "what": "play g8f6",
+        "t": 6.16
+      },
+      {
+        "what": "found",
+        "t": 8.9
+      },
+      {
+        "what": "next",
+        "t": 12.29
+      },
+      {
+        "what": "position 2: 4… g6",
+        "t": 13.46
+      },
+      {
+        "what": "play b8c6",
+        "t": 15
+      },
+      {
+        "what": "found",
+        "t": 17.81
+      },
+      {
+        "what": "next",
+        "t": 21.25
+      },
+      {
+        "what": "position 3: 5… Bxd1",
+        "t": 22.29
+      },
+      {
+        "what": "retry the capture",
+        "t": 23.79
+      },
+      {
+        "what": "feedback",
+        "t": 31.78
+      },
+      {
+        "what": "hint",
+        "t": 38.66
+      },
+      {
+        "what": "hinted",
+        "t": 39.68
+      },
+      {
+        "what": "play d6e5",
+        "t": 42.28
+      },
+      {
+        "what": "found",
+        "t": 45.13
+      },
+      {
+        "what": "results",
+        "t": 48.54
+      }
+    ]
+  }
+]

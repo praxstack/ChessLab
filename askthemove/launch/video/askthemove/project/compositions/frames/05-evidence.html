@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>05 Evidence</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #root {
+          position: absolute;
+          inset: 0;
+        }
+      </style>
+      <div
+        id="root"
+        data-composition-id="f05-evidence"
+        data-width="1920"
+        data-height="1080"
+        data-duration="6.6"
+      >
+        <div id="f05-page" class="nb-page">
+          <div class="nb-paper"></div>
+          <div class="nb-fig">
+            <div id="f05-stage" class="nb-stage">
+              <!-- A: the evidence card for 5...Bxd1 (source 59.4 to 63.0 s). -->
+              <video
+                id="f05-a"
+                class="nb-vid"
+                src="assets/footage/03-game-review.mp4"
+                muted
+                playsinline
+                data-start="0"
+                data-duration="3.6"
+                data-media-start="59.4"
+                data-track-index="0"
+              ></video>
+              <!-- B: the board after 5...Bxd1, end of clip 03 (63.0 to 64.75 s) and the
+                   identical opening of clip 04 (0 to 1.25 s). -->
+              <video
+                id="f05-b"
+                class="nb-vid"
+                src="assets/footage/03-game-review.mp4"
+                muted
+                playsinline
+                data-start="3.6"
+                data-duration="1.75"
+                data-media-start="63"
+                data-track-index="0"
+                data-hf-media-start-basis="local"
+              ></video>
+              <video
+                id="f05-c"
+                class="nb-vid"
+                src="assets/footage/04-variation-note.mp4"
+                muted
+                playsinline
+                data-start="5.35"
+                data-duration="1.25"
+                data-media-start="0"
+                data-track-index="0"
+                data-hf-media-start-basis="local"
+              ></video>
+              <div class="nb-mask nb-mask--side"></div>
+              <!-- The app's "!" badge on 5...Bxd1 (a known quirk), covered by a clone
+                   patch (see index.html). The board is static here, so the patch takes
+                   its pixels from the identical still opening of clip 04, slowed down. -->
+              <div class="nb-patch" aria-hidden="true">
+                <div class="nb-patch__a">
+                  <video
+                    id="f05-patch-a"
+                    class="nb-vid"
+                    src="assets/footage/04-variation-note.mp4"
+                    muted
+                    playsinline
+                    data-start="3.6"
+                    data-duration="3"
+                    data-media-start="0"
+                    data-playback-rate="0.45"
+                    data-track-index="1"
+                    data-hf-media-start-basis="local"
+                  ></video>
+                </div>
+                <div class="nb-patch__b">
+                  <video
+                    id="f05-patch-b"
+                    class="nb-vid"
+                    src="assets/footage/04-variation-note.mp4"
+                    muted
+                    playsinline
+                    data-start="3.6333"
+                    data-duration="2.9667"
+                    data-media-start="0.015"
+                    data-playback-rate="0.45"
+                    data-track-index="1"
+                    data-hf-media-start-basis="local"
+                  ></video>
+                </div>
+                <div class="nb-patch__c">
+                  <video
+                    id="f05-patch-c"
+                    class="nb-vid"
+                    src="assets/footage/04-variation-note.mp4"
+                    muted
+                    playsinline
+                    data-start="3.6"
+                    data-duration="2.9667"
+                    data-media-start="0"
+                    data-playback-rate="0.45"
+                    data-track-index="1"
+                    data-hf-media-start-basis="local"
+                  ></video>
+                </div>
+              </div>
+              <svg id="f05-ink" class="nb-ink" viewBox="0 0 1920 1080" aria-hidden="true"></svg>
+            </div>
+          </div>
+          <div id="f05-col" class="nb-col">
+            <p class="nb-label"><span class="nb-count">4 / 7</span><span>Evidence</span></p>
+            <p id="f05-n1" class="nb-note">But Stockfish sees mate in 2 for White.</p>
+            <p id="f05-n2" class="nb-note">Engine, time and depth are on the card.</p>
+            <p id="f05-n3" class="nb-note">The line: 6.Bxf7+ Ke7 7.Nd5#</p>
+          </div>
+        </div>
+      </div>
+      <script>
+        (function () {
+          var NB = window.NB;
+          var tl = gsap.timeline({ paused: true });
+          var stage = document.getElementById('f05-stage');
+          var ink = document.getElementById('f05-ink');
+
+          var card = NB.fit([1350, 130, 1870, 570]);
+          var board = NB.fit([455, 88, 1196, 800]);
+
+          NB.enter(tl, '#f05-page');
+          NB.pose(tl, stage, card);
+          tl.fromTo('#f05-col .nb-label', { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'none' }, 0.1);
+
+          // White's score: M2.
+          var m2 = NB.mark(ink, 'ring', { cx: 1414, cy: 434, rx: 33, ry: 20 }, { seed: 'm2', px: 7, scale: card.scale });
+          NB.draw(tl, m2, 0.35, { max: 0.5 });
+          NB.write(tl, document.getElementById('f05-n1'), 0.5);
+
+          // The receipt: engine, time per position, depth.
+          var receipt = NB.mark(ink, 'underline', { x0: 1398, x1: 1614, y: 509, dy: -1 }, { seed: 'receipt', px: 6, scale: card.scale, color: 'var(--blue)' });
+          NB.draw(tl, receipt, 2.0, { max: 0.5 });
+          NB.write(tl, document.getElementById('f05-n2'), 2.3);
+
+          // The mate on the board: Bxf7+ then Nd5#.
+          NB.move(tl, stage, board, 3.6, 0.55);
+          var bf7 = NB.mark(ink, 'arrow', { from: [962, 393], to: [722, 643], head: 30, bow: 0.02 }, { seed: 'bxf7', px: 8, scale: board.scale });
+          var nd5 = NB.mark(ink, 'arrow', { from: [962, 324], to: [892, 470], head: 28, bow: 0.04 }, { seed: 'nd5', px: 8, scale: board.scale });
+          var t = NB.draw(tl, bf7, 4.2, { max: 0.5 });
+          NB.draw(tl, nd5, t + 0.15, { max: 0.4 });
+          NB.write(tl, document.getElementById('f05-n3'), 4.35);
+
+          NB.leave(tl, '#f05-col', 6.6);
+          window.__timelines['f05-evidence'] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

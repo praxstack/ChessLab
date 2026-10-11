@@ -1,0 +1,43 @@
+You have live access to X. I need exact, verified information from the X posts below. Open each one yourself. Do not guess or fill gaps from memory. If you cannot open a post, say CANNOT_OPEN for it.
+
+POSTS
+1. https://x.com/TheMaran/status/2108563892574286016
+2. https://x.com/arthurkatcher/status/2108536207680631087
+3. https://x.com/suraj_sharma14/status/2108490153111302508
+4. https://x.com/juampitech/status/2108331805350805820
+5. https://x.com/jasonlk/status/2107946316303392878
+6. https://x.com/AroraBhavyam/status/2108481845419782453
+7. https://x.com/tarasss13/status/2108593698594296137
+8. https://x.com/PriyankaPhatak/status/2108328495151771725
+9. https://x.com/Techstars/status/2108271276003405945
+10. https://x.com/ClaudeDevs/status/2108591328732856655
+11. https://x.com/dankimxyz/status/2108345521480024171
+12. https://x.com/AroraBhavyam/status/2108578482955411720
+13. https://x.com/venture_launch/status/2108590211961954572
+14. https://x.com/christophersaum/status/2108264357662437566
+
+For EACH post, reply with exactly this block (plain text, keep the keys in capitals):
+
+=== POST <number>
+URL:
+AUTHOR: name and @handle
+DATE: date and time with timezone
+FULL_TEXT: the complete post text, word for word, including every line of a thread if the author continued it in replies
+QUOTED_POST: full text and URL of any quoted post, or NONE
+LINKS: every URL in the post, expanded (not t.co), or NONE
+IMAGE_TEXT: any text shown in attached images, or NONE
+PROGRAMS: one line per program named, as: program name | what it gives (amount, credits, investment terms) | eligibility | deadline | application URL
+USEFUL_REPLIES: up to 5 replies that add facts (eligibility, deadlines, "it's closed", "I got accepted", other programs), each with @handle and text, or NONE
+CONFIDENCE: HIGH if you opened the post and read it, LOW if anything above is inferred
+
+After the 14 blocks, search X for posts from the last 14 days that list startup credits, free AI or API credits, cloud credits, or perks for founders. List up to 15 posts that name programs NOT already covered above, in this format:
+
+=== EXTRA <number>
+URL:
+AUTHOR:
+DATE:
+PROGRAMS: program | what it gives | eligibility | deadline | URL
+
+Context for judging eligibility: I am a solo, bootstrapped founder in India with no registered company yet and no investors, building a consumer web app (a chess coach that uses Claude). End each PROGRAMS line with whether such a founder can apply: YES, AFTER_INCORPORATING, NEEDS_INVESTOR, or NO.
+
+Do not summarise or shorten. Accuracy matters more than speed.

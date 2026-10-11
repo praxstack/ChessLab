@@ -1,0 +1,108 @@
+1
+00:00:00,650 --> 00:00:03,156
+You lost a game, and you want to know why.
+
+2
+00:00:03,456 --> 00:00:08,611
+AskTheMove reviews it move by move, with engine evidence you can check.
+
+3
+00:00:09,961 --> 00:00:14,806
+Paste in the game. Here, Maya played Black and was mated in seven moves.
+
+4
+00:00:15,106 --> 00:00:19,940
+One click imports it. Flip the board to your side and play it through to the mate.
+
+5
+00:00:21,290 --> 00:00:25,030
+Then Stockfish 18 reviews every move, for both players.
+
+6
+00:00:25,330 --> 00:00:30,513
+It names the opening, the Philidor Defense, and graphs who was ahead.
+
+7
+00:00:30,813 --> 00:00:34,522
+Every move gets a grade, and the key moves are pulled out for you.
+
+8
+00:00:35,873 --> 00:00:40,824
+On move 5, Maya's bishop took White's queen. AskTheMove marks it a blunder.
+
+9
+00:00:41,124 --> 00:00:45,944
+Why? After that capture, Stockfish finds mate in 2 for White.
+
+10
+00:00:46,244 --> 00:00:49,638
+Bishop takes f7, check. King e7. Knight d5,
+
+11
+00:00:49,638 --> 00:00:53,253
+mate. The line is right there on the card.
+
+12
+00:00:53,553 --> 00:00:58,096
+The engine, the search time and the depth are printed, so you can check it.
+
+13
+00:00:59,446 --> 00:01:05,238
+So what should Maya have played? Compare before the move: Stockfish wanted dxe5.
+
+14
+00:01:05,538 --> 00:01:10,272
+Try that line yourself: 5…dxe5, then 6.Qxg4.
+
+15
+00:01:10,572 --> 00:01:15,826
+Stockfish checks your line too: White is better, +1.89, but there is no mate.
+
+16
+00:01:17,176 --> 00:01:20,990
+Then practice. Your key moves come back as positions to solve,
+
+17
+00:01:20,990 --> 00:01:22,704
+with the answer hidden.
+
+18
+00:01:23,004 --> 00:01:25,694
+Maya finds the engine's move in the first two.
+
+19
+00:01:25,994 --> 00:01:30,600
+In the third, she grabs the queen again, and the review shows her why that fails.
+
+20
+00:01:30,900 --> 00:01:34,836
+One hint later, she plays dxe5. Found it.
+
+21
+00:01:36,186 --> 00:01:41,600
+When you're ready, play a bot. There are 43, each with a rating and a personality.
+
+22
+00:01:41,900 --> 00:01:45,545
+Here it's Barnaby, rated 1050, on a 10-minute clock.
+
+23
+00:01:46,895 --> 00:01:50,882
+There are guided lessons, 3,810 named openings,
+
+24
+00:01:50,882 --> 00:01:55,339
+24 endgame positions and board vision drills too.
+
+25
+00:01:56,689 --> 00:02:01,925
+Invited beta players can also ask an AI coach to explain any move,
+
+26
+00:02:01,925 --> 00:02:04,051
+from the same evidence.
+
+27
+00:02:04,351 --> 00:02:09,698
+AskTheMove. Join the beta at askthemove.online
+

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>04 Key moves</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        #root {
+          position: absolute;
+          inset: 0;
+        }
+      </style>
+      <div
+        id="root"
+        data-composition-id="f04-key-move"
+        data-width="1920"
+        data-height="1080"
+        data-duration="5.6"
+      >
+        <div id="f04-page" class="nb-page">
+          <div class="nb-paper"></div>
+          <div class="nb-fig">
+            <div id="f04-stage" class="nb-stage">
+              <!-- A: the key moves list, settled (source 53.3 to 55.5 s). -->
+              <video
+                id="f04-a"
+                class="nb-vid"
+                src="assets/footage/03-game-review.mp4"
+                muted
+                playsinline
+                data-start="0"
+                data-duration="2.2"
+                data-media-start="53.3"
+                data-track-index="0"
+              ></video>
+              <!-- B: 5...Bxd1 clicked; the board shows the position after it, the evidence
+                   card opens (source 55.5 to 59.41 s at 1.15x). -->
+              <video
+                id="f04-b"
+                class="nb-vid"
+                src="assets/footage/03-game-review.mp4"
+                muted
+                playsinline
+                data-start="2.2"
+                data-duration="3.4"
+                data-media-start="55.5"
+                data-playback-rate="1.15"
+                data-track-index="0"
+                data-hf-media-start-basis="local"
+              ></video>
+              <div class="nb-mask nb-mask--side"></div>
+              <!-- The app's "!" badge on 5...Bxd1 is a known quirk (the move is not
+                   brilliant), so it is covered by a clone patch (see index.html). -->
+              <div class="nb-patch" aria-hidden="true">
+                <div class="nb-patch__a">
+                  <video
+                    id="f04-patch-a"
+                    class="nb-vid"
+                    src="assets/footage/03-game-review.mp4"
+                    muted
+                    playsinline
+                    data-start="2.2333"
+                    data-duration="3.3667"
+                    data-media-start="55.5383"
+                    data-playback-rate="1.15"
+                    data-track-index="1"
+                    data-hf-media-start-basis="local"
+                  ></video>
+                </div>
+                <div class="nb-patch__b">
+                  <video
+                    id="f04-patch-b"
+                    class="nb-vid"
+                    src="assets/footage/03-game-review.mp4"
+                    muted
+                    playsinline
+                    data-start="2.2667"
+                    data-duration="3.3333"
+                    data-media-start="55.5767"
+                    data-playback-rate="1.15"
+                    data-track-index="1"
+                    data-hf-media-start-basis="local"
+                  ></video>
+                </div>
+                <div class="nb-patch__c">
+                  <video
+                    id="f04-patch-c"
+                    class="nb-vid"
+                    src="assets/footage/03-game-review.mp4"
+                    muted
+                    playsinline
+                    data-start="2.2333"
+                    data-duration="3.3333"
+                    data-media-start="55.5383"
+                    data-playback-rate="1.15"
+                    data-track-index="1"
+                    data-hf-media-start-basis="local"
+                  ></video>
+                </div>
+              </div>
+              <svg id="f04-ink" class="nb-ink" viewBox="0 0 1920 1080" aria-hidden="true"></svg>
+            </div>
+          </div>
+          <div id="f04-col" class="nb-col">
+            <p class="nb-label"><span class="nb-count">3 / 7</span><span>Key moves</span></p>
+            <p id="f04-n1" class="nb-note">The key moves are flagged.</p>
+            <p id="f04-n2" class="nb-note">5…Bxd1 grabs White’s queen.</p>
+          </div>
+        </div>
+      </div>
+      <script>
+        (function () {
+          var NB = window.NB;
+          var tl = gsap.timeline({ paused: true });
+          var stage = document.getElementById('f04-stage');
+          var ink = document.getElementById('f04-ink');
+
+          var keys = NB.fit([1316, 322, 1904, 798], { scale: 2 });
+          var board = NB.fit([455, 88, 1196, 800]);
+
+          NB.enter(tl, '#f04-page');
+          NB.pose(tl, stage, keys);
+          tl.fromTo('#f04-col .nb-label', { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'none' }, 0.1);
+
+          NB.write(tl, document.getElementById('f04-n1'), 0.3);
+          var row = NB.mark(ink, 'ring', { cx: 1608, cy: 577, rx: 254, ry: 31, wobble: 0.02, tilt: 0 }, { seed: 'bxd1-row', px: 7, scale: keys.scale });
+          NB.draw(tl, row, 0.95, { max: 0.75 });
+          tl.to(row.strokes.map(function (s) { return s.el; }), { opacity: 0, duration: 0.2, ease: 'none' }, 2.2);
+
+          // Clicked: over to the board, where Black's bishop now stands on d1.
+          NB.move(tl, stage, board, 2.25, 0.55);
+          var bishop = NB.mark(ink, 'ring', { cx: 882, cy: 144, rx: 50, ry: 48 }, { seed: 'bishop-d1', px: 7, scale: board.scale });
+          NB.draw(tl, bishop, 2.9, { max: 0.55 });
+          NB.write(tl, document.getElementById('f04-n2'), 3.05);
+
+          NB.leave(tl, '#f04-col', 5.6);
+          window.__timelines['f04-key-move'] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>
