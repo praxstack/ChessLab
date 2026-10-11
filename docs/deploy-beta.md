@@ -84,10 +84,10 @@ On either platform, confirm the proxy hop count before relying on per-visitor li
 
 Railway builds the `Dockerfile` from GitHub on every push to `main`. Railway stopped accepting `railway.toml` for new services in 2026, so the health check is set in the dashboard. The Hobby plan costs at least $5 a month, which includes $5 of usage; RAM, CPU, disk and traffic beyond that are billed. This app's real usage has not been measured yet, so set a usage limit and check the estimate after the first days. New accounts get a 30-day trial with $5 of credit. The Southeast Asia region (Singapore) is the closest to India.
 
-1. Create a project from the GitHub repository and pick the `main` branch.
+1. Create a project from the GitHub repository, pick the `main` branch, and turn on **Wait for CI** so Railway skips a commit whose `Beta image` check fails.
 2. In the service settings choose the Singapore region, keep one replica, and set the health check path to `/healthz`.
 3. Add a volume mounted at `/data`. Railway mounts it owned by root; the image's entrypoint gives it to the `node` user and starts the server as `node`.
-4. Add the settings from the table above as service variables, plus `PORT=8770`. Set `TRUST_PROXY=1`.
+4. Add the settings from the table above as service variables, plus `PORT=8770`. Set `TRUST_PROXY=1`. With `APP_ORIGIN` set and no `BETA_INVITE_CODES`, the server refuses to start, so the health check fails and Railway keeps the previous release (set `ALLOW_OPEN_REGISTRATION=1` only to open sign-up on purpose). Railway's proxy hop count is not guaranteed to be one, so check `X-Forwarded-For` as described above before relying on per-visitor limits.
 5. Add the custom domain `app.<domain>` and the `CNAME` record Railway shows. On Cloudflare DNS, leave the record unproxied (grey cloud) so Railway's proxy is the only hop.
 6. Set a usage limit in the workspace's billing settings.
 

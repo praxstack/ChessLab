@@ -32,17 +32,23 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       deploy: ${{ steps.check.outputs.deploy }}
+      sha: ${{ steps.check.outputs.sha }}
     steps:
       - id: check
         env:
           GH_TOKEN: ${{ github.token }}
           SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
-          if [ -z "$SHA" ]; then echo deploy=true >> "$GITHUB_OUTPUT"; exit 0; fi
+          if [ -z "$SHA" ]; then { echo deploy=true; echo "sha=$GITHUB_SHA"; } >> "$GITHUB_OUTPUT"; exit 0; fi
           gh api "repos/$GITHUB_REPOSITORY/compare/$SHA...main" > compare.json
           image='^(Dockerfile|docker/|\.dockerignore|vite\.config\.mjs|package(-lock)?\.json|server/|shared/|web/|\.github/workflows/beta-image\.yml)'
           newer=$(jq -r '.files[]?.filename' compare.json | grep -E "$image" || true)
-          if [ "$(jq -r .status compare.json)" != behind ] && [ -z "$newer" ]; then echo deploy=true >> "$GITHUB_OUTPUT"
+          if [ "$(jq -r .status compare.json)" != behind ] && [ -z "$newer" ]; then { echo deploy=true; echo "sha=$SHA"; } >> "$GITHUB_OUTPUT"; exit 0; fi
+          # A newer image change whose own check already passed may have had its deploy run replaced
+          # by this one in the concurrency queue, so deploy it here instead of skipping.
+          main=$(jq -r '.commits[-1].sha // empty' compare.json)
+          passed=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/beta-image.yml/runs?event=push&branch=main&status=success&head_sha=$main" --jq .total_count)
+          if [ -n "$main" ] && [ "$passed" -gt 0 ]; then echo "Deploying $main, the newest checked commit on main."; { echo deploy=true; echo "sha=$main"; } >> "$GITHUB_OUTPUT"
           else echo "Skipping $SHA: main has newer image changes, which deploy after their own check."; echo deploy=false >> "$GITHUB_OUTPUT"; fi
 
   deploy:
@@ -55,7 +61,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ needs.latest.outputs.sha }}
       - name: Build
         run: |
           docker build -t chesslab:deploy .
