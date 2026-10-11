@@ -4,7 +4,7 @@
 
 On 10 October 2026 the founder asked for the app to be hosted as a private beta, with Claude doing every step that does not need the founder's own accounts. The image from `hosted-beta-readiness` had only been run in a sandbox. Hosts such as Railway and Fly.io mount a fresh volume at `/data` owned by root, and the image ran as `node` from the start, so the server could not create its database on those hosts.
 
-Railway's Hobby plan was chosen: $5 a month including $5 of usage, a Singapore region near India, builds from the `Dockerfile` on every push to `main`, and every setup step can be done in its web dashboard. Fly.io costs about the same in Singapore but needs a command-line token for each deploy.
+Railway's Hobby plan was the first choice: $5 a month including $5 of usage, a Singapore region near India, builds from the `Dockerfile` on every push to `main`, and every setup step can be done in its web dashboard. Fly.io costs about the same in Singapore but needs a command-line token for each deploy.
 
 ## What changes
 
@@ -12,6 +12,7 @@ Railway's Hobby plan was chosen: $5 a month including $5 of usage, a Singapore r
 - `railway.toml` sets the Dockerfile build, the `/healthz` health check, a bounded restart policy and the paths that trigger a rebuild.
 - The `Beta image` GitHub workflow builds the image and checks it on a root-owned volume: health, server user, Stockfish, invite gating and an account surviving a restart. Run by hand with a URL, it checks the live beta's health, security headers and status.
 - `docs/deploy-beta.md` gains a Railway section, and its backup commands run as `node`.
+- For a single server instead (AWS free plan in Mumbai or Azure for Students), `deploy/vm/cloud-init.yaml` prepares Ubuntu with Docker, Caddy and swap. The `Deploy to server` workflow builds the image on GitHub and installs it over SSH with settings taken from repository variables and secrets. It does nothing until `VM_HOST` is set.
 
 ## Non-goals
 
@@ -21,3 +22,5 @@ Railway's Hobby plan was chosen: $5 a month including $5 of usage, a Singapore r
 ## Status
 
 Not deployed yet.
+
+On 11 October the founder's Railway trial had expired. A free AWS or Azure server became the alternative, so the change also supports one plain server.
