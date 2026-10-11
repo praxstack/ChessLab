@@ -7,11 +7,13 @@ name: Deploy to server
 #   APP_ORIGIN (https://app.askthemove.online), optional COACH_AI_MAX_PER_DAY.
 # Repository secrets: VM_SSH_KEY (the server's private key), BETA_INVITE_CODES,
 #   optional ANTHROPIC_API_KEY and COACH_AI_INVITE_CODES.
+# A push to main deploys only after the Beta image workflow has passed for that commit.
 on:
   workflow_dispatch:
-  push:
+  workflow_run:
+    workflows: [Beta image]
+    types: [completed]
     branches: [main]
-    paths: [Dockerfile, docker/**, .dockerignore, vite.config.mjs, package.json, package-lock.json, server/**, shared/**, web/**, .github/workflows/deploy-vm.yml]
 
 permissions:
   contents: read
@@ -22,13 +24,17 @@ concurrency:
 
 jobs:
   deploy:
-    if: ${{ vars.VM_HOST != '' }}
+    if: >-
+      vars.VM_HOST != '' && (github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.event == 'push' && github.event.workflow_run.conclusion == 'success'))
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
       VM: ${{ vars.VM_USER }}@${{ vars.VM_HOST }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - name: Build
         run: |
           docker build -t chesslab:deploy .
@@ -87,7 +93,7 @@ jobs:
             if sudo docker run -d --name chesslab --restart unless-stopped --env-file /etc/chesslab.env \
               -p 127.0.0.1:8770:8770 -v chesslab-data:/data chesslab:deploy >/dev/null; then
               for i in $(seq 1 30); do
-                if healthy; then docker rm chesslab-previous >/dev/null 2>&1 || true; exit 0; fi
+                if healthy; then docker rm chesslab-previous >/dev/null 2>&1 || true; docker image prune -f >/dev/null; exit 0; fi
                 sleep 2
               done
               docker logs --tail 50 chesslab
@@ -97,8 +103,8 @@ jobs:
               docker rename chesslab-previous chesslab && docker start chesslab >/dev/null
               echo "The new release did not become healthy; the previous one is running again." >&2
             fi
+            docker image prune -f >/dev/null || true
             exit 1'
-          ssh "$VM" 'docker image prune -f >/dev/null'
       - name: Check through HTTPS
         env:
           APP_ORIGIN: ${{ vars.APP_ORIGIN }}
