@@ -69,8 +69,8 @@ jobs:
       - name: Copy and restart
         run: |
           scp image.tgz chesslab.env "$VM:/tmp/"
-          # The old container is stopped, not removed, until the new one is healthy and invite-gated,
-          # so a bad release rolls back instead of leaving the beta offline.
+          # The old container is stopped, not removed, until the new one runs Stockfish and is
+          # invite-gated, so a bad release rolls back instead of leaving the beta offline.
           ssh "$VM" 'set -eu
             sudo install -m 600 -o root -g root /tmp/chesslab.env /etc/chesslab.env && rm /tmp/chesslab.env
             gunzip -c /tmp/image.tgz | docker load && rm /tmp/image.tgz
@@ -79,15 +79,20 @@ jobs:
               docker rm -f chesslab-previous >/dev/null 2>&1 || true
               docker stop chesslab >/dev/null && docker rename chesslab chesslab-previous
             fi
-            sudo docker run -d --name chesslab --restart unless-stopped --env-file /etc/chesslab.env \
-              -p 127.0.0.1:8770:8770 -v chesslab-data:/data chesslab:deploy >/dev/null
-            for i in $(seq 1 30); do
-              if curl -fsS http://127.0.0.1:8770/api/status | grep -q "\"inviteRequired\":true"; then
-                docker rm chesslab-previous >/dev/null 2>&1 || true; exit 0
-              fi
-              sleep 2
-            done
-            docker logs --tail 50 chesslab; docker rm -f chesslab >/dev/null
+            healthy() {
+              status=$(curl -fsS http://127.0.0.1:8770/api/status) || return 1
+              case "$status" in *"\"engine\":{\"available\":true"*) ;; *) return 1;; esac
+              case "$status" in *"\"inviteRequired\":true"*) ;; *) return 1;; esac
+            }
+            if sudo docker run -d --name chesslab --restart unless-stopped --env-file /etc/chesslab.env \
+              -p 127.0.0.1:8770:8770 -v chesslab-data:/data chesslab:deploy >/dev/null; then
+              for i in $(seq 1 30); do
+                if healthy; then docker rm chesslab-previous >/dev/null 2>&1 || true; exit 0; fi
+                sleep 2
+              done
+              docker logs --tail 50 chesslab
+            fi
+            docker rm -f chesslab >/dev/null 2>&1 || true
             if docker inspect chesslab-previous >/dev/null 2>&1; then
               docker rename chesslab-previous chesslab && docker start chesslab >/dev/null
               echo "The new release did not become healthy; the previous one is running again." >&2
