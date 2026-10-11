@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: [Dockerfile, docker/**, .dockerignore, package.json, package-lock.json, server/**, shared/**, web/**, .github/workflows/deploy-vm.yml]
+    paths: [Dockerfile, docker/**, .dockerignore, vite.config.mjs, package.json, package-lock.json, server/**, shared/**, web/**, .github/workflows/deploy-vm.yml]
 
 permissions:
   contents: read
@@ -54,23 +54,45 @@ jobs:
           COACH_AI_INVITE_CODES: ${{ secrets.COACH_AI_INVITE_CODES }}
         run: |
           test -n "$APP_ORIGIN" || { echo "Set the APP_ORIGIN repository variable." >&2; exit 1; }
+          # Without codes the server allows open sign-up, so the private beta refuses to deploy.
+          test -n "$BETA_INVITE_CODES" || { echo "Set the BETA_INVITE_CODES secret." >&2; exit 1; }
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            # The key may only go out with the per-code coach budget and daily cap.
+            grep -rq COACH_AI_INVITE_CODES server/ || { echo "This server has no coach budget yet; remove ANTHROPIC_API_KEY until coach-budget is merged." >&2; exit 1; }
+            test -n "$COACH_AI_INVITE_CODES" || { echo "Set COACH_AI_INVITE_CODES before ANTHROPIC_API_KEY." >&2; exit 1; }
+          fi
           umask 077
           { echo "APP_ORIGIN=$APP_ORIGIN"; echo "TRUST_PROXY=1"
             for name in BETA_INVITE_CODES ANTHROPIC_API_KEY COACH_AI_INVITE_CODES COACH_AI_MAX_PER_DAY; do
-              [ -n "${!name}" ] && echo "$name=${!name}"
+              if [ -n "${!name}" ]; then echo "$name=${!name}"; fi
             done; } > chesslab.env
       - name: Copy and restart
         run: |
           scp image.tgz chesslab.env "$VM:/tmp/"
+          # The old container is stopped, not removed, until the new one is healthy and invite-gated,
+          # so a bad release rolls back instead of leaving the beta offline.
           ssh "$VM" 'set -eu
             sudo install -m 600 -o root -g root /tmp/chesslab.env /etc/chesslab.env && rm /tmp/chesslab.env
             gunzip -c /tmp/image.tgz | docker load && rm /tmp/image.tgz
             docker volume create chesslab-data >/dev/null
-            docker rm -f chesslab >/dev/null 2>&1 || true
+            if docker inspect chesslab >/dev/null 2>&1; then
+              docker rm -f chesslab-previous >/dev/null 2>&1 || true
+              docker stop chesslab >/dev/null && docker rename chesslab chesslab-previous
+            fi
             sudo docker run -d --name chesslab --restart unless-stopped --env-file /etc/chesslab.env \
               -p 127.0.0.1:8770:8770 -v chesslab-data:/data chesslab:deploy >/dev/null
-            for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8770/healthz && exit 0; sleep 2; done
-            docker logs --tail 50 chesslab; exit 1'
+            for i in $(seq 1 30); do
+              if curl -fsS http://127.0.0.1:8770/api/status | grep -q "\"inviteRequired\":true"; then
+                docker rm chesslab-previous >/dev/null 2>&1 || true; exit 0
+              fi
+              sleep 2
+            done
+            docker logs --tail 50 chesslab; docker rm -f chesslab >/dev/null
+            if docker inspect chesslab-previous >/dev/null 2>&1; then
+              docker rename chesslab-previous chesslab && docker start chesslab >/dev/null
+              echo "The new release did not become healthy; the previous one is running again." >&2
+            fi
+            exit 1'
           ssh "$VM" 'docker image prune -f >/dev/null'
       - name: Check through HTTPS
         env:
