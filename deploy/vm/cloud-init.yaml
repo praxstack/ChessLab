@@ -19,5 +19,5 @@ write_files:
       }
 runcmd:
   - systemctl enable --now docker
-  - usermod -aG docker "$(getent passwd 1000 | cut -d: -f1)"
+  - for u in ubuntu azureuser; do id "$u" >/dev/null 2>&1 && usermod -aG docker "$u"; done; true
   - systemctl restart caddy
