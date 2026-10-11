@@ -23,7 +23,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Image checks can finish out of order, so only the newest commit on main deploys.
+  # Image checks can finish out of order, so a checked commit deploys only if nothing newer on main
+  # changes the image; a newer image change deploys after its own check.
   latest:
     if: >-
       vars.VM_HOST != '' && (github.event_name == 'workflow_dispatch' ||
@@ -38,9 +39,11 @@ jobs:
           SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           if [ -z "$SHA" ]; then echo deploy=true >> "$GITHUB_OUTPUT"; exit 0; fi
-          main=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)
-          if [ "$main" = "$SHA" ]; then echo deploy=true >> "$GITHUB_OUTPUT"
-          else echo "Skipping $SHA: main is now at $main, which deploys after its own image check."; echo deploy=false >> "$GITHUB_OUTPUT"; fi
+          gh api "repos/$GITHUB_REPOSITORY/compare/$SHA...main" > compare.json
+          image='^(Dockerfile|docker/|\.dockerignore|vite\.config\.mjs|package(-lock)?\.json|server/|shared/|web/|\.github/workflows/beta-image\.yml)'
+          newer=$(jq -r '.files[]?.filename' compare.json | grep -E "$image" || true)
+          if [ "$(jq -r .status compare.json)" != behind ] && [ -z "$newer" ]; then echo deploy=true >> "$GITHUB_OUTPUT"
+          else echo "Skipping $SHA: main has newer image changes, which deploy after their own check."; echo deploy=false >> "$GITHUB_OUTPUT"; fi
 
   deploy:
     needs: latest
@@ -126,10 +129,11 @@ jobs:
             exit 1'
       - name: Check through HTTPS
         id: https
+        timeout-minutes: 5
         env:
           APP_ORIGIN: ${{ vars.APP_ORIGIN }}
         run: |
-          for i in $(seq 1 20); do curl -fsS "$APP_ORIGIN/healthz" && exit 0; sleep 6; done
+          for i in $(seq 1 20); do curl -fsS --max-time 10 "$APP_ORIGIN/healthz" && exit 0; sleep 6; done
           echo "The server is healthy, but $APP_ORIGIN does not answer. Check APP_ORIGIN, the DNS A record and ports 80 and 443." >&2; exit 1
       - name: Keep the new release
         run: ssh "$VM" 'docker rm chesslab-previous >/dev/null 2>&1 || true; docker image prune -f >/dev/null'
