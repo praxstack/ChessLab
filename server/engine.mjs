@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {gradeMove} from './move-grade.mjs';
 const engineDirectory = resolve(process.env.CHESSLAB_ENGINES_DIR || fileURLToPath(new URL('../data/engines', import.meta.url)));
 export function localTablebasePath() {
   const path=resolve(process.env.CHESSLAB_TABLEBASES || fileURLToPath(new URL('../data/tablebases/standard',import.meta.url)));
@@ -292,12 +293,8 @@ export async function analyze(input, {signal} = {}) {
       const after = await runUci({ moves: [...moves, playedMove], initialFen, variant, board: afterBoard, movetime, lines: 1, skill: 20, engineId, threads, signal });
       const beforeScore = result.lines[0]?.score;
       const afterScore = after.lines[0]?.score ?? (afterBoard.isGameOver() && !afterBoard.isCheckmate() ? { type: 'cp', value: 0 } : null);
-      const lossCp = beforeScore?.type === 'cp' && afterScore?.type === 'cp' ? Math.max(0, Math.round((beforeScore.value - afterScore.value) * (board.turn() === 'w' ? 1 : -1))) : null;
-      let classification = lossCp == null ? 'Mate sequence' : lossCp >= 300 ? 'Blunder' : lossCp >= 150 ? 'Mistake' : lossCp >= 50 ? 'Inaccuracy' : 'Good';
-      if (playedMove === result.lines[0]?.move) classification = 'Best';
-      if (afterBoard.isCheckmate()) classification = 'Checkmate';
+      const {classification, lossCp, lossText} = gradeMove({beforeScore, afterScore, turn: board.turn(), played: playedMove, best: result.lines[0]?.move, checkmate: afterBoard.isCheckmate()});
       const evidence = moveEvidence(board, playedMove);
-      const lossText = lossCp == null ? 'Mate scores have no centipawn-loss estimate.' : `Estimated loss: ${lossCp} centipawns for ${board.turn() === 'w' ? 'White' : 'Black'}.`;
       const continuation = afterBoard.isGameOver() ? terminalText(afterBoard) : lineEvidence(afterBoard, after.lines[0]?.moves);
       const reply = after.lines[0];
       analysis.played = { move: playedMove, san: evidence.san, classification, lossCp, afterScore, line: reply ? { moves: reply.moves, san: reply.san, score: reply.score, depth: reply.depth } : null, explanation: `${evidence.text} ${continuation} ${lossText}` };
