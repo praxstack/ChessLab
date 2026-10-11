@@ -2,7 +2,8 @@ name: Deploy to server
 
 # Deploys the image to one server prepared with deploy/vm/cloud-init.yaml.
 # Does nothing until the repository variable VM_HOST is set.
-# Repository variables: VM_HOST (server IP), VM_USER (ubuntu on AWS, azureuser on Azure),
+# Repository variables: VM_HOST (server IP), VM_HOST_KEY (the server's ssh-ed25519 host key line,
+#   from its first-boot console log), VM_USER (ubuntu on AWS, azureuser on Azure),
 #   APP_ORIGIN (https://app.askthemove.online), optional COACH_AI_MAX_PER_DAY.
 # Repository secrets: VM_SSH_KEY (the server's private key), BETA_INVITE_CODES,
 #   optional ANTHROPIC_API_KEY and COACH_AI_INVITE_CODES.
@@ -36,10 +37,13 @@ jobs:
         env:
           KEY: ${{ secrets.VM_SSH_KEY }}
           HOST: ${{ vars.VM_HOST }}
+          HOST_KEY: ${{ vars.VM_HOST_KEY }}
         run: |
           install -d -m 700 ~/.ssh
           printf '%s\n' "$KEY" > ~/.ssh/id_vm && chmod 600 ~/.ssh/id_vm
-          ssh-keyscan -T 20 "$HOST" > ~/.ssh/known_hosts
+          # Trust only the pinned host key, never whatever the network answers with.
+          test -n "$HOST_KEY" || { echo "Set the VM_HOST_KEY repository variable." >&2; exit 1; }
+          printf '%s %s\n' "$HOST" "$HOST_KEY" > ~/.ssh/known_hosts
           printf 'Host *\n  IdentityFile ~/.ssh/id_vm\n  StrictHostKeyChecking yes\n' > ~/.ssh/config
       - name: Settings file
         env:

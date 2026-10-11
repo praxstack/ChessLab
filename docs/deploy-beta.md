@@ -82,10 +82,10 @@ On either platform, confirm the proxy hop count before relying on per-visitor li
 
 ## Option C: Railway (chosen for the AskTheMove beta)
 
-Railway builds the `Dockerfile` from GitHub on every push to `main` and reads `railway.toml` for the health check and restart policy. The Hobby plan costs $5 a month and includes $5 of usage, which one small always-on service fits within. New accounts get a 30-day trial with $5 of credit. The Southeast Asia region (Singapore) is the closest to India.
+Railway builds the `Dockerfile` from GitHub on every push to `main`. Railway stopped accepting `railway.toml` for new services in 2026, so the health check is set in the dashboard. The Hobby plan costs $5 a month and includes $5 of usage, which one small always-on service fits within. New accounts get a 30-day trial with $5 of credit. The Southeast Asia region (Singapore) is the closest to India.
 
 1. Create a project from the GitHub repository and pick the `main` branch.
-2. In the service settings choose the Singapore region and keep one replica.
+2. In the service settings choose the Singapore region, keep one replica, and set the health check path to `/healthz`.
 3. Add a volume mounted at `/data`. Railway mounts it owned by root; the image's entrypoint gives it to the `node` user and starts the server as `node`.
 4. Add the settings from the table above as service variables, plus `PORT=8770`. Set `TRUST_PROXY=1`.
 5. Add the custom domain `app.<domain>` and the `CNAME` record Railway shows. On Cloudflare DNS, leave the record unproxied (grey cloud) so Railway's proxy is the only hop.
@@ -99,7 +99,7 @@ Use an Ubuntu 24.04 x86-64 server with at least 1 GB of memory: an AWS `t3.micro
 
 1. Create the server with an SSH key pair and a fixed public IP (an Elastic IP on AWS, a static IP on Azure). Paste `deploy/vm/cloud-init.yaml` as its user data or custom data. Allow inbound ports 22, 80 and 443 only, with password sign-in off.
 2. Add an `A` record for `app` pointing at the IP, unproxied (grey cloud) on Cloudflare. Caddy on the server obtains the certificate.
-3. In the GitHub repository settings add the variables `VM_HOST`, `VM_USER` (`ubuntu` on AWS, `azureuser` on Azure) and `APP_ORIGIN`, and the secrets `VM_SSH_KEY` (the private key) and `BETA_INVITE_CODES`.
+3. Copy the server's `ssh-ed25519 …` host key line from its first-boot console log (AWS: Instance, Actions, Monitor and troubleshoot, Get system log; Azure: Boot diagnostics, Serial log), between the `BEGIN SSH HOST KEY KEYS` markers. In the GitHub repository settings add the variables `VM_HOST`, `VM_HOST_KEY` (that line, such as `ssh-ed25519 AAAA…`), `VM_USER` (`ubuntu` on AWS, `azureuser` on Azure) and `APP_ORIGIN`, and the secrets `VM_SSH_KEY` (the private key) and `BETA_INVITE_CODES`.
 4. Run the `Deploy to server` workflow. It builds the image on GitHub, copies the image and a settings file to the server over SSH, restarts the container on the `chesslab-data` volume, and checks `/healthz` through HTTPS. Each later push to `main` that changes the app deploys again.
 
 The settings file is written to `/etc/chesslab.env` (root, mode 600) on every deploy from the repository's variables and secrets. Change a setting in GitHub, then run the workflow again. The image is copied straight to the server and is not published to a registry.
