@@ -12,6 +12,8 @@ if (config.serveArchives) {
  app.use('/design', express.static(resolve('design'), {dotfiles:'deny'}));
 }
 if (config.hosted && !config.trustProxy) console.warn('APP_ORIGIN is set without TRUST_PROXY. Behind a reverse proxy, every visitor shares one rate-limit address; set TRUST_PROXY to the number of proxy hops.');
+// A hosted server without invite codes would let anyone sign up, so it refuses to start and the host keeps the previous release.
+if (config.hosted && !config.inviteCodes.length && process.env.ALLOW_OPEN_REGISTRATION !== '1') throw new Error('APP_ORIGIN is set without BETA_INVITE_CODES, which would open sign-up to anyone. Set BETA_INVITE_CODES, or ALLOW_OPEN_REGISTRATION=1 to open it on purpose.');
 let vite;
 if (process.env.NODE_ENV === 'production') {
  const folder=resolve('web/dist');

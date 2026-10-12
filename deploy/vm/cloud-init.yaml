@@ -1,0 +1,23 @@
+#cloud-config
+# First-boot set-up for one small Ubuntu 24.04 x86-64 server (AWS EC2 or Azure VM).
+# Paste this file as the server's "User data" (AWS) or "Custom data" (Azure).
+# It installs Docker and Caddy, adds 1 GB of swap and points Caddy at the app.
+# The "Deploy to server" GitHub workflow then copies the image and settings over SSH.
+# If the beta moves to another hostname, change it in /etc/caddy/Caddyfile and in APP_ORIGIN.
+package_update: true
+packages:
+  - docker.io
+  - caddy
+swap:
+  filename: /swapfile
+  size: 1G
+write_files:
+  - path: /etc/caddy/Caddyfile
+    content: |
+      app.askthemove.online {
+        reverse_proxy 127.0.0.1:8770
+      }
+runcmd:
+  - systemctl enable --now docker
+  - for u in ubuntu azureuser; do id "$u" >/dev/null 2>&1 && usermod -aG docker "$u"; done; true
+  - systemctl restart caddy

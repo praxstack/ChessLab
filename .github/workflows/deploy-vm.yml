@@ -1,0 +1,155 @@
+name: Deploy to server
+
+# Deploys the image to one server prepared with deploy/vm/cloud-init.yaml.
+# Does nothing until the repository variable VM_HOST is set.
+# Repository variables: VM_HOST (server IP), VM_HOST_KEY (the server's ssh-ed25519 host key line,
+#   from its first-boot console log), VM_USER (ubuntu on AWS, azureuser on Azure),
+#   APP_ORIGIN (https://app.askthemove.online), optional COACH_AI_MAX_PER_DAY.
+# Repository secrets: VM_SSH_KEY (the server's private key), BETA_INVITE_CODES,
+#   optional ANTHROPIC_API_KEY and COACH_AI_INVITE_CODES.
+# A push to main deploys only after the Beta image workflow has passed for that commit.
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: [Beta image]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: deploy-vm
+  cancel-in-progress: false
+
+jobs:
+  # Image checks can finish out of order, so a checked commit deploys only if nothing newer on main
+  # changes the image; a newer image change deploys after its own check.
+  latest:
+    if: >-
+      vars.VM_HOST != '' && (github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.event == 'push' && github.event.workflow_run.conclusion == 'success'))
+    runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.check.outputs.deploy }}
+      sha: ${{ steps.check.outputs.sha }}
+    steps:
+      - id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          if [ -z "$SHA" ]; then { echo deploy=true; echo "sha=$GITHUB_SHA"; } >> "$GITHUB_OUTPUT"; exit 0; fi
+          gh api "repos/$GITHUB_REPOSITORY/compare/$SHA...main" > compare.json
+          image='^(Dockerfile|docker/|\.dockerignore|vite\.config\.mjs|package(-lock)?\.json|server/|shared/|web/|\.github/workflows/beta-image\.yml)'
+          newer=$(jq -r '.files[]?.filename' compare.json | grep -E "$image" || true)
+          if [ "$(jq -r .status compare.json)" != behind ] && [ -z "$newer" ]; then { echo deploy=true; echo "sha=$SHA"; } >> "$GITHUB_OUTPUT"; exit 0; fi
+          # A newer image change whose own check already passed may have had its deploy run replaced
+          # by this one in the concurrency queue, so deploy it here instead of skipping.
+          main=$(jq -r '.commits[-1].sha // empty' compare.json)
+          passed=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/beta-image.yml/runs?event=push&branch=main&status=success&head_sha=$main" --jq .total_count)
+          if [ -n "$main" ] && [ "$passed" -gt 0 ]; then echo "Deploying $main, the newest checked commit on main."; { echo deploy=true; echo "sha=$main"; } >> "$GITHUB_OUTPUT"
+          else echo "Skipping $SHA: main has newer image changes, which deploy after their own check."; echo deploy=false >> "$GITHUB_OUTPUT"; fi
+
+  deploy:
+    needs: latest
+    if: needs.latest.outputs.deploy == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      VM: ${{ vars.VM_USER }}@${{ vars.VM_HOST }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.latest.outputs.sha }}
+      - name: Build
+        run: |
+          docker build -t chesslab:deploy .
+          docker save chesslab:deploy | gzip > image.tgz
+      - name: SSH key
+        env:
+          KEY: ${{ secrets.VM_SSH_KEY }}
+          HOST: ${{ vars.VM_HOST }}
+          HOST_KEY: ${{ vars.VM_HOST_KEY }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$KEY" > ~/.ssh/id_vm && chmod 600 ~/.ssh/id_vm
+          # Trust only the pinned host key, never whatever the network answers with.
+          test -n "$HOST_KEY" || { echo "Set the VM_HOST_KEY repository variable." >&2; exit 1; }
+          printf '%s %s\n' "$HOST" "$HOST_KEY" > ~/.ssh/known_hosts
+          printf 'Host *\n  IdentityFile ~/.ssh/id_vm\n  StrictHostKeyChecking yes\n' > ~/.ssh/config
+      - name: Settings file
+        env:
+          APP_ORIGIN: ${{ vars.APP_ORIGIN }}
+          COACH_AI_MAX_PER_DAY: ${{ vars.COACH_AI_MAX_PER_DAY }}
+          BETA_INVITE_CODES: ${{ secrets.BETA_INVITE_CODES }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          COACH_AI_INVITE_CODES: ${{ secrets.COACH_AI_INVITE_CODES }}
+        run: |
+          test -n "$APP_ORIGIN" || { echo "Set the APP_ORIGIN repository variable." >&2; exit 1; }
+          # Without codes the server allows open sign-up, so the private beta refuses to deploy.
+          test -n "$BETA_INVITE_CODES" || { echo "Set the BETA_INVITE_CODES secret." >&2; exit 1; }
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            # The key may only go out with the per-code coach budget and daily cap.
+            grep -rq COACH_AI_INVITE_CODES server/ || { echo "This server has no coach budget yet; remove ANTHROPIC_API_KEY until coach-budget is merged." >&2; exit 1; }
+            test -n "$COACH_AI_INVITE_CODES" || { echo "Set COACH_AI_INVITE_CODES before ANTHROPIC_API_KEY." >&2; exit 1; }
+          fi
+          umask 077
+          { echo "APP_ORIGIN=$APP_ORIGIN"; echo "TRUST_PROXY=1"
+            for name in BETA_INVITE_CODES ANTHROPIC_API_KEY COACH_AI_INVITE_CODES COACH_AI_MAX_PER_DAY; do
+              if [ -n "${!name}" ]; then echo "$name=${!name}"; fi
+            done; } > chesslab.env
+      - name: Copy and restart
+        id: restart
+        run: |
+          scp image.tgz chesslab.env "$VM:/tmp/"
+          # The old container is stopped, not removed, until the new one runs Stockfish, is
+          # invite-gated and answers over HTTPS, so a bad release rolls back instead of leaving the beta offline.
+          ssh "$VM" 'set -eu
+            sudo install -m 600 -o root -g root /tmp/chesslab.env /etc/chesslab.env && rm /tmp/chesslab.env
+            gunzip -c /tmp/image.tgz | docker load && rm /tmp/image.tgz
+            docker volume create chesslab-data >/dev/null
+            if docker inspect chesslab >/dev/null 2>&1; then
+              docker rm -f chesslab-previous >/dev/null 2>&1 || true
+              docker stop chesslab >/dev/null && docker rename chesslab chesslab-previous
+            fi
+            healthy() {
+              status=$(curl -fsS http://127.0.0.1:8770/api/status) || return 1
+              case "$status" in *"\"engine\":{\"available\":true"*) ;; *) return 1;; esac
+              case "$status" in *"\"inviteRequired\":true"*) ;; *) return 1;; esac
+            }
+            if sudo docker run -d --name chesslab --restart unless-stopped --env-file /etc/chesslab.env \
+              -p 127.0.0.1:8770:8770 -v chesslab-data:/data chesslab:deploy >/dev/null; then
+              for i in $(seq 1 30); do
+                if healthy; then exit 0; fi
+                sleep 2
+              done
+              docker logs --tail 50 chesslab
+            fi
+            docker rm -f chesslab >/dev/null 2>&1 || true
+            if docker inspect chesslab-previous >/dev/null 2>&1; then
+              docker rename chesslab-previous chesslab && docker start chesslab >/dev/null
+              echo "The new release did not become healthy; the previous one is running again." >&2
+            fi
+            docker image prune -f >/dev/null || true
+            exit 1'
+      - name: Check through HTTPS
+        id: https
+        timeout-minutes: 5
+        env:
+          APP_ORIGIN: ${{ vars.APP_ORIGIN }}
+        run: |
+          for i in $(seq 1 20); do curl -fsS --max-time 10 "$APP_ORIGIN/healthz" && exit 0; sleep 6; done
+          echo "The server is healthy, but $APP_ORIGIN does not answer. Check APP_ORIGIN, the DNS A record and ports 80 and 443." >&2; exit 1
+      - name: Keep the new release
+        run: ssh "$VM" 'docker rm chesslab-previous >/dev/null 2>&1 || true; docker image prune -f >/dev/null'
+      - name: Roll back
+        if: failure() && steps.https.outcome == 'failure'
+        # On a first deploy there is nothing to go back to, so the new release keeps running.
+        run: |
+          ssh "$VM" 'if docker inspect chesslab-previous >/dev/null 2>&1; then
+              docker rm -f chesslab >/dev/null && docker rename chesslab-previous chesslab && docker start chesslab >/dev/null
+              docker image prune -f >/dev/null || true
+              echo "The new release failed the HTTPS check; the previous one is running again." >&2
+            fi'

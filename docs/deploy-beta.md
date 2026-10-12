@@ -1,6 +1,6 @@
 # Deploying the private beta
 
-This guide covers running the app for a small invited group on one server. It has not been used for a real deployment. On 8 October 2026 the image was built and run in a sandbox. Health checks, invite gating, secure cookies, Stockfish analysis and data surviving a restart were all checked there, as a non-root user. No domain, host or Anthropic API key was involved.
+This guide covers running the app for a small invited group on one server. Option C below is the chosen host; it had not been used for a real deployment when written. On 8 October 2026 the image was built and run in a sandbox. Health checks, invite gating, secure cookies, Stockfish analysis and data surviving a restart were all checked there, as a non-root user. No domain, host or Anthropic API key was involved.
 
 The governing change is `openspec/changes/hosted-beta-readiness/`.
 
@@ -95,6 +95,30 @@ Both can build from the `Dockerfile`. Keep one instance with one persistent volu
 
 On either platform, confirm the proxy hop count before relying on per-visitor limits. Log a test request's `X-Forwarded-For` and check that the last entry is your own address. This has not been checked on a platform.
 
+## Option C: Railway (chosen for the AskTheMove beta)
+
+Railway builds the `Dockerfile` from GitHub on every push to `main`. Railway stopped accepting `railway.toml` for new services in 2026, so the health check is set in the dashboard. The Hobby plan costs at least $5 a month, which includes $5 of usage; RAM, CPU, disk and traffic beyond that are billed. This app's real usage has not been measured yet, so set a usage limit and check the estimate after the first days. New accounts get a 30-day trial with $5 of credit. The Southeast Asia region (Singapore) is the closest to India.
+
+1. Create a project from the GitHub repository, pick the `main` branch, and turn on **Wait for CI** so Railway skips a commit whose `Beta image` check fails.
+2. In the service settings choose the Singapore region, keep one replica, and set the health check path to `/healthz`.
+3. Add a volume mounted at `/data`. Railway mounts it owned by root; the image's entrypoint gives it to the `node` user and starts the server as `node`.
+4. Add the settings from the table above as service variables, plus `PORT=8770`. Set `TRUST_PROXY=1`. With `APP_ORIGIN` set and no `BETA_INVITE_CODES`, the server refuses to start, so the health check fails and Railway keeps the previous release (set `ALLOW_OPEN_REGISTRATION=1` only to open sign-up on purpose). Railway's proxy hop count is not guaranteed to be one, so check `X-Forwarded-For` as described above before relying on per-visitor limits.
+5. Add the custom domain `app.<domain>` and the `CNAME` record Railway shows. On Cloudflare DNS, leave the record unproxied (grey cloud) so Railway's proxy is the only hop.
+6. Set a usage limit in the workspace's billing settings.
+
+Railway does not overlap two deployments that share a volume, so a redeploy has a short gap. Run the `Beta image` GitHub workflow by hand with the live URL to check health, security headers and `/api/status` from outside.
+
+## Option D: one small server (AWS free plan or Azure for Students)
+
+Use an Ubuntu 24.04 x86-64 server with at least 1 GB of memory: an AWS `t3.micro` in Mumbai (`ap-south-1`) on the AWS free plan, or an Azure `B1s` in Central India with Azure for Students. Don't pick an Arm (Graviton) size, because the image's Stockfish is an x86-64 build.
+
+1. Create the server with an SSH key pair and a fixed public IP (an Elastic IP on AWS, a static IP on Azure). Paste `deploy/vm/cloud-init.yaml` as its user data or custom data. Allow inbound ports 22, 80 and 443 only, with password sign-in off.
+2. Add an `A` record for `app` pointing at the IP, unproxied (grey cloud) on Cloudflare. Caddy on the server obtains the certificate.
+3. Copy the server's `ssh-ed25519 …` host key line from its first-boot console log (AWS: Instance, Actions, Monitor and troubleshoot, Get system log; Azure: Boot diagnostics, Serial log), between the `BEGIN SSH HOST KEY KEYS` markers. In the GitHub repository settings add the variables `VM_HOST`, `VM_HOST_KEY` (that line, such as `ssh-ed25519 AAAA…`), `VM_USER` (`ubuntu` on AWS, `azureuser` on Azure) and `APP_ORIGIN`, and the secrets `VM_SSH_KEY` (the private key) and `BETA_INVITE_CODES`.
+4. Run the `Deploy to server` workflow. It builds the image on GitHub, copies the image and a settings file to the server over SSH, restarts the container on the `chesslab-data` volume, and checks `/healthz` through HTTPS. Each later push to `main` that changes the app deploys again, but only after the `Beta image` check passes for that commit.
+
+The workflow refuses to deploy without `BETA_INVITE_CODES`, and refuses `ANTHROPIC_API_KEY` unless the server has the coach budget and `COACH_AI_INVITE_CODES` is set. The previous container is kept stopped until the new one starts, runs Stockfish, is invite-gated and answers over HTTPS, and is started again if any of that fails. If image checks finish out of order, a checked commit deploys only when nothing newer on `main` changes the image. The settings file is written to `/etc/chesslab.env` (root, mode 600) on every deploy from the repository's variables and secrets. Change a setting in GitHub, then run the workflow again. The image is copied straight to the server and is not published to a registry.
+
 ## Backups
 
 The database holds password hashes, session hashes, games and progress. Treat every copy as private data and encrypt it when stored off the server.
@@ -103,9 +127,9 @@ An online backup can run while the app is serving. `VACUUM INTO` writes one cons
 
 ```sh
 stamp=$(date -u +%Y%m%dT%H%M%SZ)
-docker exec chesslab node -e "const {DatabaseSync}=require('node:sqlite');const db=new DatabaseSync('/data/chesslab.sqlite',{readOnly:true});db.prepare('VACUUM INTO ?').run(process.argv[1])" "/data/backup-$stamp.sqlite"
+docker exec --user node chesslab node -e "const {DatabaseSync}=require('node:sqlite');const db=new DatabaseSync('/data/chesslab.sqlite',{readOnly:true});db.prepare('VACUUM INTO ?').run(process.argv[1])" "/data/backup-$stamp.sqlite"
 docker cp "chesslab:/data/backup-$stamp.sqlite" "./backup-$stamp.sqlite"
-docker exec chesslab rm "/data/backup-$stamp.sqlite"
+docker exec --user node chesslab rm "/data/backup-$stamp.sqlite"
 ```
 
 Run it at least daily from cron or the platform's scheduler. Copy the file off the server, and keep several days and weeks of copies. For a cold backup, stop the container and copy the whole volume, including any `chesslab.sqlite-wal` and `chesslab.sqlite-shm` files.
