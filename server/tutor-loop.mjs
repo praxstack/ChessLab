@@ -129,7 +129,8 @@ export function emptyRecord() {
 const OUTCOMES = new Set(['unaided', 'hinted', 'taught', 'answer-now']);
 const ROLES = new Set(['main', 'recall', 'variation']);
 const isObject = v => v !== null && typeof v === 'object' && !Array.isArray(v);
-const isCount = v => Number.isInteger(v) && v >= 0;
+// Safe integers only, so a saved counter can always be advanced by one.
+const isCount = v => Number.isSafeInteger(v) && v >= 0;
 
 function normalizeRow(row) {
   if (!isObject(row) || typeof row.item !== 'string' || !row.item || !OUTCOMES.has(row.outcome) || !ROLES.has(row.role) || !isCount(row.session)) return null;
@@ -219,26 +220,32 @@ export function hasSeen(record, topicId, itemId) {
 // a reload the position counts as seen and anything more on it is a repeat.
 const HELP = {unaided: 0, hinted: 1, taught: 2, 'answer-now': 2};
 
-export function recordOutcome(record, topicId, {item, outcome, hintLevel = 0, role = 'main', pending = false, attempt = null}, now) {
+export function recordOutcome(record, topicId, {item, outcome, hintLevel = 0, role, pending = false, attempt = null}, now) {
   if (typeof item !== 'string' || !item) throw new TypeError('An outcome needs a position or puzzle id.');
-  if (!OUTCOMES.has(outcome) || !ROLES.has(role)) throw new RangeError('Unknown outcome or role.');
+  if (!OUTCOMES.has(outcome) || (role !== undefined && !ROLES.has(role))) throw new RangeError('Unknown outcome or role.');
   if (pending && (typeof attempt !== 'string' || !attempt || outcome === 'unaided')) throw new RangeError('A pending record needs an attempt id and a helped outcome.');
   const next = structuredClone(record);
   const session = next.session.count;
   let entry = topicEntry(next, topicId);
   let repeat = false;
   // The pending row may not be last if another position on this tag finished in between.
-  const at = attempt ? entry.log.findLastIndex(row => row.pending && row.attempt === attempt && row.item === item) : -1;
-  if (at !== -1) {
+  const heldAt = attempt ? entry.log.findLastIndex(row => row.pending && row.attempt === attempt && row.item === item) : -1;
+  if (heldAt !== -1) {
     // The finished outcome never claims less help than was already recorded.
-    const [held] = entry.log.splice(at, 1);
+    const [held] = entry.log.splice(heldAt, 1);
     if (HELP[held.outcome] > HELP[outcome]) outcome = held.outcome;
     hintLevel = Math.max(hintLevel, held.hintLevel);
     repeat = held.repeat === true;
+    // The attempt keeps the role it started with.
+    role = held.role;
     // Undo what the pending row did to the schedule before the outcome lands.
     entry = rebuild(entry.log, entry.firstSession);
   }
-  applyRow(entry, {session, item, outcome, hintLevel, role, at: now, ...(repeat ? {repeat: true} : {}), ...(pending ? {pending: true, attempt} : {})});
+  role ??= 'main';
+  const at = Number.isFinite(now) ? now : null;
+  // Recording an outcome is activity, so the live header matches what a reload rebuilds.
+  if (at !== null) next.session.lastAt = Math.max(next.session.lastAt ?? -Infinity, at);
+  applyRow(entry, {session, item, outcome, hintLevel, role, at, ...(repeat ? {repeat: true} : {}), ...(pending ? {pending: true, attempt} : {})});
   next.topics[topicId] = entry;
   return next;
 }

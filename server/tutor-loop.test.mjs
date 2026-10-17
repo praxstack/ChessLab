@@ -331,6 +331,17 @@ test('a finished pending attempt leaves the same schedule as a replay of the log
   assert.deepEqual([rec.topics.x.stage, rec.topics.x.due, rec.topics.x.firstSession], [replayed.stage, replayed.due, replayed.firstSession]);
 });
 
+test('a finished attempt keeps its role, and the live header matches a reload', () => {
+  let rec = touchSession(emptyRecord(), start);
+  rec = recordOutcome(rec, 'x', {item: 'r1', outcome: 'hinted', hintLevel: 1, role: 'recall', pending: true, attempt: 'a1'}, start + H);
+  rec = recordOutcome(rec, 'x', {item: 'r1', outcome: 'unaided', attempt: 'a1'}, start + H);
+  assert.equal(rec.topics.x.log[0].role, 'recall', 'a finish without a role keeps the pending row\'s role');
+  assert.equal(rec.session.lastAt, start + H, 'recording an outcome is activity');
+  assert.deepEqual(normalize(rec).session, rec.session);
+  const big = normalize({version: 1, session: {count: 2 ** 53, lastAt: start}, topics: {}});
+  assert.equal(big.session.count, 0, 'a counter that can not be advanced is reset');
+});
+
 test('an outcome needs a position or puzzle id', () => {
   const rec = touchSession(emptyRecord(), start);
   for (const item of [undefined, '', 7]) assert.throws(() => recordOutcome(rec, 'x', {item, outcome: 'unaided', role: 'recall'}, start), TypeError);
