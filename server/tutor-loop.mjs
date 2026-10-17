@@ -148,11 +148,14 @@ function normalizeRow(row) {
 function normalizeEntry(entry) {
   if (!isObject(entry) || !Array.isArray(entry.log)) return null;
   const log = entry.log.map(normalizeRow).filter(Boolean);
+  // The first exposure can't be later than the earliest surviving row.
+  const earliest = log.length ? Math.min(...log.map(row => row.session)) : null;
+  const stored = isCount(entry.firstSession) ? entry.firstSession : null;
   return {
     log,
     stage: isCount(entry.stage) && entry.stage < INTERVALS.length ? entry.stage : 0,
     due: isCount(entry.due) ? entry.due : null,
-    firstSession: isCount(entry.firstSession) ? entry.firstSession : log.length ? Math.min(...log.map(row => row.session)) : null,
+    firstSession: earliest === null ? stored : stored !== null && stored <= earliest ? stored : earliest,
   };
 }
 
@@ -201,13 +204,20 @@ export function hasSeen(record, topicId, itemId) {
 // pending: true records help as it is used. Only the finished outcome of the
 // same attempt id replaces that row. An abandoned pending row stays, so after
 // a reload the position counts as seen and anything more on it is a repeat.
+const HELP = {unaided: 0, hinted: 1, taught: 2, 'answer-now': 2};
+
 export function recordOutcome(record, topicId, {item, outcome, hintLevel = 0, role = 'main', pending = false, attempt = null}, now) {
   if (!OUTCOMES.has(outcome) || !ROLES.has(role)) throw new RangeError('Unknown outcome or role.');
   const next = structuredClone(record);
   const session = next.session.count;
   const entry = topicEntry(next, topicId);
   const last = entry.log.at(-1);
-  if (attempt && last?.pending && last.attempt === attempt && last.item === item) entry.log.pop();
+  if (attempt && last?.pending && last.attempt === attempt && last.item === item) {
+    // The finished outcome never claims less help than was already recorded.
+    const held = entry.log.pop();
+    if (HELP[held.outcome] > HELP[outcome]) outcome = held.outcome;
+    hintLevel = Math.max(hintLevel, held.hintLevel);
+  }
   const repeat = entry.log.some(row => row.item === item);
   entry.log.push({
     session, item, outcome, hintLevel, role, at: now,

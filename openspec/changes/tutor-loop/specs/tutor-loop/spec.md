@@ -5,7 +5,7 @@ Turn a flagged move from a reviewed game into a short lesson the learner works t
 ## ADDED Requirements
 
 ### Requirement: TL-001 Attempt steps
-An attempt SHALL move through try, say why, an optional typed reason, and done. A right move on the first try with no hint SHALL be unaided. A right move after a hint or a miss SHALL be hinted. Each miss SHALL show the next hint, the piece's square and then the move, without repeating a hint already shown. The second miss SHALL end the try step as taught. Show answer SHALL end it as answer-now. Skip SHALL end the attempt with no recall credit. No try SHALL be accepted after the try step ends.
+An attempt SHALL move through try, say why, an optional typed reason, and done. A right move on the first try with no hint SHALL be unaided. A right move after a hint or a miss SHALL be hinted. Each miss SHALL show the next hint, the piece's square and then the move, without repeating a hint already shown. The second miss SHALL end the try step as taught. Show answer SHALL end it as answer-now. Skip SHALL end the attempt with no recall credit; help already used before the skip SHALL stay recorded, so the tag still comes back next session. No try SHALL be accepted after the try step ends.
 
 #### Scenario: Two misses
 - **WHEN** the learner plays two wrong moves on a flagged position
@@ -33,7 +33,7 @@ A tag SHALL count as learned only after an unaided solve of a fresh recall puzzl
 - **THEN** the tag is not learned
 
 ### Requirement: TL-005 Progress survives reloads
-Help SHALL be recorded as it is used, so a reload mid-attempt cannot turn a helped attempt into an unaided one. This includes a shown answer, a taught move and a wrong say-why pick, which are recorded before the attempt ends. Only the finished outcome of the same attempt SHALL replace that record. Saved progress that is malformed SHALL be repaired by keeping valid rows and dropping the rest.
+Help SHALL be recorded as it is used, so a reload mid-attempt cannot turn a helped attempt into an unaided one. This includes a shown answer, a taught move and a wrong say-why pick, which are recorded before the attempt ends. Only the finished outcome of the same attempt SHALL replace that record, and it SHALL NOT claim less help than the record it replaces. Saved progress that is malformed SHALL be repaired by keeping valid rows and dropping the rest.
 
 #### Scenario: Reload after a hint
 - **WHEN** the learner reloads after a hint and then solves the position unaided

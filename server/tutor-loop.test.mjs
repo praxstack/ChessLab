@@ -231,6 +231,27 @@ test('help is recorded as it happens and the finished outcome replaces it', () =
   assert.equal(fresh.topics.x.log.length, 2, 'a new attempt never replaces a finished one');
 });
 
+test('a finished outcome never claims less help than the pending record', () => {
+  let rec = touchSession(emptyRecord(), start);
+  rec = recordOutcome(rec, 'x', {item: 'm', outcome: 'hinted', hintLevel: 2, pending: true, attempt: 'a1'}, start);
+  rec = recordOutcome(rec, 'x', {item: 'm', outcome: 'unaided', attempt: 'a1'}, start);
+  assert.equal(rec.topics.x.log.length, 1);
+  assert.equal(rec.topics.x.log[0].outcome, 'hinted');
+  assert.equal(rec.topics.x.log[0].hintLevel, 2);
+  assert.equal(rec.topics.x.due, 2);
+});
+
+test('a damaged first session is repaired from the log, so a later recall still counts', () => {
+  const log = [{session: 5, item: 'main', outcome: 'taught', role: 'main'}, {session: 6, item: 'r1', outcome: 'unaided', role: 'recall'}];
+  for (const firstSession of [99, 6, 'x']) {
+    const rec = normalize({version: 1, session: {count: 6, lastAt: start}, topics: {x: {log, stage: 0, due: 7, firstSession}}});
+    assert.equal(rec.topics.x.firstSession, 5, String(firstSession));
+    assert.equal(isLearned(rec, 'x'), true);
+  }
+  const kept = normalize({version: 1, session: {count: 6, lastAt: start}, topics: {x: {log, stage: 0, due: 7, firstSession: 4}}});
+  assert.equal(kept.topics.x.firstSession, 4, 'an earlier first session stays when its rows were dropped');
+});
+
 test('a reload mid attempt, then an unaided solve, stays hinted and moves nothing', () => {
   let rec = touchSession(emptyRecord(), start);
   rec = recordOutcome(rec, 'x', {item: 'm', outcome: 'hinted', hintLevel: 1, pending: true, attempt: 'a1'}, start);
