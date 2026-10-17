@@ -252,6 +252,17 @@ test('a damaged first session is repaired from the log, so a later recall still 
   assert.equal(kept.topics.x.firstSession, 4, 'an earlier first session stays when its rows were dropped');
 });
 
+test('repair keeps the session count and repeat markers that surviving rows imply', () => {
+  const log = [{session: 5, item: 'main', outcome: 'taught', role: 'main'}, {session: 6, item: 'r1', outcome: 'unaided', role: 'recall', repeat: true}];
+  for (const count of ['6', 2]) {
+    const rec = normalize({version: 1, session: {count, lastAt: start}, topics: {x: {log, stage: 0, due: 7, firstSession: 5}}});
+    assert.equal(rec.session.count, 6, String(count));
+    assert.equal(topicStatus(rec, 'x').label, 'Back in 1 session');
+  }
+  const rec = normalize({version: 1, session: {count: 6, lastAt: start}, topics: {x: {log, stage: 0, due: 7, firstSession: 5}}});
+  assert.equal(isLearned(rec, 'x'), false, 'a saved repeat never counts, even if its first row was lost');
+});
+
 test('a reload mid attempt, then an unaided solve, stays hinted and moves nothing', () => {
   let rec = touchSession(emptyRecord(), start);
   rec = recordOutcome(rec, 'x', {item: 'm', outcome: 'hinted', hintLevel: 1, pending: true, attempt: 'a1'}, start);

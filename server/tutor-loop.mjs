@@ -170,10 +170,12 @@ export function normalize(record) {
       if (clean) topics[id] = clean;
     }
   }
+  // The session count can't be behind the latest surviving row.
+  const latest = Math.max(0, ...Object.values(topics).flatMap(entry => entry.log.map(row => row.session)));
   return {
     version: 1,
     session: {
-      count: isCount(record.session.count) ? record.session.count : 0,
+      count: Math.max(isCount(record.session.count) ? record.session.count : 0, latest),
       lastAt: Number.isFinite(record.session.lastAt) ? record.session.lastAt : null,
     },
     topics,
@@ -264,7 +266,7 @@ export function isLearned(record, topicId) {
   return entry.log.some(row => {
     const fresh = !seen.has(row.item);
     seen.add(row.item);
-    return fresh && row.role === 'recall' && row.outcome === 'unaided' && row.session > entry.firstSession;
+    return fresh && !row.repeat && row.role === 'recall' && row.outcome === 'unaided' && row.session > entry.firstSession;
   });
 }
 
