@@ -129,11 +129,14 @@ export function emptyRecord() {
 const OUTCOMES = new Set(['unaided', 'hinted', 'taught', 'answer-now']);
 const ROLES = new Set(['main', 'recall', 'variation']);
 const isObject = v => v !== null && typeof v === 'object' && !Array.isArray(v);
-// Safe integers only, so a saved counter can always be advanced by one.
-const isCount = v => Number.isSafeInteger(v) && v >= 0;
+// A saved counter must stay a safe integer after one more session.
+const isCount = v => Number.isSafeInteger(v) && v >= 0 && v < Number.MAX_SAFE_INTEGER;
+const isFlag = v => v === undefined || typeof v === 'boolean';
+const maxOf = (values, start) => values.reduce((a, b) => (b > a ? b : a), start);
 
 function normalizeRow(row) {
-  if (!isObject(row) || typeof row.item !== 'string' || !row.item || !OUTCOMES.has(row.outcome) || !ROLES.has(row.role) || !isCount(row.session)) return null;
+  if (!isObject(row) || !isFlag(row.pending) || !isFlag(row.repeat)) return null;
+  if (typeof row.item !== 'string' || !row.item || !OUTCOMES.has(row.outcome) || !ROLES.has(row.role) || !isCount(row.session)) return null;
   // A pending row records help, so it needs an attempt id and a helped outcome.
   if (row.pending === true && (typeof row.attempt !== 'string' || !row.attempt || row.outcome === 'unaided')) return null;
   return {
@@ -157,7 +160,8 @@ function rebuild(rows, firstSession) {
   if (!rows.length) return clean;
   const ordered = [...rows].sort((a, b) => a.session - b.session);
   if (isCount(firstSession) && firstSession <= ordered[0].session) clean.firstSession = firstSession;
-  for (const row of ordered) applyRow(clean, row);
+  const seen = new Set();
+  for (const row of ordered) applyRow(clean, row, seen);
   return clean;
 }
 
@@ -181,8 +185,9 @@ export function normalize(record) {
   }
   // The session count and last visit can't be behind the latest surviving row.
   const rows = Object.values(topics).flatMap(entry => entry.log);
-  const latest = Math.max(0, ...rows.map(row => row.session));
-  const lastRowAt = Math.max(-Infinity, ...rows.map(row => row.at ?? -Infinity));
+  // Reduce, not spread: a long history must not overflow the argument list.
+  const latest = maxOf(rows.map(row => row.session), 0);
+  const lastRowAt = maxOf(rows.map(row => row.at ?? -Infinity), -Infinity);
   const lastAt = Math.max(Number.isFinite(header.lastAt) ? header.lastAt : -Infinity, lastRowAt);
   return {
     version: 1,
@@ -252,9 +257,11 @@ export function recordOutcome(record, topicId, {item, outcome, hintLevel = 0, ro
 
 // Appends one row and moves the schedule. A row already marked as a repeat
 // stays one, even if the row it repeated was lost.
-function applyRow(entry, row) {
+// seen lets a replay check repeats in constant time instead of rescanning the log.
+function applyRow(entry, row, seen = new Set(entry.log.map(r => r.item))) {
   const {session, item, outcome, role} = row;
-  const repeat = row.repeat === true || entry.log.some(r => r.item === item);
+  const repeat = row.repeat === true || seen.has(item);
+  seen.add(item);
   const {repeat: _, ...rest} = row;
   entry.log.push({...rest, ...(repeat ? {repeat: true} : {})});
   if (entry.firstSession === null) entry.firstSession = session;

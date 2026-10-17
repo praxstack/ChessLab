@@ -342,6 +342,20 @@ test('a finished attempt keeps its role, and the live header matches a reload', 
   assert.equal(big.session.count, 0, 'a counter that can not be advanced is reset');
 });
 
+test('repair rejects odd flags and the largest counter, and handles a long history', () => {
+  const row = {session: 2, item: 'r1', outcome: 'unaided', role: 'recall', at: start};
+  const odd = normalize({version: 1, session: {count: 2, lastAt: start}, topics: {x: {
+    log: [{session: 1, item: 'm', outcome: 'taught', role: 'main', at: start}, {...row, pending: 'true', attempt: 'a1'}, {...row, item: 'r2', repeat: 1}],
+    stage: 0, due: 2, firstSession: 1,
+  }}});
+  assert.deepEqual(odd.topics.x.log.map(r => r.item), ['m'], 'a pending or repeat marker that is not a boolean drops the row');
+  assert.equal(isLearned(odd, 'x'), false);
+  assert.equal(normalize({version: 1, session: {count: Number.MAX_SAFE_INTEGER, lastAt: null}, topics: {}}).session.count, 0);
+  const log = Array.from({length: 200000}, (_, i) => ({session: 1, item: `v${i}`, outcome: 'unaided', role: 'variation', at: start + i}));
+  const long = normalize({version: 1, session: {count: 1, lastAt: null}, topics: {x: {log}}});
+  assert.equal(long.session.lastAt, start + 199999);
+});
+
 test('an outcome needs a position or puzzle id', () => {
   const rec = touchSession(emptyRecord(), start);
   for (const item of [undefined, '', 7]) assert.throws(() => recordOutcome(rec, 'x', {item, outcome: 'unaided', role: 'recall'}, start), TypeError);
