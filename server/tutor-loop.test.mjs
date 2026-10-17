@@ -301,6 +301,36 @@ test('repair rebuilds stage and due from the log, and ignores bad timestamps', (
   assert.equal(after.topics.x.due, 2 + INTERVALS[1]);
 });
 
+test('repair replays rows in session order and drops empty ids', () => {
+  const rec = normalize({version: 1, session: {count: 2, lastAt: start}, topics: {x: {
+    log: [
+      {session: 2, item: 'r1', outcome: 'unaided', role: 'recall', at: start},
+      {session: 1, item: 'm', outcome: 'taught', role: 'main', at: start},
+      {session: 2, item: '', outcome: 'unaided', role: 'recall', at: start},
+    ],
+    stage: 0, due: 2, firstSession: 1,
+  }}});
+  assert.deepEqual(rec.topics.x.log.map(row => row.item), ['m', 'r1']);
+  assert.equal(rec.topics.x.stage, 1, 'the session 2 recall was due, so it advances');
+  assert.equal(rec.topics.x.due, 2 + INTERVALS[1]);
+});
+
+test('a finished pending attempt leaves the same schedule as a replay of the log', () => {
+  let rec = touchSession(emptyRecord(), start);
+  rec = recordOutcome(rec, 'x', {item: 'm', outcome: 'taught'}, start);
+  rec = touchSession(rec, start + SESSION_GAP_MS);
+  rec = recordOutcome(rec, 'x', {item: 'r0', outcome: 'unaided', role: 'recall'}, start + SESSION_GAP_MS);
+  for (let i = 2; i <= 4; i++) rec = touchSession(rec, start + i * SESSION_GAP_MS);
+  assert.equal(topicStatus(rec, 'x').state, 'due');
+  const now = start + 4 * SESSION_GAP_MS;
+  rec = recordOutcome(rec, 'x', {item: 'r1', outcome: 'hinted', hintLevel: 1, role: 'recall', pending: true, attempt: 'a1'}, now);
+  rec = recordOutcome(rec, 'x', {item: 'r2', outcome: 'unaided', role: 'recall'}, now);
+  rec = recordOutcome(rec, 'x', {item: 'r1', outcome: 'hinted', hintLevel: 1, role: 'recall', attempt: 'a1'}, now);
+  const replayed = normalize(rec).topics.x;
+  assert.equal(rec.topics.x.stage, 2, 'r2 was a due recall once the pending row is undone');
+  assert.deepEqual([rec.topics.x.stage, rec.topics.x.due, rec.topics.x.firstSession], [replayed.stage, replayed.due, replayed.firstSession]);
+});
+
 test('an outcome needs a position or puzzle id', () => {
   const rec = touchSession(emptyRecord(), start);
   for (const item of [undefined, '', 7]) assert.throws(() => recordOutcome(rec, 'x', {item, outcome: 'unaided', role: 'recall'}, start), TypeError);

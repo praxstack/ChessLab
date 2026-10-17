@@ -132,7 +132,7 @@ const isObject = v => v !== null && typeof v === 'object' && !Array.isArray(v);
 const isCount = v => Number.isInteger(v) && v >= 0;
 
 function normalizeRow(row) {
-  if (!isObject(row) || typeof row.item !== 'string' || !OUTCOMES.has(row.outcome) || !ROLES.has(row.role) || !isCount(row.session)) return null;
+  if (!isObject(row) || typeof row.item !== 'string' || !row.item || !OUTCOMES.has(row.outcome) || !ROLES.has(row.role) || !isCount(row.session)) return null;
   // A pending row records help, so it needs an attempt id and a helped outcome.
   if (row.pending === true && (typeof row.attempt !== 'string' || !row.attempt || row.outcome === 'unaided')) return null;
   return {
@@ -147,18 +147,22 @@ function normalizeRow(row) {
   };
 }
 
-// The log is the source of truth: stage, due and firstSession are rebuilt by
-// replaying the surviving rows, so they can never disagree with the log.
+// The log is the source of truth: stage, due and firstSession come from
+// replaying its rows in session order, so they can never disagree with it.
+// A first exposure earlier than every row is kept, because it means earlier
+// rows were lost.
+function rebuild(rows, firstSession) {
+  const clean = {log: [], stage: 0, due: null, firstSession: null};
+  if (!rows.length) return clean;
+  const ordered = [...rows].sort((a, b) => a.session - b.session);
+  if (isCount(firstSession) && firstSession <= ordered[0].session) clean.firstSession = firstSession;
+  for (const row of ordered) applyRow(clean, row);
+  return clean;
+}
+
 function normalizeEntry(entry) {
   if (!isObject(entry) || !Array.isArray(entry.log)) return null;
-  const log = entry.log.map(normalizeRow).filter(Boolean);
-  const clean = {log: [], stage: 0, due: null, firstSession: null};
-  if (!log.length) return clean;
-  // A stored first exposure earlier than every surviving row means earlier rows were lost.
-  const earliest = Math.min(...log.map(row => row.session));
-  if (isCount(entry.firstSession) && entry.firstSession <= earliest) clean.firstSession = entry.firstSession;
-  for (const row of log) applyRow(clean, row);
-  return clean;
+  return rebuild(entry.log.map(normalizeRow).filter(Boolean), entry.firstSession);
 }
 
 // Saved progress may come from an older build or a bad write. Keep what is
@@ -221,7 +225,8 @@ export function recordOutcome(record, topicId, {item, outcome, hintLevel = 0, ro
   if (pending && (typeof attempt !== 'string' || !attempt || outcome === 'unaided')) throw new RangeError('A pending record needs an attempt id and a helped outcome.');
   const next = structuredClone(record);
   const session = next.session.count;
-  const entry = topicEntry(next, topicId);
+  let entry = topicEntry(next, topicId);
+  let repeat = false;
   // The pending row may not be last if another position on this tag finished in between.
   const at = attempt ? entry.log.findLastIndex(row => row.pending && row.attempt === attempt && row.item === item) : -1;
   if (at !== -1) {
@@ -229,8 +234,11 @@ export function recordOutcome(record, topicId, {item, outcome, hintLevel = 0, ro
     const [held] = entry.log.splice(at, 1);
     if (HELP[held.outcome] > HELP[outcome]) outcome = held.outcome;
     hintLevel = Math.max(hintLevel, held.hintLevel);
+    repeat = held.repeat === true;
+    // Undo what the pending row did to the schedule before the outcome lands.
+    entry = rebuild(entry.log, entry.firstSession);
   }
-  applyRow(entry, {session, item, outcome, hintLevel, role, at: now, ...(pending ? {pending: true, attempt} : {})});
+  applyRow(entry, {session, item, outcome, hintLevel, role, at: now, ...(repeat ? {repeat: true} : {}), ...(pending ? {pending: true, attempt} : {})});
   next.topics[topicId] = entry;
   return next;
 }
