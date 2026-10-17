@@ -263,6 +263,30 @@ test('repair keeps the session count and repeat markers that surviving rows impl
   assert.equal(isLearned(rec, 'x'), false, 'a saved repeat never counts, even if its first row was lost');
 });
 
+test('a pending attempt is found even when another position finished after it', () => {
+  let rec = touchSession(emptyRecord(), start);
+  rec = recordOutcome(rec, 'x', {item: 'm1', outcome: 'hinted', hintLevel: 1, pending: true, attempt: 'a1'}, start);
+  rec = recordOutcome(rec, 'x', {item: 'm2', outcome: 'unaided'}, start);
+  rec = recordOutcome(rec, 'x', {item: 'm1', outcome: 'taught', attempt: 'a1'}, start);
+  assert.deepEqual(rec.topics.x.log.map(row => [row.item, row.outcome, Boolean(row.pending), Boolean(row.repeat)]), [['m2', 'unaided', false, false], ['m1', 'taught', false, false]]);
+  assert.throws(() => recordOutcome(rec, 'x', {item: 'm3', outcome: 'hinted', pending: true}, start), RangeError);
+  assert.throws(() => recordOutcome(rec, 'x', {item: 'm3', outcome: 'unaided', pending: true, attempt: 'a3'}, start), RangeError);
+});
+
+test('repair drops impossible pending rows, resets empty topics and keeps topics under a broken header', () => {
+  const good = {session: 5, item: 'main', outcome: 'taught', role: 'main', at: start};
+  const rec = normalize({version: 1, session: null, topics: {
+    x: {log: [good, {session: 6, item: 'r1', outcome: 'unaided', role: 'recall', pending: true}], stage: 0, due: 6, firstSession: 5},
+    y: {log: [{session: 'bad'}], stage: 2, due: 9, firstSession: 50},
+  }});
+  assert.equal(rec.session.count, 5, 'the header is rebuilt from the rows');
+  assert.equal(rec.session.lastAt, start, 'and so is the last visit');
+  assert.equal(rec.topics.x.log.length, 1, 'a pending unaided row with no attempt is dropped');
+  assert.equal(isLearned(rec, 'x'), false);
+  assert.deepEqual(rec.topics.y, {log: [], stage: 0, due: null, firstSession: null});
+  assert.equal(touchSession(rec, start + H).session.count, 5, 'a visit soon after the last row stays in the same session');
+});
+
 test('a reload mid attempt, then an unaided solve, stays hinted and moves nothing', () => {
   let rec = touchSession(emptyRecord(), start);
   rec = recordOutcome(rec, 'x', {item: 'm', outcome: 'hinted', hintLevel: 1, pending: true, attempt: 'a1'}, start);

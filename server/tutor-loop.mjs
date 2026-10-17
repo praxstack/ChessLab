@@ -133,6 +133,8 @@ const isCount = v => Number.isInteger(v) && v >= 0;
 
 function normalizeRow(row) {
   if (!isObject(row) || typeof row.item !== 'string' || !OUTCOMES.has(row.outcome) || !ROLES.has(row.role) || !isCount(row.session)) return null;
+  // A pending row records help, so it needs an attempt id and a helped outcome.
+  if (row.pending === true && (typeof row.attempt !== 'string' || !row.attempt || row.outcome === 'unaided')) return null;
   return {
     session: row.session,
     item: row.item,
@@ -141,28 +143,32 @@ function normalizeRow(row) {
     role: row.role,
     at: typeof row.at === 'number' ? row.at : null,
     ...(row.repeat === true ? {repeat: true} : {}),
-    ...(row.pending === true ? {pending: true, attempt: typeof row.attempt === 'string' ? row.attempt : null} : {}),
+    ...(row.pending === true ? {pending: true, attempt: row.attempt} : {}),
   };
 }
 
 function normalizeEntry(entry) {
   if (!isObject(entry) || !Array.isArray(entry.log)) return null;
   const log = entry.log.map(normalizeRow).filter(Boolean);
+  // With no surviving rows the topic starts over as new.
+  if (!log.length) return {log, stage: 0, due: null, firstSession: null};
   // The first exposure can't be later than the earliest surviving row.
-  const earliest = log.length ? Math.min(...log.map(row => row.session)) : null;
+  const earliest = Math.min(...log.map(row => row.session));
   const stored = isCount(entry.firstSession) ? entry.firstSession : null;
   return {
     log,
     stage: isCount(entry.stage) && entry.stage < INTERVALS.length ? entry.stage : 0,
     due: isCount(entry.due) ? entry.due : null,
-    firstSession: earliest === null ? stored : stored !== null && stored <= earliest ? stored : earliest,
+    firstSession: stored !== null && stored <= earliest ? stored : earliest,
   };
 }
 
 // Saved progress may come from an older build or a bad write. Keep what is
 // well formed and drop the rest, so a damaged record never breaks a page.
 export function normalize(record) {
-  if (!isObject(record) || record.version !== 1 || !isObject(record.session)) return emptyRecord();
+  if (!isObject(record) || record.version !== 1) return emptyRecord();
+  // A damaged session header falls back to defaults; the topics are still kept.
+  const header = isObject(record.session) ? record.session : {};
   const topics = {};
   if (isObject(record.topics)) {
     for (const [id, entry] of Object.entries(record.topics)) {
@@ -170,13 +176,16 @@ export function normalize(record) {
       if (clean) topics[id] = clean;
     }
   }
-  // The session count can't be behind the latest surviving row.
-  const latest = Math.max(0, ...Object.values(topics).flatMap(entry => entry.log.map(row => row.session)));
+  // The session count and last visit can't be behind the latest surviving row.
+  const rows = Object.values(topics).flatMap(entry => entry.log);
+  const latest = Math.max(0, ...rows.map(row => row.session));
+  const lastRowAt = Math.max(-Infinity, ...rows.map(row => row.at ?? -Infinity));
+  const lastAt = Math.max(Number.isFinite(header.lastAt) ? header.lastAt : -Infinity, lastRowAt);
   return {
     version: 1,
     session: {
-      count: Math.max(isCount(record.session.count) ? record.session.count : 0, latest),
-      lastAt: Number.isFinite(record.session.lastAt) ? record.session.lastAt : null,
+      count: Math.max(isCount(header.count) ? header.count : 0, latest),
+      lastAt: Number.isFinite(lastAt) ? lastAt : null,
     },
     topics,
   };
@@ -210,13 +219,15 @@ const HELP = {unaided: 0, hinted: 1, taught: 2, 'answer-now': 2};
 
 export function recordOutcome(record, topicId, {item, outcome, hintLevel = 0, role = 'main', pending = false, attempt = null}, now) {
   if (!OUTCOMES.has(outcome) || !ROLES.has(role)) throw new RangeError('Unknown outcome or role.');
+  if (pending && (typeof attempt !== 'string' || !attempt || outcome === 'unaided')) throw new RangeError('A pending record needs an attempt id and a helped outcome.');
   const next = structuredClone(record);
   const session = next.session.count;
   const entry = topicEntry(next, topicId);
-  const last = entry.log.at(-1);
-  if (attempt && last?.pending && last.attempt === attempt && last.item === item) {
+  // The pending row may not be last if another position on this tag finished in between.
+  const at = attempt ? entry.log.findLastIndex(row => row.pending && row.attempt === attempt && row.item === item) : -1;
+  if (at !== -1) {
     // The finished outcome never claims less help than was already recorded.
-    const held = entry.log.pop();
+    const [held] = entry.log.splice(at, 1);
     if (HELP[held.outcome] > HELP[outcome]) outcome = held.outcome;
     hintLevel = Math.max(hintLevel, held.hintLevel);
   }
