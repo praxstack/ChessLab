@@ -69,6 +69,18 @@ test('a hint asked first makes the solve hinted, and a miss moves to the next ru
   assert.equal(tryMove(state, wrong).result.hint, null);
 });
 
+test('the outcome so far is exposed after the try step, before the attempt ends', () => {
+  assert.equal(pendingOutcome(createAttempt(flagged)), null);
+  assert.equal(pendingOutcome(showAnswer(createAttempt(flagged))), 'answer-now');
+  const taught = tryMove(tryMove(createAttempt(flagged), wrong).state, wrong).state;
+  assert.equal(pendingOutcome(taught), 'taught');
+  const solved = tryMove(createAttempt(flagged), right).state;
+  assert.equal(pendingOutcome(solved), null, 'unaided so far needs no record yet');
+  assert.equal(pendingOutcome(answerWhy(solved, {choice: 1, correct: false}).state), 'hinted');
+  assert.equal(pendingOutcome(answerWhy(solved, {choice: 0, correct: true}).state), null);
+  assert.equal(pendingOutcome(done(solved)), null, 'a finished attempt records its credit instead');
+});
+
 test('show answer and skip end the try step honestly', () => {
   const shown = showAnswer(createAttempt(flagged));
   assert.equal(shown.outcome, 'answer-now');
@@ -164,6 +176,25 @@ test('same-sitting puzzles and repeats never count as learned', () => {
   assert.equal(isLearned(rec, 'x'), false, 'recognising a seen puzzle never counts');
   rec = recordOutcome(rec, 'x', {item: 'r1', outcome: 'unaided', role: 'recall'}, t);
   assert.equal(isLearned(rec, 'x'), true, 'a fresh recall puzzle does');
+});
+
+test('a flagged move from another game never advances the interval or delays recall', () => {
+  let t = start;
+  let rec = touchSession(emptyRecord(), t);
+  rec = recordOutcome(rec, 'x', {item: 'game-1:ply-9', outcome: 'unaided'}, t);
+  rec = touchSession(rec, (t += SESSION_GAP_MS));
+  const due = rec.topics.x.due;
+  assert.equal(topicStatus(rec, 'x').state, 'due');
+  rec = recordOutcome(rec, 'x', {item: 'game-2:ply-14', outcome: 'unaided', role: 'main'}, t);
+  assert.equal(rec.topics.x.stage, 0, 'only a recall puzzle advances the interval');
+  assert.equal(rec.topics.x.due, due, 'the recall check stays due');
+  assert.equal(topicStatus(rec, 'x').state, 'due');
+  rec = recordOutcome(rec, 'x', {item: 'r1', outcome: 'unaided', role: 'recall'}, t);
+  assert.equal(rec.topics.x.stage, 1);
+  assert.equal(rec.topics.x.due, rec.session.count + INTERVALS[1]);
+  rec = recordOutcome(rec, 'x', {item: 'game-3:ply-30', outcome: 'taught', role: 'main'}, t);
+  assert.equal(rec.topics.x.stage, 0, 'a new mistake on the idea resets the interval');
+  assert.equal(rec.topics.x.due, rec.session.count + 1);
 });
 
 test('a same-sitting puzzle is evidence only and never moves the schedule', () => {

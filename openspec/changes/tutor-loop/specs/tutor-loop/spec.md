@@ -19,7 +19,7 @@ After the try step, the learner SHALL pick one of three answers once. The learne
 - **THEN** the attempt is credited as hinted and the tag comes back next session
 
 ### Requirement: TL-003 Session-counted recall
-A visit SHALL open a new session when at least four hours have passed since the last one. Each mistake tag SHALL be one recall topic. An unaided solve SHALL schedule the tag 1, then 3, then 6 sessions later, advancing only on a due recall in a later session. A hinted solve SHALL schedule it for the next session. A taught or answer-now outcome SHALL reset the interval to the next session. A same-sitting puzzle or a repeat of a seen position SHALL be logged without moving the schedule, except that a repeated recall when the puzzle pool is empty SHALL move the next due session without advancing the interval.
+A visit SHALL open a new session when at least four hours have passed since the last one. Each mistake tag SHALL be one recall topic. An unaided solve SHALL schedule the tag 1, then 3, then 6 sessions later, advancing only on an unaided due recall puzzle in a later session. A flagged move from another game on the same tag SHALL NOT advance the interval or push a scheduled recall later. A hinted solve SHALL schedule it for the next session. A taught or answer-now outcome SHALL reset the interval to the next session. A same-sitting puzzle or a repeat of a seen position SHALL be logged without moving the schedule, except that a repeated recall when the puzzle pool is empty SHALL move the next due session without advancing the interval.
 
 #### Scenario: Missed week
 - **WHEN** a tag was due and the learner does not visit for a week
@@ -33,7 +33,7 @@ A tag SHALL count as learned only after an unaided solve of a fresh recall puzzl
 - **THEN** the tag is not learned
 
 ### Requirement: TL-005 Progress survives reloads
-Help SHALL be recorded as it is used, so a reload mid-attempt cannot turn a helped attempt into an unaided one. Only the finished outcome of the same attempt SHALL replace that record. Saved progress that is malformed SHALL be repaired by keeping valid rows and dropping the rest.
+Help SHALL be recorded as it is used, so a reload mid-attempt cannot turn a helped attempt into an unaided one. This includes a shown answer, a taught move and a wrong say-why pick, which are recorded before the attempt ends. Only the finished outcome of the same attempt SHALL replace that record. Saved progress that is malformed SHALL be repaired by keeping valid rows and dropping the rest.
 
 #### Scenario: Reload after a hint
 - **WHEN** the learner reloads after a hint and then solves the position unaided

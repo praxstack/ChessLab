@@ -99,8 +99,13 @@ export function finish(state) {
 
 // Help used so far, for recording before the attempt ends, so a reload in the
 // middle can't turn a helped attempt into an unaided one.
+// After the try step this is the outcome so far: taught, answer-now, or
+// hinted for a right move with a wrong reason.
 export function pendingOutcome(state) {
-  return state.step === 'try' && (state.misses > 0 || state.hints > 0) ? 'hinted' : null;
+  if (state.step === 'try') return state.misses > 0 || state.hints > 0 ? 'hinted' : null;
+  if (state.step !== 'why' && state.step !== 'explain') return null;
+  if (state.outcome !== 'unaided') return state.outcome;
+  return state.why && !state.why.correct ? 'hinted' : null;
 }
 
 // The outcome recall sees. Finding the move but picking the wrong reason gets
@@ -212,17 +217,22 @@ export function recordOutcome(record, topicId, {item, outcome, hintLevel = 0, ro
   if (entry.firstSession === null) entry.firstSession = session;
 
   if (role !== 'variation' && !repeat) {
-    const isDueRecall = entry.due !== null && session >= entry.due && session > entry.firstSession;
+    // Only a recall puzzle can advance the interval. A flagged move from
+    // another game on the same tag is new evidence, not the recall check.
+    const isDueRecall = role === 'recall' && entry.due !== null && session >= entry.due && session > entry.firstSession;
+    let due;
     if (outcome === 'unaided') {
       entry.stage = isDueRecall ? Math.min(entry.stage + 1, INTERVALS.length - 1) : entry.stage;
-      entry.due = session + INTERVALS[entry.stage];
+      due = session + INTERVALS[entry.stage];
     } else if (outcome === 'hinted') {
-      entry.due = session + 1;
+      due = session + 1;
     } else {
       // taught or answer-now: a small refresher next session, interval reset
       entry.stage = 0;
-      entry.due = session + 1;
+      due = session + 1;
     }
+    // A new flagged move never pushes a scheduled recall later.
+    entry.due = role === 'main' && entry.due !== null ? Math.min(entry.due, due) : due;
   } else if (role === 'recall' && repeat) {
     // The puzzle pool for this tag ran out, so a seen puzzle came back. It
     // can't advance the stage or count as learned, but it still moves the

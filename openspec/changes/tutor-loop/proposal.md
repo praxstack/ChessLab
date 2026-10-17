@@ -17,7 +17,7 @@ One flagged move from a reviewed game goes through these steps:
 5. Replay: the engine line plays out on the board with chalk-drawn arrows and a short label at each step.
 6. Play it out: the learner plays the position on against a bot.
 7. New puzzle, same idea: a puzzle from the catalogue with the same mistake tag.
-8. Recall later: the tag comes back after 1, 3 and 6 sessions until the learner solves a fresh puzzle on it unaided in a later session.
+8. Recall later: the tag comes back after 1, 3 and 6 sessions. It counts as learned once the learner solves a fresh puzzle on it unaided in a later session.
 
 Decisions by the founder on 17 October 2026:
 
