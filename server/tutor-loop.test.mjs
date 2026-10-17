@@ -263,12 +263,12 @@ test('repair keeps the session count and repeat markers that surviving rows impl
   assert.equal(isLearned(rec, 'x'), false, 'a saved repeat never counts, even if its first row was lost');
 });
 
-test('a pending attempt is found even when another position finished after it', () => {
+test('a pending attempt is finished in place even when another position finished after it', () => {
   let rec = touchSession(emptyRecord(), start);
   rec = recordOutcome(rec, 'x', {item: 'm1', outcome: 'hinted', hintLevel: 1, pending: true, attempt: 'a1'}, start);
   rec = recordOutcome(rec, 'x', {item: 'm2', outcome: 'unaided'}, start);
   rec = recordOutcome(rec, 'x', {item: 'm1', outcome: 'taught', attempt: 'a1'}, start);
-  assert.deepEqual(rec.topics.x.log.map(row => [row.item, row.outcome, Boolean(row.pending), Boolean(row.repeat)]), [['m2', 'unaided', false, false], ['m1', 'taught', false, false]]);
+  assert.deepEqual(rec.topics.x.log.map(row => [row.item, row.outcome, Boolean(row.pending), Boolean(row.repeat)]), [['m1', 'taught', false, false], ['m2', 'unaided', false, false]]);
   assert.throws(() => recordOutcome(rec, 'x', {item: 'm3', outcome: 'hinted', pending: true}, start), RangeError);
   assert.throws(() => recordOutcome(rec, 'x', {item: 'm3', outcome: 'unaided', pending: true, attempt: 'a3'}, start), RangeError);
 });
@@ -327,7 +327,8 @@ test('a finished pending attempt leaves the same schedule as a replay of the log
   rec = recordOutcome(rec, 'x', {item: 'r2', outcome: 'unaided', role: 'recall'}, now);
   rec = recordOutcome(rec, 'x', {item: 'r1', outcome: 'hinted', hintLevel: 1, role: 'recall', attempt: 'a1'}, now);
   const replayed = normalize(rec).topics.x;
-  assert.equal(rec.topics.x.stage, 2, 'r2 was a due recall once the pending row is undone');
+  assert.deepEqual(rec.topics.x.log.map(row => row.item), ['m', 'r0', 'r1', 'r2'], 'r1 keeps its place');
+  assert.equal(rec.topics.x.stage, 1, 'the due recall r1 needed a hint, so the stage holds');
   assert.deepEqual([rec.topics.x.stage, rec.topics.x.due, rec.topics.x.firstSession], [replayed.stage, replayed.due, replayed.firstSession]);
 });
 
@@ -354,6 +355,26 @@ test('repair rejects odd flags and the largest counter, and handles a long histo
   const log = Array.from({length: 200000}, (_, i) => ({session: 1, item: `v${i}`, outcome: 'unaided', role: 'variation', at: start + i}));
   const long = normalize({version: 1, session: {count: 1, lastAt: null}, topics: {x: {log}}});
   assert.equal(long.session.lastAt, start + 199999);
+});
+
+test('a second attempt on the same position before the first finishes', () => {
+  let rec = touchSession(emptyRecord(), start);
+  rec = recordOutcome(rec, 'x', {item: 'm', outcome: 'hinted', hintLevel: 1, pending: true, attempt: 'a1'}, start);
+  rec = recordOutcome(rec, 'x', {item: 'm', outcome: 'unaided', attempt: 'a2'}, start);
+  rec = recordOutcome(rec, 'x', {item: 'm', outcome: 'hinted', hintLevel: 1, attempt: 'a1'}, start);
+  assert.deepEqual(rec.topics.x.log.map(row => Boolean(row.repeat)), [false, true], 'only the later attempt is a repeat');
+  assert.equal(rec.topics.x.due, 2);
+  assert.deepEqual(normalize(rec).topics.x, rec.topics.x);
+});
+
+test('a repeat recall moves the schedule only when the tag is due', () => {
+  let rec = touchSession(emptyRecord(), start);
+  rec = recordOutcome(rec, 'x', {item: 'm', outcome: 'taught'}, start);
+  rec = touchSession(rec, start + SESSION_GAP_MS);
+  rec = recordOutcome(rec, 'x', {item: 'r1', outcome: 'unaided', role: 'recall'}, start + SESSION_GAP_MS);
+  const due = rec.topics.x.due;
+  rec = recordOutcome(rec, 'x', {item: 'r1', outcome: 'hinted', role: 'recall'}, start + SESSION_GAP_MS);
+  assert.equal(rec.topics.x.due, due, 'a second tab on the same puzzle does not pull the tag forward');
 });
 
 test('an outcome needs a position or puzzle id', () => {

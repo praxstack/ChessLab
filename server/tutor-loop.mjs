@@ -220,9 +220,10 @@ export function hasSeen(record, topicId, itemId) {
 // only, and so is any repeat of an item already in the log, because
 // recognising an answer seen before is not recall.
 //
-// pending: true records help as it is used. Only the finished outcome of the
-// same attempt id replaces that row. An abandoned pending row stays, so after
-// a reload the position counts as seen and anything more on it is a repeat.
+// pending: true records help as it is used. Only a later record of the same
+// attempt id replaces that row, in place, so the log reads as if the attempt
+// had been recorded once. An abandoned pending row stays, so after a reload
+// the position counts as seen and anything more on it is a repeat.
 const HELP = {unaided: 0, hinted: 1, taught: 2, 'answer-now': 2};
 
 export function recordOutcome(record, topicId, {item, outcome, hintLevel = 0, role, pending = false, attempt = null}, now) {
@@ -231,26 +232,28 @@ export function recordOutcome(record, topicId, {item, outcome, hintLevel = 0, ro
   if (pending && (typeof attempt !== 'string' || !attempt || outcome === 'unaided')) throw new RangeError('A pending record needs an attempt id and a helped outcome.');
   const next = structuredClone(record);
   const session = next.session.count;
-  let entry = topicEntry(next, topicId);
-  let repeat = false;
-  // The pending row may not be last if another position on this tag finished in between.
-  const heldAt = attempt ? entry.log.findLastIndex(row => row.pending && row.attempt === attempt && row.item === item) : -1;
-  if (heldAt !== -1) {
-    // The finished outcome never claims less help than was already recorded.
-    const [held] = entry.log.splice(heldAt, 1);
-    if (HELP[held.outcome] > HELP[outcome]) outcome = held.outcome;
-    hintLevel = Math.max(hintLevel, held.hintLevel);
-    repeat = held.repeat === true;
-    // The attempt keeps the role it started with.
-    role = held.role;
-    // Undo what the pending row did to the schedule before the outcome lands.
-    entry = rebuild(entry.log, entry.firstSession);
-  }
-  role ??= 'main';
+  const entry = topicEntry(next, topicId);
   const at = Number.isFinite(now) ? now : null;
   // Recording an outcome is activity, so the live header matches what a reload rebuilds.
   if (at !== null) next.session.lastAt = Math.max(next.session.lastAt ?? -Infinity, at);
-  applyRow(entry, {session, item, outcome, hintLevel, role, at, ...(repeat ? {repeat: true} : {}), ...(pending ? {pending: true, attempt} : {})});
+  const tail = pending ? {pending: true, attempt} : {};
+  // The pending row may not be last if another position on this tag finished in between.
+  const heldAt = attempt ? entry.log.findLastIndex(row => row.pending && row.attempt === attempt && row.item === item) : -1;
+  if (heldAt !== -1) {
+    const held = entry.log[heldAt];
+    // The finished outcome never claims less help, and keeps the attempt's
+    // session, role and repeat marker. Rows recorded after it are unchanged,
+    // and the schedule is replayed as if this row had been final all along.
+    entry.log[heldAt] = {
+      session: held.session, item, role: held.role, at,
+      outcome: HELP[held.outcome] > HELP[outcome] ? held.outcome : outcome,
+      hintLevel: Math.max(hintLevel, held.hintLevel),
+      ...(held.repeat ? {repeat: true} : {}), ...tail,
+    };
+    next.topics[topicId] = rebuild(entry.log, entry.firstSession);
+    return next;
+  }
+  applyRow(entry, {session, item, outcome, hintLevel, role: role ?? 'main', at, ...tail});
   next.topics[topicId] = entry;
   return next;
 }
@@ -283,10 +286,11 @@ function applyRow(entry, row, seen = new Set(entry.log.map(r => r.item))) {
     }
     // A new flagged move never pushes a scheduled recall later.
     entry.due = role === 'main' && entry.due !== null ? Math.min(entry.due, due) : due;
-  } else if (role === 'recall' && repeat) {
-    // The puzzle pool for this tag ran out, so a seen puzzle came back. It
-    // can't advance the stage or count as learned, but it still moves the
-    // next due session so the tag doesn't stay due forever.
+  } else if (role === 'recall' && repeat && entry.due !== null && session >= entry.due) {
+    // The tag is due and its puzzle pool ran out, so a seen puzzle came back.
+    // It can't advance the stage or count as learned, but it still moves the
+    // next due session so the tag doesn't stay due forever. A repeat while
+    // the tag is not due (two tabs on one puzzle) leaves the schedule alone.
     if (outcome === 'taught' || outcome === 'answer-now') entry.stage = 0;
     entry.due = session + (outcome === 'unaided' ? INTERVALS[entry.stage] : 1);
   }
