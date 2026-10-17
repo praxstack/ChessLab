@@ -287,6 +287,25 @@ test('repair drops impossible pending rows, resets empty topics and keeps topics
   assert.equal(touchSession(rec, start + H).session.count, 5, 'a visit soon after the last row stays in the same session');
 });
 
+test('repair rebuilds stage and due from the log, and ignores bad timestamps', () => {
+  const rec = normalize({version: 1, session: {count: 2, lastAt: 'x'}, topics: {x: {
+    log: [{session: 1, item: 'main', outcome: 'taught', role: 'main', at: NaN}, {session: 1, item: 'v', outcome: 'unaided', role: 'variation', at: start}],
+    stage: 2, due: 40, firstSession: 1,
+  }}});
+  assert.equal(rec.topics.x.stage, 0, 'a taught row can only leave stage 0');
+  assert.equal(rec.topics.x.due, 2);
+  assert.equal(rec.topics.x.log[0].at, null);
+  assert.equal(rec.session.lastAt, start, 'a NaN time does not hide a good one');
+  const after = recordOutcome(rec, 'x', {item: 'r1', outcome: 'unaided', role: 'recall'}, start + SESSION_GAP_MS);
+  assert.equal(after.topics.x.stage, 1);
+  assert.equal(after.topics.x.due, 2 + INTERVALS[1]);
+});
+
+test('an outcome needs a position or puzzle id', () => {
+  const rec = touchSession(emptyRecord(), start);
+  for (const item of [undefined, '', 7]) assert.throws(() => recordOutcome(rec, 'x', {item, outcome: 'unaided', role: 'recall'}, start), TypeError);
+});
+
 test('a reload mid attempt, then an unaided solve, stays hinted and moves nothing', () => {
   let rec = touchSession(emptyRecord(), start);
   rec = recordOutcome(rec, 'x', {item: 'm', outcome: 'hinted', hintLevel: 1, pending: true, attempt: 'a1'}, start);
@@ -349,7 +368,7 @@ test('damaged saved progress is repaired, valid progress is kept', () => {
     mixed: {log: [good, {...good, outcome: 'guessed'}, {...good, role: 'boss'}, null, {...good, session: '1'}], stage: 99, due: 'soon'},
   }});
   assert.deepEqual(Object.keys(rec.topics), ['mixed']);
-  assert.deepEqual(rec.topics.mixed, {log: [good], stage: 0, due: null, firstSession: 1});
+  assert.deepEqual(rec.topics.mixed, {log: [good], stage: 0, due: 2, firstSession: 1}, 'stage and due are rebuilt from the log');
   for (const id of ['empty', 'bad', 'gone', 'mixed']) {
     assert.ok(!/NaN/.test(topicStatus(rec, id).label));
     isLearned(rec, id);

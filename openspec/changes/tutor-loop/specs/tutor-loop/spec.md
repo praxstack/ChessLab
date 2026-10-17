@@ -33,7 +33,7 @@ A tag SHALL count as learned only after an unaided solve of a fresh recall puzzl
 - **THEN** the tag is not learned
 
 ### Requirement: TL-005 Progress survives reloads
-Help SHALL be recorded as it is used, so a reload mid-attempt cannot turn a helped attempt into an unaided one. This includes a shown answer, a taught move and a wrong say-why pick, which are recorded before the attempt ends. Only the finished outcome of the same attempt SHALL replace that record, and it SHALL NOT claim less help than the record it replaces. Saved progress that is malformed SHALL be repaired by keeping valid rows and dropping the rest.
+Help SHALL be recorded as it is used, so a reload mid-attempt cannot turn a helped attempt into an unaided one. This includes a shown answer, a taught move and a wrong say-why pick, which are recorded before the attempt ends. Only the finished outcome of the same attempt SHALL replace that record, and it SHALL NOT claim less help than the record it replaces. Saved progress that is malformed SHALL be repaired by keeping valid rows, dropping the rest, and rebuilding the schedule and session header from the surviving rows.
 
 #### Scenario: Reload after a hint
 - **WHEN** the learner reloads after a hint and then solves the position unaided

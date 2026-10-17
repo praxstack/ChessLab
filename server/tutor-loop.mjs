@@ -141,26 +141,24 @@ function normalizeRow(row) {
     outcome: row.outcome,
     hintLevel: isCount(row.hintLevel) ? row.hintLevel : 0,
     role: row.role,
-    at: typeof row.at === 'number' ? row.at : null,
+    at: Number.isFinite(row.at) ? row.at : null,
     ...(row.repeat === true ? {repeat: true} : {}),
     ...(row.pending === true ? {pending: true, attempt: row.attempt} : {}),
   };
 }
 
+// The log is the source of truth: stage, due and firstSession are rebuilt by
+// replaying the surviving rows, so they can never disagree with the log.
 function normalizeEntry(entry) {
   if (!isObject(entry) || !Array.isArray(entry.log)) return null;
   const log = entry.log.map(normalizeRow).filter(Boolean);
-  // With no surviving rows the topic starts over as new.
-  if (!log.length) return {log, stage: 0, due: null, firstSession: null};
-  // The first exposure can't be later than the earliest surviving row.
+  const clean = {log: [], stage: 0, due: null, firstSession: null};
+  if (!log.length) return clean;
+  // A stored first exposure earlier than every surviving row means earlier rows were lost.
   const earliest = Math.min(...log.map(row => row.session));
-  const stored = isCount(entry.firstSession) ? entry.firstSession : null;
-  return {
-    log,
-    stage: isCount(entry.stage) && entry.stage < INTERVALS.length ? entry.stage : 0,
-    due: isCount(entry.due) ? entry.due : null,
-    firstSession: stored !== null && stored <= earliest ? stored : earliest,
-  };
+  if (isCount(entry.firstSession) && entry.firstSession <= earliest) clean.firstSession = entry.firstSession;
+  for (const row of log) applyRow(clean, row);
+  return clean;
 }
 
 // Saved progress may come from an older build or a bad write. Keep what is
@@ -218,6 +216,7 @@ export function hasSeen(record, topicId, itemId) {
 const HELP = {unaided: 0, hinted: 1, taught: 2, 'answer-now': 2};
 
 export function recordOutcome(record, topicId, {item, outcome, hintLevel = 0, role = 'main', pending = false, attempt = null}, now) {
+  if (typeof item !== 'string' || !item) throw new TypeError('An outcome needs a position or puzzle id.');
   if (!OUTCOMES.has(outcome) || !ROLES.has(role)) throw new RangeError('Unknown outcome or role.');
   if (pending && (typeof attempt !== 'string' || !attempt || outcome === 'unaided')) throw new RangeError('A pending record needs an attempt id and a helped outcome.');
   const next = structuredClone(record);
@@ -231,12 +230,18 @@ export function recordOutcome(record, topicId, {item, outcome, hintLevel = 0, ro
     if (HELP[held.outcome] > HELP[outcome]) outcome = held.outcome;
     hintLevel = Math.max(hintLevel, held.hintLevel);
   }
-  const repeat = entry.log.some(row => row.item === item);
-  entry.log.push({
-    session, item, outcome, hintLevel, role, at: now,
-    ...(repeat ? {repeat: true} : {}),
-    ...(pending ? {pending: true, attempt} : {}),
-  });
+  applyRow(entry, {session, item, outcome, hintLevel, role, at: now, ...(pending ? {pending: true, attempt} : {})});
+  next.topics[topicId] = entry;
+  return next;
+}
+
+// Appends one row and moves the schedule. A row already marked as a repeat
+// stays one, even if the row it repeated was lost.
+function applyRow(entry, row) {
+  const {session, item, outcome, role} = row;
+  const repeat = row.repeat === true || entry.log.some(r => r.item === item);
+  const {repeat: _, ...rest} = row;
+  entry.log.push({...rest, ...(repeat ? {repeat: true} : {})});
   if (entry.firstSession === null) entry.firstSession = session;
 
   if (role !== 'variation' && !repeat) {
@@ -263,8 +268,6 @@ export function recordOutcome(record, topicId, {item, outcome, hintLevel = 0, ro
     if (outcome === 'taught' || outcome === 'answer-now') entry.stage = 0;
     entry.due = session + (outcome === 'unaided' ? INTERVALS[entry.stage] : 1);
   }
-  next.topics[topicId] = entry;
-  return next;
 }
 
 // Learned means an unaided recall, in a session after the first exposure, of
