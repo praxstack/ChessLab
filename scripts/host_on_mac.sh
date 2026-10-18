@@ -236,6 +236,8 @@ refresh_tunnel_agent() {
   # agent is put back so the site keeps its connection.
   [ -f "$AGENTS/$TUNNEL_LABEL.plist" ] || return 0
   grep -qF "<string>$(xml "$CLOUDFLARED")</string>" "$AGENTS/$TUNNEL_LABEL.plist" && return 0
+  # A stopped tunnel stays stopped; start loads it after checking for other connectors.
+  if ! launchctl print "gui/$(id -u)/$TUNNEL_LABEL" >/dev/null 2>&1; then write_tunnel_agent; return 0; fi
   cp "$AGENTS/$TUNNEL_LABEL.plist" "$AGENTS/$TUNNEL_LABEL.plist.previous"
   write_tunnel_agent
   if reload_agent "$TUNNEL_LABEL"; then rm -f "$AGENTS/$TUNNEL_LABEL.plist.previous"; return 0; fi
@@ -378,10 +380,13 @@ case "${1:-setup}" in
     # Copy the chosen file first: the safety backup below may rotate the oldest backup away.
     ( umask 077; cp "$file" "$DB.restoring" )
     usable_db "$DB.restoring" || { rm -f "$DB.restoring"; fail "$file isn't a complete AskTheMove database. Nothing was changed."; }
-    keep_replaced=
-    if [ -f "$DB" ] && usable_db "$DB"; then echo "Saving the current database first."; backup
-    elif [ -e "$DB" ]; then keep_replaced=1; fi
     stop_app || { rm -f "$DB.restoring"; fail "the app didn't stop within 30 seconds, so nothing was changed. Run scripts/host_on_mac.sh start, then try again."; }
+    # The safety backup is taken with the app stopped, so no write can land after it.
+    keep_replaced=
+    if [ -f "$DB" ] && usable_db "$DB"; then
+      echo "Saving the current database first."
+      ( backup ) || { rm -f "$DB.restoring"; load_agent "$APP_LABEL" || true; restart_app; fail "the safety backup of the current database failed, so nothing was changed."; }
+    elif [ -e "$DB" ]; then keep_replaced=1; fi
     # Keep the database being replaced until the restored one is serving.
     mkdir -m 700 "$DB.before-restore"
     for part in "$DB" "$DB-wal" "$DB-shm"; do [ -e "$part" ] && mv "$part" "$DB.before-restore/"; done
@@ -588,7 +593,8 @@ fi
 # so a failed check can't excuse the next run from it.
 host_marker="$HOME_DIR/.tunnel-host-$tunnel_id"
 had_tunnel_agent=0
-[ -f "$host_marker" ] && had_tunnel_agent=1
+# Only a connector running on this Mac now excuses the check; a Mac that was stopped must recheck.
+if [ -f "$host_marker" ] && launchctl print "gui/$(id -u)/$TUNNEL_LABEL" >/dev/null 2>&1; then had_tunnel_agent=1; fi
 write_tunnel_agent
 # Cloudflare spreads traffic over every running connector of a tunnel. Another Mac serving its own
 # database through the same tunnel would mix accounts, so stop ours and require that none are left.
