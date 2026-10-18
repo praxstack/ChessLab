@@ -284,21 +284,36 @@ swap_agents() {
 }
 
 lock_maintenance() {
-  # One setup, update or restore at a time; they share staging files and stop the app.
-  local lock="$HOME_DIR/.maintenance.lock"
+  # One setup, start, update or restore at a time; they share staging files and stop the app.
+  # The lock is a symlink whose target is the holder's process id, so taking it is one atomic step.
+  local lock="$HOME_DIR/.maintenance.lock" reap="$HOME_DIR/.maintenance.reap" holder
   mkdir -p "$HOME_DIR"
-  if ! mkdir "$lock" 2>/dev/null; then
-    local holder; holder="$(cat "$lock/pid" 2>/dev/null || true)"
-    if [ -n "$holder" ] && kill -0 "$holder" 2>/dev/null; then fail "another setup, update or restore is running (process $holder). Wait for it to finish."; fi
-    rm -rf "$lock"; mkdir "$lock" || fail "couldn't take the maintenance lock at $lock."
-  fi
-  echo $$ > "$lock/pid"
-  trap 'rm -rf "$HOME_DIR/.maintenance.lock"' EXIT
+  for _ in $(seq 1 10); do
+    if ln -s "$$" "$lock" 2>/dev/null; then
+      trap '[ "$(readlink "$HOME_DIR/.maintenance.lock" 2>/dev/null)" != "$$" ] || rm -f "$HOME_DIR/.maintenance.lock"' EXIT
+      return 0
+    fi
+    holder="$(readlink "$lock" 2>/dev/null || true)"
+    if [ -n "$holder" ] && kill -0 "$holder" 2>/dev/null; then fail "another setup, start, update or restore is running (process $holder). Wait for it to finish."; fi
+    # The holder has exited. Only one process clears it, and only if it is still the lock it checked.
+    if mkdir "$reap" 2>/dev/null; then
+      [ "$(readlink "$lock" 2>/dev/null || true)" != "$holder" ] || rm -f "$lock"
+      rmdir "$reap"
+    fi
+    sleep 1
+  done
+  fail "couldn't take the maintenance lock at $lock. If no setup, start, update or restore is running, remove $lock and $reap, then try again."
+}
+
+load_agent() {
+  # stop disables the agents so they stay off after a restart; loading turns them back on.
+  launchctl enable "gui/$(id -u)/$1" 2>/dev/null || true
+  launchctl bootstrap "gui/$(id -u)" "$AGENTS/$1.plist"
 }
 
 reload_agent() {
   launchctl bootout "gui/$(id -u)/$1" 2>/dev/null || true
-  launchctl bootstrap "gui/$(id -u)" "$AGENTS/$1.plist"
+  load_agent "$1"
 }
 
 case "${1:-setup}" in
@@ -309,9 +324,13 @@ case "${1:-setup}" in
     echo "Latest backup: ${latest:-none yet}"
     exit 0 ;;
   stop)
-    launchctl bootout "gui/$(id -u)/$APP_LABEL" 2>/dev/null || true
-    launchctl bootout "gui/$(id -u)/$TUNNEL_LABEL" 2>/dev/null || true
-    echo "Stopped. Run scripts/host_on_mac.sh start to start again."
+    # Disabled agents don't load at the next login either, so a stopped Mac stays off the tunnel
+    # (for example after the site has moved to another Mac) until start runs its checks.
+    for label in "$APP_LABEL" "$TUNNEL_LABEL"; do
+      launchctl disable "gui/$(id -u)/$label" 2>/dev/null || true
+      launchctl bootout "gui/$(id -u)/$label" 2>/dev/null || true
+    done
+    echo "Stopped, and it stays stopped after a restart. Run scripts/host_on_mac.sh start to start again."
     exit 0 ;;
   start)
     # Starts what setup installed, without reinstalling or rebuilding anything.
@@ -320,14 +339,22 @@ case "${1:-setup}" in
     done
     # Don't start the app while an update or restore has it stopped to move files.
     lock_maintenance
-    if ! launchctl print "gui/$(id -u)/$TUNNEL_LABEL" >/dev/null 2>&1; then
+    pick_node
+    CLOUDFLARED="$(command -v cloudflared)" || fail "cloudflared is missing; run scripts/host_on_mac.sh to set up again."
+    loaded() { launchctl print "gui/$(id -u)/$1" >/dev/null 2>&1; }
+    if ! loaded "$TUNNEL_LABEL"; then
       # Another Mac may have taken over the site while this one was stopped.
-      pick_node
-      CLOUDFLARED="$(command -v cloudflared)" || fail "cloudflared is missing; run scripts/host_on_mac.sh to set up again."
       require_no_other_connector
+      # Homebrew may have moved cloudflared since setup.
+      grep -qF "<string>$(xml "$CLOUDFLARED")</string>" "$AGENTS/$TUNNEL_LABEL.plist" || write_tunnel_agent
+    fi
+    if ! loaded "$APP_LABEL" && ! grep -qF "<string>$(xml "$NODE")</string>" "$AGENTS/$APP_LABEL.plist"; then
+      # The Node recorded at setup may be gone; start with the one picked here.
+      write_app_agent; write_backup_agent
+      if loaded "$BACKUP_LABEL"; then reload_agent "$BACKUP_LABEL"; fi
     fi
     for label in "$APP_LABEL" "$TUNNEL_LABEL" "$BACKUP_LABEL"; do
-      launchctl print "gui/$(id -u)/$label" >/dev/null 2>&1 || launchctl bootstrap "gui/$(id -u)" "$AGENTS/$label.plist"
+      loaded "$label" || load_agent "$label"
     done
     for _ in $(seq 1 30); do answers && { echo "Started."; exit 0; }; sleep 2; done
     tail -n 30 "$HOME_DIR/logs/app.log" >&2 || true
@@ -351,26 +378,35 @@ case "${1:-setup}" in
     # Copy the chosen file first: the safety backup below may rotate the oldest backup away.
     ( umask 077; cp "$file" "$DB.restoring" )
     usable_db "$DB.restoring" || { rm -f "$DB.restoring"; fail "$file isn't a complete AskTheMove database. Nothing was changed."; }
-    if [ -f "$DB" ] && usable_db "$DB"; then echo "Saving the current database first."; backup; fi
+    keep_replaced=
+    if [ -f "$DB" ] && usable_db "$DB"; then echo "Saving the current database first."; backup
+    elif [ -e "$DB" ]; then keep_replaced=1; fi
     stop_app || { rm -f "$DB.restoring"; fail "the app didn't stop within 30 seconds, so nothing was changed. Run scripts/host_on_mac.sh start, then try again."; }
     # Keep the database being replaced until the restored one is serving.
     mkdir -m 700 "$DB.before-restore"
     for part in "$DB" "$DB-wal" "$DB-shm"; do [ -e "$part" ] && mv "$part" "$DB.before-restore/"; done
     mv "$DB.restoring" "$DB"
-    if ! launchctl bootstrap "gui/$(id -u)" "$AGENTS/$APP_LABEL.plist" || ! app_starts; then
+    if ! load_agent "$APP_LABEL" || ! app_starts; then
       echo "The restored database didn't start, so the previous one is being put back." >&2
       # Unload first, so a restarting app can't recreate the database while files are swapped.
-      stop_app || true
+      stop_app || fail "the app didn't stop within 30 seconds, so nothing was put back yet. The previous database is in $DB.before-restore. Run scripts/host_on_mac.sh stop (restart the Mac if it still runs), move those files into $HOME_DIR in place of chesslab.sqlite and its -wal and -shm files, remove the folder, then run scripts/host_on_mac.sh start."
       rm -f "$DB" "$DB-wal" "$DB-shm"
       if [ -n "$(ls -A "$DB.before-restore")" ]; then
         mv "$DB.before-restore"/* "$HOME_DIR"/ || fail "couldn't put the previous database back. It is kept in $DB.before-restore; move its files into $HOME_DIR, then run scripts/host_on_mac.sh start."
       fi
       rmdir "$DB.before-restore"
-      launchctl bootstrap "gui/$(id -u)" "$AGENTS/$APP_LABEL.plist" 2>/dev/null || true
+      load_agent "$APP_LABEL" 2>/dev/null || true
       restart_app
       fail "the restore was undone; the app is running on the database it had before."
     fi
-    rm -rf "$DB.before-restore"
+    if [ -n "$keep_replaced" ]; then
+      # The replaced database failed its check, so no backup of it could be made. Keep it as it was.
+      replaced="$HOME_DIR/replaced-$(date -u +%Y%m%dT%H%M%SZ)"
+      mv "$DB.before-restore" "$replaced"
+      echo "The database that was replaced failed its check, so it was kept as-is in $replaced in case anything can be recovered from it."
+    else
+      rm -rf "$DB.before-restore"
+    fi
     echo "Restored $file and restarted. Anyone who signed in after that backup has to sign in again."
     exit 0 ;;
   update)
