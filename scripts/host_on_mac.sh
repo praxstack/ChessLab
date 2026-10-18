@@ -41,7 +41,8 @@ rotate_logs() {
   # Keep each log under about 10 MB, with one older copy, so a crash loop can't fill the disk.
   local log
   for log in "$HOME_DIR"/logs/*.log; do
-    [ -f "$log" ] && [ "$(wc -c < "$log")" -gt 10485760 ] && { mv -f "$log" "$log.1"; : > "$log"; }
+    # The app and cloudflared keep their log open (launchd appends), so copy, then truncate in place.
+    [ -f "$log" ] && [ "$(wc -c < "$log")" -gt 10485760 ] && { cp -f "$log" "$log.1" && : > "$log"; }
   done
   return 0
 }
