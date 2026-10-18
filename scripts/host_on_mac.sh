@@ -177,6 +177,42 @@ cat > "$AGENTS/$BACKUP_LABEL.plist" <<PLIST
 PLIST
 }
 
+write_tunnel_agent() {
+cat > "$AGENTS/$TUNNEL_LABEL.plist" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>$TUNNEL_LABEL</string>
+  <key>ProgramArguments</key><array>
+    <string>$(xml "$CLOUDFLARED")</string><string>tunnel</string><string>--config</string><string>$(xml "$TUNNEL_CONFIG")</string><string>run</string><string>$TUNNEL_NAME</string>
+  </array>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>StandardOutPath</key><string>$(xml "$HOME_DIR")/logs/tunnel.log</string>
+  <key>StandardErrorPath</key><string>$(xml "$HOME_DIR")/logs/tunnel.log</string>
+</dict></plist>
+PLIST
+}
+
+stop_app() {
+  launchctl bootout "gui/$(id -u)/$APP_LABEL" 2>/dev/null || true
+  for _ in $(seq 1 15); do answers || break; sleep 1; done
+  return 0
+}
+
+sync_env_stockfish() {
+  # Setup wrote Stockfish's absolute path into .env.beta. If that binary moved, point the line at
+  # the one found now and leave every other setting as it is.
+  [ -f "$ENV_FILE" ] && grep -q '^STOCKFISH_PATH=' "$ENV_FILE" || return 0
+  grep -qxF "STOCKFISH_PATH=$STOCKFISH" "$ENV_FILE" && return 0
+  local current
+  current="$(sed -n 's/^STOCKFISH_PATH=//p' "$ENV_FILE" | tail -n 1)"
+  [ -x "$current" ] && return 0
+  ( umask 077
+    awk -v p="$STOCKFISH" '/^STOCKFISH_PATH=/{print "STOCKFISH_PATH=" p; next} {print}' "$ENV_FILE" > "$ENV_FILE.next" ) \
+    && mv "$ENV_FILE.next" "$ENV_FILE" && echo "Pointed STOCKFISH_PATH in .env.beta at $STOCKFISH."
+}
+
 reload_agent() {
   launchctl bootout "gui/$(id -u)/$1" 2>/dev/null || true
   launchctl bootstrap "gui/$(id -u)" "$AGENTS/$1.plist"
@@ -215,16 +251,19 @@ case "${1:-setup}" in
     ( umask 077; cp "$file" "$DB.restoring" )
     usable_db "$DB.restoring" || { rm -f "$DB.restoring"; fail "$file isn't a complete AskTheMove database. Nothing was changed."; }
     if [ -f "$DB" ] && usable_db "$DB"; then echo "Saving the current database first."; backup; fi
-    launchctl bootout "gui/$(id -u)/$APP_LABEL" 2>/dev/null || true
-    for _ in $(seq 1 15); do answers || break; sleep 1; done
+    stop_app
     # Keep the database being replaced until the restored one is serving.
     rm -rf "$DB.before-restore"; mkdir -m 700 "$DB.before-restore"
     for part in "$DB" "$DB-wal" "$DB-shm"; do [ -e "$part" ] && mv "$part" "$DB.before-restore/"; done
     mv "$DB.restoring" "$DB"
     if ! launchctl bootstrap "gui/$(id -u)" "$AGENTS/$APP_LABEL.plist" || ! app_starts; then
       echo "The restored database didn't start, so the previous one is being put back." >&2
+      # Unload first, so a restarting app can't recreate the database while files are swapped.
+      stop_app
       rm -f "$DB" "$DB-wal" "$DB-shm"
-      mv "$DB.before-restore"/* "$HOME_DIR"/ 2>/dev/null || true
+      if [ -n "$(ls -A "$DB.before-restore")" ]; then
+        mv "$DB.before-restore"/* "$HOME_DIR"/ || fail "couldn't put the previous database back. It is kept in $DB.before-restore; move its files into $HOME_DIR, then run scripts/host_on_mac.sh start."
+      fi
       launchctl bootstrap "gui/$(id -u)" "$AGENTS/$APP_LABEL.plist" 2>/dev/null || true
       restart_app
       fail "the restore was undone; the app is running on the database it had before."
@@ -252,18 +291,41 @@ case "${1:-setup}" in
     # Node may have moved (for example nvm removed), so point the agents at the one chosen above.
     saved="$(mktemp -d)"
     cp "$AGENTS/$APP_LABEL.plist" "$AGENTS/$BACKUP_LABEL.plist" "$saved"/ 2>/dev/null || true
-    if ! ( build ) || ! write_app_agent || ! write_backup_agent \
+    sync_env_stockfish
+    # The new version may change the database when it starts. Copy it with the app stopped, so a
+    # rollback can put back exactly what the old version had.
+    snapshot="$DB.before-update"
+    rm -rf "$snapshot"; mkdir -m 700 "$snapshot"
+    take_snapshot() {
+      stop_app
+      for part in "$DB" "$DB-wal" "$DB-shm"; do [ ! -e "$part" ] || cp -p "$part" "$snapshot"/ || return 1; done
+      touch "$snapshot/.complete"
+    }
+    if ! ( build ) || ! write_app_agent || ! write_backup_agent || ! take_snapshot \
       || ! reload_agent "$BACKUP_LABEL" || ! reload_agent "$APP_LABEL" || ! app_starts; then
       echo "The update didn't come up, so the previous version is being put back." >&2
+      stop_app
+      if [ -f "$snapshot/.complete" ]; then
+        rm -f "$DB" "$DB-wal" "$DB-shm"
+        for part in "$snapshot"/*; do [ ! -e "$part" ] || cp -p "$part" "$HOME_DIR"/ \
+          || fail "couldn't put the database back. The copy from before the update is in $snapshot."; done
+      fi
       git reset -q --hard "$old"
       build
       cp "$saved"/*.plist "$AGENTS"/ 2>/dev/null || true
       reload_agent "$BACKUP_LABEL" || true
       reload_agent "$APP_LABEL" || true
       restart_app
-      fail "the update was undone; the site runs the version it had before."
+      rm -rf "$snapshot"
+      fail "the update was undone; the site runs the version and database it had before."
     fi
+    rm -rf "$snapshot"
     link_engine
+    # cloudflared may have moved too. Restart the tunnel only when its path changed.
+    if [ -f "$AGENTS/$TUNNEL_LABEL.plist" ] && ! grep -qF "<string>$(xml "$CLOUDFLARED")</string>" "$AGENTS/$TUNNEL_LABEL.plist"; then
+      write_tunnel_agent
+      reload_agent "$TUNNEL_LABEL"
+    fi
     echo "Updated and running."
     exit 0 ;;
   setup) ;;
@@ -308,6 +370,7 @@ if [ ! -f "$ENV_FILE" ]; then
   echo "Saved to .env.beta (only your user can read it; Git ignores it)."
 fi
 chmod 600 "$ENV_FILE"
+sync_env_stockfish
 
 say "Starting the app"
 # caffeinate keeps the Mac from idle-sleeping while the app runs. Closing a laptop lid still sleeps it.
@@ -353,20 +416,7 @@ YAML
 dns_existing=0
 "$CLOUDFLARED" tunnel route dns "$TUNNEL_NAME" "$HOSTNAME_PUBLIC" || dns_existing=1
 
-cat > "$AGENTS/$TUNNEL_LABEL.plist" <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0"><dict>
-  <key>Label</key><string>$TUNNEL_LABEL</string>
-  <key>ProgramArguments</key><array>
-    <string>$(xml "$CLOUDFLARED")</string><string>tunnel</string><string>--config</string><string>$(xml "$TUNNEL_CONFIG")</string><string>run</string><string>$TUNNEL_NAME</string>
-  </array>
-  <key>RunAtLoad</key><true/>
-  <key>KeepAlive</key><true/>
-  <key>StandardOutPath</key><string>$(xml "$HOME_DIR")/logs/tunnel.log</string>
-  <key>StandardErrorPath</key><string>$(xml "$HOME_DIR")/logs/tunnel.log</string>
-</dict></plist>
-PLIST
+write_tunnel_agent
 # Cloudflare spreads traffic over every running connector of a tunnel. Another Mac serving its own
 # database through the same tunnel would mix accounts, so stop ours and require that none are left.
 launchctl bootout "gui/$(id -u)/$TUNNEL_LABEL" 2>/dev/null || true
