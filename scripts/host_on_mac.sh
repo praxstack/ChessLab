@@ -16,6 +16,7 @@ set -euo pipefail
 HOSTNAME_PUBLIC="${ASKTHEMOVE_HOSTNAME:-app.askthemove.online}"
 TUNNEL_NAME=askthemove
 PORT=8780
+TUNNEL_METRICS=127.0.0.1:8781   # cloudflared answers /ready here once it has a live connection to Cloudflare
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 HOME_DIR="$HOME/AskTheMove"
 DB="$HOME_DIR/chesslab.sqlite"
@@ -41,6 +42,11 @@ sf_is_18() {
 node_major() { "$1" -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0; }
 
 answers() { curl -fsS --max-time 5 "http://127.0.0.1:$PORT/api/status" 2>/dev/null | grep -q '"inviteRequired":true'; }
+tunnel_ready() {
+  # Loaded is not connected: wait until this Mac's cloudflared reports a live Cloudflare connection.
+  for _ in $(seq 1 30); do curl -fsS --max-time 5 "http://$TUNNEL_METRICS/ready" >/dev/null 2>&1 && return 0; sleep 2; done
+  return 1
+}
 serving() {
   # The answer must come from this launch agent's process. Another ChessLab on the same port would
   # otherwise pass, and the tunnel would publish its database.
@@ -208,7 +214,7 @@ cat > "$AGENTS/$TUNNEL_LABEL.plist" <<PLIST
 <plist version="1.0"><dict>
   <key>Label</key><string>$TUNNEL_LABEL</string>
   <key>ProgramArguments</key><array>
-    <string>$(xml "$CLOUDFLARED")</string><string>tunnel</string><string>--config</string><string>$(xml "$TUNNEL_CONFIG")</string><string>run</string><string>$TUNNEL_NAME</string>
+    <string>$(xml "$CLOUDFLARED")</string><string>tunnel</string><string>--metrics</string><string>$TUNNEL_METRICS</string><string>--config</string><string>$(xml "$TUNNEL_CONFIG")</string><string>run</string><string>$TUNNEL_NAME</string>
   </array>
   <key>RunAtLoad</key><true/>
   <key>KeepAlive</key><true/>
@@ -254,7 +260,7 @@ refresh_tunnel_agent() {
   local old; old="$(sed -n 's|.*<string>\([^<]*\)</string><string>tunnel</string>.*|\1|p' "$AGENTS/$TUNNEL_LABEL.plist" | head -n 1)"
   cp "$AGENTS/$TUNNEL_LABEL.plist" "$AGENTS/$TUNNEL_LABEL.plist.previous"
   write_tunnel_agent
-  if reload_agent "$TUNNEL_LABEL"; then rm -f "$AGENTS/$TUNNEL_LABEL.plist.previous"; return 0; fi
+  if reload_agent "$TUNNEL_LABEL" && tunnel_ready; then rm -f "$AGENTS/$TUNNEL_LABEL.plist.previous"; return 0; fi
   if [ -n "$old" ] && [ ! -x "$old" ]; then
     # The previous agent names a cloudflared that no longer exists, so putting it back can't help.
     rm -f "$AGENTS/$TUNNEL_LABEL.plist.previous"
@@ -356,6 +362,13 @@ case "${1:-setup}" in
       launchctl disable "gui/$(id -u)/$label" 2>/dev/null || true
       launchctl bootout "gui/$(id -u)/$label" 2>/dev/null || true
     done
+    for _ in $(seq 1 15); do
+      launchctl print "gui/$(id -u)/$APP_LABEL" >/dev/null 2>&1 || launchctl print "gui/$(id -u)/$TUNNEL_LABEL" >/dev/null 2>&1 || break
+      sleep 1
+    done
+    if launchctl print "gui/$(id -u)/$APP_LABEL" >/dev/null 2>&1 || launchctl print "gui/$(id -u)/$TUNNEL_LABEL" >/dev/null 2>&1; then
+      fail "the app or tunnel is still loaded after 15 seconds. Run scripts/host_on_mac.sh stop again, or restart the Mac (they stay off after a restart)."
+    fi
     echo "Stopped, and it stays stopped after a restart. Run scripts/host_on_mac.sh start to start again."
     exit 0 ;;
   start)
@@ -371,8 +384,8 @@ case "${1:-setup}" in
     if ! loaded "$TUNNEL_LABEL"; then
       # Another Mac may have taken over the site while this one was stopped.
       require_no_other_connector
-      # Homebrew may have moved cloudflared since setup.
-      grep -qF "<string>$(xml "$CLOUDFLARED")</string>" "$AGENTS/$TUNNEL_LABEL.plist" || write_tunnel_agent
+      # Homebrew may have moved cloudflared since setup; rewriting also picks up this version's settings.
+      write_tunnel_agent
     fi
     if ! loaded "$APP_LABEL" && ! grep -qF "<string>$(xml "$NODE")</string>" "$AGENTS/$APP_LABEL.plist"; then
       # The Node recorded at setup may be gone; start with the one picked here.
@@ -382,7 +395,13 @@ case "${1:-setup}" in
     for label in "$APP_LABEL" "$TUNNEL_LABEL" "$BACKUP_LABEL"; do
       loaded "$label" || load_agent "$label"
     done
-    for _ in $(seq 1 30); do serving && { echo "Started."; exit 0; }; sleep 2; done
+    for _ in $(seq 1 30); do
+      if serving; then
+        tunnel_ready || { tail -n 30 "$HOME_DIR/logs/tunnel.log" >&2 || true; fail "the app runs, but the tunnel didn't connect to Cloudflare, so the site is offline. The lines above are the tunnel's log."; }
+        echo "Started."; exit 0
+      fi
+      sleep 2
+    done
     tail -n 30 "$HOME_DIR/logs/app.log" >&2 || true
     if answers; then echo "Another program is answering on port $PORT, not this Mac's AskTheMove service. Stop it (lsof -nP -iTCP:$PORT -sTCP:LISTEN shows which), then run this again." >&2; fi
     fail "the app did not start. The lines above are its log." ;;
@@ -453,7 +472,10 @@ case "${1:-setup}" in
     if [ "$old" = "$new" ]; then
       # Nothing new to install, but Homebrew may have moved Node, Stockfish or cloudflared.
       sync_env_stockfish
-      grep -qF "<string>$(xml "$NODE")</string>" "$AGENTS/$APP_LABEL.plist" || swap_agents
+      # The checkout may also have moved; both agents record its path.
+      { grep -qF "<string>$(xml "$NODE")</string>" "$AGENTS/$APP_LABEL.plist" \
+        && grep -qF "<string>$(xml "$REPO")</string>" "$AGENTS/$APP_LABEL.plist" \
+        && grep -qF "<string>$(xml "$REPO")/scripts/host_on_mac.sh</string>" "$AGENTS/$BACKUP_LABEL.plist"; } || swap_agents
       link_engine
       refresh_tunnel_agent
       echo "Already up to date."
