@@ -127,10 +127,12 @@ This costs nothing and needs no card or server: the app runs natively on the Mac
 scripts/host_on_mac.sh          # first time: installs Node, Stockfish and cloudflared if missing, builds, asks for invite codes, starts
 scripts/host_on_mac.sh update   # after new commits on main
 scripts/host_on_mac.sh status
+scripts/host_on_mac.sh backup                 # copy the database now
+scripts/host_on_mac.sh restore <backup-file>  # put a backup back and restart
 scripts/host_on_mac.sh stop
 ```
 
-The first run asks for the invite codes without showing them and writes `.env.beta` (mode 600, ignored by Git) with `APP_ORIGIN`, `TRUST_PROXY=1` and a database at `~/AskTheMove/chesslab.sqlite`, separate from local development data. `cloudflared tunnel login` opens a browser to choose the domain. The script creates a tunnel named `askthemove` and adds one `CNAME` for the app hostname; it never changes other records. Two launch agents in `~/Library/LaunchAgents` keep the app (port 8780, wrapped in `caffeinate -i`) and the tunnel running and start them at login. Logs are in `~/AskTheMove/logs`. A closed laptop lid still sleeps the Mac. The proxy hop count through Cloudflare has not been checked; follow the `X-Forwarded-For` check above before relying on per-visitor limits.
+The first run asks for the invite codes without showing them and writes `.env.beta` (mode 600, ignored by Git) with `APP_ORIGIN`, `TRUST_PROXY=1` and a database at `~/AskTheMove/chesslab.sqlite`, separate from local development data. `cloudflared tunnel login` opens a browser to choose the domain. The script creates a tunnel named `askthemove` and adds one `CNAME` for the app hostname; it never changes other records. Two launch agents in `~/Library/LaunchAgents` keep the app (port 8780, wrapped in `caffeinate -i`) and the tunnel running and start them at login. Logs are in `~/AskTheMove/logs`. `~/AskTheMove` is mode 700 and the app runs with umask 077, so other accounts on the Mac can't read the database. Analysis's default engine id (`stockfish18`) is linked to the Homebrew Stockfish in `data/engines/stockfish18` unless `scripts/install_engines.py` already put one there. The build is written beside the live files and swapped in only when it succeeds, so a failed `update` leaves the site as it was. If the hostname already points somewhere other than this tunnel, the script stops without changing DNS. A closed laptop lid still sleeps the Mac. The proxy hop count through Cloudflare has not been checked; follow the `X-Forwarded-For` check above before relying on per-visitor limits.
 
 ## Backups
 
@@ -147,7 +149,9 @@ docker exec --user node chesslab rm "/data/backup-$stamp.sqlite"
 
 Run it at least daily from cron or the platform's scheduler. Copy the file off the server, and keep several days and weeks of copies. For a cold backup, stop the container and copy the whole volume, including any `chesslab.sqlite-wal` and `chesslab.sqlite-shm` files.
 
-To restore, stop the container. Replace `/data/chesslab.sqlite` with the backup and remove any stale `-wal` and `-shm` files beside it. Then start the container again. Rehearse a restore before inviting testers. Restoring signs out anyone whose session was created after the backup.
+On the Mac host (Option E), the script does this without Docker. Setup schedules `scripts/host_on_mac.sh backup` daily at 03:00 (or on wake if the Mac was asleep) through a third launch agent, `online.askthemove.backup`. It writes `~/AskTheMove/backups/chesslab-<UTC time>.sqlite` with `VACUUM INTO` while the app keeps serving, at mode 600, and keeps the newest 14. Copy some of them off the Mac, encrypted, for example to an encrypted disk image. To restore, run `scripts/host_on_mac.sh restore ~/AskTheMove/backups/<file>`: it saves the current database as a fresh backup, stops the app, replaces the database, removes stale `-wal` and `-shm` files and starts the app again. To rehearse, run `backup` and then `restore` with the file it printed; the data is unchanged and only sessions created in between are signed out.
+
+For Docker hosts, to restore, stop the container. Replace `/data/chesslab.sqlite` with the backup and remove any stale `-wal` and `-shm` files beside it. Then start the container again. Rehearse a restore before inviting testers. Restoring signs out anyone whose session was created after the backup.
 
 ## Pointing `app.<domain>` at it later
 
