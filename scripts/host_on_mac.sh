@@ -31,6 +31,7 @@ DOMAIN="${HOSTNAME_PUBLIC#*.}"
 say() { printf '\n==> %s\n' "$*"; }
 fail() { printf '\nStopped: %s\n' "$*" >&2; exit 1; }
 xml() { printf '%s' "$1" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g'; }
+sf_is_18() { printf 'uci\nquit\n' | "$1" 2>/dev/null | grep -q '^id name Stockfish 18'; }
 node_major() { "$1" -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0; }
 
 answers() { curl -fsS --max-time 5 "http://127.0.0.1:$PORT/api/status" 2>/dev/null | grep -q '"inviteRequired":true'; }
@@ -43,11 +44,16 @@ private_dirs() {
   return 0
 }
 
-restart_app() {
+app_starts() {
   launchctl kickstart -k "gui/$(id -u)/$APP_LABEL" >/dev/null
   for _ in $(seq 1 30); do answers && return 0; sleep 2; done
   tail -n 30 "$HOME_DIR/logs/app.log" >&2 || true
-  fail "the app did not start. The lines above are its log."
+  return 1
+}
+restart_app() { app_starts || fail "the app did not start. The lines above are its log."; }
+
+usable_db() {
+  "$NODE" -e "const {DatabaseSync}=require('node:sqlite');const d=new DatabaseSync(process.argv[1],{readOnly:true});if(d.prepare('PRAGMA integrity_check').get().integrity_check!=='ok')process.exit(1);for(const t of ['users','sessions','games','progress'])if(!d.prepare('SELECT 1 FROM sqlite_master WHERE type=? AND name=?').get('table',t))process.exit(1)" "$1" 2>/dev/null
 }
 
 pick_node() {
@@ -67,6 +73,7 @@ pick_node() {
 tools() {
   pick_node
   command -v stockfish >/dev/null || brew install stockfish
+  if ! sf_is_18 "$(command -v stockfish)" && [ -x "$(brew --prefix)/opt/stockfish/bin/stockfish" ]; then brew upgrade stockfish || true; fi
   command -v cloudflared >/dev/null || brew install cloudflared
   STOCKFISH="$(command -v stockfish)"
   CLOUDFLARED="$(command -v cloudflared)"
@@ -90,7 +97,9 @@ link_engine() {
   # Analysis defaults to the engine id stockfish18, which looks in data/engines/stockfish18.
   # Point it at the Homebrew Stockfish unless scripts/install_engines.py already installed one.
   local dir="$REPO/data/engines/stockfish18"
-  if [ ! -e "$dir/stockfish" ]; then
+  if [ ! -e "$dir/stockfish" ] && ! sf_is_18 "$STOCKFISH"; then
+    echo "Note: $STOCKFISH is not Stockfish 18, so it isn't offered as Stockfish 18. Choose another analysis engine in Settings, or run scripts/install_engines.py stockfish18."
+  elif [ ! -e "$dir/stockfish" ]; then
     mkdir -p "$dir"
     ln -s "$STOCKFISH" "$dir/stockfish"
   fi
@@ -101,7 +110,7 @@ backup() {
   [ -f "$DB" ] || fail "there is no database at $DB yet."
   private_dirs
   local out
-  out="$BACKUPS/chesslab-$(date -u +%Y%m%dT%H%M%SZ).sqlite"
+  out="$BACKUPS/chesslab-$(date -u +%Y%m%dT%H%M%SZ)-$$.sqlite"
   # VACUUM INTO writes one consistent file while the app keeps serving.
   ( umask 077
     "$NODE" -e "const {DatabaseSync}=require('node:sqlite');new DatabaseSync(process.argv[1],{readOnly:true}).prepare('VACUUM INTO ?').run(process.argv[2])" "$DB" "$out" )
@@ -131,23 +140,50 @@ case "${1:-setup}" in
     tools
     # Copy the chosen file first: the safety backup below may rotate the oldest backup away.
     ( umask 077; cp "$file" "$DB.restoring" )
-    if [ -f "$DB" ]; then echo "Saving the current database first."; backup; fi
+    usable_db "$DB.restoring" || { rm -f "$DB.restoring"; fail "$file isn't a complete AskTheMove database. Nothing was changed."; }
+    if [ -f "$DB" ] && usable_db "$DB"; then echo "Saving the current database first."; backup; fi
     launchctl bootout "gui/$(id -u)/$APP_LABEL" 2>/dev/null || true
     for _ in $(seq 1 15); do answers || break; sleep 1; done
-    rm -f "$DB-wal" "$DB-shm"
+    # Keep the database being replaced until the restored one is serving.
+    rm -rf "$DB.before-restore"; mkdir -m 700 "$DB.before-restore"
+    for part in "$DB" "$DB-wal" "$DB-shm"; do [ -e "$part" ] && mv "$part" "$DB.before-restore/"; done
     mv "$DB.restoring" "$DB"
     launchctl bootstrap "gui/$(id -u)" "$AGENTS/$APP_LABEL.plist"
-    restart_app
+    if ! app_starts; then
+      echo "The restored database didn't start, so the previous one is being put back." >&2
+      rm -f "$DB" "$DB-wal" "$DB-shm"
+      mv "$DB.before-restore"/* "$HOME_DIR"/ 2>/dev/null || true
+      restart_app
+      fail "the restore was undone; the app is running on the database it had before."
+    fi
+    rm -rf "$DB.before-restore"
     echo "Restored $file and restarted. Anyone who signed in after that backup has to sign in again."
     exit 0 ;;
   update)
     cd "$REPO"
     [ "$(git branch --show-current)" = main ] || fail "switch this folder to the main branch first (git switch main)."
+    git diff --quiet && git diff --cached --quiet || fail "this folder has uncommitted changes. Commit or stash them first, so an update can be undone cleanly."
     tools
-    git pull --ff-only origin main
-    build
+    git fetch origin main
+    git merge-base --is-ancestor HEAD origin/main || fail "local main has commits that aren't on GitHub, so it can't fast-forward."
+    old="$(git rev-parse HEAD)" new="$(git rev-parse origin/main)"
+    [ "$old" != "$new" ] || { echo "Already up to date."; exit 0; }
+    # Install and build the new commit in a separate copy first. The live folder is untouched if that fails.
+    trial="$REPO/.scratch/update-trial"
+    git worktree remove --force "$trial" 2>/dev/null || rm -rf "$trial"
+    git worktree add --detach "$trial" "$new" >/dev/null
+    ( cd "$trial" && npm ci --no-audit --no-fund && npx --no-install vite build --outDir "$trial/.scratch/dist-check" ) \
+      || { git worktree remove --force "$trial"; fail "the new version didn't install or build; the live site was left as it was."; }
+    git worktree remove --force "$trial"
+    git merge --ff-only -q "$new"
+    if ! ( build ) || ! app_starts; then
+      echo "The update didn't come up, so the previous version is being put back." >&2
+      git reset -q --hard "$old"
+      build
+      restart_app
+      fail "the update was undone; the site runs the version it had before."
+    fi
     link_engine
-    restart_app
     echo "Updated and running."
     exit 0 ;;
   setup) ;;
@@ -165,6 +201,9 @@ build
 link_engine
 private_dirs
 
+if [ -f "$ENV_FILE" ] && ! grep -qx "APP_ORIGIN=https://$HOSTNAME_PUBLIC" "$ENV_FILE"; then
+  fail ".env.beta was made for a different address than https://$HOSTNAME_PUBLIC. Edit its APP_ORIGIN line to match, or move the file away to answer the setup questions again."
+fi
 if [ ! -f "$ENV_FILE" ]; then
   say "Beta settings"
   echo "Type the invite codes testers will use, separated by commas."
