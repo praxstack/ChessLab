@@ -1,6 +1,6 @@
 # Deploying the private beta
 
-This guide covers running the app for a small invited group on one server. Option C below is the chosen host; it had not been used for a real deployment when written. On 8 October 2026 the image was built and run in a sandbox. Health checks, invite gating, secure cookies, Stockfish analysis and data surviving a restart were all checked there, as a non-root user. No domain, host or Anthropic API key was involved.
+This guide covers running the app for a small invited group on one server. Option E below (your own Mac) is the chosen host; it had not been used for a real deployment when written. On 8 October 2026 the image was built and run in a sandbox. Health checks, invite gating, secure cookies, Stockfish analysis and data surviving a restart were all checked there, as a non-root user. No domain, host or Anthropic API key was involved.
 
 The governing change is `openspec/changes/hosted-beta-readiness/`.
 
@@ -95,7 +95,7 @@ Both can build from the `Dockerfile`. Keep one instance with one persistent volu
 
 On either platform, confirm the proxy hop count before relying on per-visitor limits. Log a test request's `X-Forwarded-For` and check that the last entry is your own address. This has not been checked on a platform.
 
-## Option C: Railway (chosen for the AskTheMove beta)
+## Option C: Railway
 
 Railway builds the `Dockerfile` from GitHub on every push to `main`. Railway stopped accepting `railway.toml` for new services in 2026, so the health check is set in the dashboard. The Hobby plan costs at least $5 a month, which includes $5 of usage; RAM, CPU, disk and traffic beyond that are billed. This app's real usage has not been measured yet, so set a usage limit and check the estimate after the first days. New accounts get a 30-day trial with $5 of credit. The Southeast Asia region (Singapore) is the closest to India.
 
@@ -118,6 +118,19 @@ Use an Ubuntu 24.04 x86-64 server with at least 1 GB of memory: an AWS `t3.micro
 4. Run the `Deploy to server` workflow. It builds the image on GitHub, copies the image and a settings file to the server over SSH, restarts the container on the `chesslab-data` volume, and checks `/healthz` through HTTPS. Each later push to `main` that changes the app deploys again, but only after the `Beta image` check passes for that commit.
 
 The workflow refuses to deploy without `BETA_INVITE_CODES`, and refuses `ANTHROPIC_API_KEY` unless the server has the coach budget and `COACH_AI_INVITE_CODES` is set. The previous container is kept stopped until the new one starts, runs Stockfish, is invite-gated and answers over HTTPS, and is started again if any of that fails. If image checks finish out of order, a checked commit deploys only when nothing newer on `main` changes the image. The settings file is written to `/etc/chesslab.env` (root, mode 600) on every deploy from the repository's variables and secrets. Change a setting in GitHub, then run the workflow again. The image is copied straight to the server and is not published to a registry.
+
+## Option E: your own Mac, free (chosen for the AskTheMove beta from 18 October 2026)
+
+This costs nothing and needs no card or server: the app runs natively on the Mac, as it does for local use, and a free Cloudflare Tunnel connects `app.<domain>` to it. No port is opened on the home network. The site is offline whenever the Mac sleeps, is shut down or loses its connection. It needs the domain's DNS on Cloudflare, Homebrew, and the repository checked out on `main`.
+
+```sh
+scripts/host_on_mac.sh          # first time: installs Node, Stockfish and cloudflared if missing, builds, asks for invite codes, starts
+scripts/host_on_mac.sh update   # after new commits on main
+scripts/host_on_mac.sh status
+scripts/host_on_mac.sh stop
+```
+
+The first run asks for the invite codes without showing them and writes `.env.beta` (mode 600, ignored by Git) with `APP_ORIGIN`, `TRUST_PROXY=1` and a database at `~/AskTheMove/chesslab.sqlite`, separate from local development data. `cloudflared tunnel login` opens a browser to choose the domain. The script creates a tunnel named `askthemove` and adds one `CNAME` for the app hostname; it never changes other records. Two launch agents in `~/Library/LaunchAgents` keep the app (port 8780, wrapped in `caffeinate -i`) and the tunnel running and start them at login. Logs are in `~/AskTheMove/logs`. A closed laptop lid still sleeps the Mac. The proxy hop count through Cloudflare has not been checked; follow the `X-Forwarded-For` check above before relying on per-visitor limits.
 
 ## Backups
 
