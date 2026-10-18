@@ -30,6 +30,7 @@ DOMAIN="${HOSTNAME_PUBLIC#*.}"
 
 say() { printf '\n==> %s\n' "$*"; }
 fail() { printf '\nStopped: %s\n' "$*" >&2; exit 1; }
+xml() { printf '%s' "$1" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g'; }
 node_major() { "$1" -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0; }
 
 answers() { curl -fsS --max-time 5 "http://127.0.0.1:$PORT/api/status" 2>/dev/null | grep -q '"inviteRequired":true'; }
@@ -49,7 +50,7 @@ restart_app() {
   fail "the app did not start. The lines above are its log."
 }
 
-tools() {
+pick_node() {
   command -v brew >/dev/null || fail "Homebrew is missing. Install it from https://brew.sh, then run this again."
   # An older Node from nvm or Volta may come first on PATH, so fall back to Homebrew's own Node.
   if [ "$(node_major "$(command -v node || echo node)")" -lt 24 ]; then
@@ -61,6 +62,10 @@ tools() {
   fi
   NODE="$(command -v node)"
   [ "$(node_major "$NODE")" -ge 24 ] || fail "Node.js 24 or newer is needed; $NODE is older."
+}
+
+tools() {
+  pick_node
   command -v stockfish >/dev/null || brew install stockfish
   command -v cloudflared >/dev/null || brew install cloudflared
   STOCKFISH="$(command -v stockfish)"
@@ -92,7 +97,7 @@ link_engine() {
 }
 
 backup() {
-  NODE="${ASKTHEMOVE_NODE:-${NODE:-$(command -v node)}}"
+  if [ -n "${ASKTHEMOVE_NODE:-}" ]; then NODE="$ASKTHEMOVE_NODE"; elif [ -z "${NODE:-}" ]; then pick_node; fi
   [ -f "$DB" ] || fail "there is no database at $DB yet."
   private_dirs
   local out
@@ -124,10 +129,11 @@ case "${1:-setup}" in
     [ -f "$file" ] || fail "give the backup file to restore, for example: scripts/host_on_mac.sh restore $BACKUPS/chesslab-<date>.sqlite"
     [ -f "$AGENTS/$APP_LABEL.plist" ] || fail "run the setup first (scripts/host_on_mac.sh)."
     tools
+    # Copy the chosen file first: the safety backup below may rotate the oldest backup away.
+    ( umask 077; cp "$file" "$DB.restoring" )
     if [ -f "$DB" ]; then echo "Saving the current database first."; backup; fi
     launchctl bootout "gui/$(id -u)/$APP_LABEL" 2>/dev/null || true
     for _ in $(seq 1 15); do answers || break; sleep 1; done
-    ( umask 077; cp "$file" "$DB.restoring" )
     rm -f "$DB-wal" "$DB-shm"
     mv "$DB.restoring" "$DB"
     launchctl bootstrap "gui/$(id -u)" "$AGENTS/$APP_LABEL.plist"
@@ -162,12 +168,12 @@ private_dirs
 if [ ! -f "$ENV_FILE" ]; then
   say "Beta settings"
   echo "Type the invite codes testers will use, separated by commas."
-  echo "Each code needs 8 to 128 characters and no spaces. Nothing is shown while you type."
+  echo "Each code needs 8 to 128 characters: no spaces, no quote marks, and none of # \\ = \$. Nothing is shown while you type."
   while :; do
     IFS= read -rs codes; echo
     # Check with the server's own rules, so a bad code can't be saved and then stop the app from starting.
-    if [ -n "$codes" ] && CODES="$codes" "$NODE" -e "const {pathToFileURL}=require('node:url');import(pathToFileURL(process.argv[1]).href).then(m=>process.exit(m.parseInviteCodes(process.env.CODES).length?0:1)).catch(()=>process.exit(1))" "$REPO/server/security.mjs"; then break; fi
-    echo "That wasn't accepted. Each code needs 8 to 128 characters, no spaces, and no empty entries between commas. Type them again."
+    if [ -n "$codes" ] && ! printf '%s' "$codes" | grep -q "[#\"'\`\\\\=\$]" && CODES="$codes" "$NODE" -e "const {pathToFileURL}=require('node:url');import(pathToFileURL(process.argv[1]).href).then(m=>process.exit(m.parseInviteCodes(process.env.CODES).length?0:1)).catch(()=>process.exit(1))" "$REPO/server/security.mjs"; then break; fi
+    echo "That wasn't accepted. Each code needs 8 to 128 characters: no spaces, no quote marks, none of # \\ = \$, and no empty entries between commas. Type them again."
   done
   ( umask 077
     { echo "NODE_ENV=production"
@@ -194,14 +200,14 @@ cat > "$AGENTS/$APP_LABEL.plist" <<PLIST
   <key>Label</key><string>$APP_LABEL</string>
   <key>ProgramArguments</key><array>
     <string>/usr/bin/caffeinate</string><string>-i</string>
-    <string>$NODE</string><string>--env-file=$ENV_FILE</string><string>server/index.mjs</string>
+    <string>$(xml "$NODE")</string><string>--env-file=$(xml "$ENV_FILE")</string><string>server/index.mjs</string>
   </array>
-  <key>WorkingDirectory</key><string>$REPO</string>
+  <key>WorkingDirectory</key><string>$(xml "$REPO")</string>
   <key>Umask</key><integer>63</integer>
   <key>RunAtLoad</key><true/>
   <key>KeepAlive</key><true/>
-  <key>StandardOutPath</key><string>$HOME_DIR/logs/app.log</string>
-  <key>StandardErrorPath</key><string>$HOME_DIR/logs/app.log</string>
+  <key>StandardOutPath</key><string>$(xml "$HOME_DIR")/logs/app.log</string>
+  <key>StandardErrorPath</key><string>$(xml "$HOME_DIR")/logs/app.log</string>
 </dict></plist>
 PLIST
 launchctl bootout "gui/$(id -u)/$APP_LABEL" 2>/dev/null || true
@@ -218,13 +224,13 @@ cat > "$AGENTS/$BACKUP_LABEL.plist" <<PLIST
 <plist version="1.0"><dict>
   <key>Label</key><string>$BACKUP_LABEL</string>
   <key>ProgramArguments</key><array>
-    <string>/bin/bash</string><string>$REPO/scripts/host_on_mac.sh</string><string>backup</string>
+    <string>/bin/bash</string><string>$(xml "$REPO")/scripts/host_on_mac.sh</string><string>backup</string>
   </array>
-  <key>EnvironmentVariables</key><dict><key>ASKTHEMOVE_NODE</key><string>$NODE</string></dict>
+  <key>EnvironmentVariables</key><dict><key>ASKTHEMOVE_NODE</key><string>$(xml "$NODE")</string></dict>
   <key>StartCalendarInterval</key><dict><key>Hour</key><integer>3</integer><key>Minute</key><integer>0</integer></dict>
   <key>Umask</key><integer>63</integer>
-  <key>StandardOutPath</key><string>$HOME_DIR/logs/backup.log</string>
-  <key>StandardErrorPath</key><string>$HOME_DIR/logs/backup.log</string>
+  <key>StandardOutPath</key><string>$(xml "$HOME_DIR")/logs/backup.log</string>
+  <key>StandardErrorPath</key><string>$(xml "$HOME_DIR")/logs/backup.log</string>
 </dict></plist>
 PLIST
 launchctl bootout "gui/$(id -u)/$BACKUP_LABEL" 2>/dev/null || true
@@ -254,8 +260,14 @@ ingress:
 YAML
 # Adds one CNAME for the app hostname only. It never touches the site, www or email records.
 # It succeeds when the record already points at this tunnel, and fails if the name points anywhere else.
-"$CLOUDFLARED" tunnel route dns "$TUNNEL_NAME" "$HOSTNAME_PUBLIC" \
-  || fail "$HOSTNAME_PUBLIC already has a DNS record that points somewhere else. Nothing was changed. In Cloudflare DNS for $DOMAIN, check the record named '${HOSTNAME_PUBLIC%%.*}'. If it's an old one you no longer need, delete only that record (leave the email records alone), then run this again."
+routed="$HOME_DIR/.dns-routed"
+if [ "$(cat "$routed" 2>/dev/null)" = "$tunnel_id $HOSTNAME_PUBLIC" ]; then
+  echo "$HOSTNAME_PUBLIC already points at this tunnel."
+elif "$CLOUDFLARED" tunnel route dns "$TUNNEL_NAME" "$HOSTNAME_PUBLIC"; then
+  echo "$tunnel_id $HOSTNAME_PUBLIC" > "$routed"
+else
+  fail "$HOSTNAME_PUBLIC already has a DNS record that points somewhere else. Nothing was changed. In Cloudflare DNS for $DOMAIN, check the record named '${HOSTNAME_PUBLIC%%.*}'. If it's an old one you no longer need, delete only that record (leave the email records alone), then run this again."
+fi
 
 cat > "$AGENTS/$TUNNEL_LABEL.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -263,12 +275,12 @@ cat > "$AGENTS/$TUNNEL_LABEL.plist" <<PLIST
 <plist version="1.0"><dict>
   <key>Label</key><string>$TUNNEL_LABEL</string>
   <key>ProgramArguments</key><array>
-    <string>$CLOUDFLARED</string><string>tunnel</string><string>--config</string><string>$TUNNEL_CONFIG</string><string>run</string><string>$TUNNEL_NAME</string>
+    <string>$(xml "$CLOUDFLARED")</string><string>tunnel</string><string>--config</string><string>$(xml "$TUNNEL_CONFIG")</string><string>run</string><string>$TUNNEL_NAME</string>
   </array>
   <key>RunAtLoad</key><true/>
   <key>KeepAlive</key><true/>
-  <key>StandardOutPath</key><string>$HOME_DIR/logs/tunnel.log</string>
-  <key>StandardErrorPath</key><string>$HOME_DIR/logs/tunnel.log</string>
+  <key>StandardOutPath</key><string>$(xml "$HOME_DIR")/logs/tunnel.log</string>
+  <key>StandardErrorPath</key><string>$(xml "$HOME_DIR")/logs/tunnel.log</string>
 </dict></plist>
 PLIST
 launchctl bootout "gui/$(id -u)/$TUNNEL_LABEL" 2>/dev/null || true
