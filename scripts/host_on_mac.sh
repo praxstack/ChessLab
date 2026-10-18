@@ -32,7 +32,12 @@ DOMAIN="${HOSTNAME_PUBLIC#*.}"
 say() { printf '\n==> %s\n' "$*"; }
 fail() { printf '\nStopped: %s\n' "$*" >&2; exit 1; }
 xml() { printf '%s' "$1" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g'; }
-sf_is_18() { printf 'uci\nquit\n' | "$1" 2>/dev/null | grep -q '^id name Stockfish 18'; }
+sf_is_18() {
+  # Read all of the engine's reply first; grep -q closing the pipe early could fail it under pipefail.
+  local out
+  out="$(printf 'uci\nquit\n' | "$1" 2>/dev/null)" || true
+  grep -q '^id name Stockfish 18' <<<"$out"
+}
 node_major() { "$1" -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0; }
 
 answers() { curl -fsS --max-time 5 "http://127.0.0.1:$PORT/api/status" 2>/dev/null | grep -q '"inviteRequired":true'; }
@@ -256,6 +261,7 @@ case "${1:-setup}" in
     [ -f "$file" ] || fail "give the backup file to restore, for example: scripts/host_on_mac.sh restore $BACKUPS/chesslab-<date>.sqlite"
     [ -f "$AGENTS/$APP_LABEL.plist" ] || fail "run the setup first (scripts/host_on_mac.sh)."
     pick_node
+    rmdir "$DB.before-restore" 2>/dev/null || true
     [ ! -e "$DB.before-restore" ] || fail "$DB.before-restore is left from a restore that didn't finish and may hold the only copy of the previous database. Move its files somewhere safe (or back into $HOME_DIR), remove the folder, then run this again."
     # Copy the chosen file first: the safety backup below may rotate the oldest backup away.
     ( umask 077; cp "$file" "$DB.restoring" )
@@ -274,6 +280,7 @@ case "${1:-setup}" in
       if [ -n "$(ls -A "$DB.before-restore")" ]; then
         mv "$DB.before-restore"/* "$HOME_DIR"/ || fail "couldn't put the previous database back. It is kept in $DB.before-restore; move its files into $HOME_DIR, then run scripts/host_on_mac.sh start."
       fi
+      rmdir "$DB.before-restore"
       launchctl bootstrap "gui/$(id -u)" "$AGENTS/$APP_LABEL.plist" 2>/dev/null || true
       restart_app
       fail "the restore was undone; the app is running on the database it had before."
