@@ -8,6 +8,7 @@
 #   scripts/host_on_mac.sh backup          copy the database now (setup also schedules this daily)
 #   scripts/host_on_mac.sh restore FILE    put a backup back in place and restart the app
 #   scripts/host_on_mac.sh stop            stop the app and the tunnel (they start again at next login unless removed)
+#   scripts/host_on_mac.sh start           start them again after stop, without rebuilding
 #
 # The beta keeps its own database in ~/AskTheMove, apart from the local development data in ./data.
 set -euo pipefail
@@ -35,6 +36,15 @@ sf_is_18() { printf 'uci\nquit\n' | "$1" 2>/dev/null | grep -q '^id name Stockfi
 node_major() { "$1" -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0; }
 
 answers() { curl -fsS --max-time 5 "http://127.0.0.1:$PORT/api/status" 2>/dev/null | grep -q '"inviteRequired":true'; }
+
+rotate_logs() {
+  # Keep each log under about 10 MB, with one older copy, so a crash loop can't fill the disk.
+  local log
+  for log in "$HOME_DIR"/logs/*.log; do
+    [ -f "$log" ] && [ "$(wc -c < "$log")" -gt 10485760 ] && { mv -f "$log" "$log.1"; : > "$log"; }
+  done
+  return 0
+}
 
 private_dirs() {
   # The database holds password and session hashes, so only this user may read the folder.
@@ -97,6 +107,8 @@ link_engine() {
   # Analysis defaults to the engine id stockfish18, which looks in data/engines/stockfish18.
   # Point it at the Homebrew Stockfish unless scripts/install_engines.py already installed one.
   local dir="$REPO/data/engines/stockfish18"
+  # A link left pointing at a removed Stockfish counts as missing; clear it so it can be relinked.
+  if [ -L "$dir/stockfish" ] && [ ! -e "$dir/stockfish" ]; then rm -f "$dir/stockfish"; fi
   if [ ! -e "$dir/stockfish" ] && ! sf_is_18 "$STOCKFISH"; then
     echo "Note: $STOCKFISH is not Stockfish 18, so it isn't offered as Stockfish 18. Choose another analysis engine in Settings, or run scripts/install_engines.py stockfish18."
   elif [ ! -e "$dir/stockfish" ]; then
@@ -111,9 +123,14 @@ backup() {
   private_dirs
   local out
   out="$BACKUPS/chesslab-$(date -u +%Y%m%dT%H%M%SZ)-$$.sqlite"
-  # VACUUM INTO writes one consistent file while the app keeps serving.
+  # VACUUM INTO writes one consistent file while the app keeps serving. It goes to a temporary
+  # name and gets its final name only after it passes the same check a restore uses.
+  rm -f "$BACKUPS"/.partial-*
   ( umask 077
-    "$NODE" -e "const {DatabaseSync}=require('node:sqlite');new DatabaseSync(process.argv[1],{readOnly:true}).prepare('VACUUM INTO ?').run(process.argv[2])" "$DB" "$out" )
+    "$NODE" -e "const {DatabaseSync}=require('node:sqlite');new DatabaseSync(process.argv[1],{readOnly:true}).prepare('VACUUM INTO ?').run(process.argv[2])" "$DB" "$BACKUPS/.partial-$$" ) \
+    && usable_db "$BACKUPS/.partial-$$" || { rm -f "$BACKUPS/.partial-$$"; fail "the backup didn't complete; no file was kept."; }
+  mv "$BACKUPS/.partial-$$" "$out"
+  rotate_logs
   ls -1t "$BACKUPS"/chesslab-*.sqlite | tail -n +$((KEEP_BACKUPS + 1)) | while IFS= read -r stale; do rm -f "$stale"; done
   echo "Backed up to $out"
 }
@@ -174,8 +191,17 @@ case "${1:-setup}" in
   stop)
     launchctl bootout "gui/$(id -u)/$APP_LABEL" 2>/dev/null || true
     launchctl bootout "gui/$(id -u)/$TUNNEL_LABEL" 2>/dev/null || true
-    echo "Stopped. Run scripts/host_on_mac.sh to start again."
+    echo "Stopped. Run scripts/host_on_mac.sh start to start again."
     exit 0 ;;
+  start)
+    # Starts what setup installed, without reinstalling or rebuilding anything.
+    for label in "$APP_LABEL" "$TUNNEL_LABEL" "$BACKUP_LABEL"; do
+      [ -f "$AGENTS/$label.plist" ] || fail "setup hasn't run on this Mac yet (scripts/host_on_mac.sh)."
+      launchctl print "gui/$(id -u)/$label" >/dev/null 2>&1 || launchctl bootstrap "gui/$(id -u)" "$AGENTS/$label.plist"
+    done
+    for _ in $(seq 1 30); do answers && { echo "Started."; exit 0; }; sleep 2; done
+    tail -n 30 "$HOME_DIR/logs/app.log" >&2 || true
+    fail "the app did not start. The lines above are its log." ;;
   backup)
     backup
     exit 0 ;;
@@ -183,7 +209,7 @@ case "${1:-setup}" in
     file="${2:-}"
     [ -f "$file" ] || fail "give the backup file to restore, for example: scripts/host_on_mac.sh restore $BACKUPS/chesslab-<date>.sqlite"
     [ -f "$AGENTS/$APP_LABEL.plist" ] || fail "run the setup first (scripts/host_on_mac.sh)."
-    tools
+    pick_node
     # Copy the chosen file first: the safety backup below may rotate the oldest backup away.
     ( umask 077; cp "$file" "$DB.restoring" )
     usable_db "$DB.restoring" || { rm -f "$DB.restoring"; fail "$file isn't a complete AskTheMove database. Nothing was changed."; }
@@ -223,12 +249,15 @@ case "${1:-setup}" in
     git worktree remove --force "$trial"
     git merge --ff-only -q "$new"
     # Node may have moved (for example nvm removed), so point the agents at the one chosen above.
-    write_app_agent; write_backup_agent
-    reload_agent "$BACKUP_LABEL"
-    if ! ( build ) || ! reload_agent "$APP_LABEL" || ! app_starts; then
+    saved="$(mktemp -d)"
+    cp "$AGENTS/$APP_LABEL.plist" "$AGENTS/$BACKUP_LABEL.plist" "$saved"/ 2>/dev/null || true
+    if ! ( build ) || ! write_app_agent || ! write_backup_agent \
+      || ! reload_agent "$BACKUP_LABEL" || ! reload_agent "$APP_LABEL" || ! app_starts; then
       echo "The update didn't come up, so the previous version is being put back." >&2
       git reset -q --hard "$old"
       build
+      cp "$saved"/*.plist "$AGENTS"/ 2>/dev/null || true
+      reload_agent "$BACKUP_LABEL" || true
       reload_agent "$APP_LABEL" || true
       restart_app
       fail "the update was undone; the site runs the version it had before."
@@ -237,7 +266,7 @@ case "${1:-setup}" in
     echo "Updated and running."
     exit 0 ;;
   setup) ;;
-  *) fail "unknown command $1. Use setup, update, status, backup, restore or stop." ;;
+  *) fail "unknown command $1. Use setup, update, status, backup, restore, start or stop." ;;
 esac
 
 [ "$(uname -s)" = Darwin ] || fail "this script is for macOS."
@@ -365,5 +394,5 @@ for _ in $(seq 1 30); do
   sleep 5
 done
 tail -n 20 "$HOME_DIR/logs/tunnel.log" >&2 || true
-[ "$dns_existing" = 0 ] || fail "$HOSTNAME_PUBLIC already has a DNS record, and it doesn't reach this tunnel. Nothing was changed. In Cloudflare DNS for $DOMAIN, check the record named '${HOSTNAME_PUBLIC%%.*}'. If it's an old one you no longer need, delete only that record (leave the email records alone), then run this again."
+[ "$dns_existing" = 0 ] || fail "$HOSTNAME_PUBLIC already has a DNS record, and it doesn't reach this tunnel. Nothing was changed. In Cloudflare DNS for $DOMAIN, check the record named '${HOSTNAME_PUBLIC%%.*}'. If it's an old one you no longer need, delete only that record (leave the email records alone), then run this again. If this Mac is signed in to a different Cloudflare account, move ~/.cloudflared/cert.pem away and run this again to sign in to the one that holds $DOMAIN."
 fail "the app runs, but https://$HOSTNAME_PUBLIC doesn't answer yet. DNS can take a few minutes; run scripts/host_on_mac.sh status, then try the address again."
