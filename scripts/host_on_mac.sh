@@ -118,6 +118,52 @@ backup() {
   echo "Backed up to $out"
 }
 
+# The launch agents hold absolute paths (Node, the checkout), so setup and update both rewrite them.
+# Umask 63 is 077, so files the app and backups create are readable only by this user.
+write_app_agent() {
+  mkdir -p "$AGENTS"
+cat > "$AGENTS/$APP_LABEL.plist" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>$APP_LABEL</string>
+  <key>ProgramArguments</key><array>
+    <string>/usr/bin/caffeinate</string><string>-i</string>
+    <string>$(xml "$NODE")</string><string>--env-file=$(xml "$ENV_FILE")</string><string>server/index.mjs</string>
+  </array>
+  <key>WorkingDirectory</key><string>$(xml "$REPO")</string>
+  <key>Umask</key><integer>63</integer>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>StandardOutPath</key><string>$(xml "$HOME_DIR")/logs/app.log</string>
+  <key>StandardErrorPath</key><string>$(xml "$HOME_DIR")/logs/app.log</string>
+</dict></plist>
+PLIST
+}
+
+write_backup_agent() {
+cat > "$AGENTS/$BACKUP_LABEL.plist" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>$BACKUP_LABEL</string>
+  <key>ProgramArguments</key><array>
+    <string>/bin/bash</string><string>$(xml "$REPO")/scripts/host_on_mac.sh</string><string>backup</string>
+  </array>
+  <key>EnvironmentVariables</key><dict><key>ASKTHEMOVE_NODE</key><string>$(xml "$NODE")</string></dict>
+  <key>StartCalendarInterval</key><dict><key>Hour</key><integer>3</integer><key>Minute</key><integer>0</integer></dict>
+  <key>Umask</key><integer>63</integer>
+  <key>StandardOutPath</key><string>$(xml "$HOME_DIR")/logs/backup.log</string>
+  <key>StandardErrorPath</key><string>$(xml "$HOME_DIR")/logs/backup.log</string>
+</dict></plist>
+PLIST
+}
+
+reload_agent() {
+  launchctl bootout "gui/$(id -u)/$1" 2>/dev/null || true
+  launchctl bootstrap "gui/$(id -u)" "$AGENTS/$1.plist"
+}
+
 case "${1:-setup}" in
   status)
     if answers; then echo "The app is running and invite-only on port $PORT."; else echo "The app is not answering on port $PORT."; fi
@@ -176,10 +222,14 @@ case "${1:-setup}" in
       || { git worktree remove --force "$trial"; fail "the new version didn't install or build; the live site was left as it was."; }
     git worktree remove --force "$trial"
     git merge --ff-only -q "$new"
-    if ! ( build ) || ! app_starts; then
+    # Node may have moved (for example nvm removed), so point the agents at the one chosen above.
+    write_app_agent; write_backup_agent
+    reload_agent "$BACKUP_LABEL"
+    if ! ( build ) || ! reload_agent "$APP_LABEL" || ! app_starts; then
       echo "The update didn't come up, so the previous version is being put back." >&2
       git reset -q --hard "$old"
       build
+      reload_agent "$APP_LABEL" || true
       restart_app
       fail "the update was undone; the site runs the version it had before."
     fi
@@ -227,53 +277,20 @@ if [ ! -f "$ENV_FILE" ]; then
   unset codes
   echo "Saved to .env.beta (only your user can read it; Git ignores it)."
 fi
+chmod 600 "$ENV_FILE"
 
 say "Starting the app"
-mkdir -p "$AGENTS"
 # caffeinate keeps the Mac from idle-sleeping while the app runs. Closing a laptop lid still sleeps it.
-# Umask 63 is 077, so the database files the app creates are readable only by this user.
-cat > "$AGENTS/$APP_LABEL.plist" <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0"><dict>
-  <key>Label</key><string>$APP_LABEL</string>
-  <key>ProgramArguments</key><array>
-    <string>/usr/bin/caffeinate</string><string>-i</string>
-    <string>$(xml "$NODE")</string><string>--env-file=$(xml "$ENV_FILE")</string><string>server/index.mjs</string>
-  </array>
-  <key>WorkingDirectory</key><string>$(xml "$REPO")</string>
-  <key>Umask</key><integer>63</integer>
-  <key>RunAtLoad</key><true/>
-  <key>KeepAlive</key><true/>
-  <key>StandardOutPath</key><string>$(xml "$HOME_DIR")/logs/app.log</string>
-  <key>StandardErrorPath</key><string>$(xml "$HOME_DIR")/logs/app.log</string>
-</dict></plist>
-PLIST
-launchctl bootout "gui/$(id -u)/$APP_LABEL" 2>/dev/null || true
-launchctl bootstrap "gui/$(id -u)" "$AGENTS/$APP_LABEL.plist"
+write_app_agent
+reload_agent "$APP_LABEL"
 restart_app
 private_dirs
 echo "The app answers on http://127.0.0.1:$PORT and requires an invite code."
 
 say "Scheduling a daily backup"
 # Runs at 03:00, or as soon as the Mac wakes if it was asleep then. Keeps the newest $KEEP_BACKUPS copies.
-cat > "$AGENTS/$BACKUP_LABEL.plist" <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0"><dict>
-  <key>Label</key><string>$BACKUP_LABEL</string>
-  <key>ProgramArguments</key><array>
-    <string>/bin/bash</string><string>$(xml "$REPO")/scripts/host_on_mac.sh</string><string>backup</string>
-  </array>
-  <key>EnvironmentVariables</key><dict><key>ASKTHEMOVE_NODE</key><string>$(xml "$NODE")</string></dict>
-  <key>StartCalendarInterval</key><dict><key>Hour</key><integer>3</integer><key>Minute</key><integer>0</integer></dict>
-  <key>Umask</key><integer>63</integer>
-  <key>StandardOutPath</key><string>$(xml "$HOME_DIR")/logs/backup.log</string>
-  <key>StandardErrorPath</key><string>$(xml "$HOME_DIR")/logs/backup.log</string>
-</dict></plist>
-PLIST
-launchctl bootout "gui/$(id -u)/$BACKUP_LABEL" 2>/dev/null || true
-launchctl bootstrap "gui/$(id -u)" "$AGENTS/$BACKUP_LABEL.plist"
+write_backup_agent
+reload_agent "$BACKUP_LABEL"
 [ -f "$DB" ] && backup
 
 say "Connecting the tunnel"
@@ -320,8 +337,21 @@ cat > "$AGENTS/$TUNNEL_LABEL.plist" <<PLIST
   <key>StandardErrorPath</key><string>$(xml "$HOME_DIR")/logs/tunnel.log</string>
 </dict></plist>
 PLIST
+# Cloudflare spreads traffic over every running connector of a tunnel. Another Mac serving its own
+# database through the same tunnel would mix accounts, so stop ours and require that none are left.
 launchctl bootout "gui/$(id -u)/$TUNNEL_LABEL" 2>/dev/null || true
-launchctl bootstrap "gui/$(id -u)" "$AGENTS/$TUNNEL_LABEL.plist"
+connectors=unknown
+for _ in $(seq 1 12); do
+  connectors="$("$CLOUDFLARED" tunnel info --output json "$TUNNEL_NAME" 2>/dev/null | "$NODE" -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{console.log((JSON.parse(s).conns||[]).length)}catch{console.log("unknown")}})')" || connectors=unknown
+  [ "$connectors" = 0 ] && break
+  sleep 5
+done
+case "$connectors" in
+  0) ;;
+  unknown) echo "Couldn't read the tunnel's connectors; continuing. Make sure no other computer runs the '$TUNNEL_NAME' tunnel." ;;
+  *) fail "the '$TUNNEL_NAME' tunnel is still running on another computer ($connectors connection(s)). Stop it there first (scripts/host_on_mac.sh stop on that Mac), so visitors don't land on two different databases, then run this again." ;;
+esac
+reload_agent "$TUNNEL_LABEL"
 
 say "Checking https://$HOSTNAME_PUBLIC"
 probe="https://$HOSTNAME_PUBLIC/.well-known/askthemove-tunnel-$tunnel_id"
