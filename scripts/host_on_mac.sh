@@ -13,7 +13,6 @@
 # The beta keeps its own database in ~/AskTheMove, apart from the local development data in ./data.
 set -euo pipefail
 
-HOSTNAME_PUBLIC="${ASKTHEMOVE_HOSTNAME:-app.askthemove.online}"
 TUNNEL_NAME=askthemove
 PORT=8780
 TUNNEL_METRICS=127.0.0.1:8781   # cloudflared answers /ready here once it has a live connection to Cloudflare
@@ -23,6 +22,10 @@ DB="$HOME_DIR/chesslab.sqlite"
 BACKUPS="$HOME_DIR/backups"
 KEEP_BACKUPS=14
 ENV_FILE="$REPO/.env.beta"
+# The hostname setup used is kept in .env.beta, so later commands (update rewrites the tunnel
+# settings) keep using it without ASKTHEMOVE_HOSTNAME being set again.
+saved_host="$(sed -n 's|^APP_ORIGIN=https://||p' "$ENV_FILE" 2>/dev/null | tail -n 1 || true)"
+HOSTNAME_PUBLIC="${ASKTHEMOVE_HOSTNAME:-${saved_host:-app.askthemove.online}}"
 AGENTS="$HOME/Library/LaunchAgents"
 APP_LABEL=online.askthemove.app
 TUNNEL_LABEL=online.askthemove.tunnel
@@ -495,6 +498,11 @@ case "${1:-setup}" in
     done
     tail -n 30 "$HOME_DIR/logs/app.log" >&2 || true
     if answers; then echo "Another program is answering on port $PORT, not this Mac's AskTheMove service. Stop it (lsof -nP -iTCP:$PORT -sTCP:LISTEN shows which), then run this again." >&2; fi
+    if [ -z "$tunnel_was_loaded" ]; then
+      # Don't leave a tunnel this command loaded publishing a broken site, or reconnecting later.
+      launchctl disable "gui/$(id -u)/$TUNNEL_LABEL" 2>/dev/null || true
+      launchctl bootout "gui/$(id -u)/$TUNNEL_LABEL" 2>/dev/null || true
+    fi
     fail "the app did not start. The lines above are its log." ;;
   backup)
     backup
