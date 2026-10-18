@@ -240,6 +240,50 @@ refresh_tunnel_agent() {
   echo "Warning: couldn't switch the tunnel to $CLOUDFLARED; it still uses the previous cloudflared." >&2
 }
 
+require_no_other_connector() {
+  # Cloudflare spreads traffic over every connector of a tunnel; two Macs would serve two databases.
+  local connectors=unknown
+  for _ in $(seq 1 12); do
+    connectors="$("$CLOUDFLARED" tunnel info --output json "$TUNNEL_NAME" 2>/dev/null | "$NODE" -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{console.log((JSON.parse(s).conns||[]).length)}catch{console.log("unknown")}})')" || connectors=unknown
+    [ "$connectors" = 0 ] && return 0
+    sleep 5
+  done
+  case "$connectors" in
+    unknown) echo "Couldn't read the tunnel's connectors; continuing. Make sure no other computer runs the '$TUNNEL_NAME' tunnel." ;;
+    *) fail "the '$TUNNEL_NAME' tunnel is still running somewhere ($connectors connection(s)). If another Mac hosts the site, stop it there first (scripts/host_on_mac.sh stop), so visitors don't land on two different databases. If this Mac was the only host, Cloudflare may still be listing its old connection; wait a minute and run this again." ;;
+  esac
+}
+
+swap_agents() {
+  # Rewrites the app and backup agents and reloads them. If either fails to load or the app
+  # doesn't answer, the previous agents are put back and reloaded.
+  local saved
+  saved="$(mktemp -d)"
+  cp "$AGENTS/$APP_LABEL.plist" "$AGENTS/$BACKUP_LABEL.plist" "$saved"/ 2>/dev/null || true
+  write_app_agent; write_backup_agent
+  if reload_agent "$BACKUP_LABEL" && reload_agent "$APP_LABEL" && app_starts; then rm -rf "$saved"; return 0; fi
+  echo "The new launch agents didn't start, so the previous ones are being put back." >&2
+  cp "$saved"/*.plist "$AGENTS"/ 2>/dev/null || true
+  reload_agent "$BACKUP_LABEL" || true
+  reload_agent "$APP_LABEL" || true
+  rm -rf "$saved"
+  restart_app
+  fail "the launch agents couldn't be switched to $NODE; the app runs as it did before."
+}
+
+lock_maintenance() {
+  # One setup, update or restore at a time; they share staging files and stop the app.
+  local lock="$HOME_DIR/.maintenance.lock"
+  mkdir -p "$HOME_DIR"
+  if ! mkdir "$lock" 2>/dev/null; then
+    local holder; holder="$(cat "$lock/pid" 2>/dev/null || true)"
+    if [ -n "$holder" ] && kill -0 "$holder" 2>/dev/null; then fail "another setup, update or restore is running (process $holder). Wait for it to finish."; fi
+    rm -rf "$lock"; mkdir "$lock" || fail "couldn't take the maintenance lock at $lock."
+  fi
+  echo $$ > "$lock/pid"
+  trap 'rm -rf "$HOME_DIR/.maintenance.lock"' EXIT
+}
+
 reload_agent() {
   launchctl bootout "gui/$(id -u)/$1" 2>/dev/null || true
   launchctl bootstrap "gui/$(id -u)" "$AGENTS/$1.plist"
@@ -261,6 +305,14 @@ case "${1:-setup}" in
     # Starts what setup installed, without reinstalling or rebuilding anything.
     for label in "$APP_LABEL" "$TUNNEL_LABEL" "$BACKUP_LABEL"; do
       [ -f "$AGENTS/$label.plist" ] || fail "setup hasn't run on this Mac yet (scripts/host_on_mac.sh)."
+    done
+    if ! launchctl print "gui/$(id -u)/$TUNNEL_LABEL" >/dev/null 2>&1; then
+      # Another Mac may have taken over the site while this one was stopped.
+      pick_node
+      CLOUDFLARED="$(command -v cloudflared)" || fail "cloudflared is missing; run scripts/host_on_mac.sh to set up again."
+      require_no_other_connector
+    fi
+    for label in "$APP_LABEL" "$TUNNEL_LABEL" "$BACKUP_LABEL"; do
       launchctl print "gui/$(id -u)/$label" >/dev/null 2>&1 || launchctl bootstrap "gui/$(id -u)" "$AGENTS/$label.plist"
     done
     for _ in $(seq 1 30); do answers && { echo "Started."; exit 0; }; sleep 2; done
@@ -273,9 +325,13 @@ case "${1:-setup}" in
     file="${2:-}"
     [ -f "$file" ] || fail "give the backup file to restore, for example: scripts/host_on_mac.sh restore $BACKUPS/chesslab-<date>.sqlite"
     [ -f "$AGENTS/$APP_LABEL.plist" ] || fail "run the setup first (scripts/host_on_mac.sh)."
+    lock_maintenance
     pick_node
     # The Node that setup recorded may be gone; the app must restart with the one picked here.
-    grep -qF "<string>$(xml "$NODE")</string>" "$AGENTS/$APP_LABEL.plist" || { write_app_agent; write_backup_agent; }
+    if ! grep -qF "<string>$(xml "$NODE")</string>" "$AGENTS/$APP_LABEL.plist"; then
+      write_app_agent; write_backup_agent
+      reload_agent "$BACKUP_LABEL" || echo "Warning: the daily backup agent didn't reload; run scripts/host_on_mac.sh start." >&2
+    fi
     rmdir "$DB.before-restore" 2>/dev/null || true
     [ ! -e "$DB.before-restore" ] || fail "$DB.before-restore is left from a restore that didn't finish and may hold the only copy of the previous database. Move its files somewhere safe (or back into $HOME_DIR), remove the folder, then run this again."
     # Copy the chosen file first: the safety backup below may rotate the oldest backup away.
@@ -304,6 +360,7 @@ case "${1:-setup}" in
     echo "Restored $file and restarted. Anyone who signed in after that backup has to sign in again."
     exit 0 ;;
   update)
+    lock_maintenance
     cd "$REPO"
     [ "$(git branch --show-current)" = main ] || fail "switch this folder to the main branch first (git switch main)."
     git diff --quiet && git diff --cached --quiet || fail "this folder has uncommitted changes. Commit or stash them first, so an update can be undone cleanly."
@@ -316,10 +373,7 @@ case "${1:-setup}" in
     if [ "$old" = "$new" ]; then
       # Nothing new to install, but Homebrew may have moved Node, Stockfish or cloudflared.
       sync_env_stockfish
-      if ! grep -qF "<string>$(xml "$NODE")</string>" "$AGENTS/$APP_LABEL.plist"; then
-        write_app_agent; write_backup_agent
-        reload_agent "$BACKUP_LABEL"; reload_agent "$APP_LABEL"; restart_app
-      fi
+      grep -qF "<string>$(xml "$NODE")</string>" "$AGENTS/$APP_LABEL.plist" || swap_agents
       link_engine
       refresh_tunnel_agent
       echo "Already up to date."
@@ -370,7 +424,7 @@ case "${1:-setup}" in
       && { [ ! -e web/dist ] || mv web/dist "$keep/dist"; } \
       && git merge --ff-only -q "$new" \
       && mv "$trial/node_modules" node_modules && mv "$trial/.scratch/dist-next" web/dist \
-      && write_app_agent && write_backup_agent \
+      && ASKTHEMOVE_NODE="$NODE" bash "$REPO/scripts/host_on_mac.sh" write-agents \
       && reload_agent "$BACKUP_LABEL" && reload_agent "$APP_LABEL" && app_starts || rollback
     git worktree remove --force "$trial"
     rm -rf "$snapshot" "$keep"
@@ -379,7 +433,12 @@ case "${1:-setup}" in
     refresh_tunnel_agent
     echo "Updated and running."
     exit 0 ;;
-  setup) ;;
+  write-agents)
+    # Used by update, so the launch agents come from the version being installed.
+    NODE="${ASKTHEMOVE_NODE:?}"
+    write_app_agent; write_backup_agent
+    exit 0 ;;
+  setup) lock_maintenance ;;
   *) fail "unknown command $1. Use setup, update, status, backup, restore, start or stop." ;;
 esac
 
@@ -486,17 +545,7 @@ write_tunnel_agent
 # Cloudflare can keep listing them for a while after they stop.
 if [ "$had_tunnel_agent" = 0 ]; then
   launchctl bootout "gui/$(id -u)/$TUNNEL_LABEL" 2>/dev/null || true
-  connectors=unknown
-  for _ in $(seq 1 12); do
-    connectors="$("$CLOUDFLARED" tunnel info --output json "$TUNNEL_NAME" 2>/dev/null | "$NODE" -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{console.log((JSON.parse(s).conns||[]).length)}catch{console.log("unknown")}})')" || connectors=unknown
-    [ "$connectors" = 0 ] && break
-    sleep 5
-  done
-  case "$connectors" in
-    0) ;;
-    unknown) echo "Couldn't read the tunnel's connectors; continuing. Make sure no other computer runs the '$TUNNEL_NAME' tunnel." ;;
-    *) fail "the '$TUNNEL_NAME' tunnel is still running on another computer ($connectors connection(s)). Stop it there first (scripts/host_on_mac.sh stop on that Mac), so visitors don't land on two different databases, then run this again." ;;
-  esac
+  require_no_other_connector
 fi
 reload_agent "$TUNNEL_LABEL"
 touch "$host_marker"
