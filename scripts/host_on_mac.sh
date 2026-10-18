@@ -88,10 +88,14 @@ pick_node() {
 
 tools() {
   pick_node
-  command -v stockfish >/dev/null || brew install stockfish
-  if ! sf_is_18 "$(command -v stockfish)" && [ -x "$(brew --prefix)/opt/stockfish/bin/stockfish" ]; then brew upgrade stockfish || true; fi
+  local brew_sf; brew_sf="$(brew --prefix)/opt/stockfish/bin/stockfish"
+  STOCKFISH="$(command -v stockfish || true)"
+  if [ -z "$STOCKFISH" ] || ! sf_is_18 "$STOCKFISH"; then
+    # An older Stockfish on PATH would hide Homebrew's; install or upgrade Homebrew's and prefer it when it is 18.
+    if [ -x "$brew_sf" ]; then brew upgrade stockfish || true; elif [ -n "$STOCKFISH" ]; then brew install stockfish || true; else brew install stockfish; fi
+    if sf_is_18 "$brew_sf" || [ -z "$STOCKFISH" ]; then STOCKFISH="$brew_sf"; fi
+  fi
   command -v cloudflared >/dev/null || brew install cloudflared
-  STOCKFISH="$(command -v stockfish)"
   CLOUDFLARED="$(command -v cloudflared)"
 }
 
@@ -249,7 +253,7 @@ require_no_other_connector() {
     sleep 5
   done
   case "$connectors" in
-    unknown) echo "Couldn't read the tunnel's connectors; continuing. Make sure no other computer runs the '$TUNNEL_NAME' tunnel." ;;
+    unknown) fail "couldn't ask Cloudflare whether the '$TUNNEL_NAME' tunnel is running on another computer (no network, or the Cloudflare login expired). Nothing was started. Check the internet connection and run this again; if it keeps failing, run 'cloudflared tunnel login' first." ;;
     *) fail "the '$TUNNEL_NAME' tunnel is still running somewhere ($connectors connection(s)). If another Mac hosts the site, stop it there first (scripts/host_on_mac.sh stop), so visitors don't land on two different databases. If this Mac was the only host, Cloudflare may still be listing its old connection; wait a minute and run this again." ;;
   esac
 }
@@ -257,11 +261,19 @@ require_no_other_connector() {
 swap_agents() {
   # Rewrites the app and backup agents and reloads them. If either fails to load or the app
   # doesn't answer, the previous agents are put back and reloaded.
-  local saved
+  local saved old_node
+  # Check the new Node can read the settings before the running app is touched.
+  ( cd "$REPO" && "$NODE" --env-file="$ENV_FILE" -e 0 ) || fail "$NODE can't run the app's settings file; the running app was left alone."
+  old_node="$(sed -n 's|.*<string>\([^<]*\)</string><string>--env-file=.*|\1|p' "$AGENTS/$APP_LABEL.plist" 2>/dev/null | head -n 1)"
   saved="$(mktemp -d)"
   cp "$AGENTS/$APP_LABEL.plist" "$AGENTS/$BACKUP_LABEL.plist" "$saved"/ 2>/dev/null || true
   write_app_agent; write_backup_agent
   if reload_agent "$BACKUP_LABEL" && reload_agent "$APP_LABEL" && app_starts; then rm -rf "$saved"; return 0; fi
+  if [ -n "$old_node" ] && [ ! -x "$old_node" ]; then
+    # The previous agents point at a Node that no longer exists, so putting them back can't help.
+    rm -rf "$saved"
+    fail "the app didn't start with $NODE, and the Node it used before ($old_node) is gone. Its log is above. Fix Node (brew install node), then run scripts/host_on_mac.sh start."
+  fi
   echo "The new launch agents didn't start, so the previous ones are being put back." >&2
   cp "$saved"/*.plist "$AGENTS"/ 2>/dev/null || true
   reload_agent "$BACKUP_LABEL" || true
@@ -306,6 +318,8 @@ case "${1:-setup}" in
     for label in "$APP_LABEL" "$TUNNEL_LABEL" "$BACKUP_LABEL"; do
       [ -f "$AGENTS/$label.plist" ] || fail "setup hasn't run on this Mac yet (scripts/host_on_mac.sh)."
     done
+    # Don't start the app while an update or restore has it stopped to move files.
+    lock_maintenance
     if ! launchctl print "gui/$(id -u)/$TUNNEL_LABEL" >/dev/null 2>&1; then
       # Another Mac may have taken over the site while this one was stopped.
       pick_node
@@ -397,7 +411,8 @@ case "${1:-setup}" in
     rollback() {
       # Needs no network: the old node_modules and build were kept, not rebuilt.
       echo "The update didn't come up, so the previous version is being put back." >&2
-      stop_app || true
+      # Never swap the database under a process that still has it open.
+      stop_app || fail "the new version didn't stop within 30 seconds, so nothing was put back yet. Restart the Mac, then: copy the files in $snapshot into $HOME_DIR, run 'git reset --hard $old', move $keep/node_modules to $REPO/node_modules and $keep/dist to $REPO/web/dist, and run scripts/host_on_mac.sh start."
       if [ -f "$snapshot/.complete" ]; then
         rm -f "$DB" "$DB-wal" "$DB-shm"
         for part in "$snapshot"/*; do [ ! -e "$part" ] || cp -p "$part" "$HOME_DIR"/ \
