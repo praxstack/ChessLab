@@ -109,7 +109,8 @@ link_engine() {
   # Point it at the Homebrew Stockfish unless scripts/install_engines.py already installed one.
   local dir="$REPO/data/engines/stockfish18"
   # A link left pointing at a removed Stockfish counts as missing; clear it so it can be relinked.
-  if [ -L "$dir/stockfish" ] && [ ! -e "$dir/stockfish" ]; then rm -f "$dir/stockfish"; fi
+  # Homebrew may also have upgraded it past 18. Only links are removed; an installed engine file stays.
+  if [ -L "$dir/stockfish" ] && { [ ! -e "$dir/stockfish" ] || ! sf_is_18 "$dir/stockfish"; }; then rm -f "$dir/stockfish"; fi
   if [ ! -e "$dir/stockfish" ] && ! sf_is_18 "$STOCKFISH"; then
     echo "Note: $STOCKFISH is not Stockfish 18, so it isn't offered as Stockfish 18. Choose another analysis engine in Settings, or run scripts/install_engines.py stockfish18."
   elif [ ! -e "$dir/stockfish" ]; then
@@ -129,7 +130,7 @@ backup() {
   # Clear partial files only from runs that are no longer running; another backup may be mid-way.
   local partial
   for partial in "$BACKUPS"/.partial-*; do
-    if [ -e "$partial" ] && ! kill -0 "${partial##*.partial-}" 2>/dev/null; then rm -f "$partial"; fi
+    if [ -e "$partial" ] && { [ "${partial##*.partial-}" = "$$" ] || ! kill -0 "${partial##*.partial-}" 2>/dev/null; }; then rm -f "$partial"; fi
   done
   ( umask 077
     "$NODE" -e "const {DatabaseSync}=require('node:sqlite');new DatabaseSync(process.argv[1],{readOnly:true}).prepare('VACUUM INTO ?').run(process.argv[2])" "$DB" "$BACKUPS/.partial-$$" ) \
@@ -150,7 +151,7 @@ cat > "$AGENTS/$APP_LABEL.plist" <<PLIST
 <plist version="1.0"><dict>
   <key>Label</key><string>$APP_LABEL</string>
   <key>ProgramArguments</key><array>
-    <string>/usr/bin/caffeinate</string><string>-i</string>
+    <string>/bin/bash</string><string>-c</string><string>/usr/bin/caffeinate -i -w \$\$ &amp; exec "\$0" "\$@"</string>
     <string>$(xml "$NODE")</string><string>--env-file=$(xml "$ENV_FILE")</string><string>server/index.mjs</string>
   </array>
   <key>WorkingDirectory</key><string>$(xml "$REPO")</string>
@@ -199,9 +200,13 @@ PLIST
 }
 
 stop_app() {
+  # Returns success only once nothing answers on the port and no process has the database open.
   launchctl bootout "gui/$(id -u)/$APP_LABEL" 2>/dev/null || true
-  for _ in $(seq 1 15); do answers || break; sleep 1; done
-  return 0
+  for _ in $(seq 1 30); do
+    if ! answers && ! lsof -t "$DB" >/dev/null 2>&1; then return 0; fi
+    sleep 1
+  done
+  return 1
 }
 
 sync_env_stockfish() {
@@ -251,19 +256,20 @@ case "${1:-setup}" in
     [ -f "$file" ] || fail "give the backup file to restore, for example: scripts/host_on_mac.sh restore $BACKUPS/chesslab-<date>.sqlite"
     [ -f "$AGENTS/$APP_LABEL.plist" ] || fail "run the setup first (scripts/host_on_mac.sh)."
     pick_node
+    [ ! -e "$DB.before-restore" ] || fail "$DB.before-restore is left from a restore that didn't finish and may hold the only copy of the previous database. Move its files somewhere safe (or back into $HOME_DIR), remove the folder, then run this again."
     # Copy the chosen file first: the safety backup below may rotate the oldest backup away.
     ( umask 077; cp "$file" "$DB.restoring" )
     usable_db "$DB.restoring" || { rm -f "$DB.restoring"; fail "$file isn't a complete AskTheMove database. Nothing was changed."; }
     if [ -f "$DB" ] && usable_db "$DB"; then echo "Saving the current database first."; backup; fi
-    stop_app
+    stop_app || { rm -f "$DB.restoring"; fail "the app didn't stop within 30 seconds, so nothing was changed. Run scripts/host_on_mac.sh start, then try again."; }
     # Keep the database being replaced until the restored one is serving.
-    rm -rf "$DB.before-restore"; mkdir -m 700 "$DB.before-restore"
+    mkdir -m 700 "$DB.before-restore"
     for part in "$DB" "$DB-wal" "$DB-shm"; do [ -e "$part" ] && mv "$part" "$DB.before-restore/"; done
     mv "$DB.restoring" "$DB"
     if ! launchctl bootstrap "gui/$(id -u)" "$AGENTS/$APP_LABEL.plist" || ! app_starts; then
       echo "The restored database didn't start, so the previous one is being put back." >&2
       # Unload first, so a restarting app can't recreate the database while files are swapped.
-      stop_app
+      stop_app || true
       rm -f "$DB" "$DB-wal" "$DB-shm"
       if [ -n "$(ls -A "$DB.before-restore")" ]; then
         mv "$DB.before-restore"/* "$HOME_DIR"/ || fail "couldn't put the previous database back. It is kept in $DB.before-restore; move its files into $HOME_DIR, then run scripts/host_on_mac.sh start."
@@ -279,51 +285,62 @@ case "${1:-setup}" in
     cd "$REPO"
     [ "$(git branch --show-current)" = main ] || fail "switch this folder to the main branch first (git switch main)."
     git diff --quiet && git diff --cached --quiet || fail "this folder has uncommitted changes. Commit or stash them first, so an update can be undone cleanly."
+    snapshot="$DB.before-update"
+    [ ! -e "$snapshot" ] || fail "$snapshot is left from an update that didn't finish and may hold the only copy of the database from before it. Check that the site works, move the folder somewhere safe, then run this again."
     tools
     git fetch origin main
     git merge-base --is-ancestor HEAD origin/main || fail "local main has commits that aren't on GitHub, so it can't fast-forward."
     old="$(git rev-parse HEAD)" new="$(git rev-parse origin/main)"
     [ "$old" != "$new" ] || { echo "Already up to date."; exit 0; }
-    # Install and build the new commit in a separate copy first. The live folder is untouched if that fails.
-    trial="$REPO/.scratch/update-trial"
-    git worktree remove --force "$trial" 2>/dev/null || rm -rf "$trial"
+    # Install and build the new commit in a separate copy while the site keeps running.
+    # Its node_modules and build are then moved into place, so the live folder never runs npm.
+    trial="$REPO/.scratch/update-trial" keep="$REPO/.scratch/update-previous"
+    git worktree remove --force "$trial" 2>/dev/null || rm -rf "${trial:?}"
+    git worktree prune
     git worktree add --detach "$trial" "$new" >/dev/null
-    ( cd "$trial" && npm ci --no-audit --no-fund && npx --no-install vite build --outDir "$trial/.scratch/dist-check" ) \
-      || { git worktree remove --force "$trial"; fail "the new version didn't install or build; the live site was left as it was."; }
-    git worktree remove --force "$trial"
-    git merge --ff-only -q "$new"
-    # Node may have moved (for example nvm removed), so point the agents at the one chosen above.
+    if ! ( cd "$trial" && npm ci --no-audit --no-fund && npx --no-install vite build --outDir "$trial/.scratch/dist-next" ) \
+      || [ ! -f "$trial/.scratch/dist-next/index.html" ]; then
+      git worktree remove --force "$trial"
+      fail "the new version didn't install or build; the live site was left as it was."
+    fi
     saved="$(mktemp -d)"
     cp "$AGENTS/$APP_LABEL.plist" "$AGENTS/$BACKUP_LABEL.plist" "$saved"/ 2>/dev/null || true
     sync_env_stockfish
-    # The new version may change the database when it starts. Copy it with the app stopped, so a
-    # rollback can put back exactly what the old version had.
-    snapshot="$DB.before-update"
-    rm -rf "$snapshot"; mkdir -m 700 "$snapshot"
-    take_snapshot() {
-      stop_app
-      for part in "$DB" "$DB-wal" "$DB-shm"; do [ ! -e "$part" ] || cp -p "$part" "$snapshot"/ || return 1; done
-      touch "$snapshot/.complete"
-    }
-    if ! ( build ) || ! write_app_agent || ! write_backup_agent || ! take_snapshot \
-      || ! reload_agent "$BACKUP_LABEL" || ! reload_agent "$APP_LABEL" || ! app_starts; then
+    rm -rf "${keep:?}"; mkdir -p "$keep"
+    rollback() {
+      # Needs no network: the old node_modules and build were kept, not rebuilt.
       echo "The update didn't come up, so the previous version is being put back." >&2
-      stop_app
+      stop_app || true
       if [ -f "$snapshot/.complete" ]; then
         rm -f "$DB" "$DB-wal" "$DB-shm"
         for part in "$snapshot"/*; do [ ! -e "$part" ] || cp -p "$part" "$HOME_DIR"/ \
-          || fail "couldn't put the database back. The copy from before the update is in $snapshot."; done
+          || fail "couldn't put the database back. The copy from before the update is in $snapshot; copy its files into $HOME_DIR, then run scripts/host_on_mac.sh start."; done
       fi
-      git reset -q --hard "$old"
-      build
+      git reset -q --hard "$old" || true
+      if [ -e "$keep/node_modules" ]; then rm -rf "$REPO/node_modules"; mv "$keep/node_modules" "$REPO/node_modules"; fi
+      if [ -e "$keep/dist" ]; then rm -rf "$REPO/web/dist"; mv "$keep/dist" "$REPO/web/dist"; fi
       cp "$saved"/*.plist "$AGENTS"/ 2>/dev/null || true
       reload_agent "$BACKUP_LABEL" || true
       reload_agent "$APP_LABEL" || true
-      restart_app
-      rm -rf "$snapshot"
+      git worktree remove --force "$trial" 2>/dev/null || true
+      app_starts || fail "the previous version didn't start either; its log is above. The database from before the update is in $snapshot."
+      rm -rf "$snapshot" "$keep"
       fail "the update was undone; the site runs the version and database it had before."
-    fi
-    rm -rf "$snapshot"
+    }
+    # The new version may change the database when it starts. Stop the app before anything in the
+    # live folder changes, so no code, old or new, touches the database until it has been copied.
+    stop_app || { reload_agent "$APP_LABEL" || true; git worktree remove --force "$trial"; fail "the app didn't stop within 30 seconds, so the update was not applied."; }
+    mkdir -m 700 "$snapshot"
+    for part in "$DB" "$DB-wal" "$DB-shm"; do [ ! -e "$part" ] || cp -p "$part" "$snapshot"/ || rollback; done
+    touch "$snapshot/.complete"
+    { [ ! -e node_modules ] || mv node_modules "$keep/node_modules"; } \
+      && { [ ! -e web/dist ] || mv web/dist "$keep/dist"; } \
+      && git merge --ff-only -q "$new" \
+      && mv "$trial/node_modules" node_modules && mv "$trial/.scratch/dist-next" web/dist \
+      && write_app_agent && write_backup_agent \
+      && reload_agent "$BACKUP_LABEL" && reload_agent "$APP_LABEL" && app_starts || rollback
+    git worktree remove --force "$trial"
+    rm -rf "$snapshot" "$keep"
     link_engine
     # cloudflared may have moved too. Restart the tunnel only when its path changed.
     if [ -f "$AGENTS/$TUNNEL_LABEL.plist" ] && ! grep -qF "<string>$(xml "$CLOUDFLARED")</string>" "$AGENTS/$TUNNEL_LABEL.plist"; then
@@ -337,6 +354,11 @@ case "${1:-setup}" in
 esac
 
 [ "$(uname -s)" = Darwin ] || fail "this script is for macOS."
+# The public beta runs main; update only moves main forward.
+[ "$(git -C "$REPO" branch --show-current)" = main ] || fail "switch this folder to the main branch first (git switch main)."
+if [ -f "$ENV_FILE" ] && ! grep -qxF "APP_ORIGIN=https://$HOSTNAME_PUBLIC" "$ENV_FILE"; then
+  fail ".env.beta was made for a different address than https://$HOSTNAME_PUBLIC. Edit its APP_ORIGIN line to match, or move the file away to answer the setup questions again."
+fi
 
 say "Checking Node.js, Stockfish and cloudflared"
 tools
@@ -347,9 +369,6 @@ build
 link_engine
 private_dirs
 
-if [ -f "$ENV_FILE" ] && ! grep -qxF "APP_ORIGIN=https://$HOSTNAME_PUBLIC" "$ENV_FILE"; then
-  fail ".env.beta was made for a different address than https://$HOSTNAME_PUBLIC. Edit its APP_ORIGIN line to match, or move the file away to answer the setup questions again."
-fi
 if [ ! -f "$ENV_FILE" ]; then
   say "Beta settings"
   echo "Type the invite codes testers will use, separated by commas."
@@ -418,23 +437,34 @@ YAML
 # Adds one CNAME for the app hostname only. It never touches the site, www or email records.
 # If the record already exists, the probe below shows whether it points at this tunnel.
 dns_existing=0
-"$CLOUDFLARED" tunnel route dns "$TUNNEL_NAME" "$HOSTNAME_PUBLIC" || dns_existing=1
+route_out="$("$CLOUDFLARED" tunnel route dns "$TUNNEL_NAME" "$HOSTNAME_PUBLIC" 2>&1)" || dns_existing=1
+printf '%s\n' "$route_out"
+# With a login for another domain, cloudflared appends that domain (app.askthemove.online.other.com).
+if printf '%s' "$route_out" | grep -qF "$HOSTNAME_PUBLIC."; then
+  fail "this Mac's Cloudflare login is for a different domain, so the record went there (see the line above). Delete that one record in that domain's DNS, move ~/.cloudflared/cert.pem away, and run this again to sign in to the account that holds $DOMAIN."
+fi
 
+had_tunnel_agent=0
+[ -f "$AGENTS/$TUNNEL_LABEL.plist" ] && had_tunnel_agent=1
 write_tunnel_agent
 # Cloudflare spreads traffic over every running connector of a tunnel. Another Mac serving its own
 # database through the same tunnel would mix accounts, so stop ours and require that none are left.
-launchctl bootout "gui/$(id -u)/$TUNNEL_LABEL" 2>/dev/null || true
-connectors=unknown
-for _ in $(seq 1 12); do
-  connectors="$("$CLOUDFLARED" tunnel info --output json "$TUNNEL_NAME" 2>/dev/null | "$NODE" -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{console.log((JSON.parse(s).conns||[]).length)}catch{console.log("unknown")}})')" || connectors=unknown
-  [ "$connectors" = 0 ] && break
-  sleep 5
-done
-case "$connectors" in
-  0) ;;
-  unknown) echo "Couldn't read the tunnel's connectors; continuing. Make sure no other computer runs the '$TUNNEL_NAME' tunnel." ;;
-  *) fail "the '$TUNNEL_NAME' tunnel is still running on another computer ($connectors connection(s)). Stop it there first (scripts/host_on_mac.sh stop on that Mac), so visitors don't land on two different databases, then run this again." ;;
-esac
+# A rerun on the Mac that already hosts the tunnel skips this: the connections are its own, and
+# Cloudflare can keep listing them for a while after they stop.
+if [ "$had_tunnel_agent" = 0 ]; then
+  launchctl bootout "gui/$(id -u)/$TUNNEL_LABEL" 2>/dev/null || true
+  connectors=unknown
+  for _ in $(seq 1 12); do
+    connectors="$("$CLOUDFLARED" tunnel info --output json "$TUNNEL_NAME" 2>/dev/null | "$NODE" -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{console.log((JSON.parse(s).conns||[]).length)}catch{console.log("unknown")}})')" || connectors=unknown
+    [ "$connectors" = 0 ] && break
+    sleep 5
+  done
+  case "$connectors" in
+    0) ;;
+    unknown) echo "Couldn't read the tunnel's connectors; continuing. Make sure no other computer runs the '$TUNNEL_NAME' tunnel." ;;
+    *) fail "the '$TUNNEL_NAME' tunnel is still running on another computer ($connectors connection(s)). Stop it there first (scripts/host_on_mac.sh stop on that Mac), so visitors don't land on two different databases, then run this again." ;;
+  esac
+fi
 reload_agent "$TUNNEL_LABEL"
 
 say "Checking https://$HOSTNAME_PUBLIC"

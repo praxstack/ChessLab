@@ -11,6 +11,7 @@ Railway's Hobby plan was the first choice, set up in its dashboard because Railw
 - The image starts through `docker/entrypoint.sh`. As root it gives `/data` to the `node` user when needed, then runs the server as `node` with `setpriv`. Started as any other user, it runs the command unchanged.
 - The `Beta image` GitHub workflow builds the image and checks it on a root-owned volume: health, server user, Stockfish, invite gating and an account surviving a restart. Run by hand with a URL, it checks the live beta's health, security headers and status.
 - `docs/deploy-beta.md` gains a Railway section, and its backup commands run as `node`.
+- On the founder's own Mac (chosen 18 October 2026, see Status), `scripts/host_on_mac.sh` runs the app natively under launchd with Homebrew Node and Stockfish, publishes it through a free Cloudflare Tunnel at `app.askthemove.online`, backs up the database daily, and can update, restore and roll back. `docs/deploy-beta.md` documents it as Option E.
 - For a single server instead (AWS free plan in Mumbai or Azure for Students), `deploy/vm/cloud-init.yaml` prepares Ubuntu with Docker, Caddy and swap. The `Deploy to server` workflow builds the image on GitHub and installs it over SSH with settings taken from repository variables and secrets. It does nothing until `VM_HOST` is set.
 
 ## Non-goals
@@ -23,3 +24,5 @@ Railway's Hobby plan was the first choice, set up in its dashboard because Railw
 Not deployed yet.
 
 On 11 October the founder's Railway trial had expired. A free AWS or Azure server became the alternative, so the change also supports one plain server.
+
+On 18 October the founder ruled out AWS and paid hosts. The chosen host is now the founder's Mac with a free Cloudflare Tunnel (Option E). The site is offline while the Mac sleeps. The script has not yet been run on a real Mac.
