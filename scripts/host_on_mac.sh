@@ -308,11 +308,15 @@ refresh_tunnel_agent() {
     write_tunnel_agent
     [ ! -f "$rendered/tunnel.yml" ] || cp "$rendered/tunnel.yml" "$TUNNEL_CONFIG"
   }
-  if [ -z "$changed" ]; then rm -rf "$rendered"; return 0; fi
   # A stopped tunnel stays stopped; start loads it after checking for other connectors.
-  if ! launchctl print "gui/$(id -u)/$TUNNEL_LABEL" >/dev/null 2>&1; then install_tunnel_files; rm -rf "$rendered"; return 0; fi
+  if ! launchctl print "gui/$(id -u)/$TUNNEL_LABEL" >/dev/null 2>&1; then
+    [ -z "$changed" ] || install_tunnel_files
+    rm -rf "$rendered"; return 0
+  fi
+  # Returns non-zero whenever the loaded tunnel ends up without a live connection.
+  if [ -z "$changed" ]; then rm -rf "$rendered"; tunnel_ready; return; fi
   # Check the new cloudflared runs before the working connector is unloaded.
-  "$CLOUDFLARED" --version >/dev/null 2>&1 || { rm -rf "$rendered"; echo "Warning: $CLOUDFLARED doesn't run, so the tunnel was left as it is." >&2; return 0; }
+  "$CLOUDFLARED" --version >/dev/null 2>&1 || { rm -rf "$rendered"; echo "Warning: $CLOUDFLARED doesn't run, so the tunnel was left as it is." >&2; tunnel_ready; return; }
   local old; old="$(sed -n 's|.*<string>\([^<]*\)</string><string>tunnel</string>.*|\1|p' "$AGENTS/$TUNNEL_LABEL.plist" | head -n 1)"
   cp "$AGENTS/$TUNNEL_LABEL.plist" "$rendered/previous.plist"
   [ ! -f "$TUNNEL_CONFIG" ] || cp -p "$TUNNEL_CONFIG" "$rendered/previous.yml"
@@ -322,7 +326,7 @@ refresh_tunnel_agent() {
     # The previous agent names a cloudflared that no longer exists, so putting it back can't help.
     rm -rf "$rendered"
     echo "Warning: the tunnel didn't start with $CLOUDFLARED, and the cloudflared it used before ($old) is gone, so the site is offline. Check $HOME_DIR/logs/tunnel.log, then run scripts/host_on_mac.sh start." >&2
-    return 0
+    return 1
   fi
   cp "$rendered/previous.plist" "$AGENTS/$TUNNEL_LABEL.plist"
   [ ! -f "$rendered/previous.yml" ] || cp -p "$rendered/previous.yml" "$TUNNEL_CONFIG"
@@ -331,6 +335,7 @@ refresh_tunnel_agent() {
     echo "Warning: the new tunnel settings didn't connect, so the previous ones were put back and the tunnel runs as before." >&2
   else
     echo "Warning: the tunnel didn't connect with the new settings or the previous ones, so the site is offline. Check $HOME_DIR/logs/tunnel.log, then run scripts/host_on_mac.sh start." >&2
+    return 1
   fi
 }
 
@@ -453,23 +458,37 @@ case "${1:-setup}" in
     pick_node
     CLOUDFLARED="$(command -v cloudflared)" || fail "cloudflared is missing; run scripts/host_on_mac.sh to set up again."
     loaded() { launchctl print "gui/$(id -u)/$1" >/dev/null 2>&1; }
+    tunnel_was_loaded=1
     if ! loaded "$TUNNEL_LABEL"; then
+      tunnel_was_loaded=
       # Another Mac may have taken over the site while this one was stopped.
       require_no_other_connector
       # Homebrew may have moved cloudflared since setup; rewriting also picks up this version's settings.
       write_tunnel_agent
     fi
-    if ! loaded "$APP_LABEL" && ! agents_current; then
-      # The Node recorded at setup may be gone; start with the one picked here.
+    if ! agents_current && { ! loaded "$APP_LABEL" || ! serving; }; then
+      # The Node or checkout recorded at setup may be gone. A loaded app can still be crash-looping
+      # on it, so rewrite the agents with the Node picked here and reload whichever was loaded.
       write_app_agent; write_backup_agent
       if loaded "$BACKUP_LABEL"; then reload_agent "$BACKUP_LABEL"; fi
+      if loaded "$APP_LABEL"; then reload_agent "$APP_LABEL"; fi
     fi
     for label in "$APP_LABEL" "$TUNNEL_LABEL" "$BACKUP_LABEL"; do
       loaded "$label" || load_agent "$label"
     done
     for _ in $(seq 1 30); do
       if serving; then
-        tunnel_ready || { tail -n 30 "$HOME_DIR/logs/tunnel.log" >&2 || true; fail "the app runs, but the tunnel didn't connect to Cloudflare, so the site is offline. The lines above are the tunnel's log."; }
+        if ! tunnel_ready; then
+          tail -n 30 "$HOME_DIR/logs/tunnel.log" >&2 || true
+          if [ -z "$tunnel_was_loaded" ]; then
+            # Don't leave a connector retrying in the background: if another Mac takes over meanwhile,
+            # this one reconnecting later would split visitors across two databases.
+            launchctl disable "gui/$(id -u)/$TUNNEL_LABEL" 2>/dev/null || true
+            launchctl bootout "gui/$(id -u)/$TUNNEL_LABEL" 2>/dev/null || true
+            fail "the app runs, but the tunnel didn't connect to Cloudflare, so the site is offline and the tunnel was stopped again. The lines above are the tunnel's log. Fix that, then run scripts/host_on_mac.sh start."
+          fi
+          fail "the app runs, but the tunnel didn't connect to Cloudflare, so the site is offline. The lines above are the tunnel's log."
+        fi
         echo "Started."; exit 0
       fi
       sleep 2
@@ -553,7 +572,7 @@ case "${1:-setup}" in
         restart_app
       fi
       link_engine
-      refresh_tunnel_agent
+      refresh_tunnel_agent || fail "the app is up to date and running, but the tunnel isn't connected to Cloudflare, so the site is offline. Check $HOME_DIR/logs/tunnel.log, then run scripts/host_on_mac.sh start."
       echo "Already up to date."
       exit 0
     fi
@@ -615,7 +634,8 @@ case "${1:-setup}" in
     rm -rf "$snapshot" "$keep"
     link_engine
     # The new version's script decides the tunnel agent; it restarts the tunnel only if that changed.
-    ASKTHEMOVE_CLOUDFLARED="$CLOUDFLARED" bash "$REPO/scripts/host_on_mac.sh" refresh-tunnel || echo "Warning: the tunnel agent couldn't be refreshed; the tunnel keeps running as before." >&2
+    ASKTHEMOVE_CLOUDFLARED="$CLOUDFLARED" bash "$REPO/scripts/host_on_mac.sh" refresh-tunnel \
+      || fail "the new version is installed and the app runs, but the tunnel isn't connected to Cloudflare, so the site is offline. Check $HOME_DIR/logs/tunnel.log, then run scripts/host_on_mac.sh start."
     echo "Updated and running."
     exit 0 ;;
   write-agents)
@@ -626,7 +646,7 @@ case "${1:-setup}" in
   refresh-tunnel)
     # Used by update, so the tunnel agent also comes from the version being installed.
     CLOUDFLARED="${ASKTHEMOVE_CLOUDFLARED:?}"
-    refresh_tunnel_agent
+    refresh_tunnel_agent || exit 1
     exit 0 ;;
   setup) lock_maintenance ;;
   *) fail "unknown command $1. Use setup, update, status, backup, restore, start or stop." ;;
