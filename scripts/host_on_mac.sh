@@ -115,16 +115,20 @@ tools() {
 
 build() {
   cd "$REPO"
-  npm ci --no-audit --no-fund
-  # Build beside the live files and swap only after success, so a failed build never empties the site.
-  local next="$REPO/.scratch/dist-next" old="$REPO/.scratch/dist-old"
+  # npm ci deletes node_modules before installing, so keep the running app's packages aside and
+  # put them back if the install or build fails. The build goes beside the live files too.
+  local next="$REPO/.scratch/dist-next" old="$REPO/.scratch/dist-old" mods="$REPO/.scratch/node_modules-old"
   mkdir -p "$REPO/.scratch"
-  rm -rf "$next" "$old"
-  npx --no-install vite build --outDir "$next"
-  [ -f "$next/index.html" ] || fail "the build produced no index.html; the live site was left as it was."
+  rm -rf "$next" "$old" "$mods"
+  if [ -d node_modules ]; then mv node_modules "$mods"; fi
+  if ! npm ci --no-audit --no-fund || ! npx --no-install vite build --outDir "$next" || [ ! -f "$next/index.html" ]; then
+    rm -rf node_modules "$next"
+    if [ -d "$mods" ]; then mv "$mods" node_modules; fi
+    fail "the install or build failed; the live site and its packages were left as they were."
+  fi
   if [ -d web/dist ]; then mv web/dist "$old"; fi
   mv "$next" web/dist
-  rm -rf "$old"
+  rm -rf "$old" "$mods"
 }
 
 link_engine() {
@@ -245,7 +249,7 @@ sync_env_stockfish() {
   [ -x "$current" ] && return 0
   ( umask 077
     awk -v p="$STOCKFISH" '/^STOCKFISH_PATH=/{print "STOCKFISH_PATH=" p; next} {print}' "$ENV_FILE" > "$ENV_FILE.next" ) \
-    && mv "$ENV_FILE.next" "$ENV_FILE" && echo "Pointed STOCKFISH_PATH in .env.beta at $STOCKFISH."
+    && mv "$ENV_FILE.next" "$ENV_FILE" && ENV_CHANGED=1 && echo "Pointed STOCKFISH_PATH in .env.beta at $STOCKFISH."
 }
 
 refresh_tunnel_agent() {
@@ -471,11 +475,17 @@ case "${1:-setup}" in
     old="$(git rev-parse HEAD)" new="$(git rev-parse origin/main)"
     if [ "$old" = "$new" ]; then
       # Nothing new to install, but Homebrew may have moved Node, Stockfish or cloudflared.
+      ENV_CHANGED=
       sync_env_stockfish
       # The checkout may also have moved; both agents record its path.
-      { grep -qF "<string>$(xml "$NODE")</string>" "$AGENTS/$APP_LABEL.plist" \
+      if ! { grep -qF "<string>$(xml "$NODE")</string>" "$AGENTS/$APP_LABEL.plist" \
         && grep -qF "<string>$(xml "$REPO")</string>" "$AGENTS/$APP_LABEL.plist" \
-        && grep -qF "<string>$(xml "$REPO")/scripts/host_on_mac.sh</string>" "$AGENTS/$BACKUP_LABEL.plist"; } || swap_agents
+        && grep -qF "<string>$(xml "$REPO")/scripts/host_on_mac.sh</string>" "$AGENTS/$BACKUP_LABEL.plist"; }; then
+        swap_agents
+      elif [ -n "$ENV_CHANGED" ] && launchctl print "gui/$(id -u)/$APP_LABEL" >/dev/null 2>&1; then
+        # The running app read the old STOCKFISH_PATH at start; restart it to pick up the new one.
+        restart_app
+      fi
       link_engine
       refresh_tunnel_agent
       echo "Already up to date."
@@ -494,6 +504,10 @@ case "${1:-setup}" in
     fi
     saved="$(mktemp -d)"
     cp "$AGENTS/$APP_LABEL.plist" "$AGENTS/$BACKUP_LABEL.plist" "$saved"/ 2>/dev/null || true
+    # A rollback reloads these saved agents. If the Node they name is gone, save ones that use
+    # the Node picked now instead, so the previous version can still start.
+    saved_node="$(sed -n 's|.*<string>\([^<]*\)</string><string>--env-file=.*|\1|p' "$saved/$APP_LABEL.plist" 2>/dev/null | head -n 1)"
+    if [ -n "$saved_node" ] && [ ! -x "$saved_node" ]; then ( AGENTS="$saved"; write_app_agent; write_backup_agent ); fi
     sync_env_stockfish
     rm -rf "${keep:?}"; mkdir -p "$keep"
     rollback() {
@@ -652,13 +666,14 @@ if [ "$had_tunnel_agent" = 0 ]; then
   require_no_other_connector
 fi
 reload_agent "$TUNNEL_LABEL"
-touch "$host_marker"
 
 say "Checking https://$HOSTNAME_PUBLIC"
 probe="https://$HOSTNAME_PUBLIC/.well-known/askthemove-tunnel-$tunnel_id"
 for _ in $(seq 1 30); do
   if [ "$(curl -sS -o /dev/null -w '%{http_code}' --max-time 10 "$probe" 2>/dev/null)" = 204 ] \
     && curl -fsS --max-time 10 "https://$HOSTNAME_PUBLIC/healthz" >/dev/null 2>&1; then
+    # Mark this Mac as the tunnel's host only once the public site works through it.
+    touch "$host_marker"
     echo "Live: https://$HOSTNAME_PUBLIC"
     echo "It starts again by itself when you log in. Logs: $HOME_DIR/logs. Backups: $BACKUPS"
     exit 0
