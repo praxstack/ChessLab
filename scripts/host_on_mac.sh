@@ -44,7 +44,14 @@ node_major() { "$1" -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo
 answers() { curl -fsS --max-time 5 "http://127.0.0.1:$PORT/api/status" 2>/dev/null | grep -q '"inviteRequired":true'; }
 tunnel_ready() {
   # Loaded is not connected: wait until this Mac's cloudflared reports a live Cloudflare connection.
-  for _ in $(seq 1 30); do curl -fsS --max-time 5 "http://$TUNNEL_METRICS/ready" >/dev/null 2>&1 && return 0; sleep 2; done
+  # The answer must come from this tunnel agent's own process, not another cloudflared on that port.
+  local pid
+  for _ in $(seq 1 30); do
+    pid="$(launchctl print "gui/$(id -u)/$TUNNEL_LABEL" 2>/dev/null | awk '$1=="pid"{print $3; exit}')"
+    if [ -n "$pid" ] && lsof -nP -a -p "$pid" -iTCP:"${TUNNEL_METRICS##*:}" -sTCP:LISTEN >/dev/null 2>&1 \
+      && curl -fsS --max-time 5 "http://$TUNNEL_METRICS/ready" >/dev/null 2>&1; then return 0; fi
+    sleep 2
+  done
   return 1
 }
 serving() {
@@ -211,6 +218,22 @@ PLIST
   chmod 644 "$AGENTS/$BACKUP_LABEL.plist"  # launchd refuses agents others can write to
 }
 
+write_tunnel_config() {
+  # Prints the tunnel's settings for tunnel id $1 and key file $2.
+cat <<YAML
+tunnel: $1
+credentials-file: $2
+ingress:
+  # Answered by cloudflared itself, so a 204 here proves the hostname reaches this tunnel.
+  - hostname: $HOSTNAME_PUBLIC
+    path: ^/\.well-known/askthemove-tunnel-$1\$
+    service: http_status:204
+  - hostname: $HOSTNAME_PUBLIC
+    service: http://127.0.0.1:$PORT
+  - service: http_status:404
+YAML
+}
+
 write_tunnel_agent() {
 cat > "$AGENTS/$TUNNEL_LABEL.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -230,10 +253,15 @@ PLIST
 }
 
 stop_app() {
-  # Returns success only once nothing answers on the port and no process has the database open.
-  launchctl bootout "gui/$(id -u)/$APP_LABEL" 2>/dev/null || true
+  # Returns success only once launchd no longer has the app loaded (so KeepAlive can't start it
+  # again), nothing answers on the port and no process has the database open.
+  local target; target="gui/$(id -u)/$APP_LABEL"
   for _ in $(seq 1 30); do
-    if ! answers && ! lsof -t "$DB" >/dev/null 2>&1; then return 0; fi
+    if launchctl print "$target" >/dev/null 2>&1; then
+      launchctl bootout "$target" 2>/dev/null || true
+    elif ! answers && ! lsof -t "$DB" >/dev/null 2>&1; then
+      return 0
+    fi
     sleep 1
   done
   return 1
@@ -260,30 +288,50 @@ agents_current() {
 }
 
 refresh_tunnel_agent() {
-  # Rewrites the tunnel agent only when it differs from what this version would write (cloudflared
-  # moved, or the command changed). If the new one won't connect, the old agent is put back.
+  # Rewrites the tunnel agent and settings only when they differ from what this version would
+  # write (cloudflared moved, or the command or settings changed). If the new ones won't connect,
+  # the old ones are put back.
   [ -f "$AGENTS/$TUNNEL_LABEL.plist" ] || return 0
-  local rendered; rendered="$(mktemp -d)"
+  local rendered changed= tunnel_id credentials
+  rendered="$(mktemp -d)"
   ( AGENTS="$rendered"; write_tunnel_agent )
-  if cmp -s "$rendered/$TUNNEL_LABEL.plist" "$AGENTS/$TUNNEL_LABEL.plist"; then rm -rf "$rendered"; return 0; fi
-  rm -rf "$rendered"
+  cmp -s "$rendered/$TUNNEL_LABEL.plist" "$AGENTS/$TUNNEL_LABEL.plist" || changed=1
+  if [ -f "$TUNNEL_CONFIG" ]; then
+    tunnel_id="$(sed -n 's/^tunnel: //p' "$TUNNEL_CONFIG" | head -n 1)"
+    credentials="$(sed -n 's/^credentials-file: //p' "$TUNNEL_CONFIG" | head -n 1)"
+    if [ -n "$tunnel_id" ] && [ -n "$credentials" ]; then
+      write_tunnel_config "$tunnel_id" "$credentials" > "$rendered/tunnel.yml"
+      cmp -s "$rendered/tunnel.yml" "$TUNNEL_CONFIG" || changed=1
+    fi
+  fi
+  install_tunnel_files() {
+    write_tunnel_agent
+    [ ! -f "$rendered/tunnel.yml" ] || cp "$rendered/tunnel.yml" "$TUNNEL_CONFIG"
+  }
+  if [ -z "$changed" ]; then rm -rf "$rendered"; return 0; fi
   # A stopped tunnel stays stopped; start loads it after checking for other connectors.
-  if ! launchctl print "gui/$(id -u)/$TUNNEL_LABEL" >/dev/null 2>&1; then write_tunnel_agent; return 0; fi
+  if ! launchctl print "gui/$(id -u)/$TUNNEL_LABEL" >/dev/null 2>&1; then install_tunnel_files; rm -rf "$rendered"; return 0; fi
   # Check the new cloudflared runs before the working connector is unloaded.
-  "$CLOUDFLARED" --version >/dev/null 2>&1 || { echo "Warning: $CLOUDFLARED doesn't run, so the tunnel was left as it is." >&2; return 0; }
+  "$CLOUDFLARED" --version >/dev/null 2>&1 || { rm -rf "$rendered"; echo "Warning: $CLOUDFLARED doesn't run, so the tunnel was left as it is." >&2; return 0; }
   local old; old="$(sed -n 's|.*<string>\([^<]*\)</string><string>tunnel</string>.*|\1|p' "$AGENTS/$TUNNEL_LABEL.plist" | head -n 1)"
-  cp "$AGENTS/$TUNNEL_LABEL.plist" "$AGENTS/$TUNNEL_LABEL.plist.previous"
-  write_tunnel_agent
-  if reload_agent "$TUNNEL_LABEL" && tunnel_ready; then rm -f "$AGENTS/$TUNNEL_LABEL.plist.previous"; return 0; fi
+  cp "$AGENTS/$TUNNEL_LABEL.plist" "$rendered/previous.plist"
+  [ ! -f "$TUNNEL_CONFIG" ] || cp -p "$TUNNEL_CONFIG" "$rendered/previous.yml"
+  install_tunnel_files
+  if reload_agent "$TUNNEL_LABEL" && tunnel_ready; then rm -rf "$rendered"; return 0; fi
   if [ -n "$old" ] && [ ! -x "$old" ]; then
     # The previous agent names a cloudflared that no longer exists, so putting it back can't help.
-    rm -f "$AGENTS/$TUNNEL_LABEL.plist.previous"
+    rm -rf "$rendered"
     echo "Warning: the tunnel didn't start with $CLOUDFLARED, and the cloudflared it used before ($old) is gone, so the site is offline. Check $HOME_DIR/logs/tunnel.log, then run scripts/host_on_mac.sh start." >&2
     return 0
   fi
-  mv "$AGENTS/$TUNNEL_LABEL.plist.previous" "$AGENTS/$TUNNEL_LABEL.plist"
-  reload_agent "$TUNNEL_LABEL" || true
-  echo "Warning: couldn't switch the tunnel to $CLOUDFLARED; it still uses the previous cloudflared." >&2
+  cp "$rendered/previous.plist" "$AGENTS/$TUNNEL_LABEL.plist"
+  [ ! -f "$rendered/previous.yml" ] || cp -p "$rendered/previous.yml" "$TUNNEL_CONFIG"
+  rm -rf "$rendered"
+  if reload_agent "$TUNNEL_LABEL" && tunnel_ready; then
+    echo "Warning: the new tunnel settings didn't connect, so the previous ones were put back and the tunnel runs as before." >&2
+  else
+    echo "Warning: the tunnel didn't connect with the new settings or the previous ones, so the site is offline. Check $HOME_DIR/logs/tunnel.log, then run scripts/host_on_mac.sh start." >&2
+  fi
 }
 
 require_no_other_connector() {
@@ -318,25 +366,35 @@ swap_agents() {
   fi
   echo "The new launch agents didn't start, so the previous ones are being put back." >&2
   cp "$saved"/*.plist "$AGENTS"/ 2>/dev/null || true
-  reload_agent "$BACKUP_LABEL" || true
+  local backup_back=1
+  reload_agent "$BACKUP_LABEL" || backup_back=
   reload_agent "$APP_LABEL" || true
   rm -rf "$saved"
   restart_app
+  [ -n "$backup_back" ] || fail "the launch agents couldn't be switched to $NODE. The app runs as it did before, but the daily backup agent didn't load again, so no backups run. Run scripts/host_on_mac.sh start to turn it back on."
   fail "the launch agents couldn't be switched to $NODE; the app runs as it did before."
+}
+
+lock_token() {
+  # A process id plus that process's start time; empty start time when no such process runs.
+  local started; started="$(ps -o lstart= -p "$1" 2>/dev/null | tr -s ' ' '_' || true)"
+  printf '%s@%s' "$1" "$started"
 }
 
 lock_maintenance() {
   # One setup, start, update or restore at a time; they share staging files and stop the app.
-  # The lock is a symlink whose target is the holder's process id, so taking it is one atomic step.
+  # The lock is a symlink whose target names the holder (process id and its start time), so taking
+  # it is one atomic step, and a lock left by a crash isn't mistaken for a later process given that id.
   local lock="$HOME_DIR/.maintenance.lock" reap="$HOME_DIR/.maintenance.reap" holder
   mkdir -p "$HOME_DIR"
+  LOCK_TOKEN="$(lock_token "$$")"
   for _ in $(seq 1 10); do
-    if ln -s "$$" "$lock" 2>/dev/null; then
-      trap '[ "$(readlink "$HOME_DIR/.maintenance.lock" 2>/dev/null)" != "$$" ] || rm -f "$HOME_DIR/.maintenance.lock"' EXIT
+    if ln -s "$LOCK_TOKEN" "$lock" 2>/dev/null; then
+      trap '[ "$(readlink "$HOME_DIR/.maintenance.lock" 2>/dev/null)" != "$LOCK_TOKEN" ] || rm -f "$HOME_DIR/.maintenance.lock"' EXIT
       return 0
     fi
     holder="$(readlink "$lock" 2>/dev/null || true)"
-    if [ -n "$holder" ] && kill -0 "$holder" 2>/dev/null; then fail "another setup, start, update or restore is running (process $holder). Wait for it to finish."; fi
+    if [ -n "$holder" ] && [ "$(lock_token "${holder%%@*}")" = "$holder" ]; then fail "another setup, start, update or restore is running (process ${holder%%@*}). Wait for it to finish."; fi
     # The holder has exited. Only one process clears it, and only if it is still the lock it checked.
     if mkdir "$reap" 2>/dev/null; then
       [ "$(readlink "$lock" 2>/dev/null || true)" != "$holder" ] || rm -f "$lock"
@@ -532,11 +590,13 @@ case "${1:-setup}" in
       if [ -e "$keep/node_modules" ]; then rm -rf "$REPO/node_modules"; mv "$keep/node_modules" "$REPO/node_modules"; fi
       if [ -e "$keep/dist" ]; then rm -rf "$REPO/web/dist"; mv "$keep/dist" "$REPO/web/dist"; fi
       cp "$saved"/*.plist "$AGENTS"/ 2>/dev/null || true
-      reload_agent "$BACKUP_LABEL" || true
+      backup_back=1
+      reload_agent "$BACKUP_LABEL" || backup_back=
       reload_agent "$APP_LABEL" || true
       git worktree remove --force "$trial" 2>/dev/null || true
       app_starts || fail "the previous version didn't start either; its log is above. The database from before the update is in $snapshot."
       rm -rf "$snapshot" "$keep"
+      [ -n "$backup_back" ] || fail "the update was undone and the site runs the version and database it had before, but the daily backup agent didn't load again, so no backups run. Run scripts/host_on_mac.sh start to turn it back on."
       fail "the update was undone; the site runs the version and database it had before."
     }
     # The new version may change the database when it starts. Stop the app before anything in the
@@ -641,18 +701,7 @@ if [ ! -f "$credentials" ]; then
   ( umask 077; "$CLOUDFLARED" tunnel token --cred-file "$credentials" "$TUNNEL_NAME" >/dev/null ) \
     || fail "the tunnel '$TUNNEL_NAME' exists in Cloudflare, but its key file isn't on this Mac and couldn't be fetched. If nothing else uses that tunnel, delete it in the Cloudflare dashboard (Zero Trust > Networks > Tunnels) and run this again."
 fi
-cat > "$TUNNEL_CONFIG" <<YAML
-tunnel: $tunnel_id
-credentials-file: $credentials
-ingress:
-  # Answered by cloudflared itself, so a 204 here proves the hostname reaches this tunnel.
-  - hostname: $HOSTNAME_PUBLIC
-    path: ^/\.well-known/askthemove-tunnel-$tunnel_id\$
-    service: http_status:204
-  - hostname: $HOSTNAME_PUBLIC
-    service: http://127.0.0.1:$PORT
-  - service: http_status:404
-YAML
+write_tunnel_config "$tunnel_id" "$credentials" > "$TUNNEL_CONFIG"
 # Adds one CNAME for the app hostname only. It never touches the site, www or email records.
 # If the record already exists, the probe below shows whether it points at this tunnel.
 dns_existing=0
@@ -694,5 +743,12 @@ for _ in $(seq 1 30); do
   sleep 5
 done
 tail -n 20 "$HOME_DIR/logs/tunnel.log" >&2 || true
+if [ "$had_tunnel_agent" = 0 ]; then
+  # This Mac isn't a confirmed host, so don't leave its connector running or starting at the next
+  # login; a later host elsewhere would otherwise share traffic with it.
+  launchctl disable "gui/$(id -u)/$TUNNEL_LABEL" 2>/dev/null || true
+  launchctl bootout "gui/$(id -u)/$TUNNEL_LABEL" 2>/dev/null || true
+  echo "The tunnel on this Mac was stopped and won't start by itself until setup succeeds." >&2
+fi
 [ "$dns_existing" = 0 ] || fail "$HOSTNAME_PUBLIC already has a DNS record, and it doesn't reach this tunnel. Nothing was changed. In Cloudflare DNS for $DOMAIN, check the record named '${HOSTNAME_PUBLIC%%.*}'. If it's an old one you no longer need, delete only that record (leave the email records alone), then run this again. If this Mac is signed in to a different Cloudflare account, move ~/.cloudflared/cert.pem away and run this again to sign in to the one that holds $DOMAIN."
-fail "the app runs, but https://$HOSTNAME_PUBLIC doesn't answer yet. DNS can take a few minutes; run scripts/host_on_mac.sh status, then try the address again."
+fail "the app runs, but https://$HOSTNAME_PUBLIC doesn't answer through this tunnel yet. DNS can take a few minutes; run scripts/host_on_mac.sh again in a few minutes to recheck."
