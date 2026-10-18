@@ -252,11 +252,21 @@ sync_env_stockfish() {
     && mv "$ENV_FILE.next" "$ENV_FILE" && ENV_CHANGED=1 && echo "Pointed STOCKFISH_PATH in .env.beta at $STOCKFISH."
 }
 
+agents_current() {
+  # True when the app and backup agents name this Node and this checkout.
+  grep -qF "<string>$(xml "$NODE")</string>" "$AGENTS/$APP_LABEL.plist" \
+    && grep -qF "<string>$(xml "$REPO")</string>" "$AGENTS/$APP_LABEL.plist" \
+    && grep -qF "<string>$(xml "$REPO")/scripts/host_on_mac.sh</string>" "$AGENTS/$BACKUP_LABEL.plist"
+}
+
 refresh_tunnel_agent() {
-  # Rewrites the tunnel agent only when cloudflared moved. If the new one won't load, the old
-  # agent is put back so the site keeps its connection.
+  # Rewrites the tunnel agent only when it differs from what this version would write (cloudflared
+  # moved, or the command changed). If the new one won't connect, the old agent is put back.
   [ -f "$AGENTS/$TUNNEL_LABEL.plist" ] || return 0
-  grep -qF "<string>$(xml "$CLOUDFLARED")</string>" "$AGENTS/$TUNNEL_LABEL.plist" && return 0
+  local rendered; rendered="$(mktemp -d)"
+  ( AGENTS="$rendered"; write_tunnel_agent )
+  if cmp -s "$rendered/$TUNNEL_LABEL.plist" "$AGENTS/$TUNNEL_LABEL.plist"; then rm -rf "$rendered"; return 0; fi
+  rm -rf "$rendered"
   # A stopped tunnel stays stopped; start loads it after checking for other connectors.
   if ! launchctl print "gui/$(id -u)/$TUNNEL_LABEL" >/dev/null 2>&1; then write_tunnel_agent; return 0; fi
   # Check the new cloudflared runs before the working connector is unloaded.
@@ -391,7 +401,7 @@ case "${1:-setup}" in
       # Homebrew may have moved cloudflared since setup; rewriting also picks up this version's settings.
       write_tunnel_agent
     fi
-    if ! loaded "$APP_LABEL" && ! grep -qF "<string>$(xml "$NODE")</string>" "$AGENTS/$APP_LABEL.plist"; then
+    if ! loaded "$APP_LABEL" && ! agents_current; then
       # The Node recorded at setup may be gone; start with the one picked here.
       write_app_agent; write_backup_agent
       if loaded "$BACKUP_LABEL"; then reload_agent "$BACKUP_LABEL"; fi
@@ -419,7 +429,7 @@ case "${1:-setup}" in
     lock_maintenance
     pick_node
     # The Node that setup recorded may be gone; the app must restart with the one picked here.
-    if ! grep -qF "<string>$(xml "$NODE")</string>" "$AGENTS/$APP_LABEL.plist"; then
+    if ! agents_current; then
       write_app_agent; write_backup_agent
       reload_agent "$BACKUP_LABEL" || echo "Warning: the daily backup agent didn't reload; run scripts/host_on_mac.sh start." >&2
     fi
@@ -478,9 +488,7 @@ case "${1:-setup}" in
       ENV_CHANGED=
       sync_env_stockfish
       # The checkout may also have moved; both agents record its path.
-      if ! { grep -qF "<string>$(xml "$NODE")</string>" "$AGENTS/$APP_LABEL.plist" \
-        && grep -qF "<string>$(xml "$REPO")</string>" "$AGENTS/$APP_LABEL.plist" \
-        && grep -qF "<string>$(xml "$REPO")/scripts/host_on_mac.sh</string>" "$AGENTS/$BACKUP_LABEL.plist"; }; then
+      if ! agents_current; then
         swap_agents
       elif [ -n "$ENV_CHANGED" ] && launchctl print "gui/$(id -u)/$APP_LABEL" >/dev/null 2>&1; then
         # The running app read the old STOCKFISH_PATH at start; restart it to pick up the new one.
@@ -546,14 +554,19 @@ case "${1:-setup}" in
     git worktree remove --force "$trial"
     rm -rf "$snapshot" "$keep"
     link_engine
-    # cloudflared may have moved too. Restart the tunnel only when its path changed.
-    refresh_tunnel_agent
+    # The new version's script decides the tunnel agent; it restarts the tunnel only if that changed.
+    ASKTHEMOVE_CLOUDFLARED="$CLOUDFLARED" bash "$REPO/scripts/host_on_mac.sh" refresh-tunnel || echo "Warning: the tunnel agent couldn't be refreshed; the tunnel keeps running as before." >&2
     echo "Updated and running."
     exit 0 ;;
   write-agents)
     # Used by update, so the launch agents come from the version being installed.
     NODE="${ASKTHEMOVE_NODE:?}"
     write_app_agent; write_backup_agent
+    exit 0 ;;
+  refresh-tunnel)
+    # Used by update, so the tunnel agent also comes from the version being installed.
+    CLOUDFLARED="${ASKTHEMOVE_CLOUDFLARED:?}"
+    refresh_tunnel_agent
     exit 0 ;;
   setup) lock_maintenance ;;
   *) fail "unknown command $1. Use setup, update, status, backup, restore, start or stop." ;;
