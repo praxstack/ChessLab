@@ -126,7 +126,11 @@ backup() {
   out="$BACKUPS/chesslab-$(date -u +%Y%m%dT%H%M%SZ)-$$.sqlite"
   # VACUUM INTO writes one consistent file while the app keeps serving. It goes to a temporary
   # name and gets its final name only after it passes the same check a restore uses.
-  rm -f "$BACKUPS"/.partial-*
+  # Clear partial files only from runs that are no longer running; another backup may be mid-way.
+  local partial
+  for partial in "$BACKUPS"/.partial-*; do
+    if [ -e "$partial" ] && ! kill -0 "${partial##*.partial-}" 2>/dev/null; then rm -f "$partial"; fi
+  done
   ( umask 077
     "$NODE" -e "const {DatabaseSync}=require('node:sqlite');new DatabaseSync(process.argv[1],{readOnly:true}).prepare('VACUUM INTO ?').run(process.argv[2])" "$DB" "$BACKUPS/.partial-$$" ) \
     && usable_db "$BACKUPS/.partial-$$" || { rm -f "$BACKUPS/.partial-$$"; fail "the backup didn't complete; no file was kept."; }
@@ -343,7 +347,7 @@ build
 link_engine
 private_dirs
 
-if [ -f "$ENV_FILE" ] && ! grep -qx "APP_ORIGIN=https://$HOSTNAME_PUBLIC" "$ENV_FILE"; then
+if [ -f "$ENV_FILE" ] && ! grep -qxF "APP_ORIGIN=https://$HOSTNAME_PUBLIC" "$ENV_FILE"; then
   fail ".env.beta was made for a different address than https://$HOSTNAME_PUBLIC. Edit its APP_ORIGIN line to match, or move the file away to answer the setup questions again."
 fi
 if [ ! -f "$ENV_FILE" ]; then
