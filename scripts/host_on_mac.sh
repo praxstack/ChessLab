@@ -148,11 +148,11 @@ case "${1:-setup}" in
     rm -rf "$DB.before-restore"; mkdir -m 700 "$DB.before-restore"
     for part in "$DB" "$DB-wal" "$DB-shm"; do [ -e "$part" ] && mv "$part" "$DB.before-restore/"; done
     mv "$DB.restoring" "$DB"
-    launchctl bootstrap "gui/$(id -u)" "$AGENTS/$APP_LABEL.plist"
-    if ! app_starts; then
+    if ! launchctl bootstrap "gui/$(id -u)" "$AGENTS/$APP_LABEL.plist" || ! app_starts; then
       echo "The restored database didn't start, so the previous one is being put back." >&2
       rm -f "$DB" "$DB-wal" "$DB-shm"
       mv "$DB.before-restore"/* "$HOME_DIR"/ 2>/dev/null || true
+      launchctl bootstrap "gui/$(id -u)" "$AGENTS/$APP_LABEL.plist" 2>/dev/null || true
       restart_app
       fail "the restore was undone; the app is running on the database it had before."
     fi
@@ -293,20 +293,18 @@ cat > "$TUNNEL_CONFIG" <<YAML
 tunnel: $tunnel_id
 credentials-file: $credentials
 ingress:
+  # Answered by cloudflared itself, so a 204 here proves the hostname reaches this tunnel.
+  - hostname: $HOSTNAME_PUBLIC
+    path: ^/\.well-known/askthemove-tunnel-$tunnel_id\$
+    service: http_status:204
   - hostname: $HOSTNAME_PUBLIC
     service: http://127.0.0.1:$PORT
   - service: http_status:404
 YAML
 # Adds one CNAME for the app hostname only. It never touches the site, www or email records.
-# It succeeds when the record already points at this tunnel, and fails if the name points anywhere else.
-routed="$HOME_DIR/.dns-routed"
-if [ "$(cat "$routed" 2>/dev/null)" = "$tunnel_id $HOSTNAME_PUBLIC" ]; then
-  echo "$HOSTNAME_PUBLIC already points at this tunnel."
-elif "$CLOUDFLARED" tunnel route dns "$TUNNEL_NAME" "$HOSTNAME_PUBLIC"; then
-  echo "$tunnel_id $HOSTNAME_PUBLIC" > "$routed"
-else
-  fail "$HOSTNAME_PUBLIC already has a DNS record that points somewhere else. Nothing was changed. In Cloudflare DNS for $DOMAIN, check the record named '${HOSTNAME_PUBLIC%%.*}'. If it's an old one you no longer need, delete only that record (leave the email records alone), then run this again."
-fi
+# If the record already exists, the probe below shows whether it points at this tunnel.
+dns_existing=0
+"$CLOUDFLARED" tunnel route dns "$TUNNEL_NAME" "$HOSTNAME_PUBLIC" || dns_existing=1
 
 cat > "$AGENTS/$TUNNEL_LABEL.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -326,8 +324,10 @@ launchctl bootout "gui/$(id -u)/$TUNNEL_LABEL" 2>/dev/null || true
 launchctl bootstrap "gui/$(id -u)" "$AGENTS/$TUNNEL_LABEL.plist"
 
 say "Checking https://$HOSTNAME_PUBLIC"
+probe="https://$HOSTNAME_PUBLIC/.well-known/askthemove-tunnel-$tunnel_id"
 for _ in $(seq 1 30); do
-  if curl -fsS --max-time 10 "https://$HOSTNAME_PUBLIC/healthz" >/dev/null 2>&1; then
+  if [ "$(curl -sS -o /dev/null -w '%{http_code}' --max-time 10 "$probe" 2>/dev/null)" = 204 ] \
+    && curl -fsS --max-time 10 "https://$HOSTNAME_PUBLIC/healthz" >/dev/null 2>&1; then
     echo "Live: https://$HOSTNAME_PUBLIC"
     echo "It starts again by itself when you log in. Logs: $HOME_DIR/logs. Backups: $BACKUPS"
     exit 0
@@ -335,4 +335,5 @@ for _ in $(seq 1 30); do
   sleep 5
 done
 tail -n 20 "$HOME_DIR/logs/tunnel.log" >&2 || true
+[ "$dns_existing" = 0 ] || fail "$HOSTNAME_PUBLIC already has a DNS record, and it doesn't reach this tunnel. Nothing was changed. In Cloudflare DNS for $DOMAIN, check the record named '${HOSTNAME_PUBLIC%%.*}'. If it's an old one you no longer need, delete only that record (leave the email records alone), then run this again."
 fail "the app runs, but https://$HOSTNAME_PUBLIC doesn't answer yet. DNS can take a few minutes; run scripts/host_on_mac.sh status, then try the address again."
