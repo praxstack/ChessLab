@@ -41,6 +41,13 @@ sf_is_18() {
 node_major() { "$1" -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0; }
 
 answers() { curl -fsS --max-time 5 "http://127.0.0.1:$PORT/api/status" 2>/dev/null | grep -q '"inviteRequired":true'; }
+serving() {
+  # The answer must come from this launch agent's process. Another ChessLab on the same port would
+  # otherwise pass, and the tunnel would publish its database.
+  answers || return 1
+  local pid; pid="$(launchctl print "gui/$(id -u)/$APP_LABEL" 2>/dev/null | awk '$1=="pid"{print $3; exit}')"
+  [ -n "$pid" ] && lsof -nP -a -p "$pid" -iTCP:"$PORT" -sTCP:LISTEN >/dev/null 2>&1
+}
 
 rotate_logs() {
   # Keep each log under about 10 MB, with one older copy, so a crash loop can't fill the disk.
@@ -62,8 +69,9 @@ private_dirs() {
 
 app_starts() {
   launchctl kickstart -k "gui/$(id -u)/$APP_LABEL" >/dev/null
-  for _ in $(seq 1 30); do answers && return 0; sleep 2; done
+  for _ in $(seq 1 30); do serving && return 0; sleep 2; done
   tail -n 30 "$HOME_DIR/logs/app.log" >&2 || true
+  if answers; then echo "Another program is answering on port $PORT, not this Mac's AskTheMove service. Stop it (lsof -nP -iTCP:$PORT -sTCP:LISTEN shows which), then run this again." >&2; fi
   return 1
 }
 restart_app() { app_starts || fail "the app did not start. The lines above are its log."; }
@@ -171,6 +179,7 @@ cat > "$AGENTS/$APP_LABEL.plist" <<PLIST
   <key>StandardErrorPath</key><string>$(xml "$HOME_DIR")/logs/app.log</string>
 </dict></plist>
 PLIST
+  chmod 644 "$AGENTS/$APP_LABEL.plist"  # launchd refuses agents others can write to
 }
 
 write_backup_agent() {
@@ -189,6 +198,7 @@ cat > "$AGENTS/$BACKUP_LABEL.plist" <<PLIST
   <key>StandardErrorPath</key><string>$(xml "$HOME_DIR")/logs/backup.log</string>
 </dict></plist>
 PLIST
+  chmod 644 "$AGENTS/$BACKUP_LABEL.plist"  # launchd refuses agents others can write to
 }
 
 write_tunnel_agent() {
@@ -206,6 +216,7 @@ cat > "$AGENTS/$TUNNEL_LABEL.plist" <<PLIST
   <key>StandardErrorPath</key><string>$(xml "$HOME_DIR")/logs/tunnel.log</string>
 </dict></plist>
 PLIST
+  chmod 644 "$AGENTS/$TUNNEL_LABEL.plist"  # launchd refuses agents others can write to
 }
 
 stop_app() {
@@ -238,9 +249,18 @@ refresh_tunnel_agent() {
   grep -qF "<string>$(xml "$CLOUDFLARED")</string>" "$AGENTS/$TUNNEL_LABEL.plist" && return 0
   # A stopped tunnel stays stopped; start loads it after checking for other connectors.
   if ! launchctl print "gui/$(id -u)/$TUNNEL_LABEL" >/dev/null 2>&1; then write_tunnel_agent; return 0; fi
+  # Check the new cloudflared runs before the working connector is unloaded.
+  "$CLOUDFLARED" --version >/dev/null 2>&1 || { echo "Warning: $CLOUDFLARED doesn't run, so the tunnel was left as it is." >&2; return 0; }
+  local old; old="$(sed -n 's|.*<string>\([^<]*\)</string><string>tunnel</string>.*|\1|p' "$AGENTS/$TUNNEL_LABEL.plist" | head -n 1)"
   cp "$AGENTS/$TUNNEL_LABEL.plist" "$AGENTS/$TUNNEL_LABEL.plist.previous"
   write_tunnel_agent
   if reload_agent "$TUNNEL_LABEL"; then rm -f "$AGENTS/$TUNNEL_LABEL.plist.previous"; return 0; fi
+  if [ -n "$old" ] && [ ! -x "$old" ]; then
+    # The previous agent names a cloudflared that no longer exists, so putting it back can't help.
+    rm -f "$AGENTS/$TUNNEL_LABEL.plist.previous"
+    echo "Warning: the tunnel didn't start with $CLOUDFLARED, and the cloudflared it used before ($old) is gone, so the site is offline. Check $HOME_DIR/logs/tunnel.log, then run scripts/host_on_mac.sh start." >&2
+    return 0
+  fi
   mv "$AGENTS/$TUNNEL_LABEL.plist.previous" "$AGENTS/$TUNNEL_LABEL.plist"
   reload_agent "$TUNNEL_LABEL" || true
   echo "Warning: couldn't switch the tunnel to $CLOUDFLARED; it still uses the previous cloudflared." >&2
@@ -320,12 +340,16 @@ reload_agent() {
 
 case "${1:-setup}" in
   status)
-    if answers; then echo "The app is running and invite-only on port $PORT."; else echo "The app is not answering on port $PORT."; fi
+    if serving; then echo "The app is running and invite-only on port $PORT."
+    elif answers; then echo "Another program, not this service, is answering on port $PORT."
+    else echo "The app is not answering on port $PORT."; fi
     launchctl print "gui/$(id -u)/$TUNNEL_LABEL" >/dev/null 2>&1 && echo "The tunnel service is loaded." || echo "The tunnel service is not loaded."
     latest="$(ls -1t "$BACKUPS"/chesslab-*.sqlite 2>/dev/null | head -n 1 || true)"
     echo "Latest backup: ${latest:-none yet}"
     exit 0 ;;
   stop)
+    # Don't stop in the middle of an update or restore; it would start the app again afterwards.
+    lock_maintenance
     # Disabled agents don't load at the next login either, so a stopped Mac stays off the tunnel
     # (for example after the site has moved to another Mac) until start runs its checks.
     for label in "$APP_LABEL" "$TUNNEL_LABEL"; do
@@ -358,8 +382,9 @@ case "${1:-setup}" in
     for label in "$APP_LABEL" "$TUNNEL_LABEL" "$BACKUP_LABEL"; do
       loaded "$label" || load_agent "$label"
     done
-    for _ in $(seq 1 30); do answers && { echo "Started."; exit 0; }; sleep 2; done
+    for _ in $(seq 1 30); do serving && { echo "Started."; exit 0; }; sleep 2; done
     tail -n 30 "$HOME_DIR/logs/app.log" >&2 || true
+    if answers; then echo "Another program is answering on port $PORT, not this Mac's AskTheMove service. Stop it (lsof -nP -iTCP:$PORT -sTCP:LISTEN shows which), then run this again." >&2; fi
     fail "the app did not start. The lines above are its log." ;;
   backup)
     backup
