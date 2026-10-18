@@ -227,6 +227,19 @@ sync_env_stockfish() {
     && mv "$ENV_FILE.next" "$ENV_FILE" && echo "Pointed STOCKFISH_PATH in .env.beta at $STOCKFISH."
 }
 
+refresh_tunnel_agent() {
+  # Rewrites the tunnel agent only when cloudflared moved. If the new one won't load, the old
+  # agent is put back so the site keeps its connection.
+  [ -f "$AGENTS/$TUNNEL_LABEL.plist" ] || return 0
+  grep -qF "<string>$(xml "$CLOUDFLARED")</string>" "$AGENTS/$TUNNEL_LABEL.plist" && return 0
+  cp "$AGENTS/$TUNNEL_LABEL.plist" "$AGENTS/$TUNNEL_LABEL.plist.previous"
+  write_tunnel_agent
+  if reload_agent "$TUNNEL_LABEL"; then rm -f "$AGENTS/$TUNNEL_LABEL.plist.previous"; return 0; fi
+  mv "$AGENTS/$TUNNEL_LABEL.plist.previous" "$AGENTS/$TUNNEL_LABEL.plist"
+  reload_agent "$TUNNEL_LABEL" || true
+  echo "Warning: couldn't switch the tunnel to $CLOUDFLARED; it still uses the previous cloudflared." >&2
+}
+
 reload_agent() {
   launchctl bootout "gui/$(id -u)/$1" 2>/dev/null || true
   launchctl bootstrap "gui/$(id -u)" "$AGENTS/$1.plist"
@@ -261,6 +274,8 @@ case "${1:-setup}" in
     [ -f "$file" ] || fail "give the backup file to restore, for example: scripts/host_on_mac.sh restore $BACKUPS/chesslab-<date>.sqlite"
     [ -f "$AGENTS/$APP_LABEL.plist" ] || fail "run the setup first (scripts/host_on_mac.sh)."
     pick_node
+    # The Node that setup recorded may be gone; the app must restart with the one picked here.
+    grep -qF "<string>$(xml "$NODE")</string>" "$AGENTS/$APP_LABEL.plist" || { write_app_agent; write_backup_agent; }
     rmdir "$DB.before-restore" 2>/dev/null || true
     [ ! -e "$DB.before-restore" ] || fail "$DB.before-restore is left from a restore that didn't finish and may hold the only copy of the previous database. Move its files somewhere safe (or back into $HOME_DIR), remove the folder, then run this again."
     # Copy the chosen file first: the safety backup below may rotate the oldest backup away.
@@ -298,7 +313,18 @@ case "${1:-setup}" in
     git fetch origin main
     git merge-base --is-ancestor HEAD origin/main || fail "local main has commits that aren't on GitHub, so it can't fast-forward."
     old="$(git rev-parse HEAD)" new="$(git rev-parse origin/main)"
-    [ "$old" != "$new" ] || { echo "Already up to date."; exit 0; }
+    if [ "$old" = "$new" ]; then
+      # Nothing new to install, but Homebrew may have moved Node, Stockfish or cloudflared.
+      sync_env_stockfish
+      if ! grep -qF "<string>$(xml "$NODE")</string>" "$AGENTS/$APP_LABEL.plist"; then
+        write_app_agent; write_backup_agent
+        reload_agent "$BACKUP_LABEL"; reload_agent "$APP_LABEL"; restart_app
+      fi
+      link_engine
+      refresh_tunnel_agent
+      echo "Already up to date."
+      exit 0
+    fi
     # Install and build the new commit in a separate copy while the site keeps running.
     # Its node_modules and build are then moved into place, so the live folder never runs npm.
     trial="$REPO/.scratch/update-trial" keep="$REPO/.scratch/update-previous"
@@ -323,7 +349,7 @@ case "${1:-setup}" in
         for part in "$snapshot"/*; do [ ! -e "$part" ] || cp -p "$part" "$HOME_DIR"/ \
           || fail "couldn't put the database back. The copy from before the update is in $snapshot; copy its files into $HOME_DIR, then run scripts/host_on_mac.sh start."; done
       fi
-      git reset -q --hard "$old" || true
+      git reset -q --hard "$old" || fail "couldn't move the checkout back to $old. Nothing else was changed back. The database from before the update is in $snapshot, and the previous packages and build are in $keep."
       if [ -e "$keep/node_modules" ]; then rm -rf "$REPO/node_modules"; mv "$keep/node_modules" "$REPO/node_modules"; fi
       if [ -e "$keep/dist" ]; then rm -rf "$REPO/web/dist"; mv "$keep/dist" "$REPO/web/dist"; fi
       cp "$saved"/*.plist "$AGENTS"/ 2>/dev/null || true
@@ -350,10 +376,7 @@ case "${1:-setup}" in
     rm -rf "$snapshot" "$keep"
     link_engine
     # cloudflared may have moved too. Restart the tunnel only when its path changed.
-    if [ -f "$AGENTS/$TUNNEL_LABEL.plist" ] && ! grep -qF "<string>$(xml "$CLOUDFLARED")</string>" "$AGENTS/$TUNNEL_LABEL.plist"; then
-      write_tunnel_agent
-      reload_agent "$TUNNEL_LABEL"
-    fi
+    refresh_tunnel_agent
     echo "Updated and running."
     exit 0 ;;
   setup) ;;
@@ -451,8 +474,11 @@ if printf '%s' "$route_out" | grep -qF "$HOSTNAME_PUBLIC."; then
   fail "this Mac's Cloudflare login is for a different domain, so the record went there (see the line above). Delete that one record in that domain's DNS, move ~/.cloudflared/cert.pem away, and run this again to sign in to the account that holds $DOMAIN."
 fi
 
+# This marker is written only after the check below passed and this Mac's connector started,
+# so a failed check can't excuse the next run from it.
+host_marker="$HOME_DIR/.tunnel-host-$tunnel_id"
 had_tunnel_agent=0
-[ -f "$AGENTS/$TUNNEL_LABEL.plist" ] && had_tunnel_agent=1
+[ -f "$host_marker" ] && had_tunnel_agent=1
 write_tunnel_agent
 # Cloudflare spreads traffic over every running connector of a tunnel. Another Mac serving its own
 # database through the same tunnel would mix accounts, so stop ours and require that none are left.
@@ -473,6 +499,7 @@ if [ "$had_tunnel_agent" = 0 ]; then
   esac
 fi
 reload_agent "$TUNNEL_LABEL"
+touch "$host_marker"
 
 say "Checking https://$HOSTNAME_PUBLIC"
 probe="https://$HOSTNAME_PUBLIC/.well-known/askthemove-tunnel-$tunnel_id"
