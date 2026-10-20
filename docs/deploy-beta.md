@@ -1,10 +1,12 @@
 # Deploying the private beta
 
-This guide covers running the app for a small invited group on one server. Option C below is the chosen host; it had not been used for a real deployment when written. On 8 October 2026 the image was built and run in a sandbox. Health checks, invite gating, secure cookies, Stockfish analysis and data surviving a restart were all checked there, as a non-root user. No domain, host or Anthropic API key was involved.
+This guide covers running the app for a small invited group on one server. Option E below (your own Mac) is the chosen host. Its script, `scripts/host_on_mac.sh`, has not been run on a real Mac yet; its update and rollback steps were only rehearsed with stand-in tools. The Docker image used by Options A to D was built and run in a sandbox on 8 October 2026: health checks, invite gating, secure cookies, Stockfish analysis and data surviving a restart were checked there, as a non-root user. Those checks don't cover Option E. No domain, host or Anthropic API key was involved.
 
 The governing change is `openspec/changes/hosted-beta-readiness/`.
 
 ## What runs
+
+On the chosen Mac host (Option E) there is no container: a launch agent runs Node on port 8780 from the checkout, the database is `~/AskTheMove/chesslab.sqlite`, and a Cloudflare Tunnel provides HTTPS. Option E below has the details. The rest of this section describes Options A to D.
 
 One container serves the API and the built web app on port 8770. It runs Stockfish 18 as a child process and stores accounts, sessions, games and progress in SQLite under `/data`. A TLS reverse proxy (Caddy, nginx, Fly.io or Render) terminates HTTPS and forwards to the container.
 
@@ -95,7 +97,7 @@ Both can build from the `Dockerfile`. Keep one instance with one persistent volu
 
 On either platform, confirm the proxy hop count before relying on per-visitor limits. Log a test request's `X-Forwarded-For` and check that the last entry is your own address. This has not been checked on a platform.
 
-## Option C: Railway (chosen for the AskTheMove beta)
+## Option C: Railway
 
 Railway builds the `Dockerfile` from GitHub on every push to `main`. Railway stopped accepting `railway.toml` for new services in 2026, so the health check is set in the dashboard. The Hobby plan costs at least $5 a month, which includes $5 of usage; RAM, CPU, disk and traffic beyond that are billed. This app's real usage has not been measured yet, so set a usage limit and check the estimate after the first days. New accounts get a 30-day trial with $5 of credit. The Southeast Asia region (Singapore) is the closest to India.
 
@@ -119,6 +121,22 @@ Use an Ubuntu 24.04 x86-64 server with at least 1 GB of memory: an AWS `t3.micro
 
 The workflow refuses to deploy without `BETA_INVITE_CODES`, and refuses `ANTHROPIC_API_KEY` unless the server has the coach budget and `COACH_AI_INVITE_CODES` is set. The previous container is kept stopped until the new one starts, runs Stockfish, is invite-gated and answers over HTTPS, and is started again if any of that fails. If image checks finish out of order, a checked commit deploys only when nothing newer on `main` changes the image. The settings file is written to `/etc/chesslab.env` (root, mode 600) on every deploy from the repository's variables and secrets. Change a setting in GitHub, then run the workflow again. The image is copied straight to the server and is not published to a registry.
 
+## Option E: your own Mac, free (chosen for the AskTheMove beta from 18 October 2026)
+
+This costs nothing and needs no card or server: the app runs natively on the Mac, as it does for local use, and a free Cloudflare Tunnel connects `app.<domain>` to it. No port is opened on the home network. The site is offline whenever the Mac sleeps, is shut down or loses its connection. It needs the domain's DNS on Cloudflare, Homebrew, and the repository checked out on `main`.
+
+```sh
+scripts/host_on_mac.sh          # first time: installs Node, Stockfish and cloudflared if missing, builds, asks for invite codes, starts
+scripts/host_on_mac.sh update   # after new commits on main
+scripts/host_on_mac.sh status
+scripts/host_on_mac.sh backup                 # copy the database now
+scripts/host_on_mac.sh restore <backup-file>  # put a backup back and restart
+scripts/host_on_mac.sh stop                   # stays stopped after a restart, until start
+scripts/host_on_mac.sh start                  # start again after stop, without rebuilding
+```
+
+The first run asks for the invite codes without showing them and writes `.env.beta` (mode 600, ignored by Git) with `APP_ORIGIN`, `TRUST_PROXY=1` and a database at `~/AskTheMove/chesslab.sqlite`, separate from local development data. `cloudflared tunnel login` opens a browser to choose the domain. The script creates a tunnel named `askthemove` and adds one `CNAME` for the app hostname; it never changes other records. Three launch agents in `~/Library/LaunchAgents` keep the app (port 8780, with `caffeinate -i` alongside it) and the tunnel (its health check on 127.0.0.1:8781) running and start them at login, and run the daily backup. Logs are in `~/AskTheMove/logs`. `~/AskTheMove` is mode 700 and the app runs with umask 077, so other accounts on the Mac can't read the database. Analysis's default engine id (`stockfish18`) is linked to the Homebrew Stockfish in `data/engines/stockfish18` unless `scripts/install_engines.py` already put one there. `update` first installs and builds the new commit in a separate copy of the repository while the site keeps running. It then stops the app, copies the database, and moves the new commit's packages and build into place, so the site is down only for that swap. If the new version doesn't start, it puts back the previous commit, packages, build and database copy, without needing the network, since the new version may already have changed the database. It also repoints `STOCKFISH_PATH` and the tunnel agent if Homebrew moved those programs, and rewrites the tunnel agent and its settings when the new version changes them, putting the old ones back if the tunnel doesn't reconnect. It needs a clean checkout. `restore` checks that the file is a complete AskTheMove database before stopping anything, and puts the previous database back if the restored one doesn't start. If the database it replaces fails that check, it is kept untouched in a `~/AskTheMove/replaced-<date>` folder instead of being deleted. Stockfish is offered as Stockfish 18 only when the binary reports that version. Setup and `update` run only on the `main` branch. If `.env.beta` was written for a different hostname, setup stops before building anything and says so. If an earlier update or restore couldn't finish, the next one stops rather than delete the folder holding the only copy of the previous database. If the hostname already points somewhere other than this tunnel, the script stops without changing DNS. When a first setup can't reach the site through the tunnel, it also stops and disables this Mac's tunnel, so it doesn't start at the next login. A closed laptop lid still sleeps the Mac. The proxy hop count through Cloudflare has not been checked; follow the `X-Forwarded-For` check above before relying on per-visitor limits.
+
 ## Backups
 
 The database holds password hashes, session hashes, games and progress. Treat every copy as private data and encrypt it when stored off the server.
@@ -134,7 +152,9 @@ docker exec --user node chesslab rm "/data/backup-$stamp.sqlite"
 
 Run it at least daily from cron or the platform's scheduler. Copy the file off the server, and keep several days and weeks of copies. For a cold backup, stop the container and copy the whole volume, including any `chesslab.sqlite-wal` and `chesslab.sqlite-shm` files.
 
-To restore, stop the container. Replace `/data/chesslab.sqlite` with the backup and remove any stale `-wal` and `-shm` files beside it. Then start the container again. Rehearse a restore before inviting testers. Restoring signs out anyone whose session was created after the backup.
+On the Mac host (Option E), the script does this without Docker. Setup schedules `scripts/host_on_mac.sh backup` daily at 03:00 (or on wake if the Mac was asleep) through a third launch agent, `online.askthemove.backup`. It writes `~/AskTheMove/backups/chesslab-<UTC time>-<id>.sqlite` with `VACUUM INTO` while the app keeps serving, at mode 600. Each file is written under a temporary name and kept only after an integrity check. The newest 14 are kept, and the same run trims any log in `~/AskTheMove/logs` over 10 MB to one older copy. Copy some of them off the Mac, encrypted, for example to an encrypted disk image. To restore, run `scripts/host_on_mac.sh restore ~/AskTheMove/backups/<file>`: it stops the app, saves the current database as a fresh backup, replaces the database, removes stale `-wal` and `-shm` files and starts the app again. A restore puts the database back as it was at that backup: accounts, games and progress saved after it are lost from the live site (they remain in the safety backup restore takes first). To rehearse safely, do it before inviting testers, or run `backup` and then `restore` with the file it printed straight away, while nobody is using the site.
+
+For Docker hosts, to restore, stop the container. Replace `/data/chesslab.sqlite` with the backup and remove any stale `-wal` and `-shm` files beside it. Then start the container again. Rehearse a restore before inviting testers. Restoring signs out anyone whose session was created after the backup.
 
 ## Pointing `app.<domain>` at it later
 
