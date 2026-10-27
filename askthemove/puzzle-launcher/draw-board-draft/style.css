@@ -1,0 +1,200 @@
+/* Puzzle Sandbox. A practice board in AskTheMove's notebook colours:
+   paper, ink, blue pen, red pen. Board on the left on wide screens, on top on phones. */
+@font-face { font-family: 'Vollkorn'; src: url('fonts/vollkorn-var.woff2') format('woff2'); font-weight: 400 900; font-display: swap; }
+@font-face { font-family: 'Courier Prime'; src: url('fonts/courier-prime-400.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Kalam'; src: url('fonts/kalam-700.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+
+:root {
+  --paper: #f7f5ee;
+  --card: #fffdf8;
+  --ink: #23263a;
+  --graphite: #62656f;
+  --rule: #d9d6cc;
+  --blue: #2f4fb3;
+  --red: #c4372f;
+  --chip: #ece8dc;
+  --focus: #2f4fb3;
+  /* The board keeps the same colours in both themes, like a real board. */
+  --sq-light: #ece4d0;
+  --sq-dark: #8a9bb3;
+  --sq-last: rgba(236, 196, 70, 0.55);
+  --sq-sel: rgba(47, 79, 179, 0.38);
+  --sq-check: radial-gradient(circle, rgba(196, 55, 47, 0.9) 0%, rgba(196, 55, 47, 0.45) 45%, rgba(196, 55, 47, 0) 72%);
+  --dot: rgba(35, 38, 58, 0.32);
+  --coord-on-light: #6b7a92;
+  --coord-on-dark: #f4efe2;
+  --shadow: 0 1px 2px rgba(35, 38, 58, 0.12), 0 6px 18px rgba(35, 38, 58, 0.1);
+
+  --font-book: 'Vollkorn', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-ui: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-print: 'Courier Prime', ui-monospace, 'Courier New', monospace;
+  --font-hand: 'Kalam', 'Bradley Hand', 'Segoe Print', cursive;
+  --ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --move-ms: 170ms;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #1b1d24; --card: #23262f; --ink: #ebe7dc; --graphite: #a3a6b0; --rule: #3a3d48;
+    --blue: #93a8ff; --red: #ff8a80; --chip: #2e313b; --focus: #93a8ff;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 18px rgba(0, 0, 0, 0.3);
+    color-scheme: dark;
+  }
+}
+@media (prefers-reduced-motion: reduce) { :root { --move-ms: 0ms; } }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--paper); color: var(--ink); }
+body {
+  font: 16px/1.5 var(--font-ui);
+  -webkit-text-size-adjust: 100%;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+button, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+.app {
+  max-width: 1180px; margin: 0 auto;
+  padding-block: 12px 32px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* Header */
+.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 10px 16px; margin-bottom: 12px; }
+.top h1 { font: 700 1.6rem/1.1 var(--font-book); margin: 0; letter-spacing: -0.01em; }
+.top__date { margin: 2px 0 0; color: var(--graphite); font-size: 0.95rem; }
+.source { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  border: 1px solid var(--rule); background: var(--chip); border-radius: 999px;
+  padding: 8px 14px; min-height: 40px; cursor: pointer; font-size: 0.95rem;
+}
+.chip[aria-pressed='true'] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+/* Layout */
+.layout { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 860px) {
+  .layout { grid-template-columns: minmax(0, 1fr) 340px; align-items: start; }
+}
+.boardcol { min-width: 0; }
+.side { display: grid; gap: 12px; min-width: 0; }
+
+.turnbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 36px; margin-bottom: 6px; flex-wrap: wrap; }
+.turn { display: inline-flex; align-items: center; gap: 8px; font: 700 1.15rem/1 var(--font-book); }
+.turn__dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--ink); background: #fff; }
+.turn[data-side='b'] .turn__dot { background: #111; }
+.note { font: 700 1.05rem/1.2 var(--font-hand); color: var(--blue); min-height: 1.2em; }
+.note[data-tone='red'] { color: var(--red); }
+
+/* Board. Size it to the screen so it never needs scrolling while you play. */
+.boardwrap { display: flex; justify-content: center; }
+.board {
+  position: relative; width: 100%;
+  max-width: min(100%, calc(100svh - 230px));
+  min-width: 260px;
+  aspect-ratio: 1 / 1;
+  border-radius: 6px; overflow: hidden; box-shadow: var(--shadow);
+  touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+}
+@media (min-width: 860px) { .board { max-width: min(100%, calc(100svh - 170px)); } }
+.squares { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); }
+.sq { position: relative; background: var(--sq-light); }
+.sq.dark { background: var(--sq-dark); }
+.sq::before { content: ''; position: absolute; inset: 0; pointer-events: none; }
+.sq.last::before { background: var(--sq-last); }
+.sq.sel::before { background: var(--sq-sel); }
+.sq.check::before { background: var(--sq-check); }
+.sq.hover::after { content: ''; position: absolute; inset: 0; box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.85); pointer-events: none; }
+.sq .dot { position: absolute; left: 50%; top: 50%; width: 30%; height: 30%; transform: translate(-50%, -50%); border-radius: 50%; background: var(--dot); pointer-events: none; }
+.sq .ring { position: absolute; inset: 4%; border-radius: 50%; box-shadow: inset 0 0 0 5px var(--dot); pointer-events: none; }
+.coord { position: absolute; font: 700 clamp(9px, 1.6vmin, 13px)/1 var(--font-ui); pointer-events: none; color: var(--coord-on-light); }
+.sq.light .coord { color: var(--coord-on-dark); color: var(--coord-on-light); }
+.sq.dark .coord { color: var(--coord-on-dark); }
+.coord.file { right: 4%; bottom: 3%; }
+.coord.rank { left: 4%; top: 3%; }
+
+.pieces { position: absolute; inset: 0; pointer-events: none; }
+.pc {
+  position: absolute; left: 0; top: 0; width: 12.5%; height: 12.5%;
+  background-size: 100% 100%; background-repeat: no-repeat;
+  transition: transform var(--move-ms) var(--ease), opacity 160ms linear;
+  will-change: transform;
+}
+.pc.dragging { transition: none; z-index: 5; filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.35)); }
+.pc.snap { transition-duration: 90ms; }
+.pc.gone { opacity: 0; }
+
+/* Promotion picker */
+.promo { position: absolute; inset: 0; background: rgba(20, 22, 30, 0.55); display: grid; place-items: center; z-index: 10; }
+.promo__box { display: flex; gap: 6px; background: var(--card); padding: 10px; border-radius: 10px; box-shadow: var(--shadow); }
+.promo__box button { width: clamp(52px, 14vmin, 84px); aspect-ratio: 1; border: 1px solid var(--rule); border-radius: 8px; background: var(--sq-light) center / 90% no-repeat; cursor: pointer; }
+
+/* Controls under the board */
+.controls { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 10px; max-width: min(100%, calc(100svh - 230px)); margin-inline: auto; }
+@media (min-width: 860px) { .controls { max-width: min(100%, calc(100svh - 170px)); } }
+.ctl {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  min-height: 56px; border: 1px solid var(--rule); border-radius: 10px; background: var(--card); cursor: pointer;
+  font-size: 0.85rem; color: var(--ink); -webkit-tap-highlight-color: transparent;
+}
+.ctl:active { transform: translateY(1px); background: var(--chip); }
+.ctl:disabled { opacity: 0.4; cursor: default; }
+.ctl svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Side panels */
+.panel { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 12px 14px; }
+.panel h2 { font: 700 1.05rem/1.2 var(--font-book); margin: 0 0 8px; }
+.small { font-size: 0.9rem; color: var(--graphite); margin: 6px 0 0; }
+.hint-empty { font-size: 0.9rem; color: var(--graphite); margin: 0; }
+.moves { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 2px; font: 1rem/1.4 var(--font-print); }
+.moves li { display: inline-flex; align-items: baseline; }
+.moves .num { color: var(--graphite); margin: 0 4px 0 6px; }
+.moves li:first-child .num { margin-left: 0; }
+.moves button { border: 0; background: none; padding: 4px 6px; border-radius: 6px; cursor: pointer; font: inherit; color: var(--ink); }
+.moves button[aria-current='true'] { background: var(--ink); color: var(--paper); }
+.moves .future button { color: var(--graphite); opacity: 0.7; }
+
+.links { display: grid; gap: 8px; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 8px 14px;
+  border-radius: 10px; border: 1px solid var(--ink); background: var(--ink); color: var(--paper);
+  text-decoration: none; cursor: pointer; font-size: 0.95rem; text-align: center;
+}
+.btn--quiet { background: transparent; color: var(--ink); border-color: var(--rule); }
+.btn--danger { background: var(--red); border-color: var(--red); color: #fff; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.answer .line { font: 1.05rem/1.5 var(--font-print); margin: 0 0 8px; overflow-wrap: anywhere; }
+.puzzle-name { font: 700 1.1rem/1.3 var(--font-hand); color: var(--red); margin: 0 0 4px; }
+
+form { display: grid; gap: 8px; }
+label { font-size: 0.9rem; }
+textarea { width: 100%; border: 1px solid var(--rule); border-radius: 8px; padding: 8px; background: var(--paper); font: 0.9rem/1.4 var(--font-print); resize: vertical; }
+.side-pick { border: 0; padding: 0; margin: 0; display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+.side-pick legend { font-size: 0.85rem; color: var(--graphite); padding: 0; margin-bottom: 4px; width: 100%; }
+.side-pick label { display: inline-flex; gap: 6px; align-items: center; min-height: 32px; }
+.err { color: var(--red); font-size: 0.9rem; margin: 0; min-height: 1em; }
+.credit { font-size: 0.8rem; color: var(--graphite); margin: 4px 2px 0; }
+.credit a { color: inherit; }
+.noscript { padding: 16px; }
+
+/* Draw layer. Off: the drawing shows but taps go to the pieces. On: taps draw. */
+.ink { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 6; overflow: visible; }
+.board.drawing .ink { pointer-events: auto; cursor: crosshair; }
+.board.drawing { box-shadow: var(--shadow), 0 0 0 3px var(--red); }
+.ink path, .ink line, .ink circle { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.ink .head { stroke: none; }
+.ctl[aria-pressed='true'] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.drawbar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 10px auto 0; max-width: min(100%, calc(100svh - 230px)); }
+@media (min-width: 860px) { .drawbar { max-width: min(100%, calc(100svh - 170px)); } }
+.drawbar__group { display: flex; gap: 6px; flex-wrap: wrap; }
+.tool { min-height: 40px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--rule); background: var(--card); cursor: pointer; font-size: 0.9rem; }
+.tool[aria-pressed='true'] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.swatch { width: 40px; height: 40px; border-radius: 50%; border: 3px solid var(--card); box-shadow: 0 0 0 1px var(--rule); cursor: pointer; padding: 0; }
+.swatch[aria-pressed='true'] { box-shadow: 0 0 0 3px var(--ink); }
+.swatch[data-color='red'] { background: #d6402f; }
+.swatch[data-color='blue'] { background: #2f62d6; }
+.swatch[data-color='green'] { background: #1f9a55; }
+.swatch[data-color='yellow'] { background: #e8b51c; }
+.drawbar__tip { flex-basis: 100%; margin: 0; font-size: 0.85rem; color: var(--graphite); }

@@ -1,0 +1,5 @@
+The knight in icon.svg and the icon PNGs is from the "cburnett" chess piece set
+by Colin M. L. Burnett (https://en.wikipedia.org/wiki/User:Cburnett), as
+distributed by Lichess (https://github.com/lichess-org/lila/tree/master/public/piece/cburnett),
+licensed GPLv2 or later: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+It was placed unchanged on a green square. icon.svg is its own source code.
