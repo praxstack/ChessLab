@@ -299,7 +299,7 @@ const play = createDesk(
 function boardChanged() {
   if (!desk.fen) return;
   const fen = play.fen;
-  const moved = fen !== play.startFen;
+  const moved = play.moved;
   $('desk-turn').textContent = play.over ? 'Game over on the board.' : `${sideText(fen)}${moved ? ' on the board' : ''}.`;
   $('go-analysis').href = analysisUrl(fen);
   $('go-explorer').href = explorerUrl(fen);
@@ -443,7 +443,7 @@ $('load-lichess').addEventListener('click', async () => {
 });
 
 $('copy-fen').addEventListener('click', () => {
-  if (desk.fen) copy(play.fen, 'desk-status', play.fen === play.startFen ? 'FEN copied.' : 'FEN of the board as it is now copied.');
+  if (desk.fen) copy(play.fen, 'desk-status', !play.moved ? 'FEN copied.' : 'FEN of the board as it is now copied.');
 });
 
 /* --------------------------------------------------------------- Sound */

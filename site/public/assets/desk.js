@@ -481,7 +481,8 @@ export function createDesk(els, { onChange = () => {} } = {}) {
     if (b) jumpTo(Number(b.dataset.ply));
   });
   document.addEventListener('keydown', (e) => {
-    if (busy || e.target.closest('input, textarea, select, [contenteditable]')) return;
+    if (busy || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return; // leave browser shortcuts (Alt+Left is Back) alone
+    if (e.target.closest('input, textarea, select, [contenteditable]')) return;
     if (!els.board.closest('section').matches(':hover') && !els.board.closest('section').contains(document.activeElement)) return;
     if (e.key === 'ArrowLeft') undo();
     else if (e.key === 'ArrowRight') redo();
@@ -553,6 +554,10 @@ export function createDesk(els, { onChange = () => {} } = {}) {
     },
     get startFen() {
       return startFen;
+    },
+    /** Whether a move has been made from the loaded position (FEN text can differ without one). */
+    get moved() {
+      return Boolean(game && game.history().length);
     },
     get orientation() {
       return orientation;
