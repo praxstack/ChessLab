@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Puzzle Sandbox</title>
+<meta name="description" content="Load the Chess.com daily puzzle and move the pieces yourself. No engine, no hints.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#f7f5ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1b1d24" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Puzzle">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preload" href="fonts/vollkorn-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+<script type="module" src="app.js"></script>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="top__title">
+      <h1>Puzzle Sandbox</h1>
+      <p class="top__date" id="date">Loading today’s puzzle…</p>
+    </div>
+    <nav class="source" aria-label="Which position">
+      <button type="button" class="chip" id="src-today" aria-pressed="true">Today</button>
+      <button type="button" class="chip" id="src-random" aria-pressed="false">Random</button>
+      <button type="button" class="chip" id="src-paste" aria-pressed="false">My position</button>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <section class="boardcol" aria-label="Board">
+      <div class="turnbar">
+        <span class="turn" id="turn"><span class="turn__dot" aria-hidden="true"></span><span id="turn-text">–</span></span>
+        <span class="note" id="note" role="status" aria-live="polite"></span>
+      </div>
+      <div class="boardwrap">
+        <div class="board" id="board" role="grid" aria-label="Chess board. Tap a piece, then tap where it goes, or drag it.">
+          <div class="squares" id="squares"></div>
+          <div class="pieces" id="pieces"></div>
+          <svg class="ink" id="ink" viewBox="0 0 800 800" aria-hidden="true"></svg>
+          <div class="promo" id="promo" hidden></div>
+        </div>
+      </div>
+      <div class="controls">
+        <button type="button" class="ctl" id="btn-reset" title="Back to the start (R)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5"/></svg><span>Start</span></button>
+        <button type="button" class="ctl" id="btn-undo" title="Take back (←)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Back</span></button>
+        <button type="button" class="ctl" id="btn-redo" title="Forward (→)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg><span>Forward</span></button>
+        <button type="button" class="ctl" id="btn-flip" title="Turn the board around (F)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3"/></svg><span>Flip</span></button>
+        <button type="button" class="ctl" id="btn-draw" aria-pressed="false" title="Draw on the board (D)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4-1 11-11-3-3L5 16l-1 4zM14 7l3 3"/></svg><span>Draw</span></button>
+      </div>
+      <div class="drawbar" id="drawbar" hidden>
+        <div class="drawbar__group" role="group" aria-label="Drawing tool">
+          <button type="button" class="tool" id="tool-pen" aria-pressed="true">Pen</button>
+          <button type="button" class="tool" id="tool-arrow" aria-pressed="false">Arrow</button>
+        </div>
+        <div class="drawbar__group" role="group" aria-label="Colour">
+          <button type="button" class="swatch" data-color="red" aria-pressed="true" aria-label="Red"></button>
+          <button type="button" class="swatch" data-color="blue" aria-pressed="false" aria-label="Blue"></button>
+          <button type="button" class="swatch" data-color="green" aria-pressed="false" aria-label="Green"></button>
+          <button type="button" class="swatch" data-color="yellow" aria-pressed="false" aria-label="Yellow"></button>
+        </div>
+        <div class="drawbar__group">
+          <button type="button" class="tool" id="ink-undo">Undo line</button>
+          <button type="button" class="tool" id="ink-clear">Clear</button>
+        </div>
+        <p class="drawbar__tip">Arrow: drag from one square to another. Tap one square to circle it. Tap <b>Draw</b> again to go back to moving pieces. Your drawing stays until you clear it.</p>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="panel" aria-labelledby="moves-h">
+        <h2 id="moves-h">Your line</h2>
+        <ol class="moves" id="moves"></ol>
+        <p class="hint-empty" id="moves-empty">Move any piece of the side to move. You play both sides, so you can try their best reply too. Tap a move here to jump back to it.</p>
+      </section>
+
+      <section class="panel" id="paste-panel" hidden aria-labelledby="paste-h">
+        <h2 id="paste-h">Set up your own position</h2>
+        <form id="paste-form" autocomplete="off">
+          <label for="fen-input">Paste a FEN</label>
+          <textarea id="fen-input" rows="2" spellcheck="false" placeholder="1k5r/p1pB1p2/1bpp4/8/PP1PPn1q/N4P2/3Q2P1/3R1RK1 b - - 0 1"></textarea>
+          <fieldset class="side-pick">
+            <legend>If the FEN doesn’t say, who moves first?</legend>
+            <label><input type="radio" name="stm" id="stm-w" value="w" checked> White</label>
+            <label><input type="radio" name="stm" id="stm-b" value="b"> Black</label>
+          </fieldset>
+          <button type="submit" class="btn">Load position</button>
+          <p class="err" id="fen-err" role="alert"></p>
+        </form>
+      </section>
+
+      <section class="panel" aria-labelledby="links-h">
+        <h2 id="links-h">When you’re ready</h2>
+        <div class="links">
+          <a class="btn" id="link-chesscom" href="https://www.chess.com/daily-chess-puzzle" target="_blank" rel="noopener">Solve it on Chess.com</a>
+          <a class="btn btn--quiet" id="link-lichess" href="https://lichess.org/analysis" target="_blank" rel="noopener">Open this position on Lichess</a>
+          <button type="button" class="btn btn--quiet" id="btn-copy">Copy FEN</button>
+        </div>
+        <p class="small">Chess.com counts your streak only when you solve it there. Lichess has an engine, so keep it switched off if you don’t want hints.</p>
+      </section>
+
+      <section class="panel answer" aria-labelledby="answer-h">
+        <h2 id="answer-h">Answer</h2>
+        <div id="answer-closed">
+          <p class="small">Hidden. The puzzle’s name is hidden too, since it can give the idea away.</p>
+          <button type="button" class="btn btn--quiet" id="btn-answer">Show the answer</button>
+        </div>
+        <div id="answer-confirm" hidden>
+          <p class="small"><strong>Sure?</strong> This shows the full solution.</p>
+          <div class="row">
+            <button type="button" class="btn btn--danger" id="btn-answer-yes">Yes, show it</button>
+            <button type="button" class="btn btn--quiet" id="btn-answer-no">Not yet</button>
+          </div>
+        </div>
+        <div id="answer-open" hidden>
+          <p class="puzzle-name" id="answer-name"></p>
+          <p class="line" id="answer-line"></p>
+          <button type="button" class="btn btn--quiet" id="btn-answer-play">Step through it on the board</button>
+        </div>
+      </section>
+
+      <p class="credit">Puzzle from the <a href="https://www.chess.com/news/view/published-data-api" target="_blank" rel="noopener">Chess.com public API</a>. Not made by or linked to Chess.com.</p>
+    </aside>
+  </main>
+</div>
+<noscript><p class="noscript">This board needs JavaScript.</p></noscript>
+</body>
+</html>

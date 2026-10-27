@@ -22,6 +22,7 @@ Everything made for AskTheMove outside the app code: the product review, busines
 | [credits/](credits/) | Startup credit and grant research, the Apply pack ([apply-pack.html](credits/apply-pack.html)), the [credits map](credits/credits-map.html), Claude in Chrome prompts and the [submission log](credits/submission-log.md) |
 | [hosting/](hosting/) | Hosting research for a founder with no credit card, and the Chrome prompts for each route |
 | [launch/](launch/) | The launch kit: [X and LinkedIn posts](launch/x-launch-kit.md), [before you buy](launch/before-you-buy.md), [what's left](launch/whats-left.md), [design research](launch/design-research.md) and Chrome prompts |
+| [puzzle-launcher/](puzzle-launcher/) | The [daily puzzle launcher](puzzle-launcher/README.md) (live at daily-puzzle-launcher.vercel.app) that opens the Chess.com daily puzzle on Chess.com's analysis board, plus a parked custom-board draft with a draw layer |
 | [pages/](pages/) | Two published pages saved as HTML: the [launch checklist](pages/launch-checklist.html) (its ticks were kept in the artifact's own database, so the copy here opens empty) and the 8 October [launch plan](pages/launch-plan.html) |
 
 The landing-page previews are not copied because they are the `site/` folder of this repository. The Praxmodoro video and its footage are in the Praxmodoro repository.
