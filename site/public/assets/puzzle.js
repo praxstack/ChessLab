@@ -418,23 +418,32 @@ $('load-today').addEventListener('click', () => {
 });
 
 $('load-random').addEventListener('click', async () => {
+  const deskAt = deskSeq;
   say('desk-status', 'Picking a random puzzle…');
   try {
     const p = await getPuzzle('/random');
     saved.set(p.iso, p.fen);
     refreshPaste();
+    if (deskSeq !== deskAt) {
+      renderCalendar(); // something else went on the board meanwhile; just mark the new date
+      return;
+    }
     showOnDesk({ kind: 'random', fen: p.fen, iso: p.iso, title: 'A random puzzle', source: 'Chess.com daily' });
   } catch {
+    if (deskSeq !== deskAt) return;
     say('desk-status', 'Couldn’t get a random puzzle from Chess.com. Try again in a moment.', 'red');
   }
 });
 
 $('load-lichess').addEventListener('click', async () => {
+  const deskAt = deskSeq;
   say('desk-status', 'Getting the Lichess puzzle…');
   try {
     const fen = await lichessPuzzleFen();
+    if (deskSeq !== deskAt) return; // something else went on the board meanwhile
     showOnDesk({ kind: 'lichess', fen, title: 'Lichess puzzle of the day', source: 'Lichess daily' });
   } catch {
+    if (deskSeq !== deskAt) return;
     say('desk-status', 'Couldn’t reach Lichess. Try again in a moment.', 'red');
   }
 });
