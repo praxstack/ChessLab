@@ -1,0 +1,10 @@
+# Cloudflare Worker that shows a friendly "board is resting" page on app.askthemove.online
+# whenever the host Mac's tunnel is down. See README.md.
+name = "askthemove-resting"
+main = "worker.js"
+compatibility_date = "2025-09-01"
+workers_dev = false
+routes = [{ pattern = "app.askthemove.online/*", zone_name = "askthemove.online" }]
+
+[vars]
+LAUNCHER_URL = "https://askthemove.online/puzzleanalyzr"
