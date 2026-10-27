@@ -161,17 +161,24 @@ test('_headers and the manage page share one set of security headers', async () 
   }
 });
 
-test('puzzleanalyzr: its own policy lets it read the chess APIs, and its own manifest opens it', async () => {
-  const { PUZZLE_CONNECT, csp } = await import('../src/lib/security-headers.js');
+test('puzzleanalyzr: its own policy lets it read the chess APIs and run Stockfish, and its own manifest opens it', async () => {
+  const { ENGINE_CSP, PUZZLE_CONNECT, csp } = await import('../src/lib/security-headers.js');
   const headers = read('_headers');
   for (const path of ['/puzzleanalyzr', '/puzzleanalyzr/*']) {
     const block = new RegExp(`^${path.replace(/[*]/g, '\\*')}\n  ! Content-Security-Policy\n  Content-Security-Policy: ([^\n]+)$`, 'm').exec(headers);
     assert.ok(block, `no policy block for ${path}`);
-    assert.equal(block[1], csp({ connect: PUZZLE_CONNECT }));
+    assert.equal(block[1], csp({ connect: PUZZLE_CONNECT, wasm: true }));
+    assert.match(block[1], /script-src 'self' 'wasm-unsafe-eval';/);
     for (const origin of PUZZLE_CONNECT) assert.match(block[1], new RegExp(`connect-src [^;]*${origin.replace(/[.]/g, '\\.')}`));
   }
-  // Every other page keeps connect-src 'self' only.
+  // Every other page keeps connect-src 'self' only, and runs no WebAssembly.
   assert.match(headers, /^\/\*\n(?:  .+\n)*  Content-Security-Policy: [^\n]*connect-src 'self';/m);
+  assert.match(headers, /^\/\*\n(?:  .+\n)*  Content-Security-Policy: [^\n]*script-src 'self';/m);
+  // Stockfish's worker has its own policy, so it can compile the engine.
+  const engine = /^\/assets\/engine\/\*\n  ! Content-Security-Policy\n  Content-Security-Policy: ([^\n]+)\n  Cache-Control: ([^\n]+)$/m.exec(headers);
+  assert.ok(engine, 'no header block for /assets/engine/*');
+  assert.equal(engine[1], ENGINE_CSP);
+  assert.match(engine[2], /max-age=2592000/);
   const html = read('puzzleanalyzr/index.html');
   assert.match(html, /<link rel="manifest" href="\/puzzleanalyzr\/manifest\.webmanifest">/);
   assert.match(read('index.html'), /<link rel="manifest" href="\/site\.webmanifest">/);
@@ -180,7 +187,7 @@ test('puzzleanalyzr: its own policy lets it read the chess APIs, and its own man
   assert.equal(manifest.scope, '/puzzleanalyzr/');
   assert.equal(manifest.display, 'browser');
   assert.match(read('sitemap.xml'), /\/puzzleanalyzr\//);
-  for (const id of ['desk-board', 'go-analysis', 'cal-grid', 'paste', 'games-form', 'games-sheet', 'bm']) {
+  for (const id of ['desk-board', 'desk-pieces', 'desk-marks', 'desk-ink', 'desk-promo', 'desk-say', 'desk-moves', 'tool-undo', 'tool-redo', 'tool-reset', 'tool-flip', 'tool-sound', 'engine-check', 'engine-bar', 'engine-state', 'engine-say', 'engine-show', 'go-analysis', 'cal-grid', 'paste', 'games-form', 'games-sheet', 'bm']) {
     assert.match(html, new RegExp(`id="${id}"`), `#${id} missing`);
   }
   assert.match(html, /<script type="module" src="\/assets\/puzzle\.js"><\/script>/);

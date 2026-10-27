@@ -1,7 +1,7 @@
 {
   "name": "Puzzle analyzr · AskTheMove",
   "short_name": "Puzzles",
-  "description": "Chess puzzles and games, opened on Chess.com’s analysis board. No hints.",
+  "description": "Chess puzzles and games to work out yourself, on the board or on Chess.com. No hints.",
   "start_url": "/puzzleanalyzr/",
   "scope": "/puzzleanalyzr/",
   "display": "browser",

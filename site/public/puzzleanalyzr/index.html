@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Puzzle analyzr · AskTheMove</title>
-<meta name="description" content="Open today’s Chess.com puzzle, any past one, your own games or any FEN, PGN or game link on Chess.com’s analysis board, and work it out yourself. The answer stays hidden.">
+<meta name="description" content="Today’s Chess.com puzzle, any past one, your own games or any FEN, PGN or game link. Move the pieces yourself, check a move with Stockfish when you want, or open it on Chess.com. The answer stays hidden.">
 <link rel="canonical" href="https://askthemove.online/puzzleanalyzr/">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#fbfaf4">
@@ -19,7 +19,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AskTheMove">
 <meta property="og:title" content="Puzzle analyzr · AskTheMove">
-<meta property="og:description" content="Open today’s Chess.com puzzle, any past one, your own games or any FEN, PGN or game link on Chess.com’s analysis board, and work it out yourself. The answer stays hidden.">
+<meta property="og:description" content="Today’s Chess.com puzzle, any past one, your own games or any FEN, PGN or game link. Move the pieces yourself, check a move with Stockfish when you want, or open it on Chess.com. The answer stays hidden.">
 <meta property="og:url" content="https://askthemove.online/puzzleanalyzr/">
 <meta property="og:image" content="https://askthemove.online/og.png">
 <meta property="og:image:width" content="1200">
@@ -27,7 +27,7 @@
 <meta property="og:image:alt" content="A page from a chess lesson notebook: a board with the coach's red arrows showing why taking the queen was a blunder, and the words Ask the move why.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Puzzle analyzr · AskTheMove">
-<meta name="twitter:description" content="Open today’s Chess.com puzzle, any past one, your own games or any FEN, PGN or game link on Chess.com’s analysis board, and work it out yourself. The answer stays hidden.">
+<meta name="twitter:description" content="Today’s Chess.com puzzle, any past one, your own games or any FEN, PGN or game link. Move the pieces yourself, check a move with Stockfish when you want, or open it on Chess.com. The answer stays hidden.">
 <meta name="twitter:image" content="https://askthemove.online/og.png">
 <!--
   Optional, privacy-friendly analytics: Cloudflare Web Analytics only.
@@ -54,7 +54,7 @@
   <section class="open pz-open rows" aria-labelledby="pz-title" data-ink-group="load">
     <h1 id="pz-title" class="open__title">Find the move <span class="ink ink--circle" data-draw>yourself<svg class="ink__svg" viewBox="0 0 302 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M17.43 33.73 C20.8 32.08 30.11 26.85 37.66 23.78 C45.21 20.72 53.85 17.93 62.76 15.32 C71.67 12.71 81.01 10.15 91.1 8.12 C101.2 6.09 112.25 4.37 123.35 3.14 C134.45 1.9 146.2 1.09 157.7 0.71 C169.2 0.33 180.86 0.46 192.33 0.84 C203.8 1.22 216.11 1.59 226.53 3 C236.94 4.4 246.22 6.87 254.8 9.28 C263.38 11.69 271.63 14.39 278.02 17.44 C284.42 20.49 289.53 24.02 293.17 27.58 C296.82 31.15 299.28 35.02 299.88 38.84 C300.48 42.65 299.15 46.68 296.77 50.46 C294.39 54.25 290.21 58 285.61 61.55 C281.01 65.1 275.83 68.66 269.15 71.78 C262.48 74.89 253.61 77.49 245.56 80.25 C237.51 83.01 230.13 86.18 220.86 88.34 C211.58 90.51 200.44 91.81 189.9 93.23 C179.37 94.66 168.6 96.16 157.67 96.88 C146.73 97.6 135.31 97.72 124.31 97.55 C113.31 97.39 102.16 96.87 91.68 95.89 C81.21 94.92 70.69 93.55 61.45 91.7 C52.21 89.86 43.36 87.51 36.22 84.83 C29.08 82.15 22.88 78.96 18.62 75.64 C14.35 72.33 11.95 68.56 10.65 64.93 C9.35 61.3 9.54 57.51 10.8 53.86 C12.06 50.22 14.76 46.56 18.2 43.07 C21.64 39.58 26.13 36.15 31.45 32.94 C36.77 29.72 42.97 26.56 50.13 23.78 C57.29 21 65.77 18.5 74.41 16.25 C83.05 14 97.38 11.27 101.98 10.28"/></svg></span>.</h1>
     <div class="open__main">
-      <p class="open__lede">Today’s Chess.com puzzle, any past one, your own games or a position you paste, opened on Chess.com’s analysis board. You move the pieces. The answer stays hidden.</p>
+      <p class="open__lede">Today’s Chess.com puzzle, any past one, your own games or a position you paste. Move the pieces right here, or open it on Chess.com’s analysis board. The answer stays hidden.</p>
     </div>
     <div class="open__side">
       <p class="note-hand pz-open__note" data-write>Checks, captures, threats. Look at those first.</p>
@@ -64,17 +64,39 @@
   <section class="desk rows" id="desk" aria-labelledby="desk-title">
     <div class="desk__board">
       <div class="cc-frame">
-        <div class="board board--cc" role="img" id="desk-board" aria-label="Chessboard, empty while today’s puzzle loads.">
+        <div class="board board--cc desk__play" role="group" id="desk-board" aria-label="Chessboard, empty while today’s puzzle loads." aria-describedby="desk-say">
           <div class="board__layer board__coords" id="desk-coords" aria-hidden="true"></div>
+          <div class="board__layer desk__marks" id="desk-marks" aria-hidden="true"></div>
           <div class="board__layer board__pieces" id="desk-pieces"></div>
+          <svg class="board__ink" id="desk-ink" viewBox="0 0 80 80" aria-hidden="true" focusable="false"></svg>
+          <div class="desk__promo" id="desk-promo" hidden></div>
         </div>
+      </div>
+      <div class="desk__tools" role="toolbar" aria-label="Board controls">
+        <button class="btn btn--plain btn--small" id="tool-undo" type="button" disabled>‹ Back</button>
+        <button class="btn btn--plain btn--small" id="tool-redo" type="button" disabled>Next ›</button>
+        <button class="btn btn--plain btn--small" id="tool-reset" type="button" disabled>Start over</button>
+        <button class="btn btn--plain btn--small" id="tool-flip" type="button">Flip board</button>
+        <button class="btn btn--plain btn--small desk__sound" id="tool-sound" type="button" aria-pressed="true">Sound on</button>
+      </div>
+      <p class="note-hand desk__say" id="desk-say" aria-live="polite"></p>
+      <ol class="desk__moves" id="desk-moves" aria-label="Moves played" hidden></ol>
+
+      <div class="engine" id="engine">
+        <button class="btn btn--pen engine__check" id="engine-check" type="button" disabled>Check my move</button>
+        <div class="engine__load">
+          <progress class="engine__bar" id="engine-bar" max="1" value="0" aria-label="Stockfish download"></progress>
+          <p class="engine__state" id="engine-state">Stockfish loads after the puzzle.</p>
+        </div>
+        <p class="note-hand engine__say" id="engine-say" aria-live="polite"></p>
+        <button class="btn btn--plain btn--small engine__show" id="engine-show" type="button" hidden>Show Stockfish’s move</button>
       </div>
     </div>
 
     <div class="desk__panel">
       <h2 class="desk__title" id="desk-title">Today’s puzzle</h2>
       <p class="note-hand note-hand--red desk__turn" id="desk-turn">Setting up the board.</p>
-      <p class="note-hand desk__flip" id="desk-flip" hidden>Black plays from the top on Chess.com. Use its flip button to turn the board round.</p>
+      <p class="note-hand desk__flip" id="desk-flip" hidden>On Chess.com Black plays from the top. Use its flip button there.</p>
       <div class="desk__go">
         <a class="btn btn--cc" id="go-analysis" href="https://www.chess.com/daily"><img class="btn--cc__pawn" src="/assets/pieces/wP.svg" alt="" width="45" height="45">Open it on Chess.com</a>
         <a class="btn btn--plain" id="go-explorer" href="https://www.chess.com/daily">Opening explorer</a>
@@ -201,6 +223,15 @@
         </div>
       </details>
       <details>
+        <summary><span>How Stockfish works here</span><i class="glyph glyph--plus" data-draw><svg class="ink__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M11.24 51.4 C15.72 51.26 29.27 50.91 38.09 50.56 C46.91 50.21 55.49 49.74 64.19 49.29 C72.89 48.85 85.93 48.12 90.28 47.88"/><path class="stroke" pathLength="1" d="M52.72 9.4 C52.16 14.07 50.05 28.15 49.34 37.4 C48.63 46.65 48.7 55.73 48.45 64.89 C48.21 74.06 47.98 87.82 47.88 92.4"/></svg></i></summary>
+        <div class="pz-setup__how">
+          <p>Stockfish is the strongest chess engine there is. This page uses its small “lite” version, a 1.8 MB download, and runs it on your own phone, tablet or computer. Nothing is sent anywhere.</p>
+          <p>It downloads once, in the background, while you can already move the pieces. Your browser keeps it for 30 days, so it starts straight away next time.</p>
+          <p>It never shows a score or a move by itself. Tap <b>Check my move</b> after you play one and it says how good it was. Only <b>Show Stockfish’s move</b> gives the answer away.</p>
+          <p>With Data Saver on, it waits until you tap Check my move.</p>
+        </div>
+      </details>
+      <details>
         <summary><span>A bookmark that opens today’s puzzle</span><i class="glyph glyph--plus" data-draw><svg class="ink__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M11.24 51.4 C15.72 51.26 29.27 50.91 38.09 50.56 C46.91 50.21 55.49 49.74 64.19 49.29 C72.89 48.85 85.93 48.12 90.28 47.88"/><path class="stroke" pathLength="1" d="M52.72 9.4 C52.16 14.07 50.05 28.15 49.34 37.4 C48.63 46.65 48.7 55.73 48.45 64.89 C48.21 74.06 47.98 87.82 47.88 92.4"/></svg></i></summary>
         <div class="pz-setup__how">
           <p>A backup for when this page isn’t handy. Run it while you’re on any Chess.com page.</p>
@@ -212,7 +243,7 @@
         </div>
       </details>
     </div>
-    <p class="pz-setup__credit">Positions and games come from the <a href="https://www.chess.com/news/view/published-data-api" rel="noopener">Chess.com public API</a> and the <a href="https://lichess.org/api" rel="noopener">Lichess API</a>. This page never shows a puzzle’s answer or its name. It isn’t made by Chess.com or Lichess.</p>
+    <p class="pz-setup__credit">Positions and games come from the <a href="https://www.chess.com/news/view/published-data-api" rel="noopener">Chess.com public API</a> and the <a href="https://lichess.org/api" rel="noopener">Lichess API</a>. This page never shows a puzzle’s answer or its name unless you ask Stockfish for it. It isn’t made by Chess.com or Lichess. Moves are checked by <a href="https://github.com/jhlywa/chess.js" rel="noopener">chess.js</a> (BSD licence). The engine is <a href="https://stockfishchess.org" rel="noopener">Stockfish 19</a>, free software under the <a href="/assets/engine/COPYING.txt">GNU GPL v3</a>, in the <a href="https://github.com/nmrugg/stockfish.js" rel="noopener">stockfish.js</a> browser build, whose source is linked there.</p>
   </section>
 
 </main>

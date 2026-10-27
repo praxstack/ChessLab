@@ -24,7 +24,7 @@ import {
 } from '../public/assets/board.js';
 import { markSVG, seedFrom } from '../public/assets/ink.js';
 import { PULSE } from '../src/lib/config.js';
-import { PUZZLE_CONNECT, csp, pageHeaders } from '../src/lib/security-headers.js';
+import { ENGINE_CSP, PUZZLE_CONNECT, csp, pageHeaders } from '../src/lib/security-headers.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const config = JSON.parse(readFileSync(join(root, 'site.config.json'), 'utf8'));
@@ -66,7 +66,7 @@ const PAGES = [
     path: '/puzzleanalyzr/',
     title: 'Puzzle analyzr · AskTheMove',
     description:
-      'Open today’s Chess.com puzzle, any past one, your own games or any FEN, PGN or game link on Chess.com’s analysis board, and work it out yourself. The answer stays hidden.',
+      'Today’s Chess.com puzzle, any past one, your own games or any FEN, PGN or game link. Move the pieces yourself, check a move with Stockfish when you want, or open it on Chess.com. The answer stays hidden.',
     manifest: '/puzzleanalyzr/manifest.webmanifest',
   },
   {
@@ -374,13 +374,19 @@ function outputs() {
       '/*',
       ...securityHeaderLines(),
       '',
-      // The puzzle page reads public chess APIs, so it gets the same policy plus those origins.
+      // The puzzle page reads public chess APIs and runs Stockfish, so it gets the same policy plus those.
       ...['/puzzleanalyzr', '/puzzleanalyzr/*'].flatMap((path) => [
         path,
         '  ! Content-Security-Policy',
-        `  Content-Security-Policy: ${csp({ turnstileHost: turnstileKey ? TURNSTILE_HOST : '', connect: PUZZLE_CONNECT })}`,
+        `  Content-Security-Policy: ${csp({ turnstileHost: turnstileKey ? TURNSTILE_HOST : '', connect: PUZZLE_CONNECT, wasm: true })}`,
         '',
       ]),
+      // Stockfish's worker gets its own small policy, and its files are kept for 30 days.
+      '/assets/engine/*',
+      '  ! Content-Security-Policy',
+      `  Content-Security-Policy: ${ENGINE_CSP}`,
+      '  Cache-Control: public, max-age=2592000',
+      '',
       '/assets/fonts/*',
       '  Cache-Control: public, max-age=31536000, immutable',
       '',
@@ -403,7 +409,7 @@ function outputs() {
       {
         name: `Puzzle analyzr · ${config.siteName}`,
         short_name: 'Puzzles',
-        description: 'Chess puzzles and games, opened on Chess.com’s analysis board. No hints.',
+        description: 'Chess puzzles and games to work out yourself, on the board or on Chess.com. No hints.',
         start_url: '/puzzleanalyzr/',
         scope: '/puzzleanalyzr/',
         display: 'browser',

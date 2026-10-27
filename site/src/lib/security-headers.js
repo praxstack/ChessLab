@@ -3,9 +3,11 @@
 // responses a Pages Function generates, so the manage page sets them itself.
 
 /** The content-security policy. Turnstile, when on, needs its script and frame.
- *  `connect` adds origins the page may fetch from (the puzzle page reads public chess APIs). */
-export function csp({ turnstileHost = '', connect = [] } = {}) {
+ *  `connect` adds origins the page may fetch from (the puzzle page reads public chess APIs).
+ *  `wasm` lets the page run WebAssembly (the puzzle page's Stockfish). */
+export function csp({ turnstileHost = '', connect = [], wasm = false } = {}) {
   const script = ["'self'"];
+  if (wasm) script.push("'wasm-unsafe-eval'");
   const frame = ["'none'"];
   if (turnstileHost) {
     script.push(turnstileHost);
@@ -40,5 +42,9 @@ export function pageHeaders({ turnstileHost = '', connect = [] } = {}) {
   };
 }
 
-/** Where the puzzle page (/puzzleanalyzr/) fetches puzzles, games and the saved-puzzle list from. */
-export const PUZZLE_CONNECT = ['https://api.chess.com', 'https://lichess.org', 'https://raw.githubusercontent.com'];
+/** Where the puzzle page (/puzzleanalyzr/) fetches puzzles, games and the saved-puzzle list from.
+ *  blob: is the engine file the page hands to Stockfish from the browser's cache. */
+export const PUZZLE_CONNECT = ['https://api.chess.com', 'https://lichess.org', 'https://raw.githubusercontent.com', 'blob:'];
+
+/** The policy for Stockfish's own files: its worker script only compiles the engine and reads it from a blob. */
+export const ENGINE_CSP = "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self' blob:";

@@ -235,6 +235,319 @@
   gap: var(--s-2);
 }
 
+/* ---------- Playing on the desk board ---------- */
+
+.desk__play {
+  cursor: pointer;
+  touch-action: none; /* a drag moves the piece, not the page */
+  -webkit-tap-highlight-color: transparent;
+}
+
+.desk__play .pc {
+  will-change: transform;
+  /* A tapped move glides; a drop settles at once (see .is-snap). */
+  transition: transform 170ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 160ms var(--ease-out);
+}
+
+.desk__play .pc.is-drag {
+  z-index: 6;
+  transition: none;
+  filter: drop-shadow(0 6px 5px oklch(23% 0.025 265 / 0.35));
+}
+
+.desk__play .pc.is-snap {
+  z-index: 5;
+  transition: transform 70ms ease-out;
+}
+
+/* Squares: the last move in highlighter, the chosen piece a shade stronger,
+   Chess.com's soft dots for where it can go. */
+.desk__marks {
+  z-index: 1;
+  pointer-events: none;
+}
+
+.board .dm {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 12.5%;
+  height: 12.5%;
+  transform: translate(calc(var(--x, 0) * 100%), calc(var(--y, 0) * 100%));
+}
+
+.dm--last {
+  background: var(--highlight);
+  opacity: 0.55;
+  mix-blend-mode: multiply;
+}
+
+.dm--sel {
+  background: var(--highlight);
+  opacity: 0.85;
+  mix-blend-mode: multiply;
+}
+
+.dm--dot {
+  background: radial-gradient(circle, oklch(23% 0.025 265 / 0.2) 0 15%, transparent 16%);
+}
+
+.dm--ring {
+  background: radial-gradient(circle, transparent 0 66%, oklch(23% 0.025 265 / 0.2) 67% 82%, transparent 83%);
+}
+
+.dm--hover {
+  box-shadow: inset 0 0 0 0.75cqi oklch(100% 0 0 / 0.75);
+}
+
+.dm--check {
+  background: radial-gradient(circle, oklch(62% 0.24 27 / 0.95) 0, oklch(62% 0.24 27 / 0.55) 35%, transparent 72%);
+}
+
+.desk__play .board__ink {
+  z-index: 7;
+}
+
+.desk__play .board__ink .tone--blue .stroke {
+  stroke-width: 1.05;
+}
+
+.desk__play .board__ink .tone--red .stroke {
+  stroke-width: 0.9;
+}
+
+/* Promotion: a small card on the board with the four pieces. */
+.desk__promo {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: grid;
+  place-items: center;
+  background: oklch(23% 0.025 265 / 0.28);
+}
+
+.desk__promo[hidden] {
+  display: none;
+}
+
+.desk__promo-card {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-1);
+  width: 62%;
+  padding: var(--s-2) var(--s-3) var(--s-3);
+  background: var(--card);
+  box-shadow: 0 14px 30px -12px var(--shadow);
+  transform: rotate(-1deg);
+}
+
+.desk__promo-label {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-family: var(--font-hand);
+  font-size: 1.125rem;
+  color: var(--blue);
+}
+
+.desk__promo-pick {
+  aspect-ratio: 1;
+  padding: 6%;
+  border: 0;
+  border-radius: 4px;
+  background: var(--cc-light);
+  cursor: pointer;
+}
+
+.desk__promo-pick:nth-of-type(even) {
+  background: var(--cc-dark);
+}
+
+.desk__promo-pick img {
+  width: 100%;
+  height: 100%;
+}
+
+/* Under the board: the controls, what the board says, the moves so far. */
+.desk__tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-top: var(--s-5);
+}
+
+.desk__tools .btn:disabled,
+.engine__check:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.desk__sound {
+  margin-left: auto;
+}
+
+.desk__sound[aria-pressed='false'] {
+  color: var(--graphite);
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+}
+
+.desk__say {
+  min-height: 1.3em;
+  margin: var(--s-3) 0 0;
+  font-size: 1.3125rem;
+  transform: rotate(-0.6deg);
+  transform-origin: left center;
+}
+
+.desk__say[data-tone='red'] {
+  color: var(--red);
+}
+
+.desk__say:empty {
+  min-height: 0;
+  margin: 0;
+}
+
+.desk__moves {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--s-2);
+  margin: var(--s-3) 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-hand);
+  font-size: 1.125rem;
+  color: var(--ink);
+}
+
+.desk__moves[hidden] {
+  display: none;
+}
+
+.desk__moves li {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.desk__moves li.is-later {
+  color: var(--graphite-2);
+}
+
+.desk__num {
+  color: var(--graphite);
+}
+
+.desk__moves button {
+  min-height: 32px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 3px;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.desk__moves button .fig {
+  width: 1.05em;
+  height: 1.05em;
+  vertical-align: -0.16em;
+}
+
+.desk__moves button[aria-current='step'] {
+  background: var(--highlight);
+}
+
+/* Stockfish: a pencil line that fills while it downloads, and a button that asks it. */
+.engine {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--s-2) var(--s-4);
+  align-items: center;
+  margin-top: var(--s-5);
+  padding-top: var(--s-4);
+  border-top: 1.5px dashed var(--graphite-2);
+}
+
+.engine__load {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.engine__bar {
+  width: 100%;
+  height: 6px;
+  border: 0;
+  border-radius: 3px;
+  background: var(--paper-2);
+  color: var(--blue);
+  appearance: none;
+  -webkit-appearance: none;
+  overflow: hidden;
+}
+
+.engine__bar::-webkit-progress-bar {
+  background: var(--paper-2);
+}
+
+.engine__bar::-webkit-progress-value {
+  background: var(--blue);
+  border-radius: 3px;
+  transition: width 200ms linear;
+}
+
+.engine__bar::-moz-progress-bar {
+  background: var(--blue);
+  border-radius: 3px;
+}
+
+.engine[data-phase='ready'] .engine__bar,
+.engine[data-phase='ready'] .engine__bar::-webkit-progress-value {
+  background: var(--cc-green);
+}
+
+.engine[data-phase='ready'] .engine__bar::-moz-progress-bar {
+  background: var(--cc-green);
+}
+
+.engine[data-phase='failed'] .engine__state {
+  color: var(--red);
+}
+
+.engine__state {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.35;
+  color: var(--ink-2);
+}
+
+.engine__say {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 1.3125rem;
+  transform: rotate(-0.6deg);
+  transform-origin: left center;
+}
+
+.engine__say:empty {
+  display: none;
+}
+
+.engine__say[data-tone='red'] {
+  color: var(--red);
+}
+
+.engine__show {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+.engine__show[hidden] {
+  display: none;
+}
+
 /* ---------- Calendar: every daily puzzle ---------- */
 
 .cal {
@@ -797,6 +1110,30 @@ button.cal__day {
     min-height: 52px;
   }
 
+  /* Back, Next, Start over on one row; Flip and Sound under them. */
+  .desk__tools {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .desk__tools .btn {
+    grid-column: span 2;
+    padding: 0 var(--s-2);
+  }
+
+  .desk__tools #tool-flip,
+  .desk__tools .desk__sound {
+    grid-column: span 3;
+  }
+
+  .desk__sound {
+    margin-left: 0;
+  }
+
+  .engine {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .cal__jump {
     width: 100%;
     margin-left: 0;
@@ -830,12 +1167,15 @@ button.cal__day {
 
 @media (prefers-reduced-motion: reduce) {
   .btn--cc,
-  .played__card {
+  .played__card,
+  .desk__play .pc {
     transition: none;
   }
 }
 
 @media print {
+  .desk__tools,
+  .engine,
   .desk__go,
   .desk__swap,
   .cal__bar,
