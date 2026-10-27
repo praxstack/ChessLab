@@ -1,6 +1,6 @@
 # AskTheMove beta waitlist site
 
-The public website for AskTheMove: one landing page with a waitlist form, a privacy notice, beta terms and a 404 page. It runs on Cloudflare Pages. The form is handled by Pages Functions and stored in a Cloudflare D1 database.
+The public website for AskTheMove: one landing page with a waitlist form, a privacy notice, beta terms, a 404 page, and the puzzle page at `/puzzleanalyzr/`. It runs on Cloudflare Pages. The form is handled by Pages Functions and stored in a Cloudflare D1 database.
 
 Nothing has been deployed yet. Follow the steps below when you are ready.
 
@@ -32,6 +32,8 @@ npm run db:migrate:local            # creates the local database
 npm run dev                         # http://localhost:8788
 npm test                            # API tests and chess checks
 ```
+
+The puzzle page (`pages/puzzleanalyzr.html`, `public/assets/puzzle.js`, `public/assets/puzzle.css`) opens Chess.com daily puzzles, any past one, a player's games or a pasted FEN, PGN or link on Chess.com's analysis board, and never shows a puzzle's answer. It reads public APIs from the browser, so `_headers` gives `/puzzleanalyzr` and `/puzzleanalyzr/*` their own Content-Security-Policy with `api.chess.com`, `lichess.org` and `raw.githubusercontent.com` added to `connect-src` (`PUZZLE_CONNECT` in `src/lib/security-headers.js`); every other page keeps `connect-src 'self'`. It also has its own manifest, so a home-screen icon opens the puzzle page. Past puzzles come from `puzzles.json` on the `puzzle-archive` branch, which `.github/workflows/save-daily-puzzle.yml` fills every hour.
 
 After changing anything in `pages/`, `site.config.json` or `public/assets/demo-data.js`, run `npm run build`. `npm run build:check` fails if `public/` is out of date, and `npm run deploy` runs that check first.
 

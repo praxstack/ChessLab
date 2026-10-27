@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Puzzle Launcher</title>
-<meta name="description" content="Opens the Chess.com daily puzzle position on Chess.com's analysis board. Never shows the answer.">
+<meta name="description" content="Opens Chess.com daily puzzles, your games, or any FEN, PGN or game link on Chess.com's analysis board. Never shows a puzzle's answer.">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#f7f5ee">
 <link rel="manifest" href="manifest.webmanifest">
@@ -28,17 +28,26 @@
 html, body { margin: 0; background: var(--paper); color: var(--ink); }
 body { font: 17px/1.5 var(--ui); -webkit-text-size-adjust: 100%; }
 main {
-  max-width: 520px; margin: 0 auto;
-  padding-block: max(20px, env(safe-area-inset-top, 0px)) max(32px, env(safe-area-inset-bottom, 0px));
+  max-width: 560px; margin: 0 auto;
+  padding-block: max(16px, env(safe-area-inset-top, 0px)) max(32px, env(safe-area-inset-bottom, 0px));
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
 h1 { font: 700 1.9rem/1.1 var(--book); margin: 0; letter-spacing: -0.01em; }
+h2 { font: 700 1.2rem/1.2 var(--book); margin: 26px 0 8px; }
+.lede { margin: 4px 0 0; color: var(--graphite); }
 .date { margin: 4px 0 0; color: var(--graphite); }
-.side { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; font: 700 1.15rem/1 var(--book); }
+.side { display: inline-flex; align-items: center; gap: 8px; margin-top: 12px; font: 700 1.15rem/1 var(--book); }
 .side__dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--ink); background: #fff; }
 .side[data-side="b"] .side__dot { background: #111; }
-.buttons { display: grid; gap: 10px; margin-top: 18px; }
+
+/* Tabs */
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin: 16px 0 4px; padding: 4px; border-radius: 14px; background: var(--card); border: 1px solid var(--rule); position: sticky; top: max(6px, env(safe-area-inset-top, 0px)); z-index: 2; }
+.tab { min-height: 48px; border: 0; border-radius: 10px; background: transparent; color: var(--ink); font: 600 1rem/1.1 var(--ui); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+[role="tabpanel"] { padding-top: 10px; }
+
+.buttons { display: grid; gap: 10px; margin-top: 16px; }
 .btn {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   min-height: 64px; padding: 12px 18px; border-radius: 14px;
@@ -58,45 +67,163 @@ h1 { font: 700 1.9rem/1.1 var(--book); margin: 0; letter-spacing: -0.01em; }
 .tips { margin: 6px 0 0; padding: 14px 16px; border-left: 3px solid var(--red); background: var(--card); border-radius: 0 10px 10px 0; font-size: 0.95rem; }
 .tips p { margin: 0; }
 .tips p + p { margin-top: 8px; }
+.note { font-size: 0.9rem; color: var(--graphite); margin: 6px 2px 0; }
+
+/* Form bits */
+label.lbl { display: block; font-weight: 600; margin: 0 0 6px; }
+.row { display: flex; gap: 8px; align-items: stretch; flex-wrap: wrap; }
+.row > * { min-height: 52px; }
+input[type="date"], input[type="text"] {
+  flex: 1 1 180px; min-width: 0; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--rule);
+  background: var(--card); color: var(--ink); font: 500 1.05rem var(--ui);
+}
+.go { flex: 0 0 auto; padding: 10px 18px; border-radius: 12px; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); font: 600 1rem var(--ui); cursor: pointer; }
+.go--quiet { background: var(--card); color: var(--ink); border-color: var(--rule); }
+.go[aria-disabled="true"] { opacity: 0.45; pointer-events: none; }
+textarea#paste { min-height: 132px; font-size: 0.95rem; }
+.kind { margin: 8px 2px 0; min-height: 1.5em; font-size: 0.95rem; }
+.kind b { font-weight: 700; }
+.kind[data-tone="red"] { color: var(--red); }
+
+/* Lists of puzzles and games */
+.list { list-style: none; margin: 10px 0 0; padding: 0; border: 1px solid var(--rule); border-radius: 14px; background: var(--card); overflow: hidden; }
+.list:empty { display: none; }
+.list li + li { border-top: 1px solid var(--rule); }
+.list a { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 10px 14px; color: var(--ink); text-decoration: none; }
+.list a:active { background: var(--paper); }
+.list .dot { flex: none; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--ink); background: #fff; }
+.list .dot[data-side="b"] { background: #111; }
+.list .main { flex: 1; min-width: 0; }
+.list .main strong { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.list .main span { display: block; font-size: 0.85rem; color: var(--graphite); }
+.res { flex: none; font: 700 0.8rem/1 var(--ui); padding: 6px 8px; border-radius: 999px; border: 1px solid var(--rule); }
+.res[data-r="win"] { color: var(--green); border-color: var(--green); }
+.res[data-r="loss"] { color: var(--red); border-color: var(--red); }
+.month[hidden] { display: none; }
+.month { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 14px; }
+.month strong { font: 700 1.1rem var(--book); }
+.month .go { min-height: 44px; padding: 8px 14px; }
+.more { margin-top: 8px; }
+
 details { margin-top: 12px; background: var(--card); border: 1px solid var(--rule); border-radius: 12px; }
 summary { padding: 14px 16px; font-weight: 600; cursor: pointer; min-height: 48px; }
 details > div { padding: 0 16px 16px; font-size: 0.95rem; }
 details h3 { font: 700 1rem/1.3 var(--book); margin: 12px 0 4px; }
-details ol { margin: 0; padding-left: 1.3em; }
+details ol, details ul { margin: 0; padding-left: 1.3em; }
 details li + li { margin-top: 4px; }
 code, textarea { font-family: var(--mono); font-size: 0.85rem; }
-textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-radius: 8px; padding: 8px; background: var(--paper); color: var(--ink); resize: vertical; word-break: break-all; }
+textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-radius: 8px; padding: 8px; background: var(--card); color: var(--ink); resize: vertical; word-break: break-all; }
 .small-btn { margin-top: 8px; min-height: 44px; padding: 8px 16px; border-radius: 10px; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); font: 600 0.95rem var(--ui); cursor: pointer; }
 .foot { margin-top: 22px; font-size: 0.8rem; color: var(--graphite); }
 .foot a { color: inherit; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 </style>
 </head>
 <body>
 <main>
-  <h1>Daily puzzle</h1>
-  <p class="date" id="date">Getting today’s puzzle from Chess.com…</p>
-  <p class="side" id="side" hidden><span class="side__dot" aria-hidden="true"></span><span id="side-text"></span></p>
+  <h1>Puzzle launcher</h1>
+  <p class="lede">Everything opens on Chess.com’s own board.</p>
 
-  <div class="buttons">
-    <a class="btn btn--main" id="go-analysis" href="https://www.chess.com/daily" aria-disabled="true">
-      <span>Today’s puzzle<small>Chess.com analysis board</small></span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
-    <a class="btn" id="go-explorer" href="https://www.chess.com/daily" aria-disabled="true">
-      <span>Today in explorer<small>Chess.com opening explorer</small></span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
-    <button type="button" class="btn" id="go-random">
-      <span>Random puzzle<small>An older daily puzzle, analysis board</small></span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l10 10h3M4 17h3l3-3M14 10l3-3h3M18 4l2 3-2 3M18 14l2 3-2 3"/></svg></button>
-    <button type="button" class="btn" id="copy-fen" aria-disabled="true">
-      <span>Copy today’s FEN<small>The position as text, to paste anywhere</small></span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg></button>
+  <div class="tabs" role="tablist" aria-label="What to open">
+    <button type="button" class="tab" role="tab" id="tab-puzzles" aria-controls="panel-puzzles" aria-selected="true">Puzzles</button>
+    <button type="button" class="tab" role="tab" id="tab-paste" aria-controls="panel-paste" aria-selected="false" tabindex="-1">Paste</button>
+    <button type="button" class="tab" role="tab" id="tab-games" aria-controls="panel-games" aria-selected="false" tabindex="-1">My games</button>
   </div>
-  <p class="status" id="status" role="status" aria-live="polite"></p>
 
-  <div class="tips">
-    <p><strong>First time on this device?</strong> Open a <a href="https://www.chess.com/analysis">blank Chess.com board</a> and flip its <strong>Analysis</strong> switch off before your first puzzle, so the engine can’t show you the answer. Chess.com remembers it on this device. Switch it back on when you want to check.</p>
-    <p><strong>Black to move?</strong> Use Chess.com’s flip button so Black sits at the bottom.</p>
-  </div>
+  <!-- ── Puzzles ───────────────────────────────────────── -->
+  <section role="tabpanel" id="panel-puzzles" aria-labelledby="tab-puzzles">
+    <p class="date" id="date">Getting today’s puzzle from Chess.com…</p>
+    <p class="side" id="side" hidden><span class="side__dot" aria-hidden="true"></span><span id="side-text"></span></p>
+
+    <div class="buttons">
+      <a class="btn btn--main" id="go-analysis" href="https://www.chess.com/daily" aria-disabled="true">
+        <span>Today’s puzzle<small>Chess.com analysis board</small></span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
+      <a class="btn" id="go-explorer" href="https://www.chess.com/daily" aria-disabled="true">
+        <span>Today in explorer<small>Chess.com opening explorer</small></span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
+      <button type="button" class="btn" id="go-random">
+        <span>Random puzzle<small>An older Chess.com daily puzzle</small></span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l10 10h3M4 17h3l3-3M14 10l3-3h3M18 4l2 3-2 3M18 14l2 3-2 3"/></svg></button>
+      <button type="button" class="btn" id="go-lichess">
+        <span>Lichess puzzle of the day<small>Its position, on the Chess.com board</small></span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+      <button type="button" class="btn" id="copy-fen" aria-disabled="true">
+        <span>Copy today’s FEN<small>The position as text, to paste anywhere</small></span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg></button>
+    </div>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+
+    <h2>A past daily puzzle</h2>
+    <label class="lbl" for="pick-date">Pick a date</label>
+    <div class="row">
+      <input type="date" id="pick-date">
+      <button type="button" class="go" id="open-date" aria-disabled="true">Open</button>
+    </div>
+    <p class="note" id="date-note">Saved dates open on the analysis board. Other dates open Chess.com’s own puzzle page, which marks each move right or wrong.</p>
+
+    <h2>Saved puzzles</h2>
+    <p class="note" id="saved-note">Loading the saved list…</p>
+    <ul class="list" id="saved"></ul>
+    <button type="button" class="go go--quiet more" id="saved-more" hidden>Show more</button>
+
+    <div class="tips" style="margin-top:20px">
+      <p><strong>First time on this device?</strong> Open a <a href="https://www.chess.com/analysis">blank Chess.com board</a> and flip its <strong>Analysis</strong> switch off before your first puzzle, so the engine can’t show you the answer. Chess.com remembers it on this device. Switch it back on when you want to check.</p>
+      <p><strong>Black to move?</strong> Use Chess.com’s flip button so Black sits at the bottom.</p>
+    </div>
+  </section>
+
+  <!-- ── Paste ───────────────────────────────────────────── -->
+  <section role="tabpanel" id="panel-paste" aria-labelledby="tab-paste" hidden>
+    <label class="lbl" for="paste">Paste a FEN, a PGN, or a link</label>
+    <textarea id="paste" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="A FEN, a PGN, a Chess.com game link, a Chess.com daily puzzle link, a Lichess game, puzzle or study link"></textarea>
+    <p class="kind" id="kind" aria-live="polite"></p>
+    <div class="buttons">
+      <button type="button" class="btn btn--main" id="paste-open" aria-disabled="true">
+        <span>Open on Chess.com<small id="paste-open-sub">Analysis board</small></span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+      <button type="button" class="btn" id="paste-explorer" aria-disabled="true" hidden>
+        <span>Open in explorer<small>Chess.com opening explorer</small></span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+      <button type="button" class="btn" id="paste-clip">
+        <span>Paste from clipboard<small>Your device may ask first</small></span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4h6v3H9z"/></svg></button>
+    </div>
+    <p class="status" id="paste-status" role="status" aria-live="polite"></p>
+    <details>
+      <summary>What can I paste?</summary>
+      <div>
+        <ul>
+          <li><strong>FEN</strong>: one position, like <code>8/8/8/4k3/8/8/4P3/4K3 w - - 0 1</code>.</li>
+          <li><strong>PGN</strong>: a whole game or just its moves, like <code>1. e4 e5 2. Nf3</code>.</li>
+          <li><strong>Chess.com game link</strong>: opens that game in Chess.com’s analysis.</li>
+          <li><strong>Chess.com daily puzzle link</strong>: works like picking that date.</li>
+          <li><strong>Lichess game, puzzle or study link</strong>: this page fetches its moves and opens them on Chess.com.</li>
+          <li>Any link with <code>fen=</code> in it.</li>
+        </ul>
+        <p>Chess.com’s puzzle links (Puzzles, Puzzle Rush) can’t be read from outside, so they open as they are.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ── My games ────────────────────────────────────────── -->
+  <section role="tabpanel" id="panel-games" aria-labelledby="tab-games" hidden>
+    <form id="games-form" autocomplete="off">
+      <label class="lbl" for="user">Chess.com username</label>
+      <div class="row">
+        <input type="text" id="user" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="your username">
+        <button type="submit" class="go">Show games</button>
+      </div>
+    </form>
+    <div class="month" id="month" hidden>
+      <button type="button" class="go go--quiet" id="month-older">‹ Older</button>
+      <strong id="month-name"></strong>
+      <button type="button" class="go go--quiet" id="month-newer">Newer ›</button>
+    </div>
+    <p class="status" id="games-status" role="status" aria-live="polite"></p>
+    <ul class="list" id="games"></ul>
+    <p class="note">Tap a game to open it in Chess.com’s analysis, with Game Review if you’re signed in. Works for anyone’s public games, not just yours.</p>
+  </section>
 
   <details>
     <summary>Add this page to your home screen</summary>
@@ -137,53 +264,89 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-
     </div>
   </details>
 
-  <p class="foot">This page only reads the puzzle’s position from the <a href="https://www.chess.com/news/view/published-data-api" rel="noopener">Chess.com public API</a>. It never shows the answer or the puzzle’s name. Not made by Chess.com.</p>
+  <p class="foot">Puzzle positions and games come from the <a href="https://www.chess.com/news/view/published-data-api" rel="noopener">Chess.com public API</a> and the <a href="https://lichess.org/api" rel="noopener">Lichess API</a>. This page never shows a puzzle’s answer or name. Not made by Chess.com or Lichess.</p>
 </main>
 
 <script>
 (() => {
-  const API = 'https://api.chess.com/pub/puzzle';
+  const API = 'https://api.chess.com/pub';
+  const ARCHIVE = 'https://raw.githubusercontent.com/praxstack/ChessLab/puzzle-archive/puzzles.json';
+  const DAILY_PAGE = 'https://www.chess.com/daily';
   const $ = (id) => document.getElementById(id);
   const analysisUrl = (fen) => 'https://www.chess.com/analysis?fen=' + encodeURIComponent(fen);
   const explorerUrl = (fen) => 'https://www.chess.com/analysis/explorer?fen=' + encodeURIComponent(fen);
-  const DAILY_PAGE = 'https://www.chess.com/daily';
-  let todayFen = '';
-
+  const pgnUrl = (pgn) => 'https://www.chess.com/analysis?pgn=' + encodeURIComponent(pgn);
+  const gameUrl = (type, id) => 'https://www.chess.com/analysis/game/' + type + '/' + id;
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (_) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (_) {} },
+  };
   const BOOKMARKLET = "javascript:fetch('https://api.chess.com/pub/puzzle').then(r=>r.json()).then(j=>{location.href='https://www.chess.com/analysis?fen='+encodeURIComponent(j.fen)}).catch(()=>alert('Could not load the puzzle from this page. Try it on a Chess.com page.'))";
   $('bm').value = BOOKMARKLET;
 
-  function status(text, tone) {
-    const s = $('status');
+  function say(id, text, tone) {
+    const s = $(id);
     s.textContent = text || '';
     s.dataset.tone = tone || '';
   }
+  const status = (t, tone) => say('status', t, tone);
+  const blackToMove = (fen) => fen.split(/\s+/)[1] === 'b';
 
-  // Only the position and the date are read. The answer (pgn) and the name (title) are ignored on purpose.
-  function dateFrom(j) {
-    const m = /\/daily\/(\d{4})-(\d{2})-(\d{2})/.exec(j.url || '');
-    const d = m ? new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])) : new Date((j.publish_time || 0) * 1000);
-    return d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
-  }
-
-  async function getPuzzle(path) {
-    const res = await fetch(API + path, { cache: path ? 'no-store' : 'no-cache' });
-    if (!res.ok) throw new Error('Chess.com replied ' + res.status);
-    const j = await res.json();
-    if (!j.fen) throw new Error('No position in the reply');
-    return { fen: j.fen, date: dateFrom(j) };
-  }
-
-  // aria-disabled only blocks taps (via CSS); also stop Enter on a focused link while loading.
-  for (const id of ['go-analysis', 'go-explorer']) {
-    $(id).addEventListener('click', (e) => { if ($(id).getAttribute('aria-disabled') === 'true') e.preventDefault(); });
-  }
-
+  // Links styled as disabled: CSS blocks taps, this blocks Enter on a focused link.
+  document.addEventListener('click', (e) => {
+    const el = e.target.closest('[aria-disabled="true"]');
+    if (el) { e.preventDefault(); e.stopImmediatePropagation(); }
+  }, true);
   function enable(id, href) {
     const a = $(id);
     if (href) a.href = href;
     a.removeAttribute('aria-disabled');
   }
+  const disable = (id) => $(id).setAttribute('aria-disabled', 'true');
 
+  /* ── Tabs ───────────────────────────────────────────── */
+  const TABS = ['puzzles', 'paste', 'games'];
+  function showTab(name, focus) {
+    for (const t of TABS) {
+      const on = t === name;
+      $('tab-' + t).setAttribute('aria-selected', on);
+      $('tab-' + t).tabIndex = on ? 0 : -1;
+      $('panel-' + t).hidden = !on;
+    }
+    if (focus) $('tab-' + name).focus();
+    store.set('launcher.tab', name);
+  }
+  TABS.forEach((t, i) => {
+    $('tab-' + t).addEventListener('click', () => showTab(t));
+    $('tab-' + t).addEventListener('keydown', (e) => {
+      const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (d) { e.preventDefault(); showTab(TABS[(i + d + TABS.length) % TABS.length], true); }
+    });
+  });
+  showTab(TABS.includes(store.get('launcher.tab')) ? store.get('launcher.tab') : 'puzzles');
+
+  /* ── Puzzles ────────────────────────────────────────── */
+  // Only the position and the date are read. The answer (pgn) and the name (title) are ignored on purpose.
+  function isoFrom(j) {
+    const m = /\/daily\/(\d{4}-\d{2}-\d{2})/.exec(j.url || '');
+    return m ? m[1] : new Date((j.publish_time || 0) * 1000).toISOString().slice(0, 10);
+  }
+  function pretty(iso) {
+    const [y, m, d] = iso.split('-').map(Number);
+    return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+  }
+  async function getJson(url, opts) {
+    const res = await fetch(url, opts);
+    if (!res.ok) { const e = new Error('HTTP ' + res.status); e.status = res.status; throw e; }
+    return res.json();
+  }
+  async function getPuzzle(path) {
+    const j = await getJson(API + '/puzzle' + path, { cache: path ? 'no-store' : 'no-cache' });
+    if (!j.fen) throw new Error('No position in the reply');
+    return { fen: j.fen, iso: isoFrom(j) };
+  }
+
+  let todayFen = '';
   let loadSeq = 0;
   async function loadToday() {
     const seq = ++loadSeq;
@@ -192,20 +355,24 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-
       if (seq !== loadSeq) return; // a newer load started; let it win
       todayFen = p.fen;
       status('');
-      $('date').textContent = p.date;
-      const black = p.fen.split(' ')[1] === 'b';
+      $('date').textContent = pretty(p.iso);
+      const black = blackToMove(p.fen);
       $('side').hidden = false;
       $('side').dataset.side = black ? 'b' : 'w';
       $('side-text').textContent = black ? 'Black to move' : 'White to move';
       enable('go-analysis', analysisUrl(p.fen));
       enable('go-explorer', explorerUrl(p.fen));
       enable('copy-fen');
+      $('pick-date').max = p.iso;
+      saved.set(p.iso, p.fen); // today is always "saved", even before the archive catches up
+      renderSaved();
+      if (/\/daily(?:-chess-puzzle)?\/\d{4}-\d{2}-\d{2}/.test($('paste').value)) onPaste();
     } catch (e) {
       if (seq !== loadSeq) return;
       // Drop anything left from an earlier load (say, yesterday's puzzle in a tab left open).
       todayFen = '';
       $('side').hidden = true;
-      $('copy-fen').setAttribute('aria-disabled', 'true');
+      disable('copy-fen');
       $('date').textContent = 'Couldn’t reach Chess.com just now.';
       status('The buttons open Chess.com’s own daily puzzle page instead. Pull down or reload to try again.', 'red');
       enable('go-analysis', DAILY_PAGE);
@@ -223,10 +390,72 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-
     }
   });
 
-  async function copy(text, done) {
+  // Lichess's daily puzzle: only its starting position is read, never the solution or themes.
+  async function lichessPuzzleFen(id) {
+    const j = await getJson('https://lichess.org/api/puzzle/' + (id || 'daily'), { headers: { Accept: 'application/json' } });
+    if (!j.puzzle || !j.puzzle.fen) throw new Error('No position in the reply');
+    return j.puzzle.fen;
+  }
+  $('go-lichess').addEventListener('click', async () => {
+    status('Getting the Lichess puzzle…');
+    try { location.href = analysisUrl(await lichessPuzzleFen()); }
+    catch (e) { status('Couldn’t reach Lichess. Try again in a moment.', 'red'); }
+  });
+
+  /* Saved puzzles: a list a small daily job keeps on GitHub (date → position, nothing else). */
+  const saved = new Map();
+  let savedShown = 20;
+  async function loadSaved() {
+    try {
+      const j = await getJson(ARCHIVE, { cache: 'no-cache' });
+      for (const [iso, fen] of Object.entries(j.puzzles || {})) {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(iso) && typeof fen === 'string') saved.set(iso, fen);
+      }
+    } catch (e) { /* no list yet: today still shows, other dates fall back to Chess.com's page */ }
+    renderSaved();
+    if (/\/daily(?:-chess-puzzle)?\/\d{4}-\d{2}-\d{2}/.test($('paste').value)) onPaste(); // a pasted daily link may be saved now
+  }
+  function renderSaved() {
+    const dates = [...saved.keys()].sort().reverse();
+    const ul = $('saved');
+    ul.textContent = '';
+    for (const iso of dates.slice(0, savedShown)) {
+      const fen = saved.get(iso);
+      const li = document.createElement('li');
+      li.innerHTML = '<a><span class="dot" aria-hidden="true"></span><span class="main"><strong></strong><span></span></span></a>';
+      const a = li.firstChild;
+      a.href = analysisUrl(fen);
+      a.querySelector('.dot').dataset.side = blackToMove(fen) ? 'b' : 'w';
+      a.querySelector('strong').textContent = pretty(iso);
+      a.querySelector('.main span').textContent = blackToMove(fen) ? 'Black to move' : 'White to move';
+      ul.appendChild(li);
+    }
+    $('saved-more').hidden = dates.length <= savedShown;
+    $('saved-note').textContent = dates.length > 1
+      ? dates.length + ' puzzles saved so far. Each opens on the analysis board. The list grows every day.'
+      : 'The list starts on 27 Oct 2026 and grows every day. Older dates: use the date picker above.';
+  }
+  $('saved-more').addEventListener('click', () => { savedShown += 30; renderSaved(); });
+
+  function openDate(iso) {
+    location.href = saved.has(iso) ? analysisUrl(saved.get(iso)) : DAILY_PAGE + '/' + iso;
+  }
+  function dateNote() {
+    const iso = $('pick-date').value;
+    if (!iso) { disable('open-date'); return; }
+    enable('open-date');
+    $('date-note').textContent = saved.has(iso)
+      ? pretty(iso) + ' is saved: it opens on the analysis board.'
+      : pretty(iso) + ' isn’t saved: it opens Chess.com’s own puzzle page, which marks each move right or wrong.';
+  }
+  $('pick-date').addEventListener('change', dateNote);
+  $('pick-date').addEventListener('input', dateNote);
+  $('open-date').addEventListener('click', () => { if ($('pick-date').value) openDate($('pick-date').value); });
+
+  async function copy(text, done, where) {
     try {
       await navigator.clipboard.writeText(text);
-      status(done);
+      say(where, done);
     } catch (e) {
       const t = $('bm');
       const old = t.value;
@@ -234,14 +463,246 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-
       let ok = false;
       try { ok = document.execCommand('copy'); } catch (_) {}
       t.value = old;
-      status(ok ? done : 'Copy didn’t work here. Long-press to copy: ' + text, ok ? '' : 'red');
+      say(where, ok ? done : 'Copy didn’t work here. Long-press to copy: ' + text, ok ? '' : 'red');
     }
   }
-  $('copy-fen').addEventListener('click', () => { if (todayFen) copy(todayFen, 'FEN copied.'); });
-  $('copy-bm').addEventListener('click', () => copy(BOOKMARKLET, 'Bookmarklet copied. Now follow the steps below.'));
+  $('copy-fen').addEventListener('click', () => { if (todayFen) copy(todayFen, 'FEN copied.', 'status'); });
+  $('copy-bm').addEventListener('click', () => copy(BOOKMARKLET, 'Bookmarklet copied. Now follow the steps below.', 'status'));
+
+  /* ── Paste: work out what the text is ─────────────────── */
+  const FEN_BOARD = /^([pnbrqkPNBRQK1-8]{1,8}\/){7}[pnbrqkPNBRQK1-8]{1,8}$/;
+  function cleanFen(text) {
+    const parts = text.trim().replace(/_/g, ' ').split(/\s+/);
+    if (!FEN_BOARD.test(parts[0])) return null;
+    const ranksOk = parts[0].split('/').every((r) => [...r].reduce((n, c) => n + (/\d/.test(c) ? +c : 1), 0) === 8);
+    if (!ranksOk) return null;
+    const side = parts[1] === 'b' ? 'b' : 'w';
+    const castle = parts[2] && /^(-|[KQkqA-Ha-h]{1,4})$/.test(parts[2]) ? parts[2] : '-';
+    const ep = parts[3] && /^(-|[a-h][36])$/.test(parts[3]) ? parts[3] : '-';
+    const half = /^\d+$/.test(parts[4] || '') ? parts[4] : '0';
+    const full = /^\d+$/.test(parts[5] || '') ? parts[5] : '1';
+    return { fen: [parts[0], side, castle, ep, half, full].join(' '), sideGiven: parts[1] === 'w' || parts[1] === 'b' };
+  }
+  // Clock and engine notes make links long; the moves and any written notes stay.
+  function slimPgn(pgn) {
+    return pgn.replace(/\{\s*(\[%[^\]]*\]\s*)+\}/g, '').replace(/\[%(clk|eval|emt|timestamp)[^\]]*\]/g, '').replace(/[ \t]+\n/g, '\n').trim();
+  }
+  const looksLikePgn = (t) => /^\s*\[\w+\s+"/.test(t) || /(^|\s)1\.\s*(\.\.\.)?\s*[KQRBNOa-h]/.test(t);
+
+  function fenResult(fenText, from) {
+    const f = cleanFen(fenText);
+    if (!f) return null;
+    const who = blackToMove(f.fen) ? 'Black to move' : 'White to move';
+    return { label: (from || 'A position (FEN)') + ', ' + (f.sideGiven ? who : who + ' (not given, so White)'), url: analysisUrl(f.fen), explorer: explorerUrl(f.fen), fen: f.fen };
+  }
+
+  function detect(raw) {
+    const text = raw.trim();
+    if (!text) return null;
+    let url = null;
+    try { url = new URL(/^https?:\/\//i.test(text) ? text : (/^(www\.)?(chess\.com|lichess\.org)\//i.test(text) ? 'https://' + text : '')); } catch (_) {}
+    if (url) {
+      const host = url.hostname.toLowerCase();
+      const path = url.pathname;
+      const fenParam = url.searchParams.get('fen');
+      const onSite = (site) => host === site || host.endsWith('.' + site);
+      if (onSite('chess.com')) {
+        let m;
+        if ((m = /\/(?:analysis\/)?game\/(live|daily|computer)\/(\d+)/.exec(path))) return { label: 'A Chess.com ' + m[1] + ' game', url: gameUrl(m[1], m[2]) };
+        if ((m = /\/(live|daily)\/game\/(\d+)/.exec(path))) return { label: 'A Chess.com ' + m[1] + ' game', url: gameUrl(m[1], m[2]) };
+        if ((m = /\/(?:analysis\/)?game\/(\d+)/.exec(path))) return { label: 'A Chess.com game', url: gameUrl('live', m[1]) };
+        if ((m = /\/(?:daily-chess-puzzle|daily)\/(\d{4}-\d{2}-\d{2})/.exec(path))) {
+          const iso = m[1];
+          return saved.has(iso)
+            ? { label: 'The Chess.com daily puzzle of ' + pretty(iso) + ' (saved, opens on the analysis board)', url: analysisUrl(saved.get(iso)), explorer: explorerUrl(saved.get(iso)) }
+            : { label: 'The Chess.com daily puzzle of ' + pretty(iso) + ' (not saved, opens Chess.com’s puzzle page)', url: DAILY_PAGE + '/' + iso };
+        }
+        if (fenParam && fenResult(fenParam)) return fenResult(fenParam, 'A position from a Chess.com link');
+        if (url.searchParams.get('pgn')) return { label: 'A game from a Chess.com link', url: pgnUrl(url.searchParams.get('pgn')) };
+        return { label: 'A Chess.com page this can’t read inside, so it opens as it is', url: url.href, plain: true };
+      }
+      if (onSite('lichess.org')) {
+        let m;
+        // /training/ID or a themed /training/mateIn2/ID; a lone plain word (daily, short) is a page, not an id.
+        const pz = /^\/training\/(?:([A-Za-z0-9]+)\/)?([A-Za-z0-9]{5})\/?$/.exec(path);
+        if (pz && (pz[1] || !/^[a-z]+$/.test(pz[2]))) return { label: 'A Lichess puzzle (only its position is read)', fetch: async () => fenResult(await lichessPuzzleFen(pz[2]), 'A Lichess puzzle') };
+        if (/^\/training\/daily/.test(path)) return { label: 'The Lichess puzzle of the day', fetch: async () => fenResult(await lichessPuzzleFen(), 'The Lichess puzzle of the day') };
+        if ((m = /^\/study\/([A-Za-z0-9]{8})(?:\/([A-Za-z0-9]{8}))?/.exec(path))) {
+          const src = m[2] ? 'https://lichess.org/api/study/' + m[1] + '/' + m[2] + '.pgn' : 'https://lichess.org/api/study/' + m[1] + '.pgn';
+          return { label: 'A Lichess study' + (m[2] ? ' chapter' : ' (its first chapter)'), fetch: async () => {
+            const pgn = await getText(src + '?clocks=false&comments=true&variations=true');
+            const first = pgn.split(/\n\s*\n(?=\[)/)[0];
+            return { label: 'A Lichess study', url: pgnUrl(slimPgn(first)) };
+          } };
+        }
+        if ((m = /^\/analysis\/(?:standard\/|fromPosition\/)?(.+)$/.exec(path))) {
+          let f = null;
+          try { f = fenResult(decodeURIComponent(m[1]), 'A position from a Lichess link'); } catch (_) {}
+          if (f) return f;
+        }
+        // Lichess game ids are 8 letters/digits; skip site pages whose names are also 8 long.
+        if ((m = /^\/([A-Za-z0-9]{8})(?:[A-Za-z0-9]{4})?(?:\/(?:white|black))?\/?$/.exec(path)) && !/^(analysis|training|practice|tutorial|streamer|insights|features|calendar|password)$/i.test(m[1])) {
+          const id = m[1];
+          return { label: 'A Lichess game', fetch: async () => {
+            const pgn = await getText('https://lichess.org/game/export/' + id + '?clocks=false&evals=false&literate=false');
+            return { label: 'A Lichess game', url: pgnUrl(slimPgn(pgn)) };
+          } };
+        }
+        if (fenParam && fenResult(fenParam)) return fenResult(fenParam, 'A position from a Lichess link');
+        return { label: 'A Lichess page this can’t read, so it opens as it is', url: url.href, plain: true };
+      }
+      if (fenParam && fenResult(fenParam)) return fenResult(fenParam, 'A position from a link');
+      return { error: 'That link isn’t from Chess.com or Lichess, and it has no position in it.' };
+    }
+    const asFen = fenResult(text);
+    if (asFen) return asFen;
+    if (looksLikePgn(text)) {
+      const slim = slimPgn(text);
+      const setUp = /\[FEN\s+"([^"]+)"\]/.exec(slim);
+      return { label: 'A game (PGN)' + (setUp ? ' from a set-up position' : ''), url: pgnUrl(slim) };
+    }
+    return { error: 'Can’t tell what this is. Paste a FEN, a PGN, or a Chess.com or Lichess link.' };
+  }
+  async function getText(src) {
+    const res = await fetch(src, { headers: { Accept: 'application/x-chess-pgn' } });
+    if (!res.ok) { const e = new Error('HTTP ' + res.status); e.status = res.status; throw e; }
+    return res.text();
+  }
+
+  let current = null;
+  function onPaste() {
+    current = detect($('paste').value);
+    say('paste-status', '');
+    $('paste-explorer').hidden = true;
+    disable('paste-open'); disable('paste-explorer');
+    if (!current) { say('kind', ''); return; }
+    if (current.error) { say('kind', current.error, 'red'); return; }
+    $('kind').innerHTML = '';
+    const b = document.createElement('b'); b.textContent = 'Looks like: ';
+    $('kind').append(b, current.label);
+    $('kind').dataset.tone = '';
+    $('paste-open-sub').textContent = current.plain ? 'Opens the page as it is' : 'Analysis board';
+    enable('paste-open');
+    if (current.explorer) { $('paste-explorer').hidden = false; enable('paste-explorer'); }
+    store.set('launcher.paste', $('paste').value.slice(0, 20000));
+  }
+  $('paste').addEventListener('input', onPaste);
+  $('paste-open').addEventListener('click', async () => {
+    if (!current || current.error) return;
+    if (!current.fetch) { location.href = current.url; return; }
+    const job = current;
+    say('paste-status', 'Getting it…');
+    disable('paste-open');
+    try {
+      const got = await job.fetch();
+      if (job !== current) return; // the text changed while this was loading
+      if (!got || !got.url) throw new Error('Nothing to open');
+      location.href = got.url;
+    } catch (e) {
+      if (job !== current) return;
+      enable('paste-open');
+      say('paste-status', e.status === 404 ? 'Lichess says it can’t find that. Check the link.' : 'Couldn’t reach Lichess. Try again in a moment.', 'red');
+    }
+  });
+  $('paste-explorer').addEventListener('click', () => { if (current && current.explorer) location.href = current.explorer; });
+  $('paste-clip').addEventListener('click', async () => {
+    try {
+      const t = await navigator.clipboard.readText();
+      $('paste').value = t; onPaste();
+      if (!t.trim()) say('paste-status', 'The clipboard is empty.', 'red');
+    } catch (e) {
+      say('paste-status', 'This browser didn’t share the clipboard. Long-press the box above and tap Paste.', 'red');
+      $('paste').focus();
+    }
+  });
+  if (store.get('launcher.paste')) { $('paste').value = store.get('launcher.paste'); onPaste(); }
+
+  /* ── My games ───────────────────────────────────────── */
+  let archives = [];
+  let monthIdx = -1;
+  let who = '';
+  let gamesSeq = 0;
+  const RESULT = { win: 'win', checkmated: 'loss', timeout: 'loss', resigned: 'loss', lose: 'loss', abandoned: 'loss', kingofthehill: 'loss', threecheck: 'loss', bughousepartnerlose: 'loss',
+    agreed: 'draw', repetition: 'draw', stalemate: 'draw', insufficient: 'draw', '50move': 'draw', timevsinsufficient: 'draw' };
+
+  $('games-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = $('user').value.trim().toLowerCase();
+    if (!/^[a-z0-9_-]{2,30}$/.test(name)) { say('games-status', 'That doesn’t look like a Chess.com username.', 'red'); return; }
+    store.set('launcher.user', name);
+    who = name;
+    const seq = ++gamesSeq;
+    $('games').textContent = '';
+    $('month').hidden = true;
+    say('games-status', 'Asking Chess.com for ' + name + '’s games…');
+    try {
+      const j = await getJson(API + '/player/' + name + '/games/archives');
+      if (seq !== gamesSeq) return;
+      archives = j.archives || [];
+      if (!archives.length) { say('games-status', name + ' has no public games yet.'); return; }
+      showMonth(archives.length - 1);
+    } catch (err) {
+      if (seq !== gamesSeq) return;
+      say('games-status', err.status === 404 ? 'Chess.com has no player called ' + name + '.' : 'Couldn’t reach Chess.com. Try again in a moment.', 'red');
+    }
+  });
+
+  async function showMonth(i) {
+    monthIdx = i;
+    const seq = ++gamesSeq;
+    const src = archives[i];
+    const m = /(\d{4})\/(\d{2})$/.exec(src) || [];
+    $('month').hidden = false;
+    $('month-name').textContent = m[1] ? new Date(Date.UTC(+m[1], +m[2] - 1, 1)).toLocaleDateString(undefined, { month: 'long', year: 'numeric', timeZone: 'UTC' }) : '';
+    $('month-older').setAttribute('aria-disabled', i <= 0);
+    $('month-newer').setAttribute('aria-disabled', i >= archives.length - 1);
+    $('games').textContent = '';
+    say('games-status', 'Loading games…');
+    try {
+      const j = await getJson(src);
+      if (seq !== gamesSeq) return;
+      renderGames((j.games || []).slice().reverse());
+    } catch (err) {
+      if (seq !== gamesSeq) return;
+      say('games-status', err.status === 403 || err.status === 429
+        ? 'Chess.com is refusing this month right now (too many games, or too many requests). Try another month, or again later.'
+        : 'Couldn’t load this month. Try again in a moment.', 'red');
+    }
+  }
+  $('month-older').addEventListener('click', () => { if (monthIdx > 0) showMonth(monthIdx - 1); });
+  $('month-newer').addEventListener('click', () => { if (monthIdx < archives.length - 1) showMonth(monthIdx + 1); });
+
+  function renderGames(games) {
+    const ul = $('games');
+    ul.textContent = '';
+    say('games-status', games.length ? games.length + ' game' + (games.length === 1 ? '' : 's') + ' this month, newest first.' : 'No games this month.');
+    for (const g of games) {
+      const white = g.white || {}, black = g.black || {};
+      const meWhite = (white.username || '').toLowerCase() === who;
+      const me = meWhite ? white : black, them = meWhite ? black : white;
+      const r = RESULT[me.result] || 'draw';
+      const m = /\/game\/(live|daily)\/(\d+)/.exec(g.url || '');
+      const href = m ? gameUrl(m[1], m[2]) : (g.pgn ? pgnUrl(slimPgn(g.pgn)) : g.url);
+      const when = g.end_time ? new Date(g.end_time * 1000).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : '';
+      const kind = [g.time_class, g.rules && g.rules !== 'chess' ? g.rules : '', g.rated === false ? 'unrated' : ''].filter(Boolean).join(' · ');
+      const li = document.createElement('li');
+      li.innerHTML = '<a><span class="dot" aria-hidden="true"></span><span class="main"><strong></strong><span></span></span><span class="res"></span></a>';
+      const a = li.firstChild;
+      a.href = href;
+      a.querySelector('.dot').dataset.side = meWhite ? 'w' : 'b';
+      a.querySelector('strong').textContent = 'vs ' + (them.username || '?') + (them.rating ? ' (' + them.rating + ')' : '');
+      a.querySelector('.main span').textContent = [when, kind, meWhite ? 'as White' : 'as Black'].filter(Boolean).join(' · ');
+      a.querySelector('.res').dataset.r = r;
+      a.querySelector('.res').textContent = r === 'win' ? 'Won' : r === 'loss' ? 'Lost' : 'Draw';
+      a.setAttribute('aria-label', (r === 'win' ? 'Won' : r === 'loss' ? 'Lost' : 'Drew') + ' against ' + (them.username || 'unknown') + ', ' + when + ', ' + kind);
+      ul.appendChild(li);
+    }
+  }
+  if (store.get('launcher.user')) $('user').value = store.get('launcher.user');
 
   // Coming back to the page later (it stays open in a tab): load the new day's puzzle.
   document.addEventListener('visibilitychange', () => { if (!document.hidden) loadToday(); });
+  loadSaved();
   loadToday();
 })();
 </script>

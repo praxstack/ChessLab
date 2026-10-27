@@ -1,0 +1,87 @@
+name: Save daily puzzle
+
+# Keeps a list of Chess.com daily puzzle positions for the puzzle launcher
+# (askthemove/puzzle-launcher). Each run saves today's puzzle and one random
+# older one, so past dates open on the analysis board with no hints.
+# Only the date and the position (FEN) are kept: never the answer or the name.
+# The list lives on its own branch, puzzle-archive, so main gets no daily commits.
+on:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: save-daily-puzzle
+  cancel-in-progress: false
+
+jobs:
+  save:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Switch to the archive branch
+        run: |
+          if git fetch --depth 1 origin puzzle-archive; then
+            git switch -c puzzle-archive FETCH_HEAD
+          else
+            git switch --orphan puzzle-archive
+          fi
+
+      - name: Add today's puzzle and one random older one
+        run: |
+          python3 - <<'PY'
+          import json, re, time, urllib.request
+
+          UA = 'AskTheMove puzzle launcher (github.com/praxstack/ChessLab)'
+          path = 'puzzles.json'
+          try:
+              with open(path) as f:
+                  data = json.load(f)
+          except FileNotFoundError:
+              data = {}
+          puzzles = data.get('puzzles', {})
+
+          def get(url):
+              req = urllib.request.Request(url, headers={'User-Agent': UA, 'Accept': 'application/json'})
+              with urllib.request.urlopen(req, timeout=20) as r:
+                  return json.load(r)
+
+          added = 0
+          for url in ('https://api.chess.com/pub/puzzle', 'https://api.chess.com/pub/puzzle/random'):
+              try:
+                  j = get(url)
+              except Exception as e:
+                  print('skip', url, e)
+                  continue
+              m = re.search(r'/daily/(\d{4}-\d{2}-\d{2})', j.get('url', ''))
+              fen = j.get('fen', '')
+              if m and re.match(r'^[pnbrqkPNBRQK1-8/]+ [wb] ', fen) and m.group(1) not in puzzles:
+                  puzzles[m.group(1)] = fen
+                  added += 1
+              time.sleep(2)
+
+          data = {'note': 'Chess.com daily puzzle positions by date, for the puzzle launcher. Positions only.',
+                  'puzzles': dict(sorted(puzzles.items()))}
+          with open(path, 'w') as f:
+              json.dump(data, f, indent=0, separators=(',', ':'))
+              f.write('\n')
+          print(f'added {added}, total {len(puzzles)}')
+          PY
+
+      - name: Commit if anything changed
+        run: |
+          git add puzzles.json
+          if git diff --cached --quiet; then
+            echo "Nothing new."
+            exit 0
+          fi
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+            commit -q -m "Save daily puzzle positions"
+          git push origin puzzle-archive
