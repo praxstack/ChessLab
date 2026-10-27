@@ -99,6 +99,7 @@ textarea#paste { min-height: 132px; font-size: 0.95rem; }
 .res { flex: none; font: 700 0.8rem/1 var(--ui); padding: 6px 8px; border-radius: 999px; border: 1px solid var(--rule); }
 .res[data-r="win"] { color: var(--green); border-color: var(--green); }
 .res[data-r="loss"] { color: var(--red); border-color: var(--red); }
+.month[hidden] { display: none; }
 .month { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 14px; }
 .month strong { font: 700 1.1rem var(--book); }
 .month .go { min-height: 44px; padding: 8px 14px; }
@@ -365,6 +366,7 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-
       $('pick-date').max = p.iso;
       saved.set(p.iso, p.fen); // today is always "saved", even before the archive catches up
       renderSaved();
+      if (/\/daily(?:-chess-puzzle)?\/\d{4}-\d{2}-\d{2}/.test($('paste').value)) onPaste();
     } catch (e) {
       if (seq !== loadSeq) return;
       // Drop anything left from an earlier load (say, yesterday's puzzle in a tab left open).
@@ -411,6 +413,7 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-
       }
     } catch (e) { /* no list yet: today still shows, other dates fall back to Chess.com's page */ }
     renderSaved();
+    if (/\/daily(?:-chess-puzzle)?\/\d{4}-\d{2}-\d{2}/.test($('paste').value)) onPaste(); // a pasted daily link may be saved now
   }
   function renderSaved() {
     const dates = [...saved.keys()].sort().reverse();
@@ -520,7 +523,9 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-
       }
       if (onSite('lichess.org')) {
         let m;
-        if ((m = /^\/training\/([A-Za-z0-9]{5,8})/.exec(path)) && m[1] !== 'daily') return { label: 'A Lichess puzzle (only its position is read)', fetch: async () => fenResult(await lichessPuzzleFen(m[1]), 'A Lichess puzzle') };
+        // /training/ID or a themed /training/mateIn2/ID; a lone plain word (daily, short) is a page, not an id.
+        const pz = /^\/training\/(?:([A-Za-z0-9]+)\/)?([A-Za-z0-9]{5})\/?$/.exec(path);
+        if (pz && (pz[1] || !/^[a-z]+$/.test(pz[2]))) return { label: 'A Lichess puzzle (only its position is read)', fetch: async () => fenResult(await lichessPuzzleFen(pz[2]), 'A Lichess puzzle') };
         if (/^\/training\/daily/.test(path)) return { label: 'The Lichess puzzle of the day', fetch: async () => fenResult(await lichessPuzzleFen(), 'The Lichess puzzle of the day') };
         if ((m = /^\/study\/([A-Za-z0-9]{8})(?:\/([A-Za-z0-9]{8}))?/.exec(path))) {
           const src = m[2] ? 'https://lichess.org/api/study/' + m[1] + '/' + m[2] + '.pgn' : 'https://lichess.org/api/study/' + m[1] + '.pgn';
@@ -585,12 +590,17 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-
   $('paste-open').addEventListener('click', async () => {
     if (!current || current.error) return;
     if (!current.fetch) { location.href = current.url; return; }
+    const job = current;
     say('paste-status', 'Getting it…');
+    disable('paste-open');
     try {
-      const got = await current.fetch();
+      const got = await job.fetch();
+      if (job !== current) return; // the text changed while this was loading
       if (!got || !got.url) throw new Error('Nothing to open');
       location.href = got.url;
     } catch (e) {
+      if (job !== current) return;
+      enable('paste-open');
       say('paste-status', e.status === 404 ? 'Lichess says it can’t find that. Check the link.' : 'Couldn’t reach Lichess. Try again in a moment.', 'red');
     }
   });

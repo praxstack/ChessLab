@@ -178,6 +178,14 @@ async function lichessPuzzleFen(id = 'daily') {
 // Lichess page names that are 8 letters long, so they aren't mistaken for game ids.
 const LICHESS_PAGES = /^(analysis|training|practice|tutorial|streamer|insights|features|calendar|password)$/i;
 
+// A Lichess puzzle id from /training/ID or a themed /training/mateIn2/ID.
+// A lone plain word (daily, short, fork) is a page, not an id.
+export function lichessPuzzleId(path) {
+  const m = /^\/training\/(?:([A-Za-z0-9]+)\/)?([A-Za-z0-9]{5})\/?$/.exec(path);
+  if (!m || (!m[1] && /^[a-z]+$/.test(m[2]))) return null;
+  return m[2];
+}
+
 export function detect(raw, saved = new Map()) {
   const text = raw.trim();
   if (!text) return null;
@@ -210,8 +218,8 @@ export function detect(raw, saved = new Map()) {
     }
     if (onSite('lichess.org')) {
       let m;
-      if ((m = /^\/training\/([A-Za-z0-9]{5,8})/.exec(path)) && m[1] !== 'daily') {
-        const id = m[1];
+      const id = lichessPuzzleId(path);
+      if (id) {
         return { label: 'A Lichess puzzle. Only its position is read.', fetch: async () => fenResult(await lichessPuzzleFen(id), 'A Lichess puzzle') };
       }
       if (/^\/training\/daily/.test(path)) return { label: 'The Lichess puzzle of the day.', fetch: async () => fenResult(await lichessPuzzleFen(), 'The Lichess puzzle of the day') };
@@ -363,6 +371,7 @@ async function loadToday({ toDesk }) {
     todayFen = p.fen;
     saved.set(p.iso, p.fen); // today always counts as saved, even before the saved list catches up
     $('cal-jump').max = todayIso.slice(0, 7);
+    refreshPaste();
     if (toDesk || (desk.kind === 'today' && changed)) {
       showOnDesk({ kind: 'today', fen: p.fen, iso: p.iso, title: 'Today’s puzzle', source: 'Chess.com daily' });
     } else {
@@ -401,6 +410,7 @@ $('load-random').addEventListener('click', async () => {
   try {
     const p = await getPuzzle('/random');
     saved.set(p.iso, p.fen);
+    refreshPaste();
     showOnDesk({ kind: 'random', fen: p.fen, iso: p.iso, title: 'A random puzzle', source: 'Chess.com daily' });
   } catch {
     say('desk-status', 'Couldn’t get a random puzzle from Chess.com. Try again in a moment.', 'red');
@@ -473,6 +483,11 @@ function dayCell(iso, d, lastIso) {
 }
 
 const drawnLoops = new Set();
+// A pasted daily-puzzle link reads the saved list, so read the box again when that list grows.
+function refreshPaste() {
+  if (/\/daily(?:-chess-puzzle)?\/\d{4}-\d{2}-\d{2}/.test($('paste').value)) onPaste();
+}
+
 function renderCalendar() {
   if (!calMonth) calMonth = monthOf(localIso());
   const { y, m } = calMonth;
@@ -535,6 +550,7 @@ async function loadSaved() {
     /* no saved list yet: today still shows, other dates open Chess.com's page */
   }
   renderCalendar();
+  refreshPaste();
 }
 
 /* ----------------------------------------------------------------- Paste */
@@ -566,12 +582,17 @@ $('paste-open').addEventListener('click', async () => {
     window.location.href = current.url;
     return;
   }
+  const job = current;
   say('paste-status', 'Getting it from Lichess…');
+  $('paste-open').disabled = true;
   try {
-    const got = await current.fetch();
+    const got = await job.fetch();
+    if (job !== current) return; // the text changed while this was loading
     if (!got || !got.url) throw new Error('Nothing to open');
     window.location.href = got.url;
   } catch (err) {
+    if (job !== current) return;
+    $('paste-open').disabled = false;
     say('paste-status', err.status === 404 ? 'Lichess can’t find that. Check the link.' : 'Couldn’t reach Lichess. Try again in a moment.', 'red');
   }
 });
