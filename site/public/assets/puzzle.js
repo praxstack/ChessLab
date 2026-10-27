@@ -363,6 +363,7 @@ async function getPuzzle(path) {
 let todaySeq = 0;
 async function loadToday({ toDesk }) {
   const seq = ++todaySeq;
+  const deskAt = deskSeq; // if something else goes on the board meanwhile, leave it there
   try {
     const p = await getPuzzle('');
     if (seq !== todaySeq) return;
@@ -372,13 +373,13 @@ async function loadToday({ toDesk }) {
     saved.set(p.iso, p.fen); // today always counts as saved, even before the saved list catches up
     $('cal-jump').max = todayIso.slice(0, 7);
     refreshPaste();
-    if (toDesk || (desk.kind === 'today' && changed)) {
+    if ((toDesk && deskSeq === deskAt) || (desk.kind === 'today' && changed)) {
       showOnDesk({ kind: 'today', fen: p.fen, iso: p.iso, title: 'Today’s puzzle', source: 'Chess.com daily' });
     } else {
       renderCalendar();
     }
   } catch {
-    if (seq !== todaySeq || !toDesk) return;
+    if (seq !== todaySeq || !toDesk || deskSeq !== deskAt) return;
     deskFailed('Couldn’t reach Chess.com just now. The button opens Chess.com’s own puzzle page instead. Reload to try again.');
   }
 }
