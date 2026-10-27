@@ -10,7 +10,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const PAGES = ['index.html', 'privacy/index.html', 'terms/index.html', '404.html', 'assets/manage.html'];
+const PAGES = ['index.html', 'privacy/index.html', 'terms/index.html', '404.html', 'assets/manage.html', 'puzzleanalyzr/index.html'];
 const read = (rel) => readFileSync(join(root, 'public', rel), 'utf8');
 const tags = (html, name) => html.match(new RegExp(`<${name}\\b[^>]*>`, 'g')) || [];
 const attr = (tag, name) => {
@@ -159,6 +159,31 @@ test('_headers and the manage page share one set of security headers', async () 
     const line = new RegExp(`^  ${name.replace(/(^|-)([a-z])/g, (m) => m.toUpperCase()).replace(/-/g, '-')}: ${value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'mi');
     assert.match(headers, line, `${name} missing from _headers`);
   }
+});
+
+test('puzzleanalyzr: its own policy lets it read the chess APIs, and its own manifest opens it', async () => {
+  const { PUZZLE_CONNECT, csp } = await import('../src/lib/security-headers.js');
+  const headers = read('_headers');
+  for (const path of ['/puzzleanalyzr', '/puzzleanalyzr/*']) {
+    const block = new RegExp(`^${path.replace(/[*]/g, '\\*')}\n  ! Content-Security-Policy\n  Content-Security-Policy: ([^\n]+)$`, 'm').exec(headers);
+    assert.ok(block, `no policy block for ${path}`);
+    assert.equal(block[1], csp({ connect: PUZZLE_CONNECT }));
+    for (const origin of PUZZLE_CONNECT) assert.match(block[1], new RegExp(`connect-src [^;]*${origin.replace(/[.]/g, '\\.')}`));
+  }
+  // Every other page keeps connect-src 'self' only.
+  assert.match(headers, /^\/\*\n(?:  .+\n)*  Content-Security-Policy: [^\n]*connect-src 'self';/m);
+  const html = read('puzzleanalyzr/index.html');
+  assert.match(html, /<link rel="manifest" href="\/puzzleanalyzr\/manifest\.webmanifest">/);
+  assert.match(read('index.html'), /<link rel="manifest" href="\/site\.webmanifest">/);
+  const manifest = JSON.parse(read('puzzleanalyzr/manifest.webmanifest'));
+  assert.equal(manifest.start_url, '/puzzleanalyzr/');
+  assert.equal(manifest.scope, '/puzzleanalyzr/');
+  assert.equal(manifest.display, 'browser');
+  assert.match(read('sitemap.xml'), /\/puzzleanalyzr\//);
+  for (const id of ['desk-board', 'go-analysis', 'cal-grid', 'paste', 'games-form', 'games-sheet', 'bm']) {
+    assert.match(html, new RegExp(`id="${id}"`), `#${id} missing`);
+  }
+  assert.match(html, /<script type="module" src="\/assets\/puzzle\.js"><\/script>/);
 });
 
 test('styles: every font and image the stylesheet uses exists, and the fonts are credited', () => {

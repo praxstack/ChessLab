@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- @include head -->
+<link rel="stylesheet" href="/assets/puzzle.css">
+</head>
+<body class="page-puzzles">
+<!-- @include header -->
+<main id="main" class="sheet">
+
+  <section class="open pz-open rows" aria-labelledby="pz-title" data-ink-group="load">
+    <h1 id="pz-title" class="open__title">Find the move <span class="ink ink--circle" data-mark="circle">yourself</span>.</h1>
+    <div class="open__main">
+      <p class="open__lede">Today’s Chess.com puzzle, any past one, your own games or a position you paste, opened on Chess.com’s analysis board. You move the pieces. The answer stays hidden.</p>
+    </div>
+    <div class="open__side">
+      <p class="note-hand pz-open__note" data-write>Checks, captures, threats. Look at those first.</p>
+    </div>
+  </section>
+
+  <section class="desk rows" id="desk" aria-labelledby="desk-title">
+    <div class="desk__board">
+      <div class="diagram">
+        <div class="diagram__ranks" aria-hidden="true" id="desk-ranks"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
+        <div class="board" role="img" id="desk-board" aria-label="Chessboard, empty while today’s puzzle loads.">
+          <div class="board__layer board__pieces" id="desk-pieces"></div>
+        </div>
+        <div class="diagram__files" aria-hidden="true" id="desk-files"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+      </div>
+    </div>
+
+    <div class="desk__panel">
+      <h2 class="desk__title" id="desk-title">Today’s puzzle</h2>
+      <p class="note-hand note-hand--red desk__turn" id="desk-turn">Setting up the board.</p>
+      <p class="note-hand desk__flip" id="desk-flip" hidden>Black plays from the top on Chess.com. Use its flip button to turn the board round.</p>
+      <div class="desk__go">
+        <a class="btn btn--pen btn--large" id="go-analysis" href="https://www.chess.com/daily">Open it on Chess.com</a>
+        <a class="btn btn--plain" id="go-explorer" href="https://www.chess.com/daily">Opening explorer</a>
+        <button class="btn btn--plain" id="copy-fen" type="button" disabled>Copy FEN</button>
+      </div>
+      <p class="desk__status" id="desk-status" role="status" aria-live="polite"></p>
+      <noscript><p class="desk__status">This page needs JavaScript to read the puzzle. The button opens Chess.com’s own daily puzzle page.</p></noscript>
+
+      <div class="printout desk__card">
+        <p class="printout__head">puzzle card</p>
+        <p class="printout__line desk__row"><span>date</span><span class="desk__dots" aria-hidden="true"></span><span id="card-date">today</span></p>
+        <p class="printout__line desk__row"><span>to move</span><span class="desk__dots" aria-hidden="true"></span><span id="card-side">…</span></p>
+        <p class="printout__line desk__row"><span>from</span><span class="desk__dots" aria-hidden="true"></span><span id="card-src">Chess.com daily</span></p>
+        <p class="printout__line desk__row"><span>answer</span><span class="desk__dots" aria-hidden="true"></span><span class="printout__flag">hidden</span></p>
+      </div>
+
+      <div class="desk__swap">
+        <p class="note-hand desk__swap-note">Or put another one on the board:</p>
+        <div class="desk__swap-btns">
+          <button class="btn btn--plain btn--small" id="load-today" type="button">Today’s</button>
+          <button class="btn btn--plain btn--small" id="load-random" type="button">A random one</button>
+          <button class="btn btn--plain btn--small" id="load-lichess" type="button">Lichess daily</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cal rows" id="calendar" aria-labelledby="cal-title" data-ink-group>
+    <div class="cal__head">
+      <h2 id="cal-title" class="h2">Every daily puzzle, <span class="ink ink--underline" data-mark="underline">by date</span></h2>
+      <p class="prose cal__intro">Chess.com has posted a puzzle every day for years. Pick a day and it goes on the board above.</p>
+    </div>
+
+    <div class="cal__book">
+      <div class="cal__bar">
+        <button class="btn btn--plain btn--small cal__step" id="cal-prev" type="button" aria-label="Previous month">‹</button>
+        <p class="cal__month" id="cal-month" aria-live="polite">This month</p>
+        <button class="btn btn--plain btn--small cal__step" id="cal-next" type="button" aria-label="Next month">›</button>
+        <div class="cal__jump">
+          <label for="cal-jump">Jump to</label>
+          <input id="cal-jump" type="month">
+        </div>
+      </div>
+      <ol class="cal__days" aria-hidden="true"><li>Sun</li><li>Mon</li><li>Tue</li><li>Wed</li><li>Thu</li><li>Fri</li><li>Sat</li></ol>
+      <ol class="cal__grid" id="cal-grid" aria-labelledby="cal-month"></ol>
+    </div>
+
+    <div class="cal__side">
+      <p class="note-hand cal__key"><span class="ink ink--circle cal__sample" data-mark="circle">12</span> Circled days are saved here. They open on the board above, no hints.</p>
+      <p class="note-hand note-hand--red cal__key" data-write>Today is circled in red.</p>
+      <p class="note-hand cal__key cal__key--plain" data-write>A plain date opens Chess.com’s own puzzle page. That one marks each move right or wrong.</p>
+    </div>
+  </section>
+
+  <section class="paste rows" id="paste-sec" aria-labelledby="paste-title" data-ink-group>
+    <h2 id="paste-title" class="h2 paste__title">Bring your own <span class="ink ink--highlight" data-mark="highlight">position</span></h2>
+
+    <div class="paste__main">
+      <label class="paste__label" for="paste">Paste a FEN, a PGN, or a game, puzzle or study link</label>
+      <textarea id="paste" class="paste__box" rows="4" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4"></textarea>
+      <p class="note-hand paste__reply" id="paste-reply" aria-live="polite"></p>
+      <div class="paste__go">
+        <button class="btn btn--pen" id="paste-open" type="button" disabled>Open on Chess.com</button>
+        <button class="btn btn--plain" id="paste-board" type="button" hidden>Put it on the board</button>
+        <button class="btn btn--plain" id="paste-clip" type="button">Paste from clipboard</button>
+      </div>
+      <p class="desk__status" id="paste-status" role="status" aria-live="polite"></p>
+    </div>
+
+    <div class="paste__side">
+      <div class="printout paste__reads">
+        <p class="printout__head">what it reads</p>
+        <p class="printout__line"><b>FEN</b> one position</p>
+        <p class="printout__line"><b>PGN</b> a whole game, or just 1. e4 e5 2. Nf3</p>
+        <p class="printout__line"><b>chess.com/game/…</b> that game</p>
+        <p class="printout__line"><b>chess.com/daily/2024-05-01</b> that day’s puzzle</p>
+        <p class="printout__line"><b>lichess.org/…</b> a game, puzzle or study</p>
+        <p class="printout__line"><b>any link with fen=</b> its position</p>
+        <p class="printout__line printout__line--dim">Chess.com Puzzles and Puzzle Rush links can’t be read from outside, so they open as they are.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="played rows" id="games" aria-labelledby="games-title" data-ink-group>
+    <h2 id="games-title" class="h2 played__title">Go over your own <span class="ink ink--underline" data-mark="underline">games</span></h2>
+
+    <div class="played__main">
+      <p class="prose">Type a Chess.com username and each game shows up as its last position. Tap one to replay it on the analysis board, with Game Review if you’re signed in. Anyone’s public games work.</p>
+      <form class="played__form" id="games-form" autocomplete="off">
+        <div class="field played__field">
+          <label for="user">Chess.com username</label>
+          <input id="user" name="user" type="text" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="30" placeholder="your username">
+        </div>
+        <button class="btn btn--pen played__submit" type="submit">Show games</button>
+      </form>
+      <div class="cal__bar played__bar" id="games-bar" hidden>
+        <button class="btn btn--plain btn--small cal__step" id="month-older" type="button" aria-label="Older month">‹</button>
+        <p class="cal__month" id="month-name"></p>
+        <button class="btn btn--plain btn--small cal__step" id="month-newer" type="button" aria-label="Newer month">›</button>
+      </div>
+      <p class="desk__status" id="games-status" role="status" aria-live="polite"></p>
+    </div>
+
+    <ol class="played__sheet" id="games-sheet"></ol>
+    <p class="played__more"><button class="btn btn--plain" id="games-more" type="button" hidden>Show more games</button></p>
+  </section>
+
+  <section class="faq pz-setup rows" id="setup" aria-labelledby="setup-title" data-ink-group>
+    <div class="faq__head">
+      <h2 id="setup-title" class="h2">Before your first puzzle</h2>
+      <p class="note-hand faq__contact" data-write>Once on each device is enough.</p>
+    </div>
+    <div class="prose pz-setup__tips">
+      <p>Open a <a href="https://www.chess.com/analysis">blank Chess.com board</a> and switch its <span class="ink ink--underline" data-mark="underline">Analysis</span> toggle off, so the engine can’t show you the answer. Chess.com remembers it on that device. Switch it back on when you want to check your idea.</p>
+      <p>Chess.com always opens a position with White at the bottom. When it’s Black to move, use its flip button first.</p>
+    </div>
+    <div class="faq__list">
+      <details>
+        <summary><span>Put this page on your home screen</span><i class="glyph glyph--plus" data-mark="plus"></i></summary>
+        <div class="pz-setup__how">
+          <p><b>iPad, in Safari:</b> tap Share (the square with an arrow), then Add to Home Screen, then Add.</p>
+          <p><b>Android, in Chrome:</b> tap the ⋮ menu at the top right, then Add to Home screen, then Add.</p>
+          <p>The icon opens this page in your normal browser, where you’re already signed in to Chess.com.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span>A bookmark that opens today’s puzzle</span><i class="glyph glyph--plus" data-mark="plus"></i></summary>
+        <div class="pz-setup__how">
+          <p>A backup for when this page isn’t handy. Run it while you’re on any Chess.com page.</p>
+          <label class="paste__label" for="bm">The bookmark’s address</label>
+          <textarea id="bm" class="paste__box pz-setup__bm" rows="3" readonly spellcheck="false">javascript:fetch('https://api.chess.com/pub/puzzle').then(r=&gt;r.json()).then(j=&gt;{location.href='https://www.chess.com/analysis?fen='+encodeURIComponent(j.fen)}).catch(()=&gt;alert('Could not load the puzzle from this page. Try it on a Chess.com page.'))</textarea>
+          <p><button class="btn btn--plain btn--small" id="copy-bm" type="button">Copy it</button> <span class="desk__status" id="bm-status" role="status" aria-live="polite"></span></p>
+          <p><b>iPad:</b> bookmark any page and name it Puzzle. In Bookmarks tap Edit, tap Puzzle, replace its address with the code and tap Done. To use it, open a Chess.com page and tap Puzzle in your bookmarks.</p>
+          <p><b>Android:</b> bookmark any page with the ☆, tap Edit, name it Puzzle and replace its URL with the code. To use it, open a Chess.com page, type Puzzle in the address bar and tap the bookmark that shows up.</p>
+        </div>
+      </details>
+    </div>
+    <p class="pz-setup__credit">Positions and games come from the <a href="https://www.chess.com/news/view/published-data-api" rel="noopener">Chess.com public API</a> and the <a href="https://lichess.org/api" rel="noopener">Lichess API</a>. This page never shows a puzzle’s answer or its name. It isn’t made by Chess.com or Lichess.</p>
+  </section>
+
+</main>
+<!-- @include footer -->
+<script type="module" src="/assets/app.js"></script>
+<script type="module" src="/assets/puzzle.js"></script>
+</body>
+</html>

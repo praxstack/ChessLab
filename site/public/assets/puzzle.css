@@ -1,0 +1,724 @@
+/* Puzzle analyzr (/puzzleanalyzr/). Builds on app.css: the same paper, the
+   same three voices, the same book-diagram board. Tokens only, no new colours. */
+
+.pz-open {
+  padding-bottom: var(--s-7);
+}
+
+.pz-open__note {
+  max-width: 13em;
+  font-size: 1.5rem;
+  transform: rotate(-2deg);
+}
+
+/* ---------- The desk: the position, and what to do with it ---------- */
+
+.desk {
+  padding-bottom: var(--s-9);
+}
+
+.desk__board {
+  grid-column: main;
+  max-width: 34rem;
+  width: 100%;
+}
+
+.desk__panel {
+  grid-column: side;
+  display: grid;
+  gap: var(--s-4);
+  align-content: start;
+}
+
+.desk__title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 750;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+}
+
+.desk__turn {
+  font-size: 1.75rem;
+  line-height: 1.1;
+  transform: rotate(-1.5deg);
+  transform-origin: left center;
+}
+
+.desk__flip {
+  max-width: 17em;
+  font-size: 1.125rem;
+  transform: rotate(-0.8deg);
+}
+
+.desk__flip[hidden] {
+  display: none;
+}
+
+.desk__go {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--s-3);
+  margin-top: var(--s-2);
+}
+
+.desk__go .btn--large {
+  grid-column: 1 / -1;
+}
+
+.desk__go .btn {
+  padding: 0 var(--s-3);
+}
+
+.desk__status {
+  min-height: 1.5em;
+  font-size: var(--text-small);
+  color: var(--ink-2);
+}
+
+.desk__status:empty {
+  min-height: 0;
+}
+
+.desk__status[data-tone='red'] {
+  color: var(--red);
+}
+
+.desk__card {
+  margin-top: var(--s-2);
+}
+
+/* Label .......... value, like a line on a printout. */
+.desk__row {
+  flex-wrap: nowrap;
+  gap: var(--s-2);
+}
+
+.desk__dots {
+  flex: 1;
+  min-width: var(--s-4);
+  border-bottom: 1.5px dotted var(--graphite-2);
+  transform: translateY(-0.3em);
+}
+
+.desk__swap {
+  display: grid;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+}
+
+.desk__swap-note {
+  font-size: 1.125rem;
+  color: var(--graphite);
+}
+
+.desk__swap-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+/* ---------- Calendar: every daily puzzle ---------- */
+
+.cal {
+  padding-bottom: var(--s-9);
+  row-gap: var(--s-6);
+}
+
+.cal__head {
+  grid-column: main / end;
+  display: grid;
+  gap: var(--s-3);
+}
+
+.cal__intro {
+  color: var(--ink-2);
+}
+
+.cal__book {
+  grid-column: main;
+  max-width: 38rem;
+}
+
+.cal__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+  margin-bottom: var(--s-4);
+}
+
+.cal__step {
+  min-width: 44px;
+  padding: 0;
+  font-size: 1.375rem;
+}
+
+.cal__step:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+.cal__month {
+  min-width: 9em;
+  font-size: 1.375rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.cal__jump {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-left: auto;
+  font-size: var(--text-small);
+  color: var(--ink-2);
+}
+
+.cal__jump input {
+  height: 40px;
+  padding: 0 var(--s-2);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--ink);
+  font-family: var(--font-book);
+  font-size: 1rem;
+}
+
+.cal__days,
+.cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cal__days {
+  padding-bottom: var(--s-2);
+  border-bottom: 2px solid var(--ink);
+  font-family: var(--font-hand);
+  font-size: 1rem;
+  text-align: center;
+  color: var(--graphite);
+}
+
+.cal__grid {
+  row-gap: var(--s-1);
+  padding-top: var(--s-2);
+}
+
+.cal__cell {
+  aspect-ratio: 5 / 4;
+  min-height: 44px;
+}
+
+.cal__day {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--ink-2);
+  font-family: var(--font-book);
+  font-size: 1.25rem;
+  font-variant-numeric: lining-nums tabular-nums;
+  text-decoration: none;
+}
+
+a.cal__day,
+button.cal__day {
+  cursor: pointer;
+}
+
+.cal__day.is-later {
+  color: var(--graphite-2);
+  opacity: 0.55;
+}
+
+.cal__day.is-saved {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.cal__n {
+  position: relative;
+  z-index: 1;
+  padding: 0 0.15em;
+}
+
+/* The puzzle on the board right now: a highlighter swipe across its date. */
+.cal__day.is-on .cal__n {
+  background: linear-gradient(transparent 18%, var(--highlight) 18%, var(--highlight) 82%, transparent 82%);
+}
+
+.cal__loop {
+  position: absolute;
+  inset: 6% 2%;
+  width: 96%;
+  height: 88%;
+  overflow: visible;
+  pointer-events: none;
+  stroke-width: 4.2;
+  stroke: var(--blue);
+}
+
+.cal__day.is-today .cal__loop {
+  stroke: var(--red);
+}
+
+.cal__king {
+  position: absolute;
+  right: 4%;
+  bottom: 4%;
+  width: 34%;
+  max-width: 20px;
+  height: auto;
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a.cal__day:hover .cal__n {
+    text-decoration: underline;
+    text-decoration-color: var(--red);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.2em;
+  }
+
+  button.cal__day:hover {
+    background: var(--paper-2);
+  }
+}
+
+.cal__side {
+  grid-column: side;
+  display: grid;
+  gap: var(--s-5);
+  padding-top: var(--s-8);
+}
+
+.cal__key {
+  font-size: 1.25rem;
+}
+
+.cal__key:nth-child(odd) {
+  transform: rotate(-1.2deg);
+}
+
+.cal__key:nth-child(even) {
+  transform: rotate(0.8deg);
+}
+
+.cal__key--plain {
+  color: var(--graphite);
+}
+
+.cal__sample .stroke {
+  stroke: var(--blue);
+  stroke-width: 5;
+}
+
+.cal__sample {
+  margin-right: 0.35em;
+  font-family: var(--font-book);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ---------- Paste ---------- */
+
+.paste {
+  padding-bottom: var(--s-9);
+  row-gap: var(--s-5);
+}
+
+.paste__title {
+  grid-column: main / end;
+}
+
+.paste__main {
+  grid-column: main;
+  display: grid;
+  gap: var(--s-3);
+  max-width: 40rem;
+}
+
+.paste__label {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* A ruled index card to write the position on. */
+.paste__box {
+  display: block;
+  width: 100%;
+  min-height: 8.6rem;
+  padding: 0.55rem var(--s-4);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background-color: var(--card);
+  background-image: repeating-linear-gradient(transparent 0 calc(1.6rem - 1px), var(--rule-soft) calc(1.6rem - 1px) 1.6rem);
+  background-position: 0 0.55rem;
+  background-attachment: local;
+  color: var(--ink);
+  font-family: var(--font-print);
+  font-size: 1rem;
+  line-height: 1.6rem;
+  resize: vertical;
+  overflow-wrap: anywhere;
+}
+
+.paste__box::placeholder {
+  color: var(--graphite-2);
+  opacity: 1;
+}
+
+.paste__reply {
+  min-height: 1.3em;
+  transform: rotate(-0.8deg);
+  transform-origin: left center;
+}
+
+.paste__reply:empty {
+  min-height: 0;
+}
+
+.paste__go {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+}
+
+.paste__go [hidden] {
+  display: none;
+}
+
+.paste__side {
+  grid-column: side;
+  padding-top: var(--s-6);
+}
+
+.paste__reads .printout__line {
+  display: block;
+}
+
+.paste__reads b {
+  margin-right: 0.4em;
+  font-weight: 700;
+  color: var(--blue-deep);
+}
+
+.paste__reads .printout__line + .printout__line {
+  margin-top: var(--s-2);
+}
+
+/* ---------- My games: a contact sheet of final positions ---------- */
+
+.played {
+  padding-bottom: var(--s-9);
+  row-gap: var(--s-5);
+}
+
+.played__title {
+  grid-column: main / end;
+}
+
+.played__main {
+  grid-column: main;
+  display: grid;
+  gap: var(--s-4);
+  max-width: 40rem;
+}
+
+.played__form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--s-3);
+}
+
+.played__field {
+  flex: 1 1 14rem;
+  min-width: 0;
+}
+
+.played__submit {
+  min-height: 54px;
+}
+
+.played__bar {
+  margin: 0;
+}
+
+.played__bar[hidden] {
+  display: none;
+}
+
+.played__sheet {
+  grid-column: main / end;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+  gap: var(--s-6) var(--s-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.played__sheet:empty {
+  display: none;
+}
+
+.played__card {
+  position: relative;
+  display: grid;
+  gap: var(--s-1);
+  padding: var(--s-3) var(--s-3) var(--s-3);
+  background: var(--card);
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: 0 1px 1px var(--shadow), 0 12px 22px -16px var(--shadow);
+  transition: transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
+}
+
+.played__item:nth-child(3n + 1) .played__card {
+  transform: rotate(-0.7deg);
+}
+
+.played__item:nth-child(3n + 2) .played__card {
+  transform: rotate(0.5deg);
+}
+
+.played__item:nth-child(3n) .played__card {
+  transform: rotate(-0.2deg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .played__item .played__card:hover {
+    transform: rotate(0deg) translateY(-3px);
+    box-shadow: 0 1px 1px var(--shadow), 0 18px 26px -16px var(--shadow);
+  }
+
+  .played__card:hover .played__vs {
+    text-decoration: underline;
+    text-decoration-color: var(--red);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.2em;
+  }
+}
+
+.played__card .board {
+  margin-bottom: var(--s-2);
+}
+
+.played__vs {
+  overflow: hidden;
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1.3;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.played__meta {
+  font-family: var(--font-print);
+  font-size: 0.8125rem;
+  line-height: 1.3;
+  color: var(--graphite);
+}
+
+/* The result, written by the coach across the corner of the board. */
+.played__res {
+  position: absolute;
+  top: -0.55rem;
+  right: -0.35rem;
+  z-index: 6;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15em;
+  padding: 0 0.3em;
+  background: var(--card);
+  font-family: var(--font-hand);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+  transform: rotate(-6deg);
+}
+
+.played__res--win {
+  color: var(--blue);
+}
+
+.played__res--loss {
+  color: var(--red);
+}
+
+.played__res--draw {
+  color: var(--graphite);
+}
+
+.played__tick {
+  width: 1.1em;
+  height: 1em;
+  overflow: visible;
+  stroke: currentColor;
+  stroke-width: 9;
+}
+
+.played__more {
+  grid-column: main / end;
+}
+
+.played__more:has([hidden]) {
+  display: none;
+}
+
+/* ---------- Before your first puzzle ---------- */
+
+.pz-setup__tips {
+  grid-column: main;
+}
+
+.pz-setup__tips p + p {
+  margin-top: var(--s-4);
+}
+
+.pz-setup__how {
+  display: grid;
+  gap: var(--s-3);
+  max-width: 64ch;
+  padding-bottom: var(--s-5);
+  color: var(--ink-2);
+}
+
+.faq .pz-setup__how p {
+  padding-bottom: 0;
+}
+
+.pz-setup__bm {
+  min-height: 5rem;
+  font-size: 0.8125rem;
+}
+
+.pz-setup__credit {
+  grid-column: main / end;
+  max-width: 70ch;
+  font-size: var(--text-small);
+  color: var(--ink-2);
+}
+
+.pz-offscreen {
+  position: fixed;
+  top: 0;
+  left: -9999px;
+  opacity: 0;
+}
+
+/* ---------- Narrower screens ---------- */
+
+@media (max-width: 1079px) {
+  .desk__board,
+  .desk__panel,
+  .cal__head,
+  .cal__book,
+  .cal__side,
+  .paste__title,
+  .paste__main,
+  .paste__side,
+  .played__title,
+  .played__main,
+  .played__sheet,
+  .played__more,
+  .pz-setup__tips,
+  .pz-setup__credit {
+    grid-column: 1;
+  }
+
+  .desk {
+    row-gap: var(--s-6);
+  }
+
+  .desk__panel {
+    max-width: 38rem;
+  }
+
+  .cal__side {
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    max-width: 38rem;
+    padding-top: 0;
+  }
+
+  .paste__side {
+    max-width: 40rem;
+    padding-top: var(--s-3);
+  }
+}
+
+@media (max-width: 699px) {
+  .pz-open {
+    padding-top: var(--s-6);
+    padding-bottom: var(--s-6);
+  }
+
+  .desk__title {
+    font-size: 1.75rem;
+  }
+
+  .desk__go {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .desk__go .btn {
+    min-height: 52px;
+  }
+
+  .cal__jump {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .cal__month {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cal__day {
+    font-size: 1.0625rem;
+  }
+
+  .played__sheet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-5) var(--s-4);
+  }
+
+  .played__res {
+    font-size: 1.125rem;
+  }
+
+  .desk,
+  .cal,
+  .paste,
+  .played {
+    padding-bottom: var(--s-8);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .played__card {
+    transition: none;
+  }
+}
+
+@media print {
+  .desk__go,
+  .desk__swap,
+  .cal__bar,
+  .paste__go,
+  .played__form {
+    display: none;
+  }
+}

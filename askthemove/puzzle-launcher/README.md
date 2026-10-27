@@ -2,6 +2,8 @@
 
 A one-page launcher that opens chess positions and games on Chess.com's own analysis board, so Prax can move the pieces freely on the iPad or Android phone. It is live at https://daily-puzzle-launcher.vercel.app (Vercel project `daily-puzzle-launcher`, Hobby plan, no card). Nothing in the app or the site uses it.
 
+The redesigned version lives in the AskTheMove site at `/puzzleanalyzr/` (`site/pages/puzzleanalyzr.html`, `site/public/assets/puzzle.js`): one page with the position on a book-diagram board, a calendar of every daily puzzle, a paste box and a contact sheet of your games. Once it is deployed, this Vercel page should point there.
+
 ```
 TAB         WHAT YOU GIVE IT                      WHERE IT OPENS (chess.com)
 Puzzles     Today / Today in explorer             /analysis?fen=…, /analysis/explorer?fen=…
