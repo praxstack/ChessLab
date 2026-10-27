@@ -502,9 +502,11 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-
       const host = url.hostname.toLowerCase();
       const path = url.pathname;
       const fenParam = url.searchParams.get('fen');
-      if (host.endsWith('chess.com')) {
+      const onSite = (site) => host === site || host.endsWith('.' + site);
+      if (onSite('chess.com')) {
         let m;
         if ((m = /\/(?:analysis\/)?game\/(live|daily|computer)\/(\d+)/.exec(path))) return { label: 'A Chess.com ' + m[1] + ' game', url: gameUrl(m[1], m[2]) };
+        if ((m = /\/(live|daily)\/game\/(\d+)/.exec(path))) return { label: 'A Chess.com ' + m[1] + ' game', url: gameUrl(m[1], m[2]) };
         if ((m = /\/(?:analysis\/)?game\/(\d+)/.exec(path))) return { label: 'A Chess.com game', url: gameUrl('live', m[1]) };
         if ((m = /\/(?:daily-chess-puzzle|daily)\/(\d{4}-\d{2}-\d{2})/.exec(path))) {
           const iso = m[1];
@@ -516,7 +518,7 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-
         if (url.searchParams.get('pgn')) return { label: 'A game from a Chess.com link', url: pgnUrl(url.searchParams.get('pgn')) };
         return { label: 'A Chess.com page this can’t read inside, so it opens as it is', url: url.href, plain: true };
       }
-      if (host.endsWith('lichess.org')) {
+      if (onSite('lichess.org')) {
         let m;
         if ((m = /^\/training\/([A-Za-z0-9]{5,8})/.exec(path)) && m[1] !== 'daily') return { label: 'A Lichess puzzle (only its position is read)', fetch: async () => fenResult(await lichessPuzzleFen(m[1]), 'A Lichess puzzle') };
         if (/^\/training\/daily/.test(path)) return { label: 'The Lichess puzzle of the day', fetch: async () => fenResult(await lichessPuzzleFen(), 'The Lichess puzzle of the day') };
