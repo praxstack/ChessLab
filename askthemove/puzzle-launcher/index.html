@@ -129,7 +129,7 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-
     <button type="button" class="tab" role="tab" id="tab-games" aria-controls="panel-games" aria-selected="false" tabindex="-1">My games</button>
   </div>
 
-  <!-- ── Puzzles ─────────────────────────────────────────── -->
+  <!-- ── Puzzles ───────────────────────────────────────── -->
   <section role="tabpanel" id="panel-puzzles" aria-labelledby="tab-puzzles">
     <p class="date" id="date">Getting today’s puzzle from Chess.com…</p>
     <p class="side" id="side" hidden><span class="side__dot" aria-hidden="true"></span><span id="side-text"></span></p>
@@ -303,7 +303,7 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-
   }
   const disable = (id) => $(id).setAttribute('aria-disabled', 'true');
 
-  /* ── Tabs ─────────────────────────────────────────────── */
+  /* ── Tabs ───────────────────────────────────────────── */
   const TABS = ['puzzles', 'paste', 'games'];
   function showTab(name, focus) {
     for (const t of TABS) {
@@ -324,7 +324,7 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-
   });
   showTab(TABS.includes(store.get('launcher.tab')) ? store.get('launcher.tab') : 'puzzles');
 
-  /* ── Puzzles ──────────────────────────────────────────── */
+  /* ── Puzzles ────────────────────────────────────────── */
   // Only the position and the date are read. The answer (pgn) and the name (title) are ignored on purpose.
   function isoFrom(j) {
     const m = /\/daily\/(\d{4}-\d{2}-\d{2})/.exec(j.url || '');
@@ -607,7 +607,7 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-
   });
   if (store.get('launcher.paste')) { $('paste').value = store.get('launcher.paste'); onPaste(); }
 
-  /* ── My games ─────────────────────────────────────────── */
+  /* ── My games ───────────────────────────────────────── */
   let archives = [];
   let monthIdx = -1;
   let who = '';
