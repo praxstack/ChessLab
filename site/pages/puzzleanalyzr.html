@@ -11,7 +11,7 @@
   <section class="open pz-open rows" aria-labelledby="pz-title" data-ink-group="load">
     <h1 id="pz-title" class="open__title">Find the move <span class="ink ink--circle" data-mark="circle">yourself</span>.</h1>
     <div class="open__main">
-      <p class="open__lede">Today’s Chess.com puzzle, any past one, your own games or a position you paste, opened on Chess.com’s analysis board. You move the pieces. The answer stays hidden.</p>
+      <p class="open__lede">Today’s Chess.com puzzle, any past one, your own games or a position you paste. Move the pieces right here, or open it on Chess.com’s analysis board. The answer stays hidden.</p>
     </div>
     <div class="open__side">
       <p class="note-hand pz-open__note" data-write>Checks, captures, threats. Look at those first.</p>
@@ -21,17 +21,39 @@
   <section class="desk rows" id="desk" aria-labelledby="desk-title">
     <div class="desk__board">
       <div class="cc-frame">
-        <div class="board board--cc" role="img" id="desk-board" aria-label="Chessboard, empty while today’s puzzle loads.">
+        <div class="board board--cc desk__play" role="group" id="desk-board" aria-label="Chessboard, empty while today’s puzzle loads." aria-describedby="desk-say">
           <div class="board__layer board__coords" id="desk-coords" aria-hidden="true"></div>
+          <div class="board__layer desk__marks" id="desk-marks" aria-hidden="true"></div>
           <div class="board__layer board__pieces" id="desk-pieces"></div>
+          <svg class="board__ink" id="desk-ink" viewBox="0 0 80 80" aria-hidden="true" focusable="false"></svg>
+          <div class="desk__promo" id="desk-promo" hidden></div>
         </div>
+      </div>
+      <div class="desk__tools" role="toolbar" aria-label="Board controls">
+        <button class="btn btn--plain btn--small" id="tool-undo" type="button" disabled>‹ Back</button>
+        <button class="btn btn--plain btn--small" id="tool-redo" type="button" disabled>Next ›</button>
+        <button class="btn btn--plain btn--small" id="tool-reset" type="button" disabled>Start over</button>
+        <button class="btn btn--plain btn--small" id="tool-flip" type="button">Flip board</button>
+        <button class="btn btn--plain btn--small desk__sound" id="tool-sound" type="button" aria-pressed="true">Sound on</button>
+      </div>
+      <p class="note-hand desk__say" id="desk-say" aria-live="polite"></p>
+      <ol class="desk__moves" id="desk-moves" aria-label="Moves played" hidden></ol>
+
+      <div class="engine" id="engine">
+        <button class="btn btn--pen engine__check" id="engine-check" type="button" disabled>Check my move</button>
+        <div class="engine__load">
+          <progress class="engine__bar" id="engine-bar" max="1" value="0" aria-label="Stockfish download"></progress>
+          <p class="engine__state" id="engine-state">Stockfish loads after the puzzle.</p>
+        </div>
+        <p class="note-hand engine__say" id="engine-say" aria-live="polite"></p>
+        <button class="btn btn--plain btn--small engine__show" id="engine-show" type="button" hidden>Show Stockfish’s move</button>
       </div>
     </div>
 
     <div class="desk__panel">
       <h2 class="desk__title" id="desk-title">Today’s puzzle</h2>
       <p class="note-hand note-hand--red desk__turn" id="desk-turn">Setting up the board.</p>
-      <p class="note-hand desk__flip" id="desk-flip" hidden>Black plays from the top on Chess.com. Use its flip button to turn the board round.</p>
+      <p class="note-hand desk__flip" id="desk-flip" hidden>On Chess.com Black plays from the top. Use its flip button there.</p>
       <div class="desk__go">
         <a class="btn btn--cc" id="go-analysis" href="https://www.chess.com/daily"><img class="btn--cc__pawn" src="/assets/pieces/wP.svg" alt="" width="45" height="45">Open it on Chess.com</a>
         <a class="btn btn--plain" id="go-explorer" href="https://www.chess.com/daily">Opening explorer</a>
@@ -158,6 +180,15 @@
         </div>
       </details>
       <details>
+        <summary><span>How Stockfish works here</span><i class="glyph glyph--plus" data-mark="plus"></i></summary>
+        <div class="pz-setup__how">
+          <p>Stockfish is the strongest chess engine there is. This page uses its small “lite” version, a 1.8 MB download, and runs it on your own phone, tablet or computer. Nothing is sent anywhere.</p>
+          <p>It downloads once, in the background, while you can already move the pieces. Your browser keeps it for 30 days, so it starts straight away next time.</p>
+          <p>It never shows a score or a move by itself. Tap <b>Check my move</b> after you play one and it says how good it was. Only <b>Show Stockfish’s move</b> gives the answer away.</p>
+          <p>With Data Saver on, it waits until you tap Check my move.</p>
+        </div>
+      </details>
+      <details>
         <summary><span>A bookmark that opens today’s puzzle</span><i class="glyph glyph--plus" data-mark="plus"></i></summary>
         <div class="pz-setup__how">
           <p>A backup for when this page isn’t handy. Run it while you’re on any Chess.com page.</p>
@@ -169,7 +200,7 @@
         </div>
       </details>
     </div>
-    <p class="pz-setup__credit">Positions and games come from the <a href="https://www.chess.com/news/view/published-data-api" rel="noopener">Chess.com public API</a> and the <a href="https://lichess.org/api" rel="noopener">Lichess API</a>. This page never shows a puzzle’s answer or its name. It isn’t made by Chess.com or Lichess.</p>
+    <p class="pz-setup__credit">Positions and games come from the <a href="https://www.chess.com/news/view/published-data-api" rel="noopener">Chess.com public API</a> and the <a href="https://lichess.org/api" rel="noopener">Lichess API</a>. This page never shows a puzzle’s answer or its name unless you ask Stockfish for it. It isn’t made by Chess.com or Lichess. Moves are checked by <a href="https://github.com/jhlywa/chess.js" rel="noopener">chess.js</a> (BSD licence). The engine is <a href="https://stockfishchess.org" rel="noopener">Stockfish 19</a>, free software under the <a href="/assets/engine/COPYING.txt">GNU GPL v3</a>, in the <a href="https://github.com/nmrugg/stockfish.js" rel="noopener">stockfish.js</a> browser build, whose source is linked there.</p>
   </section>
 
 </main>

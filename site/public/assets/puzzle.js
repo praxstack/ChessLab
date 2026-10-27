@@ -1,11 +1,15 @@
-// Puzzle analyzr (/puzzleanalyzr/): puts a chess position on the desk board and
-// opens it on Chess.com's analysis board, where the learner moves the pieces.
+// Puzzle analyzr (/puzzleanalyzr/): puts a chess position on the desk board,
+// where the learner moves the pieces (desk.js), checks a move with Stockfish
+// only when asked (engine.js), or opens it on Chess.com's analysis board.
 // Reads only public APIs: Chess.com's daily puzzle and game archives, Lichess
 // puzzles, games and studies, and a small list of saved daily puzzles that a
 // GitHub Action keeps (date -> position). A puzzle's answer and its name are
 // never read or shown.
 import { parsePlacement, pieceHTML } from './board.js';
 import { markSVG, seedFrom } from './ink.js';
+import { createDesk, coordsHTML } from './desk.js';
+import { createEngine, grade, toCp, WASM_BYTES } from './engine.js';
+import * as sound from './sound.js';
 
 const API = 'https://api.chess.com/pub';
 const ARCHIVE = 'https://raw.githubusercontent.com/praxstack/ChessLab/puzzle-archive/puzzles.json';
@@ -273,54 +277,43 @@ let todayFen = '';
 let desk = { kind: 'today', fen: '', iso: '' };
 let deskSeq = 0;
 
-const deskEls = () => ({
-  board: $('desk-board'),
-  pieces: $('desk-pieces'),
-  coords: $('desk-coords'),
-});
+const play = createDesk(
+  {
+    board: $('desk-board'),
+    pieces: $('desk-pieces'),
+    coords: $('desk-coords'),
+    marks: $('desk-marks'),
+    ink: $('desk-ink'),
+    promo: $('desk-promo'),
+    say: $('desk-say'),
+    moves: $('desk-moves'),
+    undo: $('tool-undo'),
+    redo: $('tool-redo'),
+    reset: $('tool-reset'),
+    flip: $('tool-flip'),
+  },
+  { onChange: boardChanged },
+);
 
-// Coordinates inside the squares, the way Chess.com prints them: rank numbers
-// down the left file, file letters along the bottom rank, each in the colour
-// of the opposite square.
-function coordsHTML(orientation) {
-  const files = orientation === 'white' ? 'abcdefgh' : 'hgfedcba';
-  const ranks = orientation === 'white' ? '87654321' : '12345678';
-  const tone = (x, y) => ((x + y) % 2 === 0 ? 'on-light' : 'on-dark');
-  let out = '';
-  for (let y = 0; y < 8; y += 1) out += `<span class="cc-co cc-co--rank ${tone(0, y)}" data-x="0" data-y="${y}">${ranks[y]}</span>`;
-  for (let x = 0; x < 8; x += 1) out += `<span class="cc-co cc-co--file ${tone(x, 7)}" data-x="${x}" data-y="7">${files[x]}</span>`;
-  return out;
-}
-
-async function setBoard(fen, label) {
-  const { board, pieces, coords } = deskEls();
-  const orientation = blackToMove(fen) ? 'black' : 'white';
-  const old = [...pieces.children];
-  if (old.length && moving()) {
-    await Promise.all(old.map((el) => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, fill: 'forwards' }).finished.catch(() => {})));
+// After every move, take-back or new position: the turn note, the links, and the engine button follow the board.
+function boardChanged() {
+  if (!desk.fen) return;
+  const fen = play.fen;
+  const moved = play.moved;
+  $('desk-turn').textContent = play.over ? 'Game over on the board.' : `${sideText(fen)}${moved ? ' on the board' : ''}.`;
+  $('go-analysis').href = analysisUrl(fen);
+  $('go-explorer').href = explorerUrl(fen);
+  $('desk-board').setAttribute('aria-label', `Chessboard, ${desk.title}, viewed from ${play.orientation === 'white' ? 'White' : 'Black'}’s side. ${sideText(fen)}.`);
+  checkSeq += 1; // a check that was running is about a position that's gone
+  if (!revealing) {
+    engineSay('');
+    $('engine-show').hidden = true;
   }
-  coords.innerHTML = coordsHTML(orientation);
-  const map = parsePlacement(fen.split(/\s+/)[0]);
-  pieces.innerHTML = Object.keys(map)
-    .map((sq) => pieceHTML(sq, map[sq], orientation))
-    .join('');
-  board.setAttribute('aria-label', `Chessboard, viewed from ${orientation === 'white' ? 'White' : 'Black'}’s side: ${label}, ${sideText(fen)}.`);
-  if (!moving()) return;
-  // Set up like a person would: the far side first, row by row, towards you.
-  const placed = [...pieces.children].sort((a, b) => a.dataset.y - b.dataset.y || a.dataset.x - b.dataset.x);
-  placed.forEach((img, i) => {
-    img.animate(
-      [
-        { opacity: 0, translate: '0 -14%' },
-        { opacity: 1, translate: '0 0' },
-      ],
-      { duration: 260, delay: i * 26, easing: 'cubic-bezier(0.23, 1, 0.32, 1)', fill: 'backwards' },
-    );
-  });
+  updateCheckButton();
 }
 
 function showOnDesk({ kind, fen, iso = '', title, source }) {
-  desk = { kind, fen, iso };
+  desk = { kind, fen, iso, title };
   const seq = ++deskSeq;
   $('desk-title').textContent = title;
   say('desk-status', '');
@@ -334,10 +327,11 @@ function showOnDesk({ kind, fen, iso = '', title, source }) {
   go.href = analysisUrl(fen);
   $('go-explorer').href = explorerUrl(fen);
   $('copy-fen').disabled = false;
-  setBoard(fen, title).then(() => {
+  play.load(fen).then(() => {
     if (seq !== deskSeq) return;
     writeIn(turn);
     writeIn($('desk-flip'));
+    startEngineSoon();
   });
   if (iso) calMonth = monthOf(iso); // the calendar turns to the puzzle's month, where its date is marked
   renderCalendar();
@@ -449,7 +443,134 @@ $('load-lichess').addEventListener('click', async () => {
 });
 
 $('copy-fen').addEventListener('click', () => {
-  if (desk.fen) copy(desk.fen, 'desk-status', 'FEN copied.');
+  if (desk.fen) copy(play.fen, 'desk-status', !play.moved ? 'FEN copied.' : 'FEN of the board as it is now copied.');
+});
+
+/* --------------------------------------------------------------- Sound */
+
+function showSound() {
+  const on = !sound.isMuted();
+  $('tool-sound').textContent = on ? 'Sound on' : 'Sound off';
+  $('tool-sound').setAttribute('aria-pressed', String(on));
+}
+$('tool-sound').addEventListener('click', () => {
+  sound.wake();
+  sound.setMuted(!sound.isMuted());
+  showSound();
+  sound.play('move');
+});
+showSound();
+
+/* -------------------------------------------------------------- Stockfish
+ * Downloads in the background once a puzzle is on the board, and only
+ * speaks when the learner taps Check my move.
+ */
+
+const mb = (n) => (n / 1e6).toFixed(1);
+const engine = createEngine({ onState: showEngine });
+let checkSeq = 0;
+let checking = false;
+let revealing = false;
+let lastBest = null;
+
+function showEngine(s) {
+  const bar = $('engine-bar');
+  const state = $('engine-state');
+  $('engine').dataset.phase = s.phase;
+  if (s.phase === 'download') {
+    bar.max = s.total;
+    bar.value = s.got;
+    state.textContent = `Downloading Stockfish: ${mb(s.got)} of ${mb(s.total)} MB. You can move the pieces meanwhile.`;
+  } else if (s.phase === 'start') {
+    bar.removeAttribute('value'); // an indeterminate bar while it starts
+    state.textContent = s.fromDevice ? 'Starting Stockfish from this device…' : 'Starting Stockfish…';
+  } else if (s.phase === 'ready') {
+    bar.max = 1;
+    bar.value = 1;
+    state.textContent = 'Stockfish is ready on this device, kept for 30 days. It stays quiet until you tap Check my move.';
+  } else if (s.phase === 'failed') {
+    bar.max = 1;
+    bar.value = 0;
+    state.textContent = 'Stockfish couldn’t load here. The board still works. Tap Check my move to try again.';
+  }
+  updateCheckButton();
+}
+
+function engineSay(text, tone = '') {
+  say('engine-say', text, tone);
+  if (text) writeIn($('engine-say'));
+}
+
+function updateCheckButton() {
+  $('engine-check').disabled = checking || !play.playable || !play.lastMove();
+}
+
+let engineTimer = 0;
+function startEngineSoon() {
+  if (engine.phase !== 'idle' || engineTimer) return;
+  const saveData = navigator.connection && navigator.connection.saveData;
+  if (saveData) {
+    $('engine-state').textContent = `Data Saver is on, so Stockfish waits. It downloads (${mb(WASM_BYTES)} MB) when you tap Check my move.`;
+    return;
+  }
+  // Let the puzzle and its pieces arrive first; the engine is a quiet second.
+  engineTimer = setTimeout(() => engine.load().catch(() => {}), 900);
+}
+
+const VERDICT = {
+  best: ['That’s the move. Stockfish agrees.', 'blue'],
+  good: ['Good move, close to Stockfish’s choice.', 'blue'],
+  ok: ['Playable, but there’s a stronger move here. Take it back and look again: checks, captures, threats.', 'red'],
+  miss: ['That one lets something go. Take it back and try another.', 'red'],
+};
+
+$('engine-check').addEventListener('click', async () => {
+  sound.wake();
+  const m = play.lastMove();
+  if (!m) return;
+  const seq = ++checkSeq;
+  checking = true;
+  updateCheckButton();
+  $('engine-show').hidden = true;
+  engineSay(engine.phase === 'ready' ? 'Stockfish is looking…' : 'Getting Stockfish ready, then it looks…');
+  try {
+    const line = play.line();
+    const ended = play.result;
+    const before = await engine.look({ fen: line.fen, moves: line.moves.slice(0, -1) });
+    const played = `${m.from}${m.to}${m.promotion || ''}`;
+    const playedBest = before.move === played;
+    let afterCp = 0;
+    // A move that ends the game is graded by how it ended: mate wins, a draw is level.
+    if (ended === 'mate') afterCp = toCp({ mate: 0 });
+    else if (ended === 'draw') afterCp = 0;
+    else if (!playedBest) afterCp = toCp((await engine.look(line)).score);
+    if (seq !== checkSeq) return; // the board moved on while it looked
+    const verdict = grade({ bestCp: toCp(before.score), afterCp, playedBest });
+    const [text, tone] = VERDICT[verdict];
+    engineSay(text, tone);
+    sound.play(verdict === 'best' || verdict === 'good' ? 'good' : 'hmm');
+    lastBest = before.move && !playedBest ? { move: before.move, after: m.after } : null;
+    $('engine-show').hidden = !lastBest || verdict === 'best';
+  } catch {
+    if (seq !== checkSeq) return;
+    engineSay('Stockfish couldn’t check that one. Try again.', 'red');
+  } finally {
+    checking = false;
+    updateCheckButton();
+  }
+});
+
+// The answer only on purpose: take the learner's move back and draw Stockfish's in blue.
+$('engine-show').addEventListener('click', () => {
+  if (!lastBest || play.fen !== lastBest.after) return;
+  const { move } = lastBest;
+  revealing = true;
+  play.undo();
+  revealing = false;
+  play.showArrow(move.slice(0, 2), move.slice(2, 4));
+  engineSay('Stockfish’s move is drawn in blue. Your move is taken back, so you can try it.', 'blue');
+  $('engine-show').hidden = true;
+  lastBest = null;
 });
 
 /* -------------------------------------------------------------- Calendar */
@@ -805,6 +926,7 @@ $('copy-bm').addEventListener('click', () => copy($('bm').value, 'bm-status', 'C
 /* ----------------------------------------------------------------- Start */
 
 $('desk-coords').innerHTML = coordsHTML('white');
+updateCheckButton();
 renderCalendar();
 const linkFen = new URLSearchParams(window.location.search).get('fen');
 const linked = linkFen && cleanFen(linkFen);
