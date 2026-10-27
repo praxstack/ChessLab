@@ -4,7 +4,7 @@
 // puzzles, games and studies, and a small list of saved daily puzzles that a
 // GitHub Action keeps (date -> position). A puzzle's answer and its name are
 // never read or shown.
-import { filesHTML, parsePlacement, pieceHTML, ranksHTML } from './board.js';
+import { parsePlacement, pieceHTML } from './board.js';
 import { markSVG, seedFrom } from './ink.js';
 
 const API = 'https://api.chess.com/pub';
@@ -276,19 +276,30 @@ let deskSeq = 0;
 const deskEls = () => ({
   board: $('desk-board'),
   pieces: $('desk-pieces'),
-  ranks: $('desk-ranks'),
-  files: $('desk-files'),
+  coords: $('desk-coords'),
 });
 
+// Coordinates inside the squares, the way Chess.com prints them: rank numbers
+// down the left file, file letters along the bottom rank, each in the colour
+// of the opposite square.
+function coordsHTML(orientation) {
+  const files = orientation === 'white' ? 'abcdefgh' : 'hgfedcba';
+  const ranks = orientation === 'white' ? '87654321' : '12345678';
+  const tone = (x, y) => ((x + y) % 2 === 0 ? 'on-light' : 'on-dark');
+  let out = '';
+  for (let y = 0; y < 8; y += 1) out += `<span class="cc-co cc-co--rank ${tone(0, y)}" data-x="0" data-y="${y}">${ranks[y]}</span>`;
+  for (let x = 0; x < 8; x += 1) out += `<span class="cc-co cc-co--file ${tone(x, 7)}" data-x="${x}" data-y="7">${files[x]}</span>`;
+  return out;
+}
+
 async function setBoard(fen, label) {
-  const { board, pieces, ranks, files } = deskEls();
+  const { board, pieces, coords } = deskEls();
   const orientation = blackToMove(fen) ? 'black' : 'white';
   const old = [...pieces.children];
   if (old.length && moving()) {
     await Promise.all(old.map((el) => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, fill: 'forwards' }).finished.catch(() => {})));
   }
-  ranks.innerHTML = ranksHTML(orientation);
-  files.innerHTML = filesHTML(orientation);
+  coords.innerHTML = coordsHTML(orientation);
   const map = parsePlacement(fen.split(/\s+/)[0]);
   pieces.innerHTML = Object.keys(map)
     .map((sq) => pieceHTML(sq, map[sq], orientation))
@@ -727,7 +738,7 @@ function gameCard(g) {
   a.setAttribute('aria-label', `${r === 'draw' ? 'Drew' : word} against ${them.username || 'unknown'}${when ? `, ${when}` : ''}${kind ? `, ${kind}` : ''}, as ${meWhite ? 'White' : 'Black'}. Opens the analysis board.`);
 
   const board = document.createElement('div');
-  board.className = 'board board--mini';
+  board.className = 'board board--mini board--cc';
   board.setAttribute('aria-hidden', 'true');
   const layer = document.createElement('div');
   layer.className = 'board__layer board__pieces';
@@ -784,6 +795,7 @@ $('copy-bm').addEventListener('click', () => copy($('bm').value, 'bm-status', 'C
 
 /* ----------------------------------------------------------------- Start */
 
+$('desk-coords').innerHTML = coordsHTML('white');
 renderCalendar();
 const linkFen = new URLSearchParams(window.location.search).get('fen');
 const linked = linkFen && cleanFen(linkFen);

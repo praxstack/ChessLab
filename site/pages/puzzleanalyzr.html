@@ -20,12 +20,11 @@
 
   <section class="desk rows" id="desk" aria-labelledby="desk-title">
     <div class="desk__board">
-      <div class="diagram">
-        <div class="diagram__ranks" aria-hidden="true" id="desk-ranks"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
-        <div class="board" role="img" id="desk-board" aria-label="Chessboard, empty while today’s puzzle loads.">
+      <div class="cc-frame">
+        <div class="board board--cc" role="img" id="desk-board" aria-label="Chessboard, empty while today’s puzzle loads.">
+          <div class="board__layer board__coords" id="desk-coords" aria-hidden="true"></div>
           <div class="board__layer board__pieces" id="desk-pieces"></div>
         </div>
-        <div class="diagram__files" aria-hidden="true" id="desk-files"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
       </div>
     </div>
 
@@ -34,7 +33,7 @@
       <p class="note-hand note-hand--red desk__turn" id="desk-turn">Setting up the board.</p>
       <p class="note-hand desk__flip" id="desk-flip" hidden>Black plays from the top on Chess.com. Use its flip button to turn the board round.</p>
       <div class="desk__go">
-        <a class="btn btn--pen btn--large" id="go-analysis" href="https://www.chess.com/daily">Open it on Chess.com</a>
+        <a class="btn btn--cc" id="go-analysis" href="https://www.chess.com/daily"><img class="btn--cc__pawn" src="/assets/pieces/wP.svg" alt="" width="45" height="45">Open it on Chess.com</a>
         <a class="btn btn--plain" id="go-explorer" href="https://www.chess.com/daily">Opening explorer</a>
         <button class="btn btn--plain" id="copy-fen" type="button" disabled>Copy FEN</button>
       </div>

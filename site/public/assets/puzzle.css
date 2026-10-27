@@ -1,5 +1,16 @@
 /* Puzzle analyzr (/puzzleanalyzr/). Builds on app.css: the same paper, the
-   same three voices, the same book-diagram board. Tokens only, no new colours. */
+   same three voices. The one thing borrowed from Chess.com is its board and
+   its green Play button: the position is a Chess.com board taped into the
+   notebook, because that is where it opens. */
+
+:root {
+  --cc-light: oklch(93% 0.035 110);
+  --cc-dark: oklch(62% 0.1 133);
+  --cc-green: oklch(71% 0.15 132);
+  --cc-green-hi: oklch(79% 0.15 128);
+  --cc-green-deep: oklch(50% 0.1 140);
+  --tape: oklch(91% 0.15 102 / 0.55);
+}
 
 .pz-open {
   padding-bottom: var(--s-7);
@@ -62,10 +73,6 @@
   margin-top: var(--s-2);
 }
 
-.desk__go .btn--large {
-  grid-column: 1 / -1;
-}
-
 .desk__go .btn {
   padding: 0 var(--s-3);
 }
@@ -86,6 +93,116 @@
 
 .desk__card {
   margin-top: var(--s-2);
+}
+
+/* The Chess.com board, taped into the notebook like a printed photo. */
+.cc-frame {
+  position: relative;
+  padding: var(--s-3);
+  background: var(--card);
+  box-shadow: 0 1px 1px var(--shadow), 0 18px 30px -18px var(--shadow);
+  transform: rotate(-0.8deg);
+}
+
+.cc-frame::before,
+.cc-frame::after {
+  content: '';
+  position: absolute;
+  top: -12px;
+  z-index: 7;
+  width: 92px;
+  height: 26px;
+  background: var(--tape);
+  /* Torn ends on a strip of tape. */
+  clip-path: polygon(3% 0, 97% 4%, 100% 30%, 96% 55%, 99% 100%, 2% 96%, 0 70%, 4% 45%, 0 18%);
+  pointer-events: none;
+}
+
+.cc-frame::before {
+  left: -22px;
+  transform: rotate(-38deg);
+}
+
+.cc-frame::after {
+  right: -22px;
+  transform: rotate(36deg);
+}
+
+.board--cc {
+  background: var(--cc-light);
+  border: 0;
+  border-radius: 3px;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.board--cc::before {
+  background: var(--cc-dark);
+}
+
+.board .cc-co {
+  /* --x and --y come from app.css's [data-x] and [data-y] rules. */
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 12.5%;
+  height: 12.5%;
+  padding: 0.5cqi 0.9cqi;
+  transform: translate(calc(var(--x, 0) * 100%), calc(var(--y, 0) * 100%));
+  font-family: var(--font-book);
+  font-size: 2.7cqi;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.board .cc-co--file {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.cc-co.on-light {
+  color: var(--cc-dark);
+}
+
+.cc-co.on-dark {
+  color: var(--cc-light);
+}
+
+/* Chess.com's chunky green Play button: it sits on a darker ledge and presses down. */
+.btn--cc {
+  grid-column: 1 / -1;
+  gap: var(--s-3);
+  min-height: 60px;
+  margin-bottom: 5px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--cc-green);
+  color: var(--card);
+  font-size: 1.25rem;
+  font-weight: 800;
+  text-shadow: 0 1px 0 var(--cc-green-deep);
+  box-shadow: 0 5px 0 var(--cc-green-deep);
+  transition: background-color 120ms var(--ease-out), transform 90ms var(--ease-out), box-shadow 90ms var(--ease-out);
+}
+
+.btn--cc:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 var(--cc-green-deep);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn--cc:hover {
+    background: var(--cc-green-hi);
+    text-decoration: none;
+  }
+}
+
+.btn--cc__pawn {
+  width: 1.6em;
+  height: 1.6em;
+  filter: drop-shadow(0 1px 0 var(--cc-green-deep));
 }
 
 /* Label .......... value, like a line on a printout. */
@@ -515,6 +632,10 @@ button.cal__day {
   margin-bottom: var(--s-2);
 }
 
+.played__card .board--cc {
+  box-shadow: none;
+}
+
 .played__vs {
   overflow: hidden;
   font-size: 1rem;
@@ -672,7 +793,7 @@ button.cal__day {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .desk__go .btn {
+  .desk__go .btn:not(.btn--cc) {
     min-height: 52px;
   }
 
@@ -708,6 +829,7 @@ button.cal__day {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .btn--cc,
   .played__card {
     transition: none;
   }
