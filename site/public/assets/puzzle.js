@@ -534,11 +534,16 @@ $('engine-check').addEventListener('click', async () => {
   $('engine-show').hidden = true;
   engineSay(engine.phase === 'ready' ? 'Stockfish is looking…' : 'Getting Stockfish ready, then it looks…');
   try {
-    const before = await engine.look(m.before);
+    const line = play.line();
+    const ended = play.result;
+    const before = await engine.look({ fen: line.fen, moves: line.moves.slice(0, -1) });
     const played = `${m.from}${m.to}${m.promotion || ''}`;
     const playedBest = before.move === played;
     let afterCp = 0;
-    if (!playedBest) afterCp = toCp((await engine.look(m.after)).score);
+    // A move that ends the game is graded by how it ended: mate wins, a draw is level.
+    if (ended === 'mate') afterCp = toCp({ mate: 0 });
+    else if (ended === 'draw') afterCp = 0;
+    else if (!playedBest) afterCp = toCp((await engine.look(line)).score);
     if (seq !== checkSeq) return; // the board moved on while it looked
     const verdict = grade({ bestCp: toCp(before.score), afterCp, playedBest });
     const [text, tone] = VERDICT[verdict];

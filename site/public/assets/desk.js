@@ -70,6 +70,7 @@ export function createDesk(els, { onChange = () => {} } = {}) {
   let drag = null;
   let hover = null;
   let busy = false; // the promotion picker is open
+  let closePicker = null; // closes an open promotion picker without a choice
 
   /* ---------------------------------------------------------------- Drawing */
 
@@ -290,8 +291,10 @@ export function createDesk(els, { onChange = () => {} } = {}) {
       };
       els.promo.addEventListener('pointerdown', cancel);
       document.addEventListener('keydown', esc);
+      closePicker = () => done(null);
       function done(v) {
         busy = false;
+        closePicker = null;
         els.promo.hidden = true;
         els.promo.removeEventListener('pointerdown', cancel);
         document.removeEventListener('keydown', esc);
@@ -308,7 +311,11 @@ export function createDesk(els, { onChange = () => {} } = {}) {
     }
     let promotion;
     if (options.some((m) => m.promotion)) {
+      const g = game;
+      const at = game.fen();
       promotion = await pickPromotion(game.turn());
+      // Another position, or another point in the game, went on the board while the picker was open.
+      if (game !== g || game.fen() !== at) return false;
       if (!promotion) {
         select(null);
         syncPieces();
@@ -334,7 +341,13 @@ export function createDesk(els, { onChange = () => {} } = {}) {
     select(null);
   }
 
+  // Anything that changes the position first closes an open promotion picker.
+  function dropPicker() {
+    if (closePicker) closePicker();
+  }
+
   function undo() {
+    dropPicker();
     if (!game) return;
     const m = game.undo();
     if (!m) return;
@@ -343,6 +356,7 @@ export function createDesk(els, { onChange = () => {} } = {}) {
     sound.play('move');
   }
   function redo() {
+    dropPicker();
     if (!game) return;
     const m = future.pop();
     if (!m) return;
@@ -350,6 +364,7 @@ export function createDesk(els, { onChange = () => {} } = {}) {
     after(move);
   }
   function jumpTo(ply) {
+    dropPicker();
     if (!game) return;
     while (game.history().length > ply) future.push(game.undo());
     while (game.history().length < ply && future.length) {
@@ -479,6 +494,7 @@ export function createDesk(els, { onChange = () => {} } = {}) {
   // Put a new position on the board. Pieces are set out like a person would:
   // the far side first, row by row, towards you.
   async function load(fen) {
+    dropPicker();
     startFen = fen;
     future = [];
     selected = null;
@@ -549,6 +565,16 @@ export function createDesk(els, { onChange = () => {} } = {}) {
     },
     get over() {
       return Boolean(game && game.isGameOver());
+    },
+    /** 'mate' or 'draw' when the game on the board has ended, else null. */
+    get result() {
+      if (!game || !game.isGameOver()) return null;
+      return game.isCheckmate() ? 'mate' : 'draw';
+    },
+    /** The start position and the moves played from it, in engine notation, so repetitions count. */
+    line() {
+      const moves = game ? game.history({ verbose: true }).map((m) => `${m.from}${m.to}${m.promotion || ''}`) : [];
+      return { fen: startFen, moves };
     },
     get turn() {
       return game ? game.turn() : startFen.split(/\s+/)[1] || 'w';

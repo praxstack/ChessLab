@@ -99,3 +99,62 @@ test('files: chess.js is the published 1.4.0 build, and Stockfish ships with its
   assert.match(readFileSync(join(root, 'public/assets/engine/COPYING.txt'), 'utf8'), /GNU GENERAL PUBLIC LICENSE/);
   assert.match(readFileSync(join(root, 'public/puzzleanalyzr/index.html'), 'utf8'), /href="\/assets\/engine\/COPYING\.txt"/);
 });
+
+// A pretend Stockfish worker: answers uci, isready and go, and remembers what it was told.
+function fakeBrowser() {
+  const workers = [];
+  class FakeWorker {
+    constructor(url) {
+      this.url = url;
+      this.sent = [];
+      this.handlers = { message: [], error: [] };
+      this.terminated = false;
+      workers.push(this);
+    }
+    addEventListener(type, fn) {
+      this.handlers[type].push(fn);
+    }
+    emit(type, data) {
+      for (const fn of this.handlers[type]) fn(type === 'message' ? { data } : {});
+    }
+    postMessage(cmd) {
+      this.sent.push(cmd);
+      const reply = (line) => setTimeout(() => this.emit('message', line), 0);
+      if (cmd === 'uci') reply('uciok');
+      else if (cmd === 'isready') reply('readyok');
+      else if (cmd.startsWith('go')) {
+        reply('info depth 10 score cp 30 pv e2e4');
+        reply('bestmove e2e4');
+      }
+    }
+    terminate() {
+      this.terminated = true;
+    }
+  }
+  globalThis.window = {};
+  globalThis.Worker = FakeWorker;
+  globalThis.fetch = async () => new Response(new Uint8Array(16), { status: 200 });
+  URL.createObjectURL = () => 'blob:fake';
+  URL.revokeObjectURL = () => {};
+  return workers;
+}
+
+test('engine: sends the moves played, so repetitions count, and starts a new worker after a crash', async () => {
+  const workers = fakeBrowser();
+  const { createEngine } = await import('../public/assets/engine.js');
+  const phases = [];
+  const engine = createEngine({ onState: (s) => phases.push(s.phase) });
+  const got = await engine.look({ fen: START, moves: ['g1f3', 'g8f6'] });
+  assert.deepEqual(got, { move: 'e2e4', score: { cp: 30 }, depth: 10 });
+  assert.ok(workers[0].sent.includes(`position fen ${START} moves g1f3 g8f6`));
+  assert.equal(engine.phase, 'ready');
+
+  workers[0].emit('error');
+  assert.equal(workers[0].terminated, true);
+  assert.equal(engine.phase, 'failed');
+  await engine.look({ fen: START });
+  assert.equal(workers.length, 2, 'a fresh worker after the crash');
+  assert.ok(workers[1].sent.includes(`position fen ${START}`));
+  assert.equal(engine.phase, 'ready');
+  assert.ok(phases.includes('download'));
+});

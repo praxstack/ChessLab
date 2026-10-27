@@ -120,6 +120,15 @@ export function createEngine({ onState = () => {} } = {}) {
     onState(s);
   };
 
+  // A worker that crashed or hung is thrown away, so the next tap starts a fresh one.
+  function reset(error) {
+    if (worker) worker.terminate();
+    worker = null;
+    starting = null;
+    listener = null;
+    set({ phase: 'failed', error });
+  }
+
   function send(cmd) {
     worker.postMessage(cmd);
   }
@@ -135,6 +144,10 @@ export function createEngine({ onState = () => {} } = {}) {
           clearTimeout(timer);
           listener = null;
           resolve(line);
+        } else if (line === 'error') {
+          clearTimeout(timer);
+          listener = null;
+          reject(new Error('The engine stopped'));
         }
       };
     });
@@ -159,6 +172,7 @@ export function createEngine({ onState = () => {} } = {}) {
       });
       worker.addEventListener('error', () => {
         if (listener) listener('error');
+        if (phase === 'ready') reset('The engine stopped');
       });
       const ok = waitFor('uciok');
       send('uci');
@@ -169,10 +183,7 @@ export function createEngine({ onState = () => {} } = {}) {
       URL.revokeObjectURL(url);
       set({ phase: 'ready', fromDevice: Boolean(saved) });
     } catch (err) {
-      if (worker) worker.terminate();
-      worker = null;
-      starting = null;
-      set({ phase: 'failed', error: String(err && err.message ? err.message : err) });
+      reset(String(err && err.message ? err.message : err));
       throw err;
     }
   }
@@ -182,14 +193,18 @@ export function createEngine({ onState = () => {} } = {}) {
     return starting;
   }
 
-  /** Look at one position: the engine's best move and its score for the side to move. */
-  function look(fen, { depth = 16, ms = 1800 } = {}) {
+  /**
+   * Look at one position, given as a start position and the moves played
+   * from it (so the engine knows about repetitions): its best move and its
+   * score for the side to move.
+   */
+  function look({ fen, moves = [] }, { depth = 16, ms = 1800 } = {}) {
     const job = queue.then(async () => {
       await load();
       let best = null;
       const done = new Promise((resolve, reject) => {
         const timer = setTimeout(() => {
-          listener = null;
+          reset('The engine took too long');
           reject(new Error('The engine took too long'));
         }, ms + 8000);
         listener = (line) => {
@@ -203,11 +218,11 @@ export function createEngine({ onState = () => {} } = {}) {
           } else if (line === 'error') {
             clearTimeout(timer);
             listener = null;
-            reject(new Error('The engine stopped'));
+            reject(new Error('The engine stopped')); // the worker's error handler resets it
           }
         };
       });
-      send(`position fen ${fen}`);
+      send(`position fen ${fen}${moves.length ? ` moves ${moves.join(' ')}` : ''}`);
       send(`go depth ${depth} movetime ${ms}`);
       const move = await done;
       return { move: move && move !== '(none)' ? move : null, score: best ? best.score : { cp: 0 }, depth: best ? best.depth : 0 };
