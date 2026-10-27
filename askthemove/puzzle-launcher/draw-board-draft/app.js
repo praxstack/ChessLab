@@ -219,13 +219,21 @@ function select(sq) {
   renderMarks();
 }
 
+let closePicker = () => {};
+
 async function tryMove(from, to) {
   const options = state.targets.get(to);
   if (!options) return false;
+  const fenBefore = state.game.fen();
   let promotion;
   if (options.some((m) => m.promotion)) {
     promotion = await pickPromotion(state.game.turn());
-    if (!promotion) { select(null); renderPieces(); return false; }
+    // Cancelled, or the position changed (undo, reset) while the picker was open.
+    if (!promotion || state.game.fen() !== fenBefore) {
+      select(null);
+      for (const [sq, n] of pieceEls) place(n, sq);
+      return false;
+    }
   }
   const move = state.game.move({ from, to, promotion });
   state.redo = [];
@@ -255,7 +263,8 @@ function pickPromotion(color) {
     el.promo.hidden = false;
     const cancel = (e) => { if (e.target === el.promo) done(null); };
     el.promo.addEventListener('pointerdown', cancel);
-    function done(v) { el.promo.hidden = true; el.promo.removeEventListener('pointerdown', cancel); resolve(v); }
+    function done(v) { el.promo.hidden = true; el.promo.removeEventListener('pointerdown', cancel); closePicker = () => {}; resolve(v); }
+    closePicker = () => done(null);
   });
 }
 
@@ -281,12 +290,14 @@ function jumpTo(ply) {
 }
 function reset() { jumpTo(0); }
 function afterJump() {
+  closePicker();
   const h = state.game.history({ verbose: true });
   state.lastMove = h[h.length - 1] || null;
   select(null);
   render();
 }
 function flip() {
+  closePicker();
   state.orientation = state.orientation === 'white' ? 'black' : 'white';
   buildSquares();
   for (const [sq, n] of pieceEls) place(n, sq);
@@ -681,7 +692,8 @@ el.redo.addEventListener('click', redo);
 el.reset.addEventListener('click', reset);
 el.flip.addEventListener('click', () => { flip(); save(); });
 document.addEventListener('keydown', (e) => {
-  if (e.target.closest('textarea, input')) return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.target.closest('textarea, input') || !el.promo.hidden) return;
   if (e.key === 'ArrowLeft') undo();
   else if (e.key === 'ArrowRight') redo();
   else if (e.key === 'f' || e.key === 'F') { flip(); save(); }

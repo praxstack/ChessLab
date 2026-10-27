@@ -94,7 +94,7 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-
   <p class="status" id="status" role="status" aria-live="polite"></p>
 
   <div class="tips">
-    <p><strong>Engine spoils it?</strong> On Chess.com, flip the <strong>Analysis</strong> switch off once. Chess.com remembers it on this device. Switch it back on when you want to check.</p>
+    <p><strong>First time on this device?</strong> Open a <a href="https://www.chess.com/analysis">blank Chess.com board</a> and flip its <strong>Analysis</strong> switch off before your first puzzle, so the engine can’t show you the answer. Chess.com remembers it on this device. Switch it back on when you want to check.</p>
     <p><strong>Black to move?</strong> Use Chess.com’s flip button so Black sits at the bottom.</p>
   </div>
 
@@ -117,7 +117,7 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-
   <details>
     <summary>Bookmarklet (backup)</summary>
     <div>
-      <p>A bookmark that opens today’s puzzle on Chess.com’s analysis board. It works from any normal web page, Chess.com included.</p>
+      <p>A bookmark that opens today’s puzzle on Chess.com’s analysis board. Run it while you’re on a Chess.com page. Some other sites block it, and then it says it couldn’t load the puzzle.</p>
       <label for="bm">Code to paste:</label>
       <textarea id="bm" readonly spellcheck="false"></textarea>
       <button type="button" class="small-btn" id="copy-bm">Copy bookmarklet</button>
@@ -126,13 +126,13 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-
         <li>Bookmark any page: Share, then <strong>Add Bookmark</strong>. Name it <strong>Puzzle</strong>.</li>
         <li>Open Bookmarks, tap <strong>Edit</strong>, tap the Puzzle bookmark.</li>
         <li>Delete its address and paste the code. Tap <strong>Done</strong>.</li>
-        <li>To use it, open any page, then tap Puzzle in your bookmarks.</li>
+        <li>To use it, open any Chess.com page, then tap Puzzle in your bookmarks.</li>
       </ol>
       <h3>Android (Chrome)</h3>
       <ol>
         <li>Bookmark any page with the ☆ in the ⋮ menu, then tap <strong>Edit</strong>.</li>
         <li>Name it <strong>Puzzle</strong>, delete its URL and paste the code.</li>
-        <li>To use it, open any page, type <strong>Puzzle</strong> in the address bar and tap the bookmark that shows up. (Picking it from the bookmarks list doesn’t run it on Android.)</li>
+        <li>To use it, open any Chess.com page, type <strong>Puzzle</strong> in the address bar and tap the bookmark that shows up. (Picking it from the bookmarks list doesn’t run it on Android.)</li>
       </ol>
     </div>
   </details>
@@ -146,9 +146,10 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-
   const $ = (id) => document.getElementById(id);
   const analysisUrl = (fen) => 'https://www.chess.com/analysis?fen=' + encodeURIComponent(fen);
   const explorerUrl = (fen) => 'https://www.chess.com/analysis/explorer?fen=' + encodeURIComponent(fen);
+  const DAILY_PAGE = 'https://www.chess.com/daily';
   let todayFen = '';
 
-  const BOOKMARKLET = "javascript:fetch('https://api.chess.com/pub/puzzle').then(r=>r.json()).then(j=>{location.href='https://www.chess.com/analysis?fen='+encodeURIComponent(j.fen)}).catch(()=>alert('Could not reach Chess.com'))";
+  const BOOKMARKLET = "javascript:fetch('https://api.chess.com/pub/puzzle').then(r=>r.json()).then(j=>{location.href='https://www.chess.com/analysis?fen='+encodeURIComponent(j.fen)}).catch(()=>alert('Could not load the puzzle from this page. Try it on a Chess.com page.'))";
   $('bm').value = BOOKMARKLET;
 
   function status(text, tone) {
@@ -172,16 +173,25 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-
     return { fen: j.fen, date: dateFrom(j) };
   }
 
+  // aria-disabled only blocks taps (via CSS); also stop Enter on a focused link while loading.
+  for (const id of ['go-analysis', 'go-explorer']) {
+    $(id).addEventListener('click', (e) => { if ($(id).getAttribute('aria-disabled') === 'true') e.preventDefault(); });
+  }
+
   function enable(id, href) {
     const a = $(id);
     if (href) a.href = href;
     a.removeAttribute('aria-disabled');
   }
 
+  let loadSeq = 0;
   async function loadToday() {
+    const seq = ++loadSeq;
     try {
       const p = await getPuzzle('');
+      if (seq !== loadSeq) return; // a newer load started; let it win
       todayFen = p.fen;
+      status('');
       $('date').textContent = p.date;
       const black = p.fen.split(' ')[1] === 'b';
       $('side').hidden = false;
@@ -191,10 +201,15 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--rule); border-
       enable('go-explorer', explorerUrl(p.fen));
       enable('copy-fen');
     } catch (e) {
+      if (seq !== loadSeq) return;
+      // Drop anything left from an earlier load (say, yesterday's puzzle in a tab left open).
+      todayFen = '';
+      $('side').hidden = true;
+      $('copy-fen').setAttribute('aria-disabled', 'true');
       $('date').textContent = 'Couldn’t reach Chess.com just now.';
       status('The buttons open Chess.com’s own daily puzzle page instead. Pull down or reload to try again.', 'red');
-      enable('go-analysis');
-      enable('go-explorer');
+      enable('go-analysis', DAILY_PAGE);
+      enable('go-explorer', DAILY_PAGE);
     }
   }
 
