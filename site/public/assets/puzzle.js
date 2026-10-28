@@ -275,6 +275,8 @@ export function detect(raw, saved = new Map()) {
 
 const saved = new Map(); // date -> position, from the saved list, today and any random ones
 const names = new Map(); // date -> Chess.com's name for that day's puzzle
+const lichessSaved = new Map(); // date (UTC) -> { id, fen }: Lichess's puzzle of that day
+const utcIso = () => new Date().toISOString().slice(0, 10);
 let todayIso = '';
 let todayFen = '';
 let desk = { kind: 'today', fen: '', iso: '' };
@@ -315,8 +317,8 @@ function boardChanged() {
   updateCheckButton();
 }
 
-function showOnDesk({ kind, fen, iso = '', title, source, name = '' }) {
-  desk = { kind, fen, iso, title };
+function showOnDesk({ kind, fen, iso = '', title, source, name = '', lid = '' }) {
+  desk = { kind, fen, iso, title, lid };
   const seq = ++deskSeq;
   $('desk-title').textContent = title;
   say('desk-status', '');
@@ -430,9 +432,15 @@ $('card-name').addEventListener('click', (e) => {
   btn.setAttribute('aria-label', shown ? `Name: ${btn.dataset.name}. Tap to cover it again.` : 'Show the puzzle’s name. It can hint at the answer.');
 });
 
-// A Chess.com daily puzzle on the board also gets a link to Chess.com's own page for that day, which marks each move.
+// A daily puzzle on the board also gets a link to its own page on Chess.com or Lichess, which marks each move.
 function showSolve() {
   const solve = $('go-solve');
+  if (desk.kind === 'lichess') {
+    solve.hidden = !desk.lid;
+    solve.href = `https://lichess.org/training/${desk.lid}`;
+    solve.textContent = 'Solve it on Lichess';
+    return;
+  }
   solve.hidden = !(desk.iso && ['today', 'date', 'random'].includes(desk.kind));
   if (!solve.hidden) {
     solve.href = `${DAILY_PAGE}/${desk.iso}`;
@@ -505,7 +513,7 @@ $('load-lichess').addEventListener('click', async () => {
   try {
     const { fen, id } = await lichessPuzzle();
     if (deskSeq !== deskAt) return; // something else went on the board meanwhile
-    showOnDesk({ kind: 'lichess', fen, title: 'Lichess puzzle of the day', source: 'Lichess puzzle of the day', name: id ? `puzzle #${id}` : '' });
+    showOnDesk({ kind: 'lichess', fen, title: 'Lichess puzzle of the day', source: 'Lichess puzzle of the day', name: id ? `puzzle #${id}` : '', lid: id });
   } catch {
     if (deskSeq !== deskAt) return;
     say('desk-status', 'Couldn’t reach Lichess. Try again in a moment.', 'red');
@@ -646,13 +654,16 @@ $('engine-show').addEventListener('click', () => {
 /* -------------------------------------------------------------- Calendar */
 
 let calMonth = null; // { y, m } with m from 0
+let calSource = 'chesscom'; // whose daily puzzles the pop-up shows: 'chesscom' | 'lichess'
 const monthOf = (iso) => ({ y: Number(iso.slice(0, 4)), m: Number(iso.slice(5, 7)) - 1 });
 const monthName = ({ y, m }) => new Date(Date.UTC(y, m, 1)).toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 
 function dayCell(iso, d, lastIso) {
   const li = document.createElement('li');
   li.className = 'cal__cell';
-  const fen = saved.get(iso);
+  const fromLichess = calSource === 'lichess';
+  const fen = fromLichess ? lichessSaved.get(iso)?.fen : saved.get(iso);
+  const isToday = iso === lastIso;
   const long = fmt(iso, { weekday: 'long', day: 'numeric', month: 'long' });
   let el;
   if (iso > lastIso) {
@@ -663,16 +674,20 @@ function dayCell(iso, d, lastIso) {
     el = document.createElement('button');
     el.type = 'button';
     el.className = 'cal__day is-saved';
-    if (iso === todayIso) el.classList.add('is-today');
+    if (isToday) el.classList.add('is-today');
     el.dataset.iso = iso;
-    el.setAttribute('aria-label', `${long}${iso === todayIso ? ', today' : ''}, ${sideText(fen)}. Puts it on the board.`);
+    el.setAttribute('aria-label', `${long}${isToday ? ', today' : ''}, ${sideText(fen)}. Puts it on the board.`);
+  } else if (fromLichess) {
+    el = document.createElement('span');
+    el.className = 'cal__day is-missing';
+    el.setAttribute('aria-label', `${long}, not saved`);
   } else {
     el = document.createElement('a');
     el.className = 'cal__day';
     el.href = `${DAILY_PAGE}/${iso}`;
     el.setAttribute('aria-label', `${long}, opens Chess.com’s puzzle page`);
   }
-  if (desk.iso === iso && desk.kind !== 'lichess') {
+  if (desk.iso === iso && (desk.kind === 'lichess') === fromLichess) {
     el.classList.add('is-on');
     if (el.tagName === 'BUTTON') el.setAttribute('aria-current', 'true');
   }
@@ -681,7 +696,7 @@ function dayCell(iso, d, lastIso) {
   n.textContent = String(d);
   el.append(n);
   if (fen) {
-    el.insertAdjacentHTML('beforeend', markSVG('circle', 115, 100, seedFrom(`cal:${iso}`), 'cal__loop'));
+    el.insertAdjacentHTML('beforeend', markSVG('circle', 115, 100, seedFrom(`cal:${calSource}:${iso}`), 'cal__loop'));
     const king = document.createElement('img');
     king.className = 'cal__king';
     king.src = `/assets/pieces/${blackToMove(fen) ? 'b' : 'w'}K.svg`;
@@ -703,7 +718,7 @@ function refreshPaste() {
 function renderCalendar() {
   if (!calMonth) calMonth = monthOf(localIso());
   const { y, m } = calMonth;
-  const lastIso = todayIso || localIso();
+  const lastIso = calSource === 'lichess' ? utcIso() : todayIso || localIso();
   const grid = $('cal-grid');
   grid.textContent = '';
   const first = new Date(Date.UTC(y, m, 1)).getUTCDay();
@@ -723,8 +738,9 @@ function renderCalendar() {
   if (!$('cal-pop').open) return;
   let k = 0;
   grid.querySelectorAll('.is-saved').forEach((el) => {
-    if (drawnLoops.has(el.dataset.iso)) return;
-    drawnLoops.add(el.dataset.iso);
+    const key = `${calSource}:${el.dataset.iso}`;
+    if (drawnLoops.has(key)) return;
+    drawnLoops.add(key);
     drawStrokes(el.querySelector('.cal__loop'), 120 + k * 140);
     k += 1;
   });
@@ -752,13 +768,35 @@ $('cal-grid').addEventListener('click', (e) => {
   const day = e.target.closest('button.cal__day');
   if (!day) return;
   closeCalendar();
-  loadSavedDate(day.dataset.iso);
+  if (calSource === 'lichess') loadLichessDate(day.dataset.iso);
+  else loadSavedDate(day.dataset.iso);
+});
+
+function loadLichessDate(iso) {
+  const p = lichessSaved.get(iso);
+  if (!p) return;
+  showOnDesk({ kind: 'lichess', fen: p.fen, iso, title: `Lichess puzzle of ${shortDate(iso)}`, source: 'Lichess puzzle of the day', name: `puzzle #${p.id}`, lid: p.id });
+  bringDeskIntoView();
+}
+
+function setCalSource(src) {
+  calSource = src;
+  $('cal-src').querySelectorAll('.cal-src__opt').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.src === src)));
+  $('cal-key-chesscom').hidden = src !== 'chesscom';
+  $('cal-key-lichess').hidden = src !== 'lichess';
+}
+$('cal-src').addEventListener('click', (e) => {
+  const opt = e.target.closest('.cal-src__opt');
+  if (!opt || opt.dataset.src === calSource) return;
+  setCalSource(opt.dataset.src);
+  renderCalendar();
 });
 
 // The calendar lives in a pop-up, opened from "Pick a date" next to the board.
 const calPop = $('cal-pop');
 function openCalendar() {
-  if (desk.iso && desk.kind !== 'lichess') calMonth = monthOf(desk.iso);
+  setCalSource(desk.kind === 'lichess' ? 'lichess' : 'chesscom');
+  if (desk.iso) calMonth = monthOf(desk.iso);
   if (typeof calPop.showModal === 'function') calPop.showModal();
   else calPop.setAttribute('open', '');
   renderCalendar();
@@ -803,6 +841,9 @@ async function loadSaved() {
     }
     for (const [iso, name] of Object.entries(j.names || {})) {
       if (/^\d{4}-\d{2}-\d{2}$/.test(iso) && typeof name === 'string' && name.trim() && !names.has(iso)) names.set(iso, name.trim().slice(0, 120));
+    }
+    for (const [iso, p] of Object.entries(j.lichess || {})) {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(iso) && p && /^[A-Za-z0-9]{5}$/.test(p.id || '') && typeof p.fen === 'string' && cleanFen(p.fen)) lichessSaved.set(iso, { id: p.id, fen: p.fen });
     }
     // The name may arrive after the puzzle went on the board.
     if (desk.iso && desk.kind !== 'lichess' && names.has(desk.iso) && $('card-name-row').hidden) showName(names.get(desk.iso));

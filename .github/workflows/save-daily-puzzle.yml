@@ -1,8 +1,10 @@
 name: Save daily puzzle
 
-# Keeps a list of Chess.com daily puzzle positions for the puzzle launcher
-# (askthemove/puzzle-launcher). Each run saves today's puzzle and one random
-# older one, so past dates open on the analysis board with no hints.
+# Keeps a list of daily puzzle positions for the puzzle page
+# (askthemove.online/puzzleanalyzr). Each run saves Chess.com's puzzle of the
+# day, up to 30 random older ones (Chess.com shares old puzzles only at random,
+# so this is how past dates fill in), and Lichess's puzzle of the day (Lichess
+# has no history, so its days fill in from the first run onwards).
 # The date, the position (FEN) and Chess.com's name are kept: never the answer.
 # The name can hint at the answer, so the page keeps it covered until tapped.
 # The list lives on its own branch, puzzle-archive, so main gets no daily commits.
@@ -21,7 +23,7 @@ concurrency:
 jobs:
   save:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
         with:
@@ -35,7 +37,7 @@ jobs:
             git switch --orphan puzzle-archive
           fi
 
-      - name: Add today's puzzle and one random older one
+      - name: Add today's puzzles and random older ones
         run: |
           python3 - <<'PY'
           import json, re, time, urllib.request
@@ -49,6 +51,8 @@ jobs:
               data = {}
           puzzles = data.get('puzzles', {})
           names = data.get('names', {})
+          lichess = data.get('lichess', {})
+          RANDOM_PULLS = 30
 
           def get(url):
               req = urllib.request.Request(url, headers={'User-Agent': UA, 'Accept': 'application/json'})
@@ -56,7 +60,8 @@ jobs:
                   return json.load(r)
 
           added = 0
-          for url in ('https://api.chess.com/pub/puzzle', 'https://api.chess.com/pub/puzzle/random'):
+          urls = ['https://api.chess.com/pub/puzzle'] + ['https://api.chess.com/pub/puzzle/random'] * RANDOM_PULLS
+          for url in urls:
               try:
                   j = get(url)
               except Exception as e:
@@ -72,15 +77,31 @@ jobs:
                       added += 1
                   if title and date not in names:
                       names[date] = title
-              time.sleep(2)
+              # The random puzzle is cached for a few seconds, so ask slowly: fewer repeats, and gentle on the API.
+              time.sleep(12)
 
-          data = {'note': 'Chess.com daily puzzle positions and names by date, for the puzzle launcher. No answers.',
+          # Lichess: only today's puzzle is offered. File it under today's date (UTC), once per puzzle.
+          try:
+              req = urllib.request.Request('https://lichess.org/api/puzzle/daily', headers={'User-Agent': UA, 'Accept': 'application/json'})
+              with urllib.request.urlopen(req, timeout=20) as r:
+                  p = json.load(r).get('puzzle', {})
+              pid, fen = p.get('id', ''), p.get('fen', '')
+              today = time.strftime('%Y-%m-%d', time.gmtime())
+              seen = {v.get('id') for v in lichess.values()}
+              if re.match(r'^[A-Za-z0-9]{5}$', pid) and re.match(r'^[pnbrqkPNBRQK1-8/]+ [wb] ', fen) and pid not in seen and today not in lichess:
+                  lichess[today] = {'id': pid, 'fen': fen}
+                  added += 1
+          except Exception as e:
+              print('skip lichess', e)
+
+          data = {'note': 'Daily puzzle positions and names by date (Chess.com), and Lichess daily puzzles by the date saved. No answers.',
                   'puzzles': dict(sorted(puzzles.items())),
-                  'names': dict(sorted(names.items()))}
+                  'names': dict(sorted(names.items())),
+                  'lichess': dict(sorted(lichess.items()))}
           with open(path, 'w') as f:
               json.dump(data, f, indent=0, separators=(',', ':'))
               f.write('\n')
-          print(f'added {added}, total {len(puzzles)}')
+          print(f'added {added}, Chess.com total {len(puzzles)}, Lichess total {len(lichess)}')
           PY
 
       - name: Commit if anything changed

@@ -840,6 +840,42 @@ button.cal__day {
   }
 }
 
+/* Chess.com or Lichess: a two-way switch under the title. */
+.cal-src {
+  display: inline-flex;
+  margin: 0 var(--s-5) var(--s-4);
+  padding: 3px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+}
+
+.cal-src__opt {
+  min-height: 36px;
+  padding: 0 var(--s-4);
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--ink-2);
+  font-family: var(--font-book);
+  font-size: var(--text-small);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cal-src__opt[aria-checked='true'] {
+  background: var(--ink);
+  color: var(--card);
+}
+
+.cal-pop__key[hidden] {
+  display: none;
+}
+
+.cal__day.is-missing {
+  color: var(--graphite-2);
+}
+
 .cal-pop__key {
   display: grid;
   gap: var(--s-3);

@@ -91,6 +91,10 @@
       <h2 id="cal-title" class="cal-pop__title">Pick a day</h2>
       <button class="btn btn--plain btn--small cal-pop__close" id="cal-close" type="button" aria-label="Close">×</button>
     </div>
+    <div class="cal-src" id="cal-src" role="radiogroup" aria-label="Whose daily puzzle">
+      <button class="cal-src__opt" type="button" role="radio" aria-checked="true" data-src="chesscom">Chess.com</button>
+      <button class="cal-src__opt" type="button" role="radio" aria-checked="false" data-src="lichess">Lichess</button>
+    </div>
     <div class="cal__bar">
       <button class="btn btn--plain btn--small cal__step" id="cal-prev" type="button" aria-label="Previous month">‹</button>
       <p class="cal__month" id="cal-month" aria-live="polite">This month</p>
@@ -102,9 +106,13 @@
     </div>
     <ol class="cal__days" aria-hidden="true"><li>Sun</li><li>Mon</li><li>Tue</li><li>Wed</li><li>Thu</li><li>Fri</li><li>Sat</li></ol>
     <ol class="cal__grid" id="cal-grid" aria-labelledby="cal-month"></ol>
-    <div class="cal-pop__key">
+    <div class="cal-pop__key" id="cal-key-chesscom">
       <p><span class="ink ink--circle cal__sample" data-mark="circle">12</span> Circled: goes on the board here. Today is circled in red.</p>
-      <p><span class="cal__sample cal__sample--plain">12</span> Plain: opens that day’s puzzle on Chess.com, which marks each move right or wrong. Chess.com doesn’t share old positions, so only days saved here open on this board.</p>
+      <p><span class="cal__sample cal__sample--plain">12</span> Plain: opens that day’s puzzle on Chess.com, which marks each move right or wrong. Chess.com shares old puzzles only at random, so this page collects about 30 an hour and more days get circled each day.</p>
+    </div>
+    <div class="cal-pop__key" id="cal-key-lichess" hidden>
+      <p><span class="ink ink--circle cal__sample" data-mark="circle">12</span> Circled: Lichess’s puzzle of that day. It goes on the board here.</p>
+      <p><span class="cal__sample cal__sample--plain">12</span> Plain: not saved. Lichess only shares today’s puzzle, so its days fill in from 28 October 2026 onwards, one a day.</p>
     </div>
   </dialog>
 
