@@ -21,7 +21,7 @@ Stockfish 17.1 full             ▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏
 Stockfish 19 full  ★ biggest SF ▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏99
 Stockfish 19 (Lichess big)      ▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏99   (0.6 engine + 98.5 net)
 Stockfish 18 full               ▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏113
-Maia-3 79M (human-like)         ▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏316  (license unclear)
+Maia-3 3M…79M (human-like)      ▏▏▏▏12.7 … 316  (AGPL)
 ```
 
 Strongest is not the same as biggest. Stockfish 19 full is the strongest engine here. Stockfish 18 full is bigger but older and weaker. All the Stockfish builds are far stronger than any human, the Lite ones included.
@@ -47,7 +47,7 @@ Strongest is not the same as biggest. Stockfish 19 full is the strongest engine 
 | 15 | **Fairy-Stockfish 14** | Stockfish for variants (crazyhouse, three-check, Chess960 and more) | 1.7 MB | GPL-3.0 | Yes | Only useful if we add variants. |
 | 16 | **Maia-1** (1100, 1200 … 1900) | Plays like a human of that rating, not the best move. Great for "what would a 1200 play here?" | 1.3 MB per level (9 levels) + roughly 10 MB runtime (to measure) | GPL-3.0 | Yes | Needs converting to ONNX once and running with onnxruntime-web (MIT). One step, no search. |
 | 17 | Maia-2 | One human-like model for all ratings | Not verified (weights on Google Drive) | MIT | Probably | Its authors now recommend Maia-3. |
-| 18 | Maia-3 5M / 23M / 79M | Newest human-like model (ICML 2026) | 21 / 92 / 316 MB (PyTorch files) | Code AGPL-3.0; **weights have no license stated** | **Not until the authors confirm** | Would need converting to ONNX. Best human-like option if the license clears. |
+| 18 | **Maia-3** 3M / 5M / 23M / 23M-ponder / 79M | Newest human-like model (ICLR 2026, Chessformer) | 12.7 / 21 / 92 / 109 / 316 MB (PyTorch `.pt`) | AGPL-3.0 (the model card points to the repo's license) | Yes, with a source link | Hugging Face sends open CORS, so the browser can fetch the weights straight from the authors (checked: 200). Needs a one-time export to ONNX, then onnxruntime-web runs it. |
 | 19 | Lc0 (Leela) big nets | Neural-net engine, a different style from Stockfish | Roughly 10–400 MB per net (not verified) | GPL-3.0 | Yes | Runs in a browser only through ONNX + WebGPU: experimental, slow on phones. Later, maybe. |
 
 ### Not available, whatever we do
@@ -58,12 +58,28 @@ Strongest is not the same as biggest. Stockfish 19 full is the strongest engine 
 | Komodo Dragon | Commercial license, and there is no browser build we're allowed to ship. |
 | Chess.com "Cloud" engines | They run on Chess.com's servers, not in our page. |
 
+## More neural models (found 28 Oct, sizes from Hugging Face)
+
+Each of these runs with **onnxruntime-web** (MIT, WebGPU or WASM), which we load once and every model shares.
+
+| # | Model | What it does | Size | License | Browser-ready? |
+|---|---|---|---|---|---|
+| 20 | **DeepMind "searchless chess" 9M / 136M / 270M** | A transformer that plays grandmaster-level chess without searching, just by "looking" at the board once | 36 / 273 / 542 MB (ONNX, ready) | CC BY 4.0 | **Yes**, already ONNX |
+| 21 | **Maia-2 (blitz)** | Human-like moves for any rating, one model | 93 MB (safetensors) | MIT | Needs ONNX export |
+| 22 | **Lc0 BT3** (Leela) | Strongest neural engine family, Leela's style | 410 MB (ONNX, ready) | GPL-3.0 | Yes with WebGPU, plus search code in JS. Desktop or iPad Pro only. |
+| 23 | Lc0 BT4 | Newer Leela net | 336 MB (`.pb.gz`) / 824 MB | GPL-3.0 | Needs conversion. Desktop only. |
+| 24 | **C1-4B** | A small language model that **explains a puzzle step by step in words**, then gives the best move | 8 GB as published; about 2.5 GB if shrunk to 4-bit | Apache-2.0 | Mac or PC with WebGPU only; too big for phones. Could become a free on-device coach. |
+| 25 | Allie 2.0 | Human-like bot that also thinks like a human about time | 11.2 GB | MIT | No, too big for a browser today. |
+
+Skipped: other Hugging Face "chess transformer" uploads that have no license or no results to back them.
+
 ## What the licenses mean for us
 
 - **GPL-3.0** (Stockfish, Fairy-Stockfish, Maia-1, Lc0): we can host and hand out the files for free. We must keep the license file next to them (we already ship `COPYING.txt`) and link to the source code. This is how we already ship Lite today.
 - **AGPL-3.0** (Lichess builds, Maia-3 code): same as GPL, and the source must be offered to people using it over the web. Our site code is public on GitHub, so a "source" link covers it.
 - **MIT** (Maia-2, onnxruntime-web): keep the copyright notice, nothing else.
-- **No license** (Maia-3 weights): we may not copy them. We email the authors and ask for a license first.
+- **CC BY 4.0** (DeepMind searchless chess weights): free to use and host; credit the authors on the page.
+- **Apache-2.0** (C1-4B): free to use and host; keep the notice.
 
 ## How the big files reach the learner
 
