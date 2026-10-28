@@ -81,6 +81,12 @@
   grid-column: 1 / -1;
 }
 
+/* .btn and .printout__line set their own display, so hidden ones need saying. */
+.desk__go [hidden],
+.desk__card [hidden] {
+  display: none;
+}
+
 .desk__goes {
   margin-top: var(--s-2);
   font-size: var(--text-small);
