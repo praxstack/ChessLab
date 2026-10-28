@@ -405,9 +405,16 @@ async function loadToday({ toDesk }) {
       }
     }
   } catch {
-    if (seq === todaySeq) planNext();
+    if (seq === todaySeq) {
+      if (todayIso) planNext();
+      // Never reached Chess.com yet: try again in a minute, and only fill the board if it's still empty then.
+      else {
+        clearTimeout(nextTimer);
+        nextTimer = setTimeout(() => loadToday({ toDesk: !desk.fen }), 60 * 1000);
+      }
+    }
     if (seq !== todaySeq || !toDesk || deskSeq !== deskAt) return;
-    deskFailed('Couldn’t reach Chess.com just now. The button opens Chess.com’s own puzzle page instead. Reload to try again.');
+    deskFailed('Couldn’t reach Chess.com just now. The button opens Chess.com’s own puzzle page instead. Trying again in a minute.');
   }
 }
 

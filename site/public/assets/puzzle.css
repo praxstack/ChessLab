@@ -613,7 +613,7 @@
 
 /* Both pop-ups: a taped index card that fades the page behind it. */
 .cal-pop,
-.sheet {
+.howto {
   width: min(92vw, 34rem);
   max-height: min(86vh, 48rem);
   padding: 0;
@@ -631,13 +631,13 @@
 }
 
 .cal-pop::backdrop,
-.sheet::backdrop {
+.howto::backdrop {
   background: oklch(23% 0.025 265 / 0.42);
   backdrop-filter: blur(2px);
 }
 
 .cal-pop[open],
-.sheet[open] {
+.howto[open] {
   animation: sheet-rise 0.22s var(--ease-out);
 }
 
@@ -649,7 +649,7 @@
 }
 
 .cal-pop__top,
-.sheet__top {
+.howto__top {
   position: sticky;
   top: 0;
   z-index: 2;
@@ -668,7 +668,7 @@
   font-weight: 700;
 }
 
-.sheet__kicker {
+.howto__kicker {
   font-family: var(--font-print);
   font-size: 0.8125rem;
   letter-spacing: 0.04em;
@@ -677,7 +677,7 @@
 }
 
 .cal-pop__close,
-.sheet__close {
+.howto__close {
   min-width: 40px;
   min-height: 40px;
   padding: 0;
@@ -915,50 +915,50 @@ button.cal__day {
 }
 
 /* The FEN/PGN help sheet. */
-.sheet__title {
+.howto__title {
   margin: 0 var(--s-5) var(--s-2);
   font-family: var(--font-book);
   font-size: 1.75rem;
   font-weight: 700;
 }
 
-.sheet__lede {
+.howto__lede {
   margin: 0 var(--s-5) var(--s-4);
   color: var(--ink-2);
 }
 
-.sheet__part {
+.howto__part {
   margin: 0 var(--s-5) var(--s-5);
   padding-top: var(--s-4);
   border-top: 1px solid var(--rule-soft);
 }
 
-.sheet__part h3 {
+.howto__part h3 {
   margin: 0 0 var(--s-2);
   font-family: var(--font-book);
   font-size: 1.1875rem;
 }
 
-.sheet__part p {
+.howto__part p {
   margin: 0 0 var(--s-2);
   line-height: 1.5;
 }
 
-.sheet__quick {
+.howto__quick {
   color: var(--ink-2);
 }
 
-.sheet__part ol {
+.howto__part ol {
   margin: 0 0 var(--s-2);
   padding-left: 1.3em;
   line-height: 1.5;
 }
 
-.sheet__part li {
+.howto__part li {
   margin-bottom: var(--s-1);
 }
 
-.sheet code {
+.howto code {
   padding: 0.05em 0.35em;
   background: var(--paper-2);
   border-radius: var(--radius);
@@ -967,7 +967,7 @@ button.cal__day {
   word-break: break-all;
 }
 
-.sheet__end {
+.howto__end {
   margin: 0 var(--s-5) var(--s-5);
   color: var(--ink-2);
 }
