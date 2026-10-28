@@ -3,7 +3,8 @@ name: Save daily puzzle
 # Keeps a list of Chess.com daily puzzle positions for the puzzle launcher
 # (askthemove/puzzle-launcher). Each run saves today's puzzle and one random
 # older one, so past dates open on the analysis board with no hints.
-# Only the date and the position (FEN) are kept: never the answer or the name.
+# The date, the position (FEN) and Chess.com's name are kept: never the answer.
+# The name can hint at the answer, so the page keeps it covered until tapped.
 # The list lives on its own branch, puzzle-archive, so main gets no daily commits.
 on:
   schedule:
@@ -47,6 +48,7 @@ jobs:
           except FileNotFoundError:
               data = {}
           puzzles = data.get('puzzles', {})
+          names = data.get('names', {})
 
           def get(url):
               req = urllib.request.Request(url, headers={'User-Agent': UA, 'Accept': 'application/json'})
@@ -62,13 +64,19 @@ jobs:
                   continue
               m = re.search(r'/daily/(\d{4}-\d{2}-\d{2})', j.get('url', ''))
               fen = j.get('fen', '')
-              if m and re.match(r'^[pnbrqkPNBRQK1-8/]+ [wb] ', fen) and m.group(1) not in puzzles:
-                  puzzles[m.group(1)] = fen
-                  added += 1
+              if m and re.match(r'^[pnbrqkPNBRQK1-8/]+ [wb] ', fen):
+                  date = m.group(1)
+                  title = (j.get('title') or '').strip()[:120]
+                  if date not in puzzles:
+                      puzzles[date] = fen
+                      added += 1
+                  if title and date not in names:
+                      names[date] = title
               time.sleep(2)
 
-          data = {'note': 'Chess.com daily puzzle positions by date, for the puzzle launcher. Positions only.',
-                  'puzzles': dict(sorted(puzzles.items()))}
+          data = {'note': 'Chess.com daily puzzle positions and names by date, for the puzzle launcher. No answers.',
+                  'puzzles': dict(sorted(puzzles.items())),
+                  'names': dict(sorted(names.items()))}
           with open(path, 'w') as f:
               json.dump(data, f, indent=0, separators=(',', ':'))
               f.write('\n')

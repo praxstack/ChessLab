@@ -187,7 +187,7 @@ test('puzzleanalyzr: its own policy lets it read the chess APIs and run Stockfis
   assert.equal(manifest.scope, '/puzzleanalyzr/');
   assert.equal(manifest.display, 'browser');
   assert.match(read('sitemap.xml'), /\/puzzleanalyzr\//);
-  for (const id of ['desk-board', 'desk-pieces', 'desk-marks', 'desk-ink', 'desk-promo', 'desk-say', 'desk-moves', 'tool-undo', 'tool-redo', 'tool-reset', 'tool-flip', 'tool-sound', 'engine-check', 'engine-bar', 'engine-state', 'engine-say', 'engine-show', 'go-analysis', 'cal-grid', 'paste', 'games-form', 'games-sheet', 'bm']) {
+  for (const id of ['desk-board', 'desk-pieces', 'desk-marks', 'desk-ink', 'desk-promo', 'desk-say', 'desk-moves', 'tool-undo', 'tool-redo', 'tool-reset', 'tool-flip', 'tool-sound', 'engine-check', 'engine-bar', 'engine-state', 'engine-say', 'engine-show', 'go-analysis', 'go-solve', 'pick-date', 'cal-pop', 'cal-grid', 'card-name', 'card-next', 'how-open', 'how-sheet', 'paste', 'games-form', 'games-sheet', 'bm']) {
     assert.match(html, new RegExp(`id="${id}"`), `#${id} missing`);
   }
   assert.match(html, /<script type="module" src="\/assets\/puzzle\.js"><\/script>/);
