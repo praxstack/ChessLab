@@ -77,6 +77,22 @@
   padding: 0 var(--s-3);
 }
 
+.desk__go .desk__solve {
+  grid-column: 1 / -1;
+}
+
+/* .btn and .printout__line set their own display, so hidden ones need saying. */
+.desk__go [hidden],
+.desk__card [hidden] {
+  display: none;
+}
+
+.desk__goes {
+  margin-top: var(--s-2);
+  font-size: var(--text-small);
+  color: var(--ink-2);
+}
+
 .desk__status {
   min-height: 1.5em;
   font-size: var(--text-small);
@@ -548,26 +564,125 @@
   display: none;
 }
 
-/* ---------- Calendar: every daily puzzle ---------- */
+/* ---------- Date picker (pop-up) and the paste help sheet ---------- */
 
-.cal {
-  padding-bottom: var(--s-9);
-  row-gap: var(--s-6);
+/* "Pick a date" and "Where do I find a FEN or PGN?": quiet, underlined prompts. */
+.paste__how {
+  justify-self: start;
+  margin-top: calc(-1 * var(--s-2));
+  padding: var(--s-1) 0;
+  border: 0;
+  background: none;
+  color: var(--blue);
+  font-family: var(--font-book);
+  font-size: var(--text-small);
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+  cursor: pointer;
 }
 
-.cal__head {
-  grid-column: main / end;
-  display: grid;
+.paste__how:hover {
+  text-decoration-style: solid;
+}
+
+/* The puzzle's name, kept covered until tapped: it can give the answer away. */
+.desk__reveal {
+  padding: 0 0.4em;
+  border: 1px dashed var(--graphite-2);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--ink-2);
+  font-family: var(--font-print);
+  font-size: inherit;
+  cursor: pointer;
+}
+
+.desk__reveal:hover {
+  border-style: solid;
+  color: var(--ink);
+}
+
+.desk__reveal.is-shown {
+  border-color: transparent;
+  background: none;
+  color: var(--ink);
+  font-weight: 700;
+  cursor: default;
+}
+
+/* Both pop-ups: a taped index card that fades the page behind it. */
+.cal-pop,
+.howto {
+  width: min(92vw, 34rem);
+  max-height: min(86vh, 48rem);
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: 0 18px 50px -12px var(--shadow);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.cal-pop {
+  width: min(92vw, 27rem);
+}
+
+.cal-pop::backdrop,
+.howto::backdrop {
+  background: oklch(23% 0.025 265 / 0.42);
+  backdrop-filter: blur(2px);
+}
+
+.cal-pop[open],
+.howto[open] {
+  animation: sheet-rise 0.22s var(--ease-out);
+}
+
+@keyframes sheet-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+.cal-pop__top,
+.howto__top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: var(--s-3);
+  padding: var(--s-4) var(--s-5) var(--s-2);
+  background: linear-gradient(var(--card) 70%, transparent);
 }
 
-.cal__intro {
+.cal-pop__title {
+  margin: 0;
+  font-family: var(--font-book);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.howto__kicker {
+  font-family: var(--font-print);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--ink-2);
 }
 
-.cal__book {
-  grid-column: main;
-  max-width: 38rem;
+.cal-pop__close,
+.howto__close {
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0;
+  font-size: 1.5rem;
+  line-height: 1;
 }
 
 .cal__bar {
@@ -575,7 +690,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--s-3);
-  margin-bottom: var(--s-4);
+  margin: 0 var(--s-5) var(--s-4);
 }
 
 .cal__step {
@@ -620,7 +735,7 @@
 .cal__grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  margin: 0;
+  margin: 0 var(--s-5);
   padding: 0;
   list-style: none;
 }
@@ -725,27 +840,69 @@ button.cal__day {
   }
 }
 
-.cal__side {
-  grid-column: side;
+/* Chess.com or Lichess: a two-way switch under the title. */
+.cal-src {
+  display: inline-flex;
+  margin: 0 var(--s-5) var(--s-4);
+  padding: 3px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+}
+
+.cal-src__opt {
+  min-height: 36px;
+  padding: 0 var(--s-4);
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--ink-2);
+  font-family: var(--font-book);
+  font-size: var(--text-small);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cal-src__opt[aria-checked='true'] {
+  background: var(--ink);
+  color: var(--card);
+}
+
+.cal-pop__key[hidden] {
+  display: none;
+}
+
+.cal__day.is-missing {
+  color: var(--graphite-2);
+}
+
+.cal-pop__key {
   display: grid;
-  gap: var(--s-5);
-  padding-top: var(--s-8);
+  gap: var(--s-3);
+  margin: var(--s-4) var(--s-5) var(--s-5);
+  padding-top: var(--s-4);
+  border-top: 1px dashed var(--graphite-2);
+  font-size: var(--text-small);
+  line-height: 1.5;
+  color: var(--ink-2);
 }
 
-.cal__key {
-  font-size: 1.25rem;
+.cal-pop__key p {
+  margin: 0;
+  display: flex;
+  gap: 0.5em;
 }
 
-.cal__key:nth-child(odd) {
-  transform: rotate(-1.2deg);
-}
-
-.cal__key:nth-child(even) {
-  transform: rotate(0.8deg);
-}
-
-.cal__key--plain {
-  color: var(--graphite);
+.cal__sample {
+  position: relative;
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 2em;
+  height: 2em;
+  font-family: var(--font-book);
+  font-weight: 700;
+  color: var(--ink);
 }
 
 .cal__sample .stroke {
@@ -753,11 +910,66 @@ button.cal__day {
   stroke-width: 5;
 }
 
-.cal__sample {
-  margin-right: 0.35em;
+.cal__sample--plain {
+  color: var(--graphite);
+}
+
+/* The FEN/PGN help sheet. */
+.howto__title {
+  margin: 0 var(--s-5) var(--s-2);
   font-family: var(--font-book);
+  font-size: 1.75rem;
   font-weight: 700;
-  color: var(--ink);
+}
+
+.howto__lede {
+  margin: 0 var(--s-5) var(--s-4);
+  color: var(--ink-2);
+}
+
+.howto__part {
+  margin: 0 var(--s-5) var(--s-5);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--rule-soft);
+}
+
+.howto__part h3 {
+  margin: 0 0 var(--s-2);
+  font-family: var(--font-book);
+  font-size: 1.1875rem;
+}
+
+.howto__part p {
+  margin: 0 0 var(--s-2);
+  line-height: 1.5;
+}
+
+.howto__quick {
+  color: var(--ink-2);
+}
+
+.howto__part ol {
+  margin: 0 0 var(--s-2);
+  padding-left: 1.3em;
+  line-height: 1.5;
+}
+
+.howto__part li {
+  margin-bottom: var(--s-1);
+}
+
+.howto code {
+  padding: 0.05em 0.35em;
+  background: var(--paper-2);
+  border-radius: var(--radius);
+  font-family: var(--font-print);
+  font-size: 0.9em;
+  word-break: break-all;
+}
+
+.howto__end {
+  margin: 0 var(--s-5) var(--s-5);
+  color: var(--ink-2);
 }
 
 /* ---------- Paste ---------- */
@@ -1057,9 +1269,6 @@ button.cal__day {
 @media (max-width: 1079px) {
   .desk__board,
   .desk__panel,
-  .cal__head,
-  .cal__book,
-  .cal__side,
   .paste__title,
   .paste__main,
   .paste__side,
@@ -1078,12 +1287,6 @@ button.cal__day {
 
   .desk__panel {
     max-width: 38rem;
-  }
-
-  .cal__side {
-    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-    max-width: 38rem;
-    padding-top: 0;
   }
 
   .paste__side {
@@ -1158,7 +1361,6 @@ button.cal__day {
   }
 
   .desk,
-  .cal,
   .paste,
   .played {
     padding-bottom: var(--s-8);

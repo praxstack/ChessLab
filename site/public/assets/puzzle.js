@@ -3,13 +3,14 @@
 // only when asked (engine.js), or opens it on Chess.com's analysis board.
 // Reads only public APIs: Chess.com's daily puzzle and game archives, Lichess
 // puzzles, games and studies, and a small list of saved daily puzzles that a
-// GitHub Action keeps (date -> position). A puzzle's answer and its name are
-// never read or shown.
+// GitHub Action keeps (date -> position and name). A puzzle's answer is never
+// shown; its name can give the answer away, so it stays covered until tapped.
 import { parsePlacement, pieceHTML } from './board.js';
 import { markSVG, seedFrom } from './ink.js';
 import { createDesk, coordsHTML } from './desk.js';
 import { createEngine, grade, toCp, WASM_BYTES } from './engine.js';
 import * as sound from './sound.js';
+import { nextPuzzleAt, whenText } from './daily-clock.js';
 
 const API = 'https://api.chess.com/pub';
 const ARCHIVE = 'https://raw.githubusercontent.com/praxstack/ChessLab/puzzle-archive/puzzles.json';
@@ -173,11 +174,12 @@ function fenResult(text, from = 'A position (FEN)') {
 }
 
 // Lichess's puzzles: only the starting position is read, never the solution or the themes.
-async function lichessPuzzleFen(id = 'daily') {
+async function lichessPuzzle(id = 'daily') {
   const j = await getJson(`https://lichess.org/api/puzzle/${id}`, { headers: { Accept: 'application/json' } });
   if (!j.puzzle || !j.puzzle.fen) throw new Error('No position in the reply');
-  return j.puzzle.fen;
+  return { fen: j.puzzle.fen, id: /^[A-Za-z0-9]{5}$/.test(j.puzzle.id || '') ? j.puzzle.id : '' };
 }
+const lichessPuzzleFen = async (id) => (await lichessPuzzle(id)).fen;
 
 // Lichess page names that are 8 letters long, so they aren't mistaken for game ids.
 const LICHESS_PAGES = /^(analysis|training|practice|tutorial|streamer|insights|features|calendar|password)$/i;
@@ -272,6 +274,9 @@ export function detect(raw, saved = new Map()) {
 /* -------------------------------------------------------------- The desk */
 
 const saved = new Map(); // date -> position, from the saved list, today and any random ones
+const names = new Map(); // date -> Chess.com's name for that day's puzzle
+const lichessSaved = new Map(); // date (UTC) -> { id, fen }: Lichess's puzzle of that day
+const utcIso = () => new Date().toISOString().slice(0, 10);
 let todayIso = '';
 let todayFen = '';
 let desk = { kind: 'today', fen: '', iso: '' };
@@ -312,20 +317,24 @@ function boardChanged() {
   updateCheckButton();
 }
 
-function showOnDesk({ kind, fen, iso = '', title, source }) {
-  desk = { kind, fen, iso, title };
+function showOnDesk({ kind, fen, iso = '', title, source, name = '', lid = '' }) {
+  desk = { kind, fen, iso, title, lid };
   const seq = ++deskSeq;
   $('desk-title').textContent = title;
   say('desk-status', '');
   const turn = $('desk-turn');
   turn.textContent = `${sideText(fen)}.`;
   $('desk-flip').hidden = !blackToMove(fen);
+  $('card-date-row').hidden = !iso && kind !== 'lichess';
   $('card-date').textContent = iso ? longDate(iso) : 'today';
+  showName(name || (iso && kind !== 'lichess' ? names.get(iso) || '' : ''));
   $('card-side').textContent = blackToMove(fen) ? 'black' : 'white';
   $('card-src').textContent = source;
+  showNext();
   const go = $('go-analysis');
   go.href = analysisUrl(fen);
   $('go-explorer').href = explorerUrl(fen);
+  showSolve();
   $('copy-fen').disabled = false;
   play.load(fen).then(() => {
     if (seq !== deskSeq) return;
@@ -342,6 +351,7 @@ function deskFailed(text) {
   $('desk-flip').hidden = true;
   $('go-analysis').href = DAILY_PAGE;
   $('go-explorer').href = DAILY_PAGE;
+  $('go-solve').hidden = true;
   $('copy-fen').disabled = true;
   say('desk-status', text, 'red');
 }
@@ -353,7 +363,7 @@ function bringDeskIntoView() {
   }
 }
 
-/** Only the position and the date are read. The answer (pgn) and the name (title) are ignored on purpose. */
+/** The position, the date and the name are read. The answer (pgn) is ignored on purpose. */
 function puzzleIso(j) {
   const m = /\/daily\/(\d{4}-\d{2}-\d{2})/.exec(j.url || '');
   return m ? m[1] : new Date((j.publish_time || 0) * 1000).toISOString().slice(0, 10);
@@ -362,7 +372,9 @@ function puzzleIso(j) {
 async function getPuzzle(path) {
   const j = await getJson(`${API}/puzzle${path}`, { cache: path ? 'no-store' : 'no-cache' });
   if (!j.fen || !cleanFen(j.fen)) throw new Error('No position in the reply');
-  return { fen: j.fen, iso: puzzleIso(j) };
+  const iso = puzzleIso(j);
+  if (typeof j.title === 'string' && j.title.trim()) names.set(iso, j.title.trim().slice(0, 120));
+  return { fen: j.fen, iso };
 }
 
 let todaySeq = 0;
@@ -378,15 +390,88 @@ async function loadToday({ toDesk }) {
     saved.set(p.iso, p.fen); // today always counts as saved, even before the saved list catches up
     $('cal-jump').max = todayIso.slice(0, 7);
     refreshPaste();
-    if ((toDesk && deskSeq === deskAt) || (desk.kind === 'today' && changed)) {
-      showOnDesk({ kind: 'today', fen: p.fen, iso: p.iso, title: 'Today’s puzzle', source: 'Chess.com daily' });
+    planNext();
+    if ((toDesk && deskSeq === deskAt) || (desk.kind === 'today' && changed && !play.moved)) {
+      showOnDesk({ kind: 'today', fen: p.fen, iso: p.iso, title: 'Today’s puzzle', source: 'Chess.com daily puzzle' });
     } else {
       renderCalendar();
+      // Mid-way through yesterday's puzzle: leave the pieces where they are and say the new one is out.
+      if (desk.kind === 'today' && changed) {
+        desk = { ...desk, kind: 'date', title: `Puzzle of ${shortDate(desk.iso)}` };
+        $('desk-title').textContent = desk.title;
+        showNext();
+        showSolve();
+        say('desk-status', 'Today’s new puzzle is out. Tap Today’s to put it on the board.');
+      }
     }
   } catch {
+    if (seq === todaySeq) {
+      if (todayIso) planNext();
+      // Never reached Chess.com yet: try again in a minute, and only fill the board if it's still empty then.
+      else {
+        clearTimeout(nextTimer);
+        nextTimer = setTimeout(() => loadToday({ toDesk: !desk.fen }), 60 * 1000);
+      }
+    }
     if (seq !== todaySeq || !toDesk || deskSeq !== deskAt) return;
-    deskFailed('Couldn’t reach Chess.com just now. The button opens Chess.com’s own puzzle page instead. Reload to try again.');
+    deskFailed('Couldn’t reach Chess.com just now. The button opens Chess.com’s own puzzle page instead. Trying again in a minute.');
   }
+}
+
+// The next daily puzzle: its time on the puzzle card, and a timer that
+// switches an open page to it. Chess.com can be a few minutes late, so once
+// it's due the page asks again every 5 minutes, then every half hour.
+let nextTimer = 0;
+
+// A puzzle's name often gives the answer away ("Queen sac wins"), so it stays covered until tapped.
+function showName(name) {
+  const btn = $('card-name');
+  $('card-name-row').hidden = !name;
+  btn.dataset.name = name;
+  btn.textContent = 'tap to show';
+  btn.classList.remove('is-shown');
+  btn.setAttribute('aria-label', 'Show the puzzle’s name. It can hint at the answer.');
+}
+$('card-name').addEventListener('click', (e) => {
+  const btn = e.currentTarget;
+  const shown = btn.classList.toggle('is-shown');
+  btn.textContent = shown ? btn.dataset.name : 'tap to show';
+  btn.setAttribute('aria-label', shown ? `Name: ${btn.dataset.name}. Tap to cover it again.` : 'Show the puzzle’s name. It can hint at the answer.');
+});
+
+// A daily puzzle on the board also gets a link to its own page on Chess.com or Lichess, which marks each move.
+function showSolve() {
+  const solve = $('go-solve');
+  if (desk.kind === 'lichess') {
+    solve.hidden = !desk.lid;
+    solve.href = `https://lichess.org/training/${desk.lid}`;
+    solve.textContent = 'Solve it on Lichess';
+    return;
+  }
+  solve.hidden = !(desk.iso && ['today', 'date', 'random'].includes(desk.kind));
+  if (!solve.hidden) {
+    solve.href = `${DAILY_PAGE}/${desk.iso}`;
+    solve.textContent = desk.kind === 'today' ? 'Solve today’s puzzle on Chess.com' : `Solve the ${shortDate(desk.iso)} puzzle on Chess.com`;
+  }
+}
+function showNext() {
+  const row = $('card-next-row');
+  row.hidden = desk.kind !== 'today' || !todayIso;
+  if (!row.hidden) $('card-next').textContent = whenText(nextPuzzleAt(todayIso));
+}
+
+function planNext() {
+  clearTimeout(nextTimer);
+  if (!todayIso) return;
+  showNext();
+  const late = Date.now() - nextPuzzleAt(todayIso);
+  let wait;
+  if (late < 0) wait = Math.min(-late + 30 * 1000, 30 * 60 * 1000); // a short nap at most, so a sleeping device doesn't drift
+  else wait = late < 2 * 60 * 60 * 1000 ? 5 * 60 * 1000 : 30 * 60 * 1000;
+  nextTimer = setTimeout(() => {
+    if (Date.now() >= nextPuzzleAt(todayIso)) loadToday({ toDesk: false });
+    else planNext();
+  }, wait);
 }
 
 function loadSavedDate(iso) {
@@ -398,7 +483,7 @@ function loadSavedDate(iso) {
     fen,
     iso,
     title: isToday ? 'Today’s puzzle' : `Puzzle of ${shortDate(iso)}`,
-    source: 'Chess.com daily',
+    source: 'Chess.com daily puzzle',
   });
   bringDeskIntoView();
 }
@@ -422,7 +507,7 @@ $('load-random').addEventListener('click', async () => {
       renderCalendar(); // something else went on the board meanwhile; just mark the new date
       return;
     }
-    showOnDesk({ kind: 'random', fen: p.fen, iso: p.iso, title: 'A random puzzle', source: 'Chess.com daily' });
+    showOnDesk({ kind: 'random', fen: p.fen, iso: p.iso, title: 'A random puzzle', source: 'Chess.com daily (random day)' });
   } catch {
     if (deskSeq !== deskAt) return;
     say('desk-status', 'Couldn’t get a random puzzle from Chess.com. Try again in a moment.', 'red');
@@ -433,9 +518,9 @@ $('load-lichess').addEventListener('click', async () => {
   const deskAt = deskSeq;
   say('desk-status', 'Getting the Lichess puzzle…');
   try {
-    const fen = await lichessPuzzleFen();
+    const { fen, id } = await lichessPuzzle();
     if (deskSeq !== deskAt) return; // something else went on the board meanwhile
-    showOnDesk({ kind: 'lichess', fen, title: 'Lichess puzzle of the day', source: 'Lichess daily' });
+    showOnDesk({ kind: 'lichess', fen, title: 'Lichess puzzle of the day', source: 'Lichess puzzle of the day', name: id ? `puzzle #${id}` : '', lid: id });
   } catch {
     if (deskSeq !== deskAt) return;
     say('desk-status', 'Couldn’t reach Lichess. Try again in a moment.', 'red');
@@ -576,13 +661,16 @@ $('engine-show').addEventListener('click', () => {
 /* -------------------------------------------------------------- Calendar */
 
 let calMonth = null; // { y, m } with m from 0
+let calSource = 'chesscom'; // whose daily puzzles the pop-up shows: 'chesscom' | 'lichess'
 const monthOf = (iso) => ({ y: Number(iso.slice(0, 4)), m: Number(iso.slice(5, 7)) - 1 });
 const monthName = ({ y, m }) => new Date(Date.UTC(y, m, 1)).toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 
 function dayCell(iso, d, lastIso) {
   const li = document.createElement('li');
   li.className = 'cal__cell';
-  const fen = saved.get(iso);
+  const fromLichess = calSource === 'lichess';
+  const fen = fromLichess ? lichessSaved.get(iso)?.fen : saved.get(iso);
+  const isToday = iso === lastIso;
   const long = fmt(iso, { weekday: 'long', day: 'numeric', month: 'long' });
   let el;
   if (iso > lastIso) {
@@ -593,16 +681,20 @@ function dayCell(iso, d, lastIso) {
     el = document.createElement('button');
     el.type = 'button';
     el.className = 'cal__day is-saved';
-    if (iso === todayIso) el.classList.add('is-today');
+    if (isToday) el.classList.add('is-today');
     el.dataset.iso = iso;
-    el.setAttribute('aria-label', `${long}${iso === todayIso ? ', today' : ''}, ${sideText(fen)}. Puts it on the board.`);
+    el.setAttribute('aria-label', `${long}${isToday ? ', today' : ''}, ${sideText(fen)}. Puts it on the board.`);
+  } else if (fromLichess) {
+    el = document.createElement('span');
+    el.className = 'cal__day is-missing';
+    el.setAttribute('aria-label', `${long}, not saved`);
   } else {
     el = document.createElement('a');
     el.className = 'cal__day';
     el.href = `${DAILY_PAGE}/${iso}`;
     el.setAttribute('aria-label', `${long}, opens Chess.com’s puzzle page`);
   }
-  if (desk.iso === iso && desk.kind !== 'lichess') {
+  if (desk.iso === iso && (desk.kind === 'lichess') === fromLichess) {
     el.classList.add('is-on');
     if (el.tagName === 'BUTTON') el.setAttribute('aria-current', 'true');
   }
@@ -611,7 +703,7 @@ function dayCell(iso, d, lastIso) {
   n.textContent = String(d);
   el.append(n);
   if (fen) {
-    el.insertAdjacentHTML('beforeend', markSVG('circle', 115, 100, seedFrom(`cal:${iso}`), 'cal__loop'));
+    el.insertAdjacentHTML('beforeend', markSVG('circle', 115, 100, seedFrom(`cal:${calSource}:${iso}`), 'cal__loop'));
     const king = document.createElement('img');
     king.className = 'cal__king';
     king.src = `/assets/pieces/${blackToMove(fen) ? 'b' : 'w'}K.svg`;
@@ -633,7 +725,7 @@ function refreshPaste() {
 function renderCalendar() {
   if (!calMonth) calMonth = monthOf(localIso());
   const { y, m } = calMonth;
-  const lastIso = todayIso || localIso();
+  const lastIso = calSource === 'lichess' ? utcIso() : todayIso || localIso();
   const grid = $('cal-grid');
   grid.textContent = '';
   const first = new Date(Date.UTC(y, m, 1)).getUTCDay();
@@ -649,11 +741,13 @@ function renderCalendar() {
   const lastMonth = monthOf(lastIso);
   $('cal-next').disabled = y > lastMonth.y || (y === lastMonth.y && m >= lastMonth.m);
   $('cal-jump').value = `${y}-${String(m + 1).padStart(2, '0')}`;
-  // Draw each loop once, the first time it shows up.
+  // Draw each loop once, the first time it shows up in the open pop-up.
+  if (!$('cal-pop').open) return;
   let k = 0;
   grid.querySelectorAll('.is-saved').forEach((el) => {
-    if (drawnLoops.has(el.dataset.iso)) return;
-    drawnLoops.add(el.dataset.iso);
+    const key = `${calSource}:${el.dataset.iso}`;
+    if (drawnLoops.has(key)) return;
+    drawnLoops.add(key);
     drawStrokes(el.querySelector('.cal__loop'), 120 + k * 140);
     k += 1;
   });
@@ -679,8 +773,72 @@ $('cal-jump').addEventListener('change', (e) => {
 });
 $('cal-grid').addEventListener('click', (e) => {
   const day = e.target.closest('button.cal__day');
-  if (day) loadSavedDate(day.dataset.iso);
+  if (!day) return;
+  closeCalendar();
+  if (calSource === 'lichess') loadLichessDate(day.dataset.iso);
+  else loadSavedDate(day.dataset.iso);
 });
+
+function loadLichessDate(iso) {
+  const p = lichessSaved.get(iso);
+  if (!p) return;
+  showOnDesk({ kind: 'lichess', fen: p.fen, iso, title: `Lichess puzzle of ${shortDate(iso)}`, source: 'Lichess puzzle of the day', name: `puzzle #${p.id}`, lid: p.id });
+  bringDeskIntoView();
+}
+
+function setCalSource(src) {
+  calSource = src;
+  $('cal-src').querySelectorAll('.cal-src__opt').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.src === src)));
+  $('cal-key-chesscom').hidden = src !== 'chesscom';
+  $('cal-key-lichess').hidden = src !== 'lichess';
+}
+$('cal-src').addEventListener('click', (e) => {
+  const opt = e.target.closest('.cal-src__opt');
+  if (!opt || opt.dataset.src === calSource) return;
+  setCalSource(opt.dataset.src);
+  renderCalendar();
+});
+
+// The calendar lives in a pop-up, opened from "Pick a date" next to the board.
+const calPop = $('cal-pop');
+function openCalendar() {
+  setCalSource(desk.kind === 'lichess' ? 'lichess' : 'chesscom');
+  if (desk.iso) calMonth = monthOf(desk.iso);
+  if (typeof calPop.showModal === 'function') calPop.showModal();
+  else calPop.setAttribute('open', '');
+  renderCalendar();
+  (calPop.querySelector('.cal__day.is-on') || calPop.querySelector('.cal__day.is-today') || $('cal-close')).focus();
+}
+function closeCalendar() {
+  if (typeof calPop.close === 'function') calPop.close();
+  else calPop.removeAttribute('open');
+}
+// The FEN/PGN help sheet: opens from under the paste box, closes on × or a tap outside.
+const howSheet = $('how-sheet');
+$('how-open').addEventListener('click', () => {
+  if (typeof howSheet.showModal === 'function') howSheet.showModal();
+  else howSheet.setAttribute('open', '');
+  $('how-close').focus();
+});
+function closeHow() {
+  if (typeof howSheet.close === 'function') howSheet.close();
+  else howSheet.removeAttribute('open');
+}
+$('how-close').addEventListener('click', closeHow);
+howSheet.addEventListener('click', (e) => {
+  if (e.target === howSheet) closeHow();
+  // A link inside the sheet (to "My games") closes it and jumps there.
+  if (e.target.closest('[data-how-close]')) closeHow();
+});
+howSheet.addEventListener('close', () => $('how-open').focus({ preventScroll: true }));
+
+$('pick-date').addEventListener('click', openCalendar);
+$('cal-close').addEventListener('click', closeCalendar);
+// A tap on the dimmed page around the pop-up closes it too.
+calPop.addEventListener('click', (e) => {
+  if (e.target === calPop) closeCalendar();
+});
+calPop.addEventListener('close', () => $('pick-date').focus({ preventScroll: true }));
 
 async function loadSaved() {
   try {
@@ -688,6 +846,14 @@ async function loadSaved() {
     for (const [iso, fen] of Object.entries(j.puzzles || {})) {
       if (/^\d{4}-\d{2}-\d{2}$/.test(iso) && typeof fen === 'string' && cleanFen(fen) && !saved.has(iso)) saved.set(iso, fen);
     }
+    for (const [iso, name] of Object.entries(j.names || {})) {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(iso) && typeof name === 'string' && name.trim() && !names.has(iso)) names.set(iso, name.trim().slice(0, 120));
+    }
+    for (const [iso, p] of Object.entries(j.lichess || {})) {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(iso) && p && /^[A-Za-z0-9]{5}$/.test(p.id || '') && typeof p.fen === 'string' && cleanFen(p.fen)) lichessSaved.set(iso, { id: p.id, fen: p.fen });
+    }
+    // The name may arrive after the puzzle went on the board.
+    if (desk.iso && desk.kind !== 'lichess' && names.has(desk.iso) && $('card-name-row').hidden) showName(names.get(desk.iso));
   } catch {
     /* no saved list yet: today still shows, other dates open Chess.com's page */
   }

@@ -98,24 +98,29 @@
       <p class="note-hand note-hand--red desk__turn" id="desk-turn">Setting up the board.</p>
       <p class="note-hand desk__flip" id="desk-flip" hidden>On Chess.com Black plays from the top. Use its flip button there.</p>
       <div class="desk__go">
-        <a class="btn btn--cc" id="go-analysis" href="https://www.chess.com/daily"><img class="btn--cc__pawn" src="/assets/pieces/wP.svg" alt="" width="45" height="45">Open it on Chess.com</a>
+        <a class="btn btn--cc" id="go-analysis" href="https://www.chess.com/daily"><img class="btn--cc__pawn" src="/assets/pieces/wP.svg" alt="" width="45" height="45">Analyze it on Chess.com</a>
+        <a class="btn btn--plain desk__solve" id="go-solve" href="https://www.chess.com/daily" hidden>Solve this day’s puzzle on Chess.com</a>
         <a class="btn btn--plain" id="go-explorer" href="https://www.chess.com/daily">Opening explorer</a>
         <button class="btn btn--plain" id="copy-fen" type="button" disabled>Copy FEN</button>
       </div>
+      <p class="desk__goes" id="desk-goes"><b>Analyze</b> opens this position on Chess.com’s analysis board, if you’d rather work it out there than here.</p>
       <p class="desk__status" id="desk-status" role="status" aria-live="polite"></p>
       <noscript><p class="desk__status">This page needs JavaScript to read the puzzle. The button opens Chess.com’s own daily puzzle page.</p></noscript>
 
       <div class="printout desk__card">
         <p class="printout__head">puzzle card</p>
-        <p class="printout__line desk__row"><span>date</span><span class="desk__dots" aria-hidden="true"></span><span id="card-date">today</span></p>
+        <p class="printout__line desk__row" id="card-date-row"><span>date</span><span class="desk__dots" aria-hidden="true"></span><span id="card-date">today</span></p>
+        <p class="printout__line desk__row" id="card-name-row" hidden><span>name</span><span class="desk__dots" aria-hidden="true"></span><button class="desk__reveal" id="card-name" type="button">tap to show</button></p>
         <p class="printout__line desk__row"><span>to move</span><span class="desk__dots" aria-hidden="true"></span><span id="card-side">…</span></p>
-        <p class="printout__line desk__row"><span>from</span><span class="desk__dots" aria-hidden="true"></span><span id="card-src">Chess.com daily</span></p>
+        <p class="printout__line desk__row" id="card-next-row" hidden title="Your own time. Chess.com changes the daily puzzle at midnight US Pacific time."><span>next one</span><span class="desk__dots" aria-hidden="true"></span><span id="card-next">…</span></p>
+        <p class="printout__line desk__row"><span>from</span><span class="desk__dots" aria-hidden="true"></span><span id="card-src">Chess.com daily puzzle</span></p>
         <p class="printout__line desk__row"><span>answer</span><span class="desk__dots" aria-hidden="true"></span><span class="printout__flag">hidden</span></p>
       </div>
 
       <div class="desk__swap">
         <p class="note-hand desk__swap-note">Or put another one on the board:</p>
         <div class="desk__swap-btns">
+          <button class="btn btn--plain btn--small" id="pick-date" type="button" aria-haspopup="dialog" aria-controls="cal-pop">Pick a date</button>
           <button class="btn btn--plain btn--small" id="load-today" type="button">Today’s</button>
           <button class="btn btn--plain btn--small" id="load-random" type="button">A random one</button>
           <button class="btn btn--plain btn--small" id="load-lichess" type="button">Lichess daily</button>
@@ -124,32 +129,35 @@
     </div>
   </section>
 
-  <section class="cal rows" id="calendar" aria-labelledby="cal-title" data-ink-group>
-    <div class="cal__head">
-      <h2 id="cal-title" class="h2">Every daily puzzle, <span class="ink ink--underline" data-draw>by date<svg class="ink__svg" viewBox="0 0 748 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M13.98 79.41 C29.25 79.61 75.23 80.42 105.61 80.61 C135.99 80.8 166.06 80.73 196.28 80.55 C226.5 80.37 256.71 80 286.93 79.55 C317.15 79.09 347.36 78.34 377.58 77.82 C407.8 77.29 438.01 76.17 468.23 76.38 C498.46 76.59 528.7 79.17 558.92 79.07 C589.14 78.96 619.34 76.26 649.56 75.74 C679.77 75.22 725.11 75.91 740.22 75.94"/></svg></span></h2>
-      <p class="prose cal__intro">Chess.com has posted a puzzle every day for years. Pick a day and it goes on the board above.</p>
+  <dialog class="cal-pop" id="cal-pop" aria-labelledby="cal-title">
+    <div class="cal-pop__top">
+      <h2 id="cal-title" class="cal-pop__title">Pick a day</h2>
+      <button class="btn btn--plain btn--small cal-pop__close" id="cal-close" type="button" aria-label="Close">×</button>
     </div>
-
-    <div class="cal__book">
-      <div class="cal__bar">
-        <button class="btn btn--plain btn--small cal__step" id="cal-prev" type="button" aria-label="Previous month">‹</button>
-        <p class="cal__month" id="cal-month" aria-live="polite">This month</p>
-        <button class="btn btn--plain btn--small cal__step" id="cal-next" type="button" aria-label="Next month">›</button>
-        <div class="cal__jump">
-          <label for="cal-jump">Jump to</label>
-          <input id="cal-jump" type="month">
-        </div>
+    <div class="cal-src" id="cal-src" role="radiogroup" aria-label="Whose daily puzzle">
+      <button class="cal-src__opt" type="button" role="radio" aria-checked="true" data-src="chesscom">Chess.com</button>
+      <button class="cal-src__opt" type="button" role="radio" aria-checked="false" data-src="lichess">Lichess</button>
+    </div>
+    <div class="cal__bar">
+      <button class="btn btn--plain btn--small cal__step" id="cal-prev" type="button" aria-label="Previous month">‹</button>
+      <p class="cal__month" id="cal-month" aria-live="polite">This month</p>
+      <button class="btn btn--plain btn--small cal__step" id="cal-next" type="button" aria-label="Next month">›</button>
+      <div class="cal__jump">
+        <label for="cal-jump">Jump to</label>
+        <input id="cal-jump" type="month">
       </div>
-      <ol class="cal__days" aria-hidden="true"><li>Sun</li><li>Mon</li><li>Tue</li><li>Wed</li><li>Thu</li><li>Fri</li><li>Sat</li></ol>
-      <ol class="cal__grid" id="cal-grid" aria-labelledby="cal-month"></ol>
     </div>
-
-    <div class="cal__side">
-      <p class="note-hand cal__key"><span class="ink ink--circle cal__sample" data-draw>12<svg class="ink__svg" viewBox="0 0 101 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M17.74 10.44 C19.47 9.42 24.45 5.86 28.09 4.3 C31.73 2.74 35.71 1.69 39.58 1.05 C43.46 0.42 47.53 0.05 51.36 0.46 C55.2 0.88 59 2.23 62.58 3.52 C66.15 4.81 69.48 6.49 72.81 8.22 C76.13 9.95 79.74 11.49 82.52 13.9 C85.31 16.31 87.29 19.66 89.51 22.68 C91.72 25.69 94.24 28.64 95.81 32.01 C97.37 35.39 98.12 39.19 98.9 42.91 C99.69 46.63 100.64 50.55 100.51 54.35 C100.38 58.16 99.32 62.08 98.11 65.75 C96.91 69.42 95.34 73.12 93.25 76.37 C91.17 79.61 88.4 82.51 85.62 85.22 C82.83 87.93 79.94 90.84 76.56 92.63 C73.18 94.42 69.09 95.19 65.34 95.96 C61.6 96.74 57.8 97.31 54.08 97.29 C50.37 97.28 46.61 96.66 43.04 95.87 C39.46 95.07 35.95 93.96 32.63 92.53 C29.31 91.1 25.93 89.48 23.11 87.3 C20.3 85.12 18.04 82.18 15.75 79.44 C13.46 76.7 11.12 73.95 9.36 70.87 C7.59 67.78 6.35 64.38 5.17 60.93 C4 57.49 2.62 53.86 2.3 50.21 C1.98 46.56 2.54 42.71 3.28 39.04 C4.01 35.38 5.03 31.6 6.69 28.24 C8.34 24.89 10.72 21.75 13.21 18.93 C15.7 16.11 18.5 13.35 21.62 11.3 C24.73 9.26 28.37 7.75 31.9 6.65 C35.43 5.54 39.17 4.98 42.78 4.67 C46.4 4.36 51.79 4.75 53.59 4.76"/></svg></span> Circled days are saved here. They open on the board above, no hints.</p>
-      <p class="note-hand note-hand--red cal__key" data-write>Today is circled in red.</p>
-      <p class="note-hand cal__key cal__key--plain" data-write>A plain date opens Chess.com’s own puzzle page. That one marks each move right or wrong.</p>
+    <ol class="cal__days" aria-hidden="true"><li>Sun</li><li>Mon</li><li>Tue</li><li>Wed</li><li>Thu</li><li>Fri</li><li>Sat</li></ol>
+    <ol class="cal__grid" id="cal-grid" aria-labelledby="cal-month"></ol>
+    <div class="cal-pop__key" id="cal-key-chesscom">
+      <p><span class="ink ink--circle cal__sample" data-draw>12<svg class="ink__svg" viewBox="0 0 101 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M17.74 10.44 C19.47 9.42 24.45 5.86 28.09 4.3 C31.73 2.74 35.71 1.69 39.58 1.05 C43.46 0.42 47.53 0.05 51.36 0.46 C55.2 0.88 59 2.23 62.58 3.52 C66.15 4.81 69.48 6.49 72.81 8.22 C76.13 9.95 79.74 11.49 82.52 13.9 C85.31 16.31 87.29 19.66 89.51 22.68 C91.72 25.69 94.24 28.64 95.81 32.01 C97.37 35.39 98.12 39.19 98.9 42.91 C99.69 46.63 100.64 50.55 100.51 54.35 C100.38 58.16 99.32 62.08 98.11 65.75 C96.91 69.42 95.34 73.12 93.25 76.37 C91.17 79.61 88.4 82.51 85.62 85.22 C82.83 87.93 79.94 90.84 76.56 92.63 C73.18 94.42 69.09 95.19 65.34 95.96 C61.6 96.74 57.8 97.31 54.08 97.29 C50.37 97.28 46.61 96.66 43.04 95.87 C39.46 95.07 35.95 93.96 32.63 92.53 C29.31 91.1 25.93 89.48 23.11 87.3 C20.3 85.12 18.04 82.18 15.75 79.44 C13.46 76.7 11.12 73.95 9.36 70.87 C7.59 67.78 6.35 64.38 5.17 60.93 C4 57.49 2.62 53.86 2.3 50.21 C1.98 46.56 2.54 42.71 3.28 39.04 C4.01 35.38 5.03 31.6 6.69 28.24 C8.34 24.89 10.72 21.75 13.21 18.93 C15.7 16.11 18.5 13.35 21.62 11.3 C24.73 9.26 28.37 7.75 31.9 6.65 C35.43 5.54 39.17 4.98 42.78 4.67 C46.4 4.36 51.79 4.75 53.59 4.76"/></svg></span> Circled: goes on the board here. Today is circled in red.</p>
+      <p><span class="cal__sample cal__sample--plain">12</span> Plain: opens that day’s puzzle on Chess.com, which marks each move right or wrong. Chess.com shares old puzzles only at random, so this page collects about 30 an hour and more days get circled each day.</p>
     </div>
-  </section>
+    <div class="cal-pop__key" id="cal-key-lichess" hidden>
+      <p><span class="ink ink--circle cal__sample" data-draw>12<svg class="ink__svg" viewBox="0 0 101 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M17.74 10.44 C19.47 9.42 24.45 5.86 28.09 4.3 C31.73 2.74 35.71 1.69 39.58 1.05 C43.46 0.42 47.53 0.05 51.36 0.46 C55.2 0.88 59 2.23 62.58 3.52 C66.15 4.81 69.48 6.49 72.81 8.22 C76.13 9.95 79.74 11.49 82.52 13.9 C85.31 16.31 87.29 19.66 89.51 22.68 C91.72 25.69 94.24 28.64 95.81 32.01 C97.37 35.39 98.12 39.19 98.9 42.91 C99.69 46.63 100.64 50.55 100.51 54.35 C100.38 58.16 99.32 62.08 98.11 65.75 C96.91 69.42 95.34 73.12 93.25 76.37 C91.17 79.61 88.4 82.51 85.62 85.22 C82.83 87.93 79.94 90.84 76.56 92.63 C73.18 94.42 69.09 95.19 65.34 95.96 C61.6 96.74 57.8 97.31 54.08 97.29 C50.37 97.28 46.61 96.66 43.04 95.87 C39.46 95.07 35.95 93.96 32.63 92.53 C29.31 91.1 25.93 89.48 23.11 87.3 C20.3 85.12 18.04 82.18 15.75 79.44 C13.46 76.7 11.12 73.95 9.36 70.87 C7.59 67.78 6.35 64.38 5.17 60.93 C4 57.49 2.62 53.86 2.3 50.21 C1.98 46.56 2.54 42.71 3.28 39.04 C4.01 35.38 5.03 31.6 6.69 28.24 C8.34 24.89 10.72 21.75 13.21 18.93 C15.7 16.11 18.5 13.35 21.62 11.3 C24.73 9.26 28.37 7.75 31.9 6.65 C35.43 5.54 39.17 4.98 42.78 4.67 C46.4 4.36 51.79 4.75 53.59 4.76"/></svg></span> Circled: Lichess’s puzzle of that day. It goes on the board here.</p>
+      <p><span class="cal__sample cal__sample--plain">12</span> Plain: not saved. Lichess only shares today’s puzzle, so its days fill in from 28 October 2026 onwards, one a day.</p>
+    </div>
+  </dialog>
 
   <section class="paste rows" id="paste-sec" aria-labelledby="paste-title" data-ink-group>
     <h2 id="paste-title" class="h2 paste__title">Bring your own <span class="ink ink--highlight" data-draw>position<svg class="ink__svg" viewBox="0 0 419 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M3.88 61.31 C15.34 61.22 49.76 61.03 72.62 60.78 C95.49 60.53 118.25 60.34 141.06 59.82 C163.87 59.29 186.67 58.16 209.48 57.63 C232.29 57.11 255.1 56.85 277.92 56.66 C300.73 56.48 323.55 56.62 346.37 56.51 C369.18 56.4 403.4 56.09 414.81 56"/></svg></span></h2>
@@ -157,6 +165,7 @@
     <div class="paste__main">
       <label class="paste__label" for="paste">Paste a FEN, a PGN, or a game, puzzle or study link</label>
       <textarea id="paste" class="paste__box" rows="4" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4"></textarea>
+      <button class="paste__how" id="how-open" type="button" aria-haspopup="dialog" aria-controls="how-sheet">Where do I find a FEN or PGN?</button>
       <p class="note-hand paste__reply" id="paste-reply" aria-live="polite"></p>
       <div class="paste__go">
         <button class="btn btn--pen" id="paste-open" type="button" disabled>Open on Chess.com</button>
@@ -179,6 +188,53 @@
       </div>
     </div>
   </section>
+
+  <dialog class="howto" id="how-sheet" aria-labelledby="how-title">
+    <div class="howto__top">
+      <p class="howto__kicker">how to copy</p>
+      <button class="btn btn--plain btn--small howto__close" id="how-close" type="button" aria-label="Close">×</button>
+    </div>
+    <h2 class="howto__title" id="how-title">Getting a FEN or a PGN</h2>
+    <p class="howto__lede">A <b>FEN</b> is one position. A <b>PGN</b> is a whole game. Often you need neither: copy the page’s <b>link</b> and paste that.</p>
+
+    <section class="howto__part" aria-labelledby="how-puzzle">
+      <h3 id="how-puzzle">A Chess.com puzzle</h3>
+      <p><b>Daily puzzle, today or any day:</b> nothing to copy. Use <b>Today’s</b> or <b>Pick a date</b> by the board, or paste its link, like <code>chess.com/daily/2026-10-28</code>.</p>
+      <p><b>Rated Puzzles or Puzzle Rush:</b> these need your Chess.com login, which this page can’t see (your browser keeps each site’s sign-in to itself). When the puzzle ends, open it on Chess.com’s analysis board, then:</p>
+      <ol>
+        <li>Tap <b>Share</b> under the moves.</li>
+        <li>Open the <b>PGN</b> tab. The FEN sits just above the PGN.</li>
+        <li>Copy the FEN and paste it here.</li>
+      </ol>
+    </section>
+
+    <section class="howto__part" aria-labelledby="how-mine">
+      <h3 id="how-mine">Your own game on Chess.com</h3>
+      <p class="howto__quick">Quickest: copy the game’s address, <code>chess.com/game/live/…</code>, and paste it.</p>
+      <p><b>Website:</b></p>
+      <ol>
+        <li>Open the game from your <b>Game History</b>.</li>
+        <li>Tap <b>Share</b> at the bottom of the panel next to the board.</li>
+        <li>Open the <b>PGN</b> tab. Copy the PGN for the whole game, or the FEN above it for the position on the board.</li>
+      </ol>
+      <p><b>Android app:</b> open the game, tap <b>More</b> at the bottom left, then <b>Export PGN</b>.</p>
+      <p><b>iPhone or iPad app:</b> open the game and tap <b>Share</b>. It gives a link; paste that.</p>
+    </section>
+
+    <section class="howto__part" aria-labelledby="how-theirs">
+      <h3 id="how-theirs">Someone else’s game</h3>
+      <p>Type their username in <a href="#games" data-how-close>My games</a> on this page. Every public game shows up; tap one to replay it.</p>
+      <p>Or on Chess.com: open their profile, then <b>Games</b>, open the game, and follow the same Share steps.</p>
+    </section>
+
+    <section class="howto__part" aria-labelledby="how-lichess">
+      <h3 id="how-lichess">On Lichess</h3>
+      <p>Open the game and scroll below the board to <b>Share &amp; export</b> (on the analysis page it’s the <b>FEN &amp; PGN</b> tab). Copy the FEN or the PGN.</p>
+      <p>Or just copy the address. This page reads Lichess game, puzzle and study links.</p>
+    </section>
+
+    <p class="howto__end note-hand">Then paste it in the box. A FEN gets <b>Put it on the board</b>; a PGN or a link opens with <b>Open on Chess.com</b>.</p>
+  </dialog>
 
   <section class="played rows" id="games" aria-labelledby="games-title" data-ink-group>
     <h2 id="games-title" class="h2 played__title">Go over your own <span class="ink ink--underline" data-draw>games<svg class="ink__svg" viewBox="0 0 540 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M10.68 81.12 C21.6 81.02 54.4 80.22 76.24 80.52 C98.08 80.81 119.9 82.42 141.72 82.9 C163.55 83.37 185.37 83.77 207.19 83.37 C229 82.96 250.79 80.64 272.61 80.48 C294.43 80.31 316.27 82.46 338.09 82.37 C359.91 82.28 381.71 80.79 403.52 79.93 C425.33 79.07 447.13 77.88 468.94 77.21 C490.75 76.55 523.48 76.15 534.38 75.94"/></svg></span></h2>
@@ -220,6 +276,22 @@
           <p><b>iPad, in Safari:</b> tap Share (the square with an arrow), then Add to Home Screen, then Add.</p>
           <p><b>Android, in Chrome:</b> tap the ⋮ menu at the top right, then Add to Home screen, then Add.</p>
           <p>The icon opens this page in your normal browser, where you’re already signed in to Chess.com.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span>When the daily puzzle changes</span><i class="glyph glyph--plus" data-draw><svg class="ink__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M11.24 51.4 C15.72 51.26 29.27 50.91 38.09 50.56 C46.91 50.21 55.49 49.74 64.19 49.29 C72.89 48.85 85.93 48.12 90.28 47.88"/><path class="stroke" pathLength="1" d="M52.72 9.4 C52.16 14.07 50.05 28.15 49.34 37.4 C48.63 46.65 48.7 55.73 48.45 64.89 C48.21 74.06 47.98 87.82 47.88 92.4"/></svg></i></summary>
+        <div class="pz-setup__how">
+          <p>Chess.com changes its daily puzzle at midnight US Pacific time. In India that’s <b>12:30 PM</b> from March to early November, and <b>1:30 PM</b> from early November to March, when the US clocks go back.</p>
+          <p>So in the morning you still see the puzzle dated yesterday. That’s Chess.com’s today, not a stale page.</p>
+          <p>The puzzle card shows when the next one comes out, in your own time. Leave this page open and it switches to the new puzzle by itself.</p>
+        </div>
+      </details>
+      <details>
+        <summary><span>Why not my rated puzzles?</span><i class="glyph glyph--plus" data-draw><svg class="ink__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M11.24 51.4 C15.72 51.26 29.27 50.91 38.09 50.56 C46.91 50.21 55.49 49.74 64.19 49.29 C72.89 48.85 85.93 48.12 90.28 47.88"/><path class="stroke" pathLength="1" d="M52.72 9.4 C52.16 14.07 50.05 28.15 49.34 37.4 C48.63 46.65 48.7 55.73 48.45 64.89 C48.21 74.06 47.98 87.82 47.88 92.4"/></svg></i></summary>
+        <div class="pz-setup__how">
+          <p>Chess.com’s rated Puzzles, Puzzle Rush and Puzzle Battle live behind your Chess.com login, and Chess.com gives outside sites no way in. Only the daily puzzle is public.</p>
+          <p>This page can’t borrow your login either. Your browser keeps each site’s sign-in locked to that site, so askthemove.online can never see your Chess.com cookies. That lock is what keeps every account on the web safe.</p>
+          <p>So for rated puzzles, solve them on Chess.com. If you want one on this board, copy its FEN there (see <b>Where do I find a FEN or PGN?</b> by the paste box) and paste it here.</p>
         </div>
       </details>
       <details>
