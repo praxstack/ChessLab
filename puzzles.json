@@ -1,9 +1,49 @@
 {
-"note":"Chess.com daily puzzle positions by date, for the puzzle launcher. Positions only.",
+"note":"Daily puzzle positions and names by date (Chess.com), and Lichess daily puzzles by the date saved. No answers.",
 "puzzles":{
+"2009-01-28":"r1r4k/1p2BRpp/p7/b2Bp3/1P5q/4P3/6PP/3Q2K1 b - - 0 1",
+"2010-12-22":"1kq4r/2n2bp1/pB3p2/pP2p3/3p4/Q1b2B2/2P2PP1/R4K2 w - - 0 1",
+"2011-11-26":"2r2r2/p1q2pkp/2n1pNpb/2ppP3/3P3Q/2R5/PP4PP/5RK1 w - - 0 1",
+"2012-06-15":"rn2qrk1/1bppp1b1/p7/3nPN1Q/Pp1P4/3B4/1PP2PPP/R1B1K2R w KQ - 0 1",
+"2012-10-21":"2b5/pp5p/4p3/4Q3/2k1N2P/5K2/P1rp4/8 w - - 0 1",
+"2013-08-23":"2q2b1r/5ppp/rQp1k3/2p1P3/p1P1P3/P5PP/1P1BP3/R3KB1R w KQ - 0 1",
+"2013-12-07":"r1b2rk1/pp5p/2p2Rn1/5N2/8/1PB5/1P4P1/4R2K w - - 0 1",
+"2015-07-06":"r4rk1/pp3pp1/4pn1p/2p4P/2PP3R/4PNq1/PPQ3P1/1K5R w - - 0 1",
+"2015-09-23":"r4b1r/pp2p1pp/6k1/q1n5/1n1pP1N1/1Q6/PP1B1PPP/RN2K2R w KQ - 0 1",
+"2017-11-20":"5Q2/1p1k1p2/1b2bBp1/4P3/1P5P/3p2K1/6B1/2r5 w - - 0 1",
+"2018-04-14":"8/8/4p3/R2p1p2/2bP1P2/2k1K3/1pp5/2B5 w - - 0 1",
+"2019-07-14":"2k4r/ppp5/2p1b1Q1/4q3/3bP3/3B2P1/PPP1N2P/5R1K b - - 0 1",
+"2020-06-12":"r7/pb3k1p/1p1p4/4bPB1/P1p5/2P4P/1PB2K2/R7 b - - 1 1",
 "2021-04-11":"rnb2rk1/pp3pp1/4pb1p/2q5/2B5/P1N1PN2/1P2QPPP/R3K2R b KQ - 0 1",
 "2023-12-01":"8/4k1N1/4P3/p2K2p1/8/P6p/7n/8 w - - 0 1",
 "2024-01-18":"r2qk1nr/4bp2/p1ppb3/P4p2/5B2/3Q2P1/1PP1PPB1/R4RK1 w kq - 0 1",
-"2026-10-27":"1k5r/p1pB1p2/1bpp4/8/PP1PPn1q/N4P2/3Q2P1/3R1RK1 b - - 0 25"
+"2025-12-06":"2rr4/1b2R2N/6kp/4P1p1/pp1P4/q6P/B2Q1P2/6K1 w - - 0 31",
+"2026-02-04":"3q1rn1/2rn2kp/p5p1/1p6/1P1N4/P5PP/bB5K/2R1R3 w - - 0 1",
+"2026-10-27":"1k5r/p1pB1p2/1bpp4/8/PP1PPn1q/N4P2/3Q2P1/3R1RK1 b - - 0 25",
+"2026-10-28":"8/pR4p1/k2p2n1/2p1p1bp/1PP5/6PP/P4PBK/1r6 w - - 0 1"
+},
+"names":{
+"2009-01-28":"Countering Threats With Threats",
+"2010-12-22":"Mate in 4",
+"2011-11-26":"Mate in 4",
+"2012-06-15":"Mate in 5",
+"2012-10-21":"Mate in 2",
+"2013-08-23":"Dus Chotimirsky - Marshall , Kongress 1910",
+"2013-12-07":"1001 Brilliant ways to Checkmate by Reinfeld, #404",
+"2015-07-06":"Entrapment",
+"2015-09-23":"Atura - Rodriguez Costa Morir",
+"2017-11-20":"Pushed To The Limit",
+"2018-04-14":"Evgeny Libek, 2007",
+"2019-07-14":"Cracking The Shell",
+"2020-06-12":"Stretching the Board",
+"2025-12-06":"Reeling in the Catch",
+"2026-02-04":"Uncover the Grand Prize",
+"2026-10-28":"Nifty Hand Off"
+},
+"lichess":{
+"2026-10-28":{
+"id":"VTLk5",
+"fen":"4K3/3P4/pb6/2p3p1/2P3k1/1P6/P7/8 w - - 1 1"
+}
 }
 }
