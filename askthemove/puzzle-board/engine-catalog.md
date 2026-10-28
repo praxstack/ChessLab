@@ -88,3 +88,10 @@ Skipped: other Hugging Face "chess transformer" uploads that have no license or 
 - **Saved on the device:** files go into the browser's Cache Storage, as Lite does today. On iPhone and iPad, Safari may delete saved files after 7 days without a visit unless the page is added to the Home Screen. The picker should tell the learner that.
 - **Multi-thread engines (#2, #4)** need the page to send two extra headers (`Cross-Origin-Opener-Policy` and `Cross-Origin-Embedder-Policy`). Our calls to Chess.com, Lichess and GitHub already use CORS, so they should keep working with `credentialless`, but this needs testing before we turn it on. Until then, single-thread only.
 - **Memory:** a 99 MB engine plus its working memory needs roughly 200–300 MB (estimate, to measure). That's fine on iPads and recent phones; very old Android phones may close the tab. Fall back to Lite if the engine fails to start.
+
+## Decision (Prax, 28 Oct 2026)
+
+- **Desktop site: offer every entry**, including Allie 2.0, so the learner chooses.
+- Every heavy model gets a **big warning before it downloads**: its size, how long it might take, that it needs WebGPU and lots of memory, that the tab may freeze or crash, and on which devices it won't work. Rows 20–25 (DeepMind searchless, Maia-2, Lc0 BT3/BT4, C1-4B, Allie 2.0) and anything over 100 MB need a second "Yes, download it" confirmation. The download can be cancelled at any time.
+- Phones and tablets get the light list by default.
+- Build after Prax's weekly reset (around 31 Oct), as part of the browser-first app.
