@@ -433,7 +433,7 @@ $('card-name').addEventListener('click', (e) => {
 // A Chess.com daily puzzle on the board also gets a link to Chess.com's own page for that day, which marks each move.
 function showSolve() {
   const solve = $('go-solve');
-  solve.hidden = !(desk.iso && (desk.kind === 'today' || desk.kind === 'date'));
+  solve.hidden = !(desk.iso && ['today', 'date', 'random'].includes(desk.kind));
   if (!solve.hidden) {
     solve.href = `${DAILY_PAGE}/${desk.iso}`;
     solve.textContent = desk.kind === 'today' ? 'Solve today’s puzzle on Chess.com' : `Solve the ${shortDate(desk.iso)} puzzle on Chess.com`;
