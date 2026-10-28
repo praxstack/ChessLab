@@ -10,6 +10,8 @@ Prax is a chess beginner who can't visualise moves in their head. The page puts 
 
 The budget is $0. The page is static on Cloudflare Pages, with no server and no accounts.
 
+**Product direction (Prax, 28 Oct 2026):** all of AskTheMove is going browser-first. It will be one static client-side app on Cloudflare Pages with no app server. Stockfish and all storage live on the learner's device. The coach runs on the learner's own API key or through a tiny Worker. Design both features so they become parts of that app later and are not tied to this one page. The big build starts after Prax's weekly usage reset, around 31 Oct.
+
 ## What exists today
 
 | Part | File | What it does |
