@@ -30,11 +30,11 @@ Open [AskTheMove at localhost:8770](http://127.0.0.1:8770). Check `STOCKFISH_PAT
 For the built application on this server:
 
 ```sh
-npm run build:server
+npm run build
 npm start
 ```
 
-`npm run build` makes the browser app instead (`openspec/changes/browser-first-app/`): it needs no server, keeps data in the browser's IndexedDB, and `npx vite preview` serves it.
+`npm run build`, `npm run dev`, Docker and `scripts/host_on_mac.sh` all make the server app, which keeps games in the server's SQLite database. The browser app (`openspec/changes/browser-first-app/`) is a separate build while it catches up with the server app: `npm run dev:app` runs it with Vite, and `npm run build:app` builds it into `web/dist-app/` for `npm run preview:app`. It needs no server and keeps data in the browser's IndexedDB.
 
 Read [the application guide](docs/application.md) for accounts, studies, settings, backups, checks and limits. Start with [the product context](CONTEXT.md) and [the current OpenSpec change](openspec/changes/build-coach-web-platform/proposal.md) before changing product behavior.
 

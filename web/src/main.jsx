@@ -24,8 +24,9 @@ import './styles.css';
 
 const defaults = settingDefaults;
 function loadSettings() { try {return normalizeSettings(JSON.parse(localStorage.getItem('chesslab-settings') || '{}'));} catch {return defaults;} }
-// The app runs on its in-browser router unless built with VITE_BACKEND=server for the Node server.
-const serverBackend = import.meta.env.VITE_BACKEND === 'server';
+// The Node server's network path stays the default; only a build with VITE_BACKEND=local
+// (npm run build:app, npm run dev:app) runs on the in-browser router and IndexedDB.
+const serverBackend = import.meta.env.VITE_BACKEND !== 'local';
 async function api(path, body, signal) {
   if (!serverBackend) return localApi(path, body, signal);
   const response = await fetch(path, {method:body===undefined?'GET':'POST',headers:body===undefined?{}:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body),signal});

@@ -17,7 +17,7 @@ Browser (one tab)
 
 ## Seams
 
-1. `api(path, body, signal)` in `web/src/main.jsx` is the only data door (plus one `fetch` for PGN and study export). It becomes `localApi(path, body, signal)`, which returns the same JSON and throws the same `{message, status}` errors. A build flag `VITE_BACKEND=server` keeps today's network path for `just app` during the move.
+1. `api(path, body, signal)` in `web/src/main.jsx` is the only data door (plus one `fetch` for PGN and study export). It becomes `localApi(path, body, signal)`, which returns the same JSON and throws the same `{message, status}` errors. The network path stays the default until the browser app reaches parity: `npm run build`, `npm run dev`, `just app`, Docker and the Mac host script build the server app, and only `VITE_BACKEND=local` (`npm run build:app` into `web/dist-app/`, `npm run dev:app`) uses the local router.
 2. Route handlers live in `web/src/local/routes/*.js`, one file per area (games, review, training, rush, lessons, endgames, openings, positions, coach, status). Each takes `{store, engine, coach, now}` so tests inject fakes.
 3. Rules modules move from `server/` to `shared/` with no Node imports: `node:crypto` becomes `globalThis.crypto` (`randomUUID`, `crypto.subtle.digest` for hashes, made async where needed). `server/*.mjs` re-export from `shared/` so server tests keep passing.
 4. Storage interface: `get(collection, id)`, `put(collection, value)`, `list(collection, {index, value})`, `delete(collection, id)`, `exportAll()`, `importAll(json)`. Two implementations: `idb-store.js` (IndexedDB, one database `askthemove`, version 1) and `memory-store.js` (tests). Collections replace today's SQLite tables one to one (`games`, `game_reviews`, `bot_results`, `progress`, `lesson_sessions`, `puzzle_attempts`, `puzzle_profiles`, `puzzle_runs`, `daily_puzzles`, `review_practice`, `vision_runs`, `game_collections`, `collection_games`). `users`, `sessions` and `coach_daily` are not needed in the browser.
@@ -33,7 +33,7 @@ Browser (one tab)
 
 ## Hosting
 
-- `vite build` outputs `web/dist`. `web/public/_headers` sets a CSP: `connect-src 'self' https://tablebase.lichess.ovh https://lichess.org https://api.anthropic.com <coach worker origin>`, `script-src 'self' 'wasm-unsafe-eval'`, plus the security headers the site uses.
+- `npm run build:app` (`VITE_BACKEND=local`) outputs `web/dist-app`; plain `vite build` stays the server app until parity. `web/public/_headers` sets a CSP: `connect-src 'self' https://tablebase.lichess.ovh https://lichess.org https://api.anthropic.com <coach worker origin>`, `script-src 'self' 'wasm-unsafe-eval'`, plus the security headers the site uses.
 - Engine files are copied from `site/public/assets/engine/` into `web/public/engine/` with `COPYING.txt` (GPL v3), cached by the browser.
 - `npm run deploy:app` runs `wrangler pages deploy web/dist --project-name askthemove-app`. Documented in `docs/deploy-browser-app.md`.
 

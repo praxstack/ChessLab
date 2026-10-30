@@ -131,7 +131,7 @@ build() {
   mkdir -p "$REPO/.scratch"
   rm -rf "$next" "$old" "$mods"
   if [ -d node_modules ]; then mv node_modules "$mods"; fi
-  if ! npm ci --no-audit --no-fund || ! VITE_BACKEND=server npx --no-install vite build --outDir "$next" || [ ! -f "$next/index.html" ]; then
+  if ! npm ci --no-audit --no-fund || ! npx --no-install vite build --outDir "$next" || [ ! -f "$next/index.html" ]; then
     rm -rf node_modules "$next"
     if [ -d "$mods" ]; then mv "$mods" node_modules; fi
     fail "the install or build failed; the live site and its packages were left as they were."
@@ -590,7 +590,7 @@ case "${1:-setup}" in
     git worktree remove --force "$trial" 2>/dev/null || rm -rf "${trial:?}"
     git worktree prune
     git worktree add --detach "$trial" "$new" >/dev/null
-    if ! ( cd "$trial" && npm ci --no-audit --no-fund && VITE_BACKEND=server npx --no-install vite build --outDir "$trial/.scratch/dist-next" ) \
+    if ! ( cd "$trial" && npm ci --no-audit --no-fund && npx --no-install vite build --outDir "$trial/.scratch/dist-next" ) \
       || [ ! -f "$trial/.scratch/dist-next/index.html" ]; then
       git worktree remove --force "$trial"
       fail "the new version didn't install or build; the live site was left as it was."
