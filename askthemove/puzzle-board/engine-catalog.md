@@ -30,11 +30,11 @@ Strongest is not the same as biggest. Stockfish 19 full is the strongest engine 
 
 | # | Engine | What it is | Size to download | License | Can we host it? | Notes |
 |---|---|---|---|---|---|---|
-| 1 | **Stockfish 19 Lite, single** (today) | Newest Stockfish with a small "eye" (net) | **1.8 MB** | GPL-3.0 | Yes, already hosted | Fast, works everywhere. Default. |
+| 1 | **Stockfish 19 Lite, single** (today) | Newest Stockfish with a small "eye" (net) | **1.8 MB** | GPL-3.0 | Yes, already hosted | Fast. Works in any browser with WebAssembly (every current browser). Default. |
 | 2 | Stockfish 19 Lite, multi-thread | Same, uses several CPU cores | 1.7 MB | GPL-3.0 | Yes | Needs special page headers (see below). |
 | 3 | **Stockfish 19 full, single** | Newest Stockfish with the big net: the strongest engine here | **99.2 MB** | GPL-3.0 | Yes, split into parts | The "Deep" option. Over Cloudflare's 25 MB file limit, so we split it. |
 | 4 | Stockfish 19 full, multi-thread | Same, several cores, so faster and deeper | 99.1 MB | GPL-3.0 | Yes, split | Needs special headers. |
-| 5 | Stockfish 19 asm.js | Plain JavaScript, no WebAssembly | 3.2 MB | GPL-3.0 | Yes | Only for very old browsers. Slow and weak. |
+| 5 | Stockfish 19 asm.js | Plain JavaScript, no WebAssembly | 3.2 MB | GPL-3.0 | Yes | For very old browsers without WebAssembly. Slow and weak. Not shipped today: the page has no asm.js fallback yet. |
 | 6 | Stockfish 19 (Lichess build, big net) | Lichess's own build; engine and net are separate files | 0.6 + 98.5 = 99.1 MB | AGPL-3.0 (engine), GPL-3.0 (net) | Yes, split | Same strength as #3. Harder to wire up. |
 | 7 | Stockfish 19 (Lichess build, small net) | Lichess's tiny build | 0.5 + 1.2 = 1.7 MB | AGPL-3.0 / GPL-3.0 | Yes | Same idea as #1. |
 | 8 | Stockfish 18 full | Previous version | 113 MB | GPL-3.0 | Yes, split | Bigger but weaker than #3. For comparison only. |

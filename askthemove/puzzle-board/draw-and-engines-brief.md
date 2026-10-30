@@ -68,7 +68,7 @@ Today only Stockfish 19 Lite runs (1.8 MB). Prax wants to choose a bigger one ("
   - Would that break our fetches to `api.chess.com`, `lichess.org` and `raw.githubusercontent.com`, or our images?
   - Can it be limited to the engine worker?
 - Anything else worth offering. For example, Maia (human-like play by rating, via onnxruntime-web or lc0) is interesting for a beginner. Say what is real and usable today.
-- **Device limits.** Cover iPad Safari memory for a 95 MB wasm plus hash table, Cache Storage quota and eviction on iOS (7-day rule for sites not added to the home screen), Android low-end phones, and mobile data.
+- **Device limits.** Cover iPad Safari memory for a 95 MB wasm plus hash table, Cache Storage quota and eviction on iOS (Safari may delete a site's saved files after 7 days with no visit or interaction; sites added to the Home Screen are exempt), Android low-end phones, and mobile data.
 - **UX.** The picker should show size and strength in plain words, and the download should be opt-in with a progress bar and cancel. Explain what to do if storage is refused, and fall back to Lite.
 
 ## What we want back
