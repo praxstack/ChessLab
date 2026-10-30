@@ -4,7 +4,9 @@
 // A ghost move sketches a piece on another square (a see-through copy and a
 // dashed arrow) while the real position stays as it is. A numbered line is
 // the learner's guess at the moves: legal arrows numbered 1, 2, 3, one ink
-// for the side that starts and another for the replies. Lichess-style:
+// for the side that starts and another for the replies. Stickers put a
+// chess-book glyph (!!, ?, □...) or a taped word (KEY, WEAK...) on a square,
+// and tape lies along a whole rank, file or diagonal. Lichess-style:
 // a right-drag draws an arrow and a right-click circles a square at any time;
 // Draw mode lets a finger or the left button draw; a stylus always draws.
 //
@@ -22,7 +24,11 @@ import { lineText, nextStep } from './line.js';
 const FILES = 'abcdefgh';
 export const SIZE = 80;
 export const COLORS = ['blue', 'red', 'green'];
-export const TOOLS = ['pen', 'pencil', 'marker', 'arrow', 'circle', 'ghost', 'line'];
+export const TOOLS = ['pen', 'pencil', 'marker', 'arrow', 'circle', 'ghost', 'line', 'sticker', 'tape'];
+/** Move glyphs from chess books, and words taped across a square. */
+export const GLYPHS = ['!!', '!', '!?', '?!', '?', '??', '□', '⊙'];
+export const WORDS = ['KEY', 'WEAK', 'OUTPOST', 'HOLE', 'MATE'];
+const GLYPH_TONE = { '!!': 'green', '!': 'green', '!?': 'blue', '?!': 'blue', '?': 'red', '??': 'red' };
 const PIECE = /^[wb][KQRBNP]$/;
 const PIECES = '/assets/pieces/';
 /** Freehand nibs: smooth ink, grainy pencil, a wide see-through marker. */
@@ -214,6 +220,8 @@ export function sameMark(a, b) {
   if (a.kind === 'arrow') return a.from === b.from && a.to === b.to;
   if (a.kind === 'circle') return a.sq === b.sq;
   if (a.kind === 'ghost') return a.from === b.from && a.to === b.to;
+  if (a.kind === 'sticker') return a.sq === b.sq && a.glyph === b.glyph;
+  if (a.kind === 'tape') return (a.from === b.from && a.to === b.to) || (a.from === b.to && a.to === b.from);
   if (a.kind === 'step') return a.n === b.n && a.from === b.from && a.to === b.to;
   return false;
 }
@@ -226,6 +234,32 @@ export function sameMark(a, b) {
 export function ghostFor(from, to, piece) {
   if (!from || !to || from === to || !PIECE.test(piece || '')) return null;
   return { kind: 'ghost', from, to, piece };
+}
+
+/**
+ * Tape from one square toward another, laid along the nearest rank, file or
+ * diagonal through the first square and kept on the board. Null for a tap.
+ */
+export function tapeFor(from, to) {
+  if (!from || !to || from === to) return null;
+  const f0 = FILES.indexOf(from[0]);
+  const r0 = Number(from[1]);
+  const df = FILES.indexOf(to[0]) - f0;
+  const dr = Number(to[1]) - r0;
+  let sf = Math.sign(df);
+  let sr = Math.sign(dr);
+  if (Math.abs(dr) * 2 < Math.abs(df)) sr = 0; // mostly sideways: the rank
+  else if (Math.abs(df) * 2 < Math.abs(dr)) sf = 0; // mostly up or down: the file
+  let n = Math.max(Math.abs(sf ? df : 0), Math.abs(sr ? dr : 0));
+  while (n > 0 && !(f0 + sf * n >= 0 && f0 + sf * n < 8 && r0 + sr * n >= 1 && r0 + sr * n <= 8)) n -= 1;
+  if (!n) return null;
+  return { kind: 'tape', from, to: `${FILES[f0 + sf * n]}${r0 + sr * n}` };
+}
+
+/** A sticker for a square: a glyph or a taped word from the sheet, else null. */
+export function stickerFor(sq, glyph) {
+  if (!sq || !(GLYPHS.includes(glyph) || WORDS.includes(glyph))) return null;
+  return { kind: 'sticker', sq, glyph };
 }
 
 /** The numbered line among the drawings, in move order. */
@@ -260,6 +294,31 @@ export function pieceForGhost(sq, shapes, real) {
 export function shapePaths(shape, o) {
   const seed = shape.seed ?? seedFrom(JSON.stringify(shape));
   if (shape.kind === 'arrow' || shape.kind === 'ghost' || shape.kind === 'step') return arrow(arrowPoints(shape.from, shape.to, o), { seed, head: 2.7 });
+  if (shape.kind === 'tape') {
+    const a = squareCentre(shape.from, o);
+    const b = squareCentre(shape.to, o);
+    const len = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+    const u = [(b[0] - a[0]) / len, (b[1] - a[1]) / len];
+    const n = [-u[1], u[0]];
+    const rand = rng(seed);
+    const w = 1.7; // half the tape's width
+    const over = 3.6; // it runs a little past both squares' centres
+    const end = (p, dir) => {
+      // A torn end: four teeth across the strip.
+      const pts = [];
+      for (let i = 0; i <= 4; i += 1) {
+        const t = -w + (2 * w * i) / 4;
+        const bite = (i % 2 ? 0.55 : 0) + rand() * 0.25;
+        pts.push([p[0] + n[0] * t + u[0] * dir * (over - bite), p[1] + n[1] * t + u[1] * dir * (over - bite)]);
+      }
+      return pts;
+    };
+    const head = end(a, -1);
+    const tail = end(b, 1).reverse();
+    const pts = [...head, ...tail].map((p) => `${r2(p[0])} ${r2(p[1])}`);
+    return [`M${pts.join(' L')} Z`];
+  }
+  if (shape.kind === 'sticker') return [];
   if (shape.kind === 'circle') {
     const [cx, cy] = squareCentre(shape.sq, o);
     return [loop(cx, cy, 4.6, 4.3, { seed, turns: 1.12, tilt: -0.15 })];
@@ -288,6 +347,19 @@ export function shapeSVG(shape, o, extra = '', badges = []) {
   if (shape.kind === 'ghost' && PIECE.test(shape.piece || '')) {
     const [x, y] = squareCentre(shape.to, o);
     ghost = `<image class="dr-ghost" href="${PIECES}${shape.piece}.svg" x="${x - 4.6}" y="${y - 4.6}" width="9.2" height="9.2"/>`;
+  }
+  if (shape.kind === 'sticker' && (GLYPHS.includes(shape.glyph) || WORDS.includes(shape.glyph))) {
+    const [cx, cy] = squareCentre(shape.sq, o);
+    const tilt = Math.round((rng(shape.seed ?? seedFrom(shape.sq))() * 2 - 1) * 9);
+    if (WORDS.includes(shape.glyph)) {
+      // A strip of tape across the bottom of the square with the word on it.
+      ghost = `<g class="dr-word" transform="rotate(${tilt} ${cx} ${cy + 2.6})"><path class="dr-word__tape" d="M${cx - 4.9} ${cy + 1.2} l9.8 -0.2 l-0.3 1.4 l0.3 1.5 l-9.8 0.2 l0.3 -1.5 Z"/><text class="dr-word__t" x="${cx}" y="${r2(cy + 3.3)}">${shape.glyph}</text></g>`;
+    } else {
+      // A round sticker in the square's top corner, so the piece stays in sight.
+      const x = cx + 2.6;
+      const y = cy - 2.6;
+      ghost = `<g class="dr-sticker tone--${GLYPH_TONE[shape.glyph] || 'ink'}" transform="rotate(${tilt} ${x} ${y})"><circle cx="${x}" cy="${y}" r="2.9"/><text x="${x}" y="${r2(y + 1.2)}">${shape.glyph}</text></g>`;
+    }
   }
   if (shape.kind === 'step' && Number.isInteger(shape.n)) {
     const [x, y] = stepBadge(shape, o, badges);
@@ -419,6 +491,7 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
   let frame = 0;
   let menuShutUntil = 0;
   let note = ''; // a one-off message in place of the hint, e.g. why a line step didn't fit
+  let stickerPick = remembered('sticker', [...GLYPHS, ...WORDS], '!!');
 
   const done = document.createElementNS(SVGNS, 'g');
   done.setAttribute('class', 'desk__drawn');
@@ -438,6 +511,16 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
     const steps = lineSteps(sketch.shapes);
     const start = steps.length ? steps[0].start : '';
     onLine(steps.length ? { fen: start, steps, text: lineText(start, steps) } : null);
+  }
+
+  /** One glyph and one word per square: the same one again peels it off, another replaces it. */
+  function placeSticker(sq, seed) {
+    const st = stickerFor(sq, stickerPick);
+    if (!st) return;
+    const word = WORDS.includes(st.glyph);
+    const same = sketch.shapes.find((s) => s.kind === 'sticker' && s.sq === sq && s.glyph === st.glyph);
+    if (same) sketch.keep((s) => s !== same);
+    else sketch.put({ ...st, color: 'blue', seed }, (s) => s.kind === 'sticker' && s.sq === sq && WORDS.includes(s.glyph) === word);
   }
 
   /** Add the next step of the line, or say why it doesn't fit. */
@@ -474,6 +557,8 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
     for (const b of els.tools) b.setAttribute('aria-pressed', String(b.dataset.tool === tool));
     for (const b of els.colors) b.setAttribute('aria-pressed', String(b.dataset.color === color));
     for (const b of els.sizes || []) b.setAttribute('aria-pressed', String(b.dataset.size === size));
+    for (const b of els.stickers || []) b.setAttribute('aria-pressed', String(b.dataset.sticker === stickerPick));
+    if (els.sheet) els.sheet.hidden = tool !== 'sticker';
     if (els.hint) {
       const text = note || hintText();
       if (els.hint.textContent !== text) els.hint.textContent = text; // don't re-announce the same hint
@@ -481,6 +566,8 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
   }
 
   function hintText() {
+    if (drawMode && tool === 'sticker') return 'Sticker: pick one from the sheet, then tap a square. Tap it again to peel it off.';
+    if (drawMode && tool === 'tape') return 'Tape: drag along a rank, file or diagonal. It snaps to the line.';
     if (drawMode && tool === 'line') return 'Line: drag the moves you think come next, both sides, in order. Each arrow gets its number. Then tap Play it.';
     if (drawMode && tool === 'ghost') return 'Ghost: drag a piece to try it on another square. The real position stays put. Drag the ghost on to keep going.';
     if (drawMode) return fine.matches ? 'Draw is on: drag on the board to draw. Turn it off to move pieces.' : 'Draw is on: your finger draws. Tap Draw again to move pieces.';
@@ -514,6 +601,12 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
       return;
     }
     const at = squareAtPoint(live.pts[live.pts.length - 1], o);
+    if (live.kind === 'tape') {
+      const t = tapeFor(live.from, at);
+      preview.innerHTML = t ? shapeSVG({ ...t, color: 'blue', seed: live.seed }, o, 'is-live') : '';
+      return;
+    }
+    if (live.kind === 'sticker') return;
     if (live.kind === 'step') {
       const ok = at && at !== live.from;
       preview.innerHTML = ok ? shapeSVG({ kind: 'arrow', from: live.from, to: at, color: 'green', seed: live.seed, width: markWidth(size) }, o, 'is-live') : '';
@@ -647,7 +740,12 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
         if (e.type === 'pointerup') l.pts[1] = point(e, l.box);
         const at = squareAtPoint(l.pts[l.pts.length - 1], o);
         if (l.kind === 'step') addStep(l.from, at, l.seed);
-        const mark = l.kind === 'step' ? null : l.kind === 'ghost' ? ghostFor(l.from, at, l.piece) : l.kind === 'circle' ? markFor(at, at) : markFor(l.from, at);
+        if (l.kind === 'sticker') placeSticker(l.from, l.seed);
+        if (l.kind === 'tape') {
+          const t = tapeFor(l.from, at);
+          if (t) sketch.toggle({ ...t, color: 'blue', seed: l.seed });
+        }
+        const mark = l.kind === 'step' || l.kind === 'sticker' || l.kind === 'tape' ? null : l.kind === 'ghost' ? ghostFor(l.from, at, l.piece) : l.kind === 'circle' ? markFor(at, at) : markFor(l.from, at);
         if (mark) sketch.toggle({ ...mark, color, seed: l.seed, width: markWidth(size) });
       }
     }
@@ -703,6 +801,13 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
   for (const b of els.colors) {
     b.addEventListener('click', () => {
       color = b.dataset.color;
+      syncButtons();
+    });
+  }
+  for (const b of els.stickers || []) {
+    b.addEventListener('click', () => {
+      stickerPick = b.dataset.sticker;
+      remember('sticker', stickerPick);
       syncButtons();
     });
   }
