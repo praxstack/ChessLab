@@ -2,7 +2,9 @@
 // to square, and circled squares, in blue, red or green ink. Freehand lines
 // come in three nibs (pen, pencil, marker) and every drawing in three sizes.
 // A ghost move sketches a piece on another square (a see-through copy and a
-// dashed arrow) while the real position stays as it is. Lichess-style:
+// dashed arrow) while the real position stays as it is. A numbered line is
+// the learner's guess at the moves: legal arrows numbered 1, 2, 3, one ink
+// for the side that starts and another for the replies. Lichess-style:
 // a right-drag draws an arrow and a right-click circles a square at any time;
 // Draw mode lets a finger or the left button draw; a stylus always draws.
 //
@@ -15,11 +17,12 @@
 // createDrawLayer below it is the only part that touches the page.
 import { arrowPoints } from './board.js';
 import { arrow, loop, rng, seedFrom, smoothPath } from './ink.js';
+import { lineText, nextStep } from './line.js';
 
 const FILES = 'abcdefgh';
 export const SIZE = 80;
 export const COLORS = ['blue', 'red', 'green'];
-export const TOOLS = ['pen', 'pencil', 'marker', 'arrow', 'circle', 'ghost'];
+export const TOOLS = ['pen', 'pencil', 'marker', 'arrow', 'circle', 'ghost', 'line'];
 const PIECE = /^[wb][KQRBNP]$/;
 const PIECES = '/assets/pieces/';
 /** Freehand nibs: smooth ink, grainy pencil, a wide see-through marker. */
@@ -211,6 +214,7 @@ export function sameMark(a, b) {
   if (a.kind === 'arrow') return a.from === b.from && a.to === b.to;
   if (a.kind === 'circle') return a.sq === b.sq;
   if (a.kind === 'ghost') return a.from === b.from && a.to === b.to;
+  if (a.kind === 'step') return a.n === b.n && a.from === b.from && a.to === b.to;
   return false;
 }
 
@@ -222,6 +226,25 @@ export function sameMark(a, b) {
 export function ghostFor(from, to, piece) {
   if (!from || !to || from === to || !PIECE.test(piece || '')) return null;
   return { kind: 'ghost', from, to, piece };
+}
+
+/** The numbered line among the drawings, in move order. */
+export function lineSteps(shapes) {
+  return shapes.filter((s) => s.kind === 'step').sort((a, b) => a.n - b.n);
+}
+
+/**
+ * Where a step's number sits: about a third of the way along its arrow, moved
+ * further along when an earlier number already sits there (taken: placed discs).
+ */
+export function stepBadge(shape, o, taken = []) {
+  const [ax, ay] = squareCentre(shape.from, o);
+  const [bx, by] = squareCentre(shape.to, o);
+  const at = (t) => [r2(ax + (bx - ax) * t), r2(ay + (by - ay) * t)];
+  const free = (p) => taken.every((q) => Math.hypot(p[0] - q[0], p[1] - q[1]) >= 5.6);
+  const spot = [0.38, 0.62, 0.22, 0.8].map(at).find(free) || at(0.38);
+  taken.push(spot);
+  return spot;
 }
 
 /** The piece a ghost drag starting on this square picks up: the newest ghost there, else the real piece. */
@@ -236,7 +259,7 @@ export function pieceForGhost(sq, shapes, real) {
 /** The SVG path data for one drawing on a board with this orientation. */
 export function shapePaths(shape, o) {
   const seed = shape.seed ?? seedFrom(JSON.stringify(shape));
-  if (shape.kind === 'arrow' || shape.kind === 'ghost') return arrow(arrowPoints(shape.from, shape.to, o), { seed, head: 2.7 });
+  if (shape.kind === 'arrow' || shape.kind === 'ghost' || shape.kind === 'step') return arrow(arrowPoints(shape.from, shape.to, o), { seed, head: 2.7 });
   if (shape.kind === 'circle') {
     const [cx, cy] = squareCentre(shape.sq, o);
     return [loop(cx, cy, 4.6, 4.3, { seed, turns: 1.12, tilt: -0.15 })];
@@ -253,7 +276,7 @@ export function shapePaths(shape, o) {
 const TONE = new Set(COLORS);
 
 /** One drawing as SVG markup. A stylus line is filled; everything else is stroked. */
-export function shapeSVG(shape, o, extra = '') {
+export function shapeSVG(shape, o, extra = '', badges = []) {
   const tone = TONE.has(shape.color) ? shape.color : 'blue';
   const free = shape.kind === 'free';
   const filled = free && (shape.widths || shape.pts.length === 1);
@@ -265,6 +288,10 @@ export function shapeSVG(shape, o, extra = '') {
   if (shape.kind === 'ghost' && PIECE.test(shape.piece || '')) {
     const [x, y] = squareCentre(shape.to, o);
     ghost = `<image class="dr-ghost" href="${PIECES}${shape.piece}.svg" x="${x - 4.6}" y="${y - 4.6}" width="9.2" height="9.2"/>`;
+  }
+  if (shape.kind === 'step' && Number.isInteger(shape.n)) {
+    const [x, y] = stepBadge(shape, o, badges);
+    ghost = `<circle class="dr-num" cx="${x}" cy="${y}" r="2.6"/><text class="dr-num__n" x="${x}" y="${r2(y + 1.15)}">${shape.n}</text>`;
   }
   return `<g class="${cls}"${width}>${shapePaths(shape, o)
     .map((d) => `<path d="${d}"/>`)
@@ -314,6 +341,13 @@ export function createSketch() {
     clear() {
       if (!shapes.length) return false;
       commit([]);
+      return true;
+    },
+    /** Keep only the drawings that pass, as one undo step. */
+    keep(test) {
+      const next = shapes.filter(test);
+      if (next.length === shapes.length) return false;
+      commit(next);
       return true;
     },
     /** Forget everything, history too: a new position is on the board. */
@@ -368,7 +402,7 @@ const GRAIN = `<defs><filter id="dr-grain" x="-8" y="-8" width="96" height="96" 
  * els: { board, svg, mode, show, undo, clear, tools: [buttons with data-tool], colors: [buttons with data-color], sizes: [buttons with data-size], hint }
  * orientation(): the board's orientation now.
  */
-export function createDrawLayer(els, { orientation = () => 'white', pieceAt = () => null } = {}) {
+export function createDrawLayer(els, { orientation = () => 'white', pieceAt = () => null, boardFen = () => '', onLine = () => {} } = {}) {
   const sketch = createSketch();
   let drawMode = false;
   let visible = true;
@@ -379,6 +413,8 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
   let penUpAt = -Infinity;
   let frame = 0;
   let menuShutUntil = 0;
+  let note = ''; // a one-off message in place of the hint, e.g. why a line step didn't fit
+  let lineFen = ''; // the position the numbered line starts from
 
   const done = document.createElementNS(SVGNS, 'g');
   done.setAttribute('class', 'desk__drawn');
@@ -391,8 +427,37 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
 
   function render() {
     const o = orientation();
-    done.innerHTML = sketch.shapes.map((s) => shapeSVG(s, o)).join('');
+    const badges = []; // a line's numbers, placed in order so they don't cover each other
+    const ordered = [...sketch.shapes.filter((s) => s.kind !== 'step'), ...lineSteps(sketch.shapes)];
+    done.innerHTML = ordered.map((s) => shapeSVG(s, o, '', badges)).join('');
     syncButtons();
+    const steps = lineSteps(sketch.shapes);
+    onLine(steps.length ? { fen: lineFen, steps, text: lineText(lineFen, steps) } : null);
+  }
+
+  /** Add the next step of the line, or say why it doesn't fit. */
+  function addStep(from, to, seed) {
+    if (!from || !to || from === to) return;
+    let steps = lineSteps(sketch.shapes);
+    const last = steps[steps.length - 1];
+    if (last && last.from === from && last.to === to) {
+      sketch.keep((s) => s !== last); // the last arrow again takes it back
+      return;
+    }
+    const fen = boardFen();
+    if (!steps.length || fen !== lineFen) {
+      // A new line from the position on the board now; an old one from another position goes.
+      if (steps.length) sketch.keep((s) => s.kind !== 'step');
+      lineFen = fen;
+      steps = [];
+    }
+    const step = nextStep(lineFen, steps, from, to);
+    if (step.error) {
+      note = step.error;
+      return;
+    }
+    const starter = lineFen.split(/\s+/)[1] === 'b' ? 'b' : 'w';
+    sketch.add({ kind: 'step', ...step, color: step.side === starter ? 'green' : 'red', seed, width: markWidth(size) });
   }
 
   function syncButtons() {
@@ -406,12 +471,13 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
     for (const b of els.colors) b.setAttribute('aria-pressed', String(b.dataset.color === color));
     for (const b of els.sizes || []) b.setAttribute('aria-pressed', String(b.dataset.size === size));
     if (els.hint) {
-      const text = hintText();
+      const text = note || hintText();
       if (els.hint.textContent !== text) els.hint.textContent = text; // don't re-announce the same hint
     }
   }
 
   function hintText() {
+    if (drawMode && tool === 'line') return 'Line: drag the moves you think come next, both sides, in order. Each arrow gets its number. Then tap Play it.';
     if (drawMode && tool === 'ghost') return 'Ghost: drag a piece to try it on another square. The real position stays put. Drag the ghost on to keep going.';
     if (drawMode) return fine.matches ? 'Draw is on: drag on the board to draw. Turn it off to move pieces.' : 'Draw is on: your finger draws. Tap Draw again to move pieces.';
     return fine.matches ? 'Right-drag on the board for an arrow, right-click a square to circle it.' : 'Tap Draw to draw on the board with your finger. A stylus always draws.';
@@ -444,6 +510,11 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
       return;
     }
     const at = squareAtPoint(live.pts[live.pts.length - 1], o);
+    if (live.kind === 'step') {
+      const ok = at && at !== live.from;
+      preview.innerHTML = ok ? shapeSVG({ kind: 'arrow', from: live.from, to: at, color: 'green', seed: live.seed, width: markWidth(size) }, o, 'is-live') : '';
+      return;
+    }
     if (live.kind === 'ghost') {
       const g = ghostFor(live.from, at, live.piece);
       preview.innerHTML = g ? shapeSVG({ ...g, color, seed: live.seed, width: markWidth(size) }, o, 'is-live') : '';
@@ -484,7 +555,8 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
     const box = measure();
     const p = point(e, box);
     const nib = NIBS.includes(tool) ? tool : 'pen';
-    const kind = intent === 'mark' ? 'arrow' : NIBS.includes(tool) ? 'free' : tool;
+    note = '';
+    const kind = intent === 'mark' ? 'arrow' : NIBS.includes(tool) ? 'free' : tool === 'line' ? 'step' : tool;
     const from = squareAtPoint(p, o);
     if (kind !== 'free' && !from) return;
     const piece = kind === 'ghost' ? pieceForGhost(from, sketch.shapes, pieceAt(from)) : null;
@@ -570,7 +642,8 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
       } else {
         if (e.type === 'pointerup') l.pts[1] = point(e, l.box);
         const at = squareAtPoint(l.pts[l.pts.length - 1], o);
-        const mark = l.kind === 'ghost' ? ghostFor(l.from, at, l.piece) : l.kind === 'circle' ? markFor(at, at) : markFor(l.from, at);
+        if (l.kind === 'step') addStep(l.from, at, l.seed);
+        const mark = l.kind === 'step' ? null : l.kind === 'ghost' ? ghostFor(l.from, at, l.piece) : l.kind === 'circle' ? markFor(at, at) : markFor(l.from, at);
         if (mark) sketch.toggle({ ...mark, color, seed: l.seed, width: markWidth(size) });
       }
     }
@@ -618,6 +691,7 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
   for (const b of els.tools) {
     b.addEventListener('click', () => {
       tool = b.dataset.tool;
+      note = '';
       remember('tool', tool);
       syncButtons();
     });
@@ -646,9 +720,15 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
       if (sketch.clear()) render();
     },
     /** A new position: no drawings and no history. */
+    /** Take the numbered line off the board, as one undo step. */
+    clearLine() {
+      if (sketch.keep((s) => s.kind !== 'step')) render();
+    },
     reset() {
       if (live) onUp({ pointerId: live.id, stopImmediatePropagation() {}, cancelable: false }, true);
       preview.innerHTML = '';
+      lineFen = '';
+      note = '';
       sketch.reset();
       render();
     },

@@ -397,6 +397,29 @@
   filter: grayscale(0.6) drop-shadow(0 0 0.4px var(--tone));
 }
 
+/* Numbered line: each arrow carries its move number in a small paper disc. */
+.desk__draw .dr--step {
+  stroke-width: 1.3;
+}
+
+.desk__draw .dr-num {
+  fill: var(--card);
+  stroke: var(--tone);
+  stroke-width: 0.5;
+}
+
+.desk__draw .dr-num__n {
+  fill: var(--tone);
+  stroke: none;
+  font: 700 3.2px var(--font-hand);
+  text-anchor: middle;
+}
+
+/* While the line plays out, the pieces can't be picked up. */
+.desk__play.is-peeking {
+  cursor: progress;
+}
+
 /* While the pointer is down: an arrow or circle shows where it will land, lighter. */
 .desk__draw .is-live {
   opacity: 0.55;
@@ -605,6 +628,35 @@
   color: var(--graphite);
   text-decoration: line-through;
   text-decoration-thickness: 1.5px;
+}
+
+.pens__line {
+  flex-basis: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s-2) var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  border: 1.5px dashed var(--rule);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+
+.pens__line-label {
+  font-family: var(--font-hand);
+  color: var(--graphite);
+}
+
+.pens__moves {
+  flex: 1 1 12ch;
+  min-width: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.pens__line-acts {
+  display: flex;
+  gap: var(--s-2);
 }
 
 .pens__hint {

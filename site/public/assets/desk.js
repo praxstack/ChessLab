@@ -61,6 +61,7 @@ const group = (cls, paths) => `<g class="${cls}">${paths.map((d) => `<path class
  */
 export function createDesk(els, { onChange = () => {} } = {}) {
   let game = null; // null while the position can't be played (chess.js refused it)
+  let peek = null; // a position shown for a moment (a line being played out); the game itself doesn't change
   let startFen = '';
   let orientation = 'white';
   let future = []; // moves taken back, newest last
@@ -113,7 +114,7 @@ export function createDesk(els, { onChange = () => {} } = {}) {
   // Reuse piece elements, so a move, a take-back or castling slides the
   // pieces that moved and leaves the rest alone.
   function syncPieces() {
-    const want = boardMap(game ? game.fen() : startFen);
+    const want = boardMap(peek || (game ? game.fen() : startFen));
     const next = new Map();
     const spare = [];
     for (const [sq, node] of nodes) {
@@ -395,7 +396,7 @@ export function createDesk(els, { onChange = () => {} } = {}) {
 
   els.board.addEventListener('pointerdown', (e) => {
     sound.wake();
-    if (!game || busy || e.button > 0) return;
+    if (!game || busy || peek || e.button > 0) return;
     const sq = pointSquare(e.clientX, e.clientY);
     if (!sq) return;
     const p = game.get(sq);
@@ -580,6 +581,12 @@ export function createDesk(els, { onChange = () => {} } = {}) {
     line() {
       const moves = game ? game.history({ verbose: true }).map((m) => `${m.from}${m.to}${m.promotion || ''}`) : [];
       return { fen: startFen, moves };
+    },
+    /** Show another position on the board for a moment (null puts the game back). Pieces slide; moves wait. */
+    peek(fen) {
+      peek = fen || null;
+      els.board.classList.toggle('is-peeking', Boolean(peek));
+      syncPieces();
     },
     /** The piece on a square now, as 'wN' / 'bP', or null. */
     pieceAt(sq) {
