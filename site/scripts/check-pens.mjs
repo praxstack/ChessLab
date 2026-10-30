@@ -145,6 +145,14 @@ async function run(browserType, base) {
   check('a line from a new position replaces the old one', (await page.textContent('#draw-line-text')) === '3… Nf6', `${await page.textContent('#draw-line-text')} / ${await hint()} / ${await page.textContent('#desk-turn')}`);
   await page.click('#draw-undo');
   check('undo brings the old line back with its own start', (await page.textContent('#draw-line-text')) === '3. Bc4 Nf6');
+  // A real take-back during Play it ends the show; the pieces show the game.
+  await page.click('#draw-line-play');
+  await page.waitForTimeout(300);
+  await page.click('#tool-undo'); // takes back 3. d4 on the real board
+  await page.waitForTimeout(400);
+  check('a real take-back stops Play it and shows the real game', (await page.textContent('#draw-line-play')) === 'Play it' && (await pieces()) === start);
+  await page.click('#tool-redo');
+  await page.waitForTimeout(300);
 
   // Stickers and tape, when this build has them.
   if (await page.locator('#pens [data-tool="sticker"]').count()) {

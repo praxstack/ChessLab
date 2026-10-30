@@ -228,7 +228,14 @@ export function createDesk(els, { onChange = () => {} } = {}) {
     drawStrokes(els.ink);
   }
 
+  // A real change to the game ends any peek, so the pieces always show the game.
+  function endPeek() {
+    peek = null;
+    els.board.classList.remove('is-peeking');
+  }
+
   function after(move) {
+    endPeek();
     selected = null;
     targets = new Map();
     clearInk();
@@ -496,6 +503,7 @@ export function createDesk(els, { onChange = () => {} } = {}) {
   // Put a new position on the board. Pieces are set out like a person would:
   // the far side first, row by row, towards you.
   async function load(fen) {
+    endPeek();
     dropPicker();
     startFen = fen;
     future = [];

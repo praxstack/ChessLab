@@ -371,6 +371,7 @@ $('tool-reset').addEventListener('click', () => pens.clear());
 
 // After every move, take-back or new position: the turn note, the links, and the engine button follow the board.
 function boardChanged() {
+  stopLine(); // a real move, take-back or new position ends Play it
   if (!desk.fen) return;
   const fen = play.fen;
   const moved = play.moved;
