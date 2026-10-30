@@ -54,7 +54,7 @@ test('catalog: every entry is complete, ids are unique, and Lite is the ready de
   assert.equal(needsWarning(lite), false);
   assert.deepEqual(
     ENGINES.filter((e) => e.status === 'ready').map((e) => e.id),
-    ['sf19-lite', 'sf19-full', 'sf18-lite'],
+    ['sf19-lite', 'sf19-full', 'sf18-lite', 'sf17-lite', 'sf19-asm', 'sf11', 'sf17-full', 'sf18-full', 'sf16', 'dm-9m', 'maia1-1100', 'maia1-1500', 'maia1-1900'],
   );
 });
 
@@ -70,20 +70,93 @@ test('catalog: anything over 100 MB, and every named neural family, is heavy and
   assert.equal(needsWarning(engineById('sf19-full')), true, 'the 99 MB Stockfish warns');
 });
 
-test('catalog: ready engines are on disk at the listed sizes, under the Cloudflare file limit, with the GPL beside them', () => {
+test('catalog: ready engines are on disk at the listed sizes, under the Cloudflare file limit, with their licences beside them', () => {
   assert.match(readFileSync(pub('assets/engine/COPYING.txt'), 'utf8'), /GNU GENERAL PUBLIC LICENSE/);
   for (const e of ENGINES.filter((x) => x.status === 'ready')) {
     const { worker, wasm } = engineFiles(e);
-    assert.equal(e.licenseUrl, '/assets/engine/COPYING.txt');
-    assert.equal(statSync(pub(worker.path)).size, worker.bytes, worker.path);
-    const pieces = wasm.parts || [wasm];
-    for (const p of pieces) {
-      const size = statSync(pub(p.path)).size;
-      assert.equal(size, p.bytes, p.path);
-      assert.ok(size < CF_LIMIT, `${p.path} is over Cloudflare's 25 MiB`);
+    if (e.family === 'Stockfish') assert.equal(e.licenseUrl, '/assets/engine/COPYING.txt', e.id);
+    assert.ok(worker.path.startsWith('/assets/engine/'), `${e.id}: its worker gets the engine policy`);
+    assert.equal(Boolean(wasm), !e.scriptOnly, `${e.id}: a .wasm or model unless the script is the whole engine`);
+    for (const f of e.files) {
+      assert.ok(['worker', 'wasm', 'model', 'net', 'runtime'].includes(f.role), `${e.id}: ${f.path} has a role`);
+      assert.ok(!f.approx, `${e.id}: a ready engine lists exact sizes`);
+      const pieces = f.parts || [f];
+      for (const p of pieces) {
+        const size = statSync(pub(p.path)).size;
+        assert.equal(size, p.bytes, p.path);
+        assert.ok(size < CF_LIMIT, `${p.path} is over Cloudflare's 25 MiB`);
+      }
+      if (f.parts) {
+        assert.ok(f.sha256, `${f.path}: a split file has the whole file's SHA-256`);
+        assert.equal(f.parts.reduce((n, p) => n + p.bytes, 0), f.bytes, `${f.path}: its parts add up`);
+        assert.ok(!existsSync(pub(f.path)), `${f.path}: the joined file is not deployed, only its parts`);
+      }
     }
-    if (wasm.parts) assert.ok(!existsSync(pub(wasm.path)), 'the joined file is not deployed, only its parts');
   }
+  const dm = engineById('dm-9m');
+  assert.equal(dm.licenseUrl, 'https://creativecommons.org/licenses/by/4.0/');
+  assert.match(dm.credit, /DeepMind Technologies Limited/);
+  assert.match(dm.credit, /CC BY 4\.0/);
+  assert.match(readFileSync(pub('assets/engine/ort/LICENSE.txt'), 'utf8'), /MIT License/);
+  for (const elo of ['1100', '1500', '1900']) {
+    const maia = engineById(`maia1-${elo}`);
+    assert.match(maia.credit, /McIlroy-Young/);
+    assert.match(maia.license, /GPL/);
+    const model = maia.files.find((f) => f.role === 'model');
+    // The file is the one Hugging Face lists (its X-Linked-ETag is the SHA-256).
+    assert.equal(sha(readFileSync(pub(model.path))), model.sha256, model.path);
+  }
+});
+
+test('catalog: every split file matches its manifest, each part’s hash and the whole file’s hash', () => {
+  const split = ENGINES.filter((e) => e.status === 'ready').flatMap((e) => e.files.filter((f) => f.parts));
+  assert.deepEqual(
+    split.map((f) => f.path.replace('/assets/engine/', '')),
+    ['stockfish-19-single.wasm', 'stockfish-17.1-single.wasm', 'stockfish-18-single.wasm', 'nn-5af11540bbfe.nnue', 'searchless-9m.onnx'],
+  );
+  for (const f of split) {
+    const manifest = JSON.parse(readFileSync(pub(`${f.path}.parts.json`), 'utf8'));
+    assert.equal(`/assets/engine/${manifest.file}`, f.path);
+    assert.equal(manifest.bytes, f.bytes, f.path);
+    assert.equal(manifest.sha256, f.sha256, f.path);
+    assert.deepEqual(
+      manifest.parts.map((p) => [`/assets/engine/${p.file}`, p.bytes, p.sha256]),
+      f.parts.map((p) => [p.path, p.bytes, p.sha256]),
+      `${f.path}: catalog and manifest list the same parts, in the same order`,
+    );
+    const whole = createHash('sha256');
+    for (const p of f.parts) {
+      const bytes = readFileSync(pub(p.path));
+      assert.equal(sha(bytes), p.sha256, `${p.path} hash`);
+      assert.ok(bytes.length <= MAX_PART_BYTES, `${p.path} is over 24 MiB`);
+      whole.update(bytes);
+    }
+    assert.equal(whole.digest('hex'), f.sha256, `${f.path}: the parts join into the published file`);
+  }
+  // Stockfish names its nets by the start of their SHA-256, and the DeepMind model matches Hugging Face's.
+  assert.ok(engineById('sf16').files.find((f) => f.role === 'net').sha256.startsWith('5af11540bbfe'));
+  assert.equal(engineById('dm-9m').files.find((f) => f.role === 'model').sha256, 'ec45313c1ed1451acdf09e56f46fa6dee72698b8cea6803ad0f30c526659dac6');
+});
+
+test('catalog: the Lite engines are byte-for-byte the published files (stockfish@19.0.1 and @18.0.8 on npm)', () => {
+  const pinned = {
+    'stockfish-19-lite-single.js': 'ccb130d7ff29408531c47d859a49f91d59d4f482d05a53eb1a3231a4f624c91a',
+    'stockfish-19-lite-single.wasm': 'ee4f115bdb2d32cadf96cada104a05b5ec257d7ad6f57582190b49bc71f096de',
+    'stockfish-18-lite-single.js': '5243fd9b276cab7dfe3ad1d43ab9ead73568fac76468c614242977a210c4a391',
+    'stockfish-18-lite-single.wasm': 'a8fbc05ec6920b56d7485826dcb02c5ffd2826bcbf751cf973046f237a9096f1',
+  };
+  for (const [name, hash] of Object.entries(pinned)) assert.equal(sha(readFileSync(pub(`assets/engine/${name}`))), hash, name);
+});
+
+test('catalog: Stockfish 17.1’s script differs from the published one only in the line it says it changed', () => {
+  const text = readFileSync(pub('assets/engine/stockfish-17.1-single.js'), 'utf8');
+  const note = /\/\* Changed by ChessLab[^\n]*\*\/\n/;
+  assert.match(text, note, 'the script says what changed, at its top');
+  const code = text.replace(note, '');
+  assert.equal(code.match(/var enginePartsCount;/g).length, 1);
+  assert.doesNotMatch(code, /var enginePartsCount=\d/);
+  const restored = code.replace('var enginePartsCount;', 'var enginePartsCount=6;');
+  assert.equal(sha(Buffer.from(restored, 'utf8')), '562a55d9189ad013f6c6c55b8d347a37f490ce9542a34abdb06ef56a72f9d1db', 'stockfish@17.1.0 src/stockfish-17.1-single-a496a04.js');
 });
 
 test('catalog: the full Stockfish parts match the manifest, each part’s hash and the whole file’s hash', () => {

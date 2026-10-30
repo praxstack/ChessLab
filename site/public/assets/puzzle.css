@@ -887,6 +887,13 @@
   color: var(--ink-2);
 }
 
+.engines__credit {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--ink-2);
+  font-style: italic;
+}
+
 .engines__meta {
   font-family: var(--font-print);
   font-size: 0.8125rem;

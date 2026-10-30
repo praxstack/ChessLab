@@ -86,13 +86,19 @@ async function openStore() {
 
 const fresh = (hit) => Boolean(hit) && Date.now() - (Number(hit.headers.get(SAVED_AT)) || 0) <= KEEP_MS;
 
+/** The files engine.js downloads and keeps for an engine: its .wasm (or model) and its separate net, when it has them. */
+const keptFiles = (spec) => {
+  const { wasm, net } = engineFiles(spec);
+  return [wasm, net].filter(Boolean);
+};
+
 /** Whether this engine (every part of it, for a split one) is already kept on this device, and young enough to use. */
 export async function isSaved(spec) {
   const store = await openStore();
   if (!store) return false;
   try {
-    const { wasm } = engineFiles(spec);
-    const paths = wasm.parts ? wasm.parts.map((p) => p.path) : [wasm.path];
+    const paths = keptFiles(spec).flatMap((f) => (f.parts ? f.parts.map((p) => p.path) : [f.path]));
+    if (!paths.length) return false; // a script-only engine is never kept here; the browser's own cache has it
     for (const path of paths) if (!fresh(await store.match(path))) return false;
     return true;
   } catch {
@@ -203,11 +209,22 @@ async function loadParts(wasm, signal, onProgress, onCheck) {
   return { blob: new Blob([bytes], { type: 'application/wasm' }), fromDevice: !fetched };
 }
 
+// A file the catalog gives a SHA-256 for (the neural models) must match it before it may run.
+async function intact(blob, file) {
+  if (!file.sha256) return true;
+  try {
+    return await checkJoined(new Uint8Array(await blob.arrayBuffer()), file);
+  } catch {
+    return false;
+  }
+}
+
 async function loadWhole(wasm, signal, onProgress) {
   const saved = await fromDevice(wasm.path);
-  if (saved) return { blob: saved.blob, fromDevice: true };
+  if (saved && (await intact(saved.blob, wasm))) return { blob: saved.blob, fromDevice: true };
   onProgress(0, wasm.bytes);
   const blob = await downloadWhole(wasm, signal, onProgress);
+  if (!(await intact(blob, wasm))) throw new Error('The engine download is damaged (its SHA-256 does not match)');
   await keep(wasm.path, blob);
   return { blob, fromDevice: false };
 }
@@ -228,9 +245,10 @@ function cancelError() {
  * phase is 'idle' | 'download' | 'start' | 'ready' | 'failed'.
  */
 export function createEngine({ spec = LITE, onState = () => {} } = {}) {
-  const { worker: script, wasm } = engineFiles(spec);
+  const { worker: script, wasm, net } = engineFiles(spec);
+  const total = keptFiles(spec).reduce((n, f) => n + f.bytes, 0);
   // A big engine takes longer to compile before it can answer "uci".
-  const startMs = 20000 + Math.round(wasm.bytes / 1e6) * 400;
+  const startMs = 20000 + Math.round(total / 1e6) * 400;
   let worker = null;
   let phase = 'idle';
   let starting = null;
@@ -277,22 +295,34 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
     });
   }
 
+  // One kept file (the .wasm, a model or a net), from this device or downloaded; `base` bytes came before it.
+  function loadFile(file, base, signal) {
+    const progress = (got) => set({ phase: 'download', got: base + got, total });
+    return file.parts
+      ? loadParts(file, signal, progress, (fetched) => fetched && set({ phase: 'start', checking: true }))
+      : loadWhole(file, signal, progress);
+  }
+
   async function start() {
     let url = null;
+    let netUrl = null;
     aborter = typeof AbortController === 'function' ? new AbortController() : null;
     const signal = aborter ? aborter.signal : undefined;
     try {
-      const progress = (got, total) => set({ phase: 'download', got, total });
-      const saved = wasm.parts
-        ? await loadParts(wasm, signal, progress, (fetched) => fetched && set({ phase: 'start', checking: true }))
-        : await loadWhole(wasm, signal, progress);
-      const { blob } = saved;
+      const saved = wasm ? await loadFile(wasm, 0, signal) : { blob: null, fromDevice: false };
+      const savedNet = net ? await loadFile(net, wasm ? wasm.bytes : 0, signal) : null;
       if (quit || (signal && signal.aborted)) throw cancelError();
       aborter = null;
-      set({ phase: 'start', fromDevice: saved.fromDevice });
-      url = URL.createObjectURL(blob);
-      // The engine script reads where its .wasm file is from the part after #.
-      worker = new Worker(`${script.path}#${encodeURIComponent(url)}`);
+      const fromDevice = saved.fromDevice && (!savedNet || savedNet.fromDevice);
+      set({ phase: 'start', fromDevice });
+      // The engine script reads where its .wasm file (or model) is from the part after #.
+      // Stockfish 11 reads it as it is; the newer scripts decode it. A script-only engine needs nothing.
+      let hash = '';
+      if (saved.blob) {
+        url = URL.createObjectURL(saved.blob);
+        hash = `#${spec.hash === 'raw' ? url : encodeURIComponent(url)}`;
+      }
+      worker = new Worker(`${script.path}${hash}`, spec.module ? { type: 'module' } : undefined);
       worker.addEventListener('message', (e) => {
         const line = typeof e.data === 'string' ? e.data : '';
         if (listener) listener(line);
@@ -304,15 +334,26 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
       const ok = waitFor('uciok', startMs);
       send('uci');
       await ok;
+      if (savedNet) {
+        // An engine with its net in a separate file (Stockfish 16) reads it from a blob, through the usual
+        // option. Stockfish 16's browser build starts on its classical eval and loads the net only once
+        // Use NNUE is on, so that comes second; it says "Load eval file success: 1" (or 0 for a bad file).
+        netUrl = URL.createObjectURL(savedNet.blob);
+        const loaded = waitFor('Load eval file success', startMs);
+        send(`setoption name EvalFile value ${netUrl}`);
+        send('setoption name Use NNUE value true');
+        if (!/:\s*1\s*$/.test(await loaded)) throw new Error('The engine couldn’t read its net');
+      }
       const ready = waitFor('readyok', startMs);
       send('isready');
       await ready;
-      URL.revokeObjectURL(url);
+      for (const u of [url, netUrl]) if (u) URL.revokeObjectURL(u);
       url = null;
-      set({ phase: 'ready', fromDevice: saved.fromDevice });
+      netUrl = null;
+      set({ phase: 'ready', fromDevice });
     } catch (err) {
       aborter = null;
-      if (url) URL.revokeObjectURL(url); // don't keep a 99 MB blob alive after a failed start
+      for (const u of [url, netUrl]) if (u) URL.revokeObjectURL(u); // don't keep a 99 MB blob alive after a failed start
       if (isCancel(err) || quit) {
         if (worker) worker.terminate();
         worker = null;
