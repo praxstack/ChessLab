@@ -17,7 +17,7 @@ test('bot options validate trust boundaries; rating adaptation and crown tiers a
  assert.ok(attackedPieces({...make(),moves:['e2e4','d7d5']}).some(x=>x.from==='d5'&&x.to==='e4'));
 });
 test('adaptive targets stay on the strength ladder and move with the material balance',()=>{
- const adaptive=JSON.parse(readFileSync(new URL('./bot-profiles.json',import.meta.url))).filter(b=>b.adaptive);
+ const adaptive=JSON.parse(readFileSync(new URL('../shared/bot-profiles.json',import.meta.url))).filter(b=>b.adaptive);
  assert.ok(adaptive.length);
  // The learner plays White and is ahead (n>0) or behind (n<0) by n pawns.
  const rank=(piece,n)=>n?piece.repeat(n)+(n<8?String(8-n):''):'8';
@@ -36,7 +36,7 @@ test('adaptive targets stay on the strength ladder and move with the material ba
  assert.equal(adaptiveRating({adaptive:true,rating:650,color:'w',moves:[],initialFen:fen(5)}),1050,'the shift stays capped at about 350 points');
 });
 test('a portrait depends on the bot id, category and style, and on nothing else',()=>{
- const bots=JSON.parse(readFileSync(new URL('./bot-profiles.json',import.meta.url)));
+ const bots=JSON.parse(readFileSync(new URL('../shared/bot-profiles.json',import.meta.url)));
  for(const bot of bots){
   const svg=avatarSvg(bot);
   assert.equal(avatarSvg({id:bot.id,category:bot.category,style:bot.style}),svg,bot.id);
@@ -51,7 +51,7 @@ test('the portrait check fails on any file no profile uses, at any depth',()=>{
  assert.equal(check(repo).status,0,'the committed portraits pass');
  const copy=mkdtempSync(join(tmpdir(),'portraits-'));
  try{
-  for(const file of ['scripts/generate_bot_avatars.mjs','server/bot-profiles.json'])cpSync(join(repo,file),join(copy,file));
+  for(const file of ['scripts/generate_bot_avatars.mjs','shared/bot-profiles.json'])cpSync(join(repo,file),join(copy,file));
   cpSync(join(repo,'web/public/bots'),join(copy,'web/public/bots'),{recursive:true});
   assert.equal(check(copy).status,0);
   writeFileSync(join(copy,'web/public/bots/unused.png'),'x');
@@ -78,7 +78,7 @@ test('undo restores a whole turn and protects branch history',()=>{
 test('threat arrows exclude illegal captures by pinned defenders',()=>{assert.ok(!attackedPieces({...make(),initialFen:'4k3/4b3/3Q4/8/8/8/8/4R2K w - - 0 1'}).some(m=>m.from==='e7'&&m.to==='d6'));});
 
 test('the roster is original, sits on the strength ladder and draws its own portraits',()=>{
- const bots=JSON.parse(readFileSync(new URL('./bot-profiles.json',import.meta.url)));
+ const bots=JSON.parse(readFileSync(new URL('../shared/bot-profiles.json',import.meta.url)));
  assert.equal(bots.length,43);assert.equal(new Set(bots.map(b=>b.id)).size,bots.length);assert.equal(new Set(bots.map(b=>b.name)).size,bots.length);
  assert.doesNotMatch(JSON.stringify(bots),/chess\.?com|chesscomfiles|country|https?:/i);
  for(const bot of bots){
@@ -105,7 +105,7 @@ test('every ladder level is a distinct engine setting',()=>{
 });
 
 test('the strength picker offers only ladder levels, plus first moves for first-moves bots',()=>{
- const bots=JSON.parse(readFileSync(new URL('./bot-profiles.json',import.meta.url)));
+ const bots=JSON.parse(readFileSync(new URL('../shared/bot-profiles.json',import.meta.url)));
  assert.deepEqual(strengthChoices(),strengthLadder,'raw engines use the ladder');
  assert.deepEqual(strengthChoices(1050),strengthLadder);assert.ok(!strengthChoices(250).includes(275));
  assert.deepEqual(strengthChoices(100),[100,...strengthLadder]);
@@ -113,7 +113,7 @@ test('the strength picker offers only ladder levels, plus first moves for first-
 });
 
 test('games that name a bot from an earlier roster still start',()=>{
- const bots=JSON.parse(readFileSync(new URL('./bot-profiles.json',import.meta.url)));
+ const bots=JSON.parse(readFileSync(new URL('../shared/bot-profiles.json',import.meta.url)));
  const old=setupOptions({botId:'martin',rating:250},bots);assert.ok(bots.some(b=>b.id===old.botId));assert.equal(old.rating,250);assert.equal(bots.find(b=>b.id===old.botId).rating,250);
  assert.equal(setupOptions({botId:'retired-bot',rating:150},bots).rating,150,'first-moves ratings stay valid');
  assert.ok(bots.find(b=>b.id===setupOptions({botId:'retired-bot',rating:3200},bots).botId).rating===3200);

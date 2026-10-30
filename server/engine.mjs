@@ -2,7 +2,9 @@ import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {gradeMove} from './move-grade.mjs';
+import {replay, moveObject} from '../shared/replay.js';
+import {searchSummary, playedSummary} from '../shared/engine-evidence.js';
+export {replay};
 const engineDirectory = resolve(process.env.CHESSLAB_ENGINES_DIR || fileURLToPath(new URL('../data/engines', import.meta.url)));
 export function localTablebasePath() {
   const path=resolve(process.env.CHESSLAB_TABLEBASES || fileURLToPath(new URL('../data/tablebases/standard',import.meta.url)));
@@ -14,11 +16,8 @@ const analysisCommands = {
   stockfish16: () => [resolve(engineDirectory, 'stockfish16/stockfish'), []],
   'stockfish18-lite': () => [process.execPath, [resolve(engineDirectory, 'stockfish18-lite/stockfish-18-lite.js')]],
 };
-import {createChess,copyChess,gameVariant} from '../shared/chess.js';
+import {gameVariant} from '../shared/chess.js';
 
-const UCI_MOVE = /^[a-h][1-8][a-h][1-8][qrbn]?$/;
-const VALUES = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
-const PIECES = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' };
 const children = new Set();
 const waiting = [];
 let active = 0;
@@ -26,31 +25,6 @@ let closed = false;
 
 function failure(message, status = 400) {
   return Object.assign(new Error(message), { status });
-}
-
-function moveObject(move) {
-  if (typeof move !== 'string' || !UCI_MOVE.test(move)) throw failure('Moves must use UCI notation, for example e2e4 or a7a8q.');
-  return { from: move.slice(0, 2), to: move.slice(2, 4), ...(move[4] ? { promotion: move[4] } : {}) };
-}
-
-export function replay(moves, initialFen = null, variant) {
-  if (!Array.isArray(moves) || moves.length > 1000) throw failure('Provide an array of at most 1000 moves.');
-  if (initialFen != null && (typeof initialFen !== 'string' || initialFen.length > 120 || /[\r\n\0]/.test(initialFen))) throw failure('Invalid starting FEN.');
-  let board;
-  try { board = createChess(initialFen,variant); }
-  catch { throw failure('Invalid starting FEN.'); }
-  const pieces = board.board().flat().filter(Boolean);
-  for (const color of ['w', 'b']) {
-    if (pieces.filter(piece => piece.color === color).length > 16 || pieces.filter(piece => piece.color === color && piece.type === 'p').length > 8) throw failure('Starting FEN has too many pieces.');
-  }
-  const previousKing = pieces.find(piece => piece.type === 'k' && piece.color !== board.turn());
-  if (board.isAttacked(previousKing.square, board.turn())) throw failure('Invalid starting FEN: the side that just moved remains in check.');
-  for (const [index, move] of moves.entries()) {
-    const object = moveObject(move);
-    try { board.move(object); }
-    catch { throw failure(`Illegal move ${index + 1}: ${move}.`); }
-  }
-  return board;
 }
 
 function bounded(value, fallback, min, max, name) {
@@ -203,63 +177,6 @@ function runUci({ moves, initialFen, variant, board, movetime, lines, skill, eng
   });
 }
 
-function facts(board) {
-  const material = { white: 0, black: 0 };
-  for (const row of board.board()) for (const piece of row) if (piece) material[piece.color === 'w' ? 'white' : 'black'] += VALUES[piece.type];
-  return { inCheck: board.inCheck(), material, legalMoves: board.moves().length };
-}
-
-function moveEvidence(board, uci) {
-  const copy = copyChess(board);
-  const move = copy.move(moveObject(uci));
-  const details = [];
-  if (move.captured) details.push(`captures a ${PIECES[move.captured]}${move.flags.includes('e') ? ' en passant' : ''}`);
-  if (move.promotion) details.push(`promotes to a ${PIECES[move.promotion]}`);
-  if (move.flags.includes('k') || move.flags.includes('q')) details.push('castles');
-  if (copy.isCheckmate()) details.push('delivers checkmate');
-  else if (copy.inCheck()) details.push('gives check');
-  return { san: move.san, text: `${move.san}${details.length ? ` ${details.join(' and ')}` : ''}.` };
-}
-
-function lineEvidence(board, moves = []) {
-  if (!moves.length) return '';
-  const history = board.history({ verbose: true });
-  const copy = replay(history.map(move => move.from + move.to + (move.promotion || '')), history[0]?.before ?? board.fen(),board.variant);
-  const before = facts(copy).material;
-  const san = [];
-  const captures = [];
-  for (const uci of moves.slice(0, 6)) {
-    const move = copy.move(moveObject(uci));
-    san.push(move.san);
-    if (move.captured) {
-      const square = move.flags.includes('e') ? move.to[0] + move.from[1] : move.to;
-      captures.push(`${move.color === 'w' ? 'White' : 'Black'} ${move.san} captures ${move.color === 'w' ? "Black's" : "White's"} ${PIECES[move.captured]} on ${square}${move.flags.includes('e') ? ' en passant' : ''}`);
-    }
-    if (copy.isGameOver()) break;
-  }
-  const after = facts(copy).material;
-  const changes = ['white', 'black'].filter(color => after[color] !== before[color]).map(color => {
-    const delta = after[color] - before[color];
-    return `${color === 'white' ? 'White' : 'Black'} ${delta >= 0 ? '+' : ''}${delta}`;
-  }).join(', ');
-  const material = changes ? `Material: White ${after.white}, Black ${after.black} (${changes} points).` : 'No material changes in this line.';
-  return `Sample line: ${san.join(' → ')}. ${captures.length ? `${captures.join('; ')}. ` : ''}${material}`;
-}
-
-function terminalText(board) {
-  if (board.isCheckmate()) return `${board.turn() === 'w' ? 'White' : 'Black'} is checkmated.`;
-  if (board.isStalemate()) return 'Draw by stalemate.';
-  if (board.isThreefoldRepetition()) return 'Draw by threefold repetition in this move history.';
-  if (board.isInsufficientMaterial()) return 'Draw by insufficient material.';
-  if (board.isDrawByFiftyMoves()) return 'Draw by the fifty-move rule.';
-  return 'The game is over.';
-}
-
-function scoreText(score) {
-  if (score.type === 'mate') return `The search reports mate in ${Math.abs(score.value)} for ${score.value > 0 ? 'White' : 'Black'}.`;
-  return `Estimate: ${(score.value / 100).toFixed(2)} pawns from White's perspective.`;
-}
-
 export async function engineStatus() {
   try { const result = await withSlot(() => runUci()); return { available: true, name: result.name, chess960: result.chess960, tablebases:result.tablebases }; }
   catch { return { available: false, name: 'Stockfish' }; }
@@ -285,19 +202,10 @@ export async function analyze(input, {signal} = {}) {
   }
   return withSlot(async () => {
     const result = await runUci({ moves, initialFen, variant, board, movetime, lines, skill, engineId, threads, signal });
-    const positionFacts = facts(board);
-    const materialText = `Material: White ${positionFacts.material.white}, Black ${positionFacts.material.black}.`;
-    const explanation = board.isGameOver() ? `${terminalText(board)} ${materialText}` : `${board.turn() === 'w' ? 'White' : 'Black'} to move${positionFacts.inCheck ? ', in check' : ''}. ${moveEvidence(board, result.bestmove).text} ${lineEvidence(board, result.lines[0].moves)} ${scoreText(result.lines[0].score)}`;
-    const analysis = { engine: result.name, tablebaseHits:result.tablebaseHits||0, fen: board.fen(), turn: board.turn(), bestmove: result.bestmove, lines: result.lines, limits: { movetime, lines, ...(engineId ? {threads,engineId} : {}) }, facts: positionFacts, explanation };
+    const analysis = searchSummary(board, result, { movetime, lines, ...(engineId ? {threads,engineId} : {}) });
     if (afterBoard) {
       const after = await runUci({ moves: [...moves, playedMove], initialFen, variant, board: afterBoard, movetime, lines: 1, skill: 20, engineId, threads, signal });
-      const beforeScore = result.lines[0]?.score;
-      const afterScore = after.lines[0]?.score ?? (afterBoard.isGameOver() && !afterBoard.isCheckmate() ? { type: 'cp', value: 0 } : null);
-      const {classification, lossCp, lossText} = gradeMove({beforeScore, afterScore, turn: board.turn(), played: playedMove, best: result.lines[0]?.move, checkmate: afterBoard.isCheckmate()});
-      const evidence = moveEvidence(board, playedMove);
-      const continuation = afterBoard.isGameOver() ? terminalText(afterBoard) : lineEvidence(afterBoard, after.lines[0]?.moves);
-      const reply = after.lines[0];
-      analysis.played = { move: playedMove, san: evidence.san, classification, lossCp, afterScore, line: reply ? { moves: reply.moves, san: reply.san, score: reply.score, depth: reply.depth } : null, explanation: `${evidence.text} ${continuation} ${lossText}` };
+      analysis.played = playedSummary(board, afterBoard, playedMove, result, after);
     }
     return analysis;
   }, signal);

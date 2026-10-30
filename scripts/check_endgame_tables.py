@@ -15,7 +15,7 @@ for item in manifest['files']:
     assert path.stat().st_size == item['bytes'], item['name']
     with path.open('rb') as source:
         assert hashlib.file_digest(source, 'sha256').hexdigest() == item['sha256'], item['name']
-positions = json.loads((root / 'server/endgames.json').read_text())
+positions = json.loads((root / 'shared/endgames.json').read_text())
 assert len(positions) == 24
 assert len({item['id'] for item in positions}) == 24
 probed = 0
