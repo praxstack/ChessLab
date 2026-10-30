@@ -332,6 +332,66 @@
   stroke-width: 0.9;
 }
 
+/* The learner's own drawings: over the pieces, under a piece being dragged
+   and under the coach's red and blue pen. Hand ink, a little see-through so
+   the pieces show through it, with a pale edge so it reads on dark squares. */
+.desk__draw {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.desk__draw.is-hidden {
+  visibility: hidden;
+}
+
+.desk__draw .dr {
+  --tone: var(--blue);
+  fill: none;
+  stroke: var(--tone);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.88;
+  filter: drop-shadow(0 0 0.35px oklch(99% 0.01 95 / 0.9));
+}
+
+.desk__draw .tone--red {
+  --tone: var(--red);
+}
+
+.desk__draw .tone--green {
+  --tone: var(--green);
+}
+
+.desk__draw .dr--arrow,
+.desk__draw .dr--circle {
+  stroke-width: 1.3;
+}
+
+.desk__draw .dr--fill {
+  fill: var(--tone);
+  stroke: none;
+}
+
+/* While the pointer is down: an arrow or circle shows where it will land, lighter. */
+.desk__draw .is-live {
+  opacity: 0.55;
+}
+
+.desk__play.is-drawing {
+  cursor: crosshair;
+}
+
+/* Draw mode on: the frame gets a dashed blue edge, so it's clear a finger draws now. */
+.cc-frame:has(.is-drawing) {
+  outline: 2px dashed var(--blue);
+  outline-offset: 3px;
+}
+
 /* Promotion: a small card on the board with the four pieces. */
 .desk__promo {
   position: absolute;
@@ -384,6 +444,122 @@
 }
 
 /* Under the board: the controls, what the board says, the moves so far. */
+/* The pens: Draw mode, the tool, the ink, undo, clear, and show or hide. */
+.pens {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+}
+
+.pens__set {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1.5px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+
+.pens__pick {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: calc(var(--radius) - 2px);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.pens__pick[aria-pressed='true'] {
+  background: var(--highlight);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pens__pick[aria-pressed='false']:hover {
+    background: var(--paper-2);
+  }
+}
+
+.pens__icon {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pens__mode .pens__icon {
+  width: 20px;
+  height: 20px;
+}
+
+.pens__mode[aria-pressed='true'] {
+  background: var(--blue);
+  border-color: var(--blue-deep);
+  color: var(--card);
+}
+
+.pens__ink {
+  --tone: var(--blue);
+}
+
+.pens__ink.tone--red {
+  --tone: var(--red);
+}
+
+.pens__ink.tone--green {
+  --tone: var(--green);
+}
+
+.pens__dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50% 46% 52% 48%;
+  background: var(--tone);
+}
+
+.pens__ink[aria-pressed='true'] .pens__dot {
+  box-shadow: 0 0 0 2px var(--card), 0 0 0 3.5px var(--tone);
+}
+
+.pens__act:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+/* Undo, Clear and Show stay together on their own line, Show at the right like Sound. */
+.pens__keep {
+  display: flex;
+  flex: 1 1 100%;
+  gap: var(--s-2);
+}
+
+.pens__show {
+  margin-left: auto;
+}
+
+.pens__show[aria-pressed='false'] {
+  color: var(--graphite);
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+}
+
+.pens__hint {
+  flex-basis: 100%;
+  margin: 0;
+  font-family: var(--font-hand);
+  font-size: 1rem;
+  line-height: 1.3;
+  color: var(--graphite);
+}
+
 .desk__tools {
   display: flex;
   flex-wrap: wrap;
@@ -1333,6 +1509,15 @@ button.cal__day {
     margin-left: 0;
   }
 
+  .pens__mode {
+    padding: 0 var(--s-3);
+  }
+
+  .pens__pick {
+    width: 34px;
+    height: 40px;
+  }
+
   .engine {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1376,6 +1561,7 @@ button.cal__day {
 }
 
 @media print {
+  .pens,
   .desk__tools,
   .engine,
   .desk__go,
