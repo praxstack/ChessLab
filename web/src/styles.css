@@ -294,7 +294,8 @@ input::placeholder, textarea::placeholder { color: var(--muted); }
 [data-board-theme=slate] .square.light.last-move { background: #f3d58c; }[data-board-theme=slate] .square.dark.last-move { background: #c2ad6c; }
 .square.selected:after { content: ''; position: absolute; inset: 0; background: var(--select); z-index: 0; pointer-events: none; }
 .square:focus-visible { outline-offset: -4px; outline-color: var(--focus); z-index: 3; }
-.square.in-check { background-image: radial-gradient(ellipse at center,#ff3333 0%,#c8323299 45%,transparent 75%); }
+/* An overlay, so no board theme's background can hide the check glow. */
+.square.in-check:before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center,#ff3333 0%,#c8323299 45%,transparent 75%); z-index: 0; pointer-events: none; }
 .piece { width: 100%; height: 100%; display: block; position: relative; z-index: 1; object-fit: contain; pointer-events: none; }
 .piece.moving { z-index: 3; animation-name: piece-move; animation-timing-function: ease-out; }
 @keyframes piece-move { from { transform: translate(var(--move-x),var(--move-y)); } to { transform: translate(0,0); } }
