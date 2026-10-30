@@ -68,7 +68,7 @@ test('a backup with a malformed game is refused whole', async () => {
   const f = fixture();
   const kept = (await f.post('/api/import', {pgn: '1. d4 *'})).body.game;
   const good = {id: 'good', moves: ['e2e4'], revision: 0};
-  for (const bad of [{moves: [], revision: 0}, {id: 7, moves: [], revision: 0}, {id: 'x', moves: 'e2e4', revision: 0}, {id: 'x', moves: ['e2e4', 5], revision: 0}, {id: 'x', moves: []}, {id: 'x', moves: [], revision: 1.5}, {id: 'x', moves: [], revision: '0'}, 'not a game']) {
+  for (const bad of [{moves: [], revision: 0}, {id: 7, moves: [], revision: 0}, {id: 'x', moves: 'e2e4', revision: 0}, {id: 'x', moves: ['e2e4', 5], revision: 0}, {id: 'x', moves: []}, {id: 'x', moves: [], revision: 1.5}, {id: 'x', moves: [], revision: '0'}, {id: 'x', moves: ['e2e5'], revision: 0}, {id: 'x', moves: ['e2e4', 'e2e4'], revision: 0}, {id: 'x', moves: [], revision: 0, initialFen: 'not a fen'}, {id: 'x', moves: [], revision: 0, variant: 'chess960'}, 'not a game']) {
     await assert.rejects(restoreBackup(f.store, backupWith({games: [good, bad]}), {currentSaved: true}), error => error.status === 400, JSON.stringify(bad));
   }
   assert.deepEqual((await f.get('/api/games')).body.games.map(game => game.id), [kept.id]);

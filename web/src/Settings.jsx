@@ -1,5 +1,5 @@
 import React from 'react';
-import {pieceSet, boardThemes, thinkingTimes} from './settings-state.js';
+import {pieceSet, boardThemes, thinkingTimes, settingDefaults} from './settings-state.js';
 import CoachSettings from './local/coach/CoachSettings.jsx';
 
 // The browser build keeps its own AI coach access (own key or invite code) in a Coach tab.
@@ -28,7 +28,8 @@ export default function Settings({settings,tab,onTab,onChange,engines,local=fals
   {select('pace','Delay between moves',[[500,'0.5 seconds'],[1000,'1 second'],[2000,'2 seconds'],[3000,'3 seconds']],true)}
   {toggle('coachAvatar','Coach avatar')}
  </>:local?<>
-  <h3>Engine</h3>{select('thinkingTime','Thinking time',thinkingTimes,true)}
+  <h3>Engine</h3><SettingSelect label="Analysis" value={settings.analysisEngine==='off'?'off':'on'} onChange={value=>onChange('analysisEngine',value==='off'?'off':settingDefaults.analysisEngine)} options={[{value:'on',label:'On'},{value:'off',label:'Off'}]}/>
+  {select('thinkingTime','Thinking time',thinkingTimes,true)}
   {select('lines','Lines shown',[1,2,3,4,5].map(n=>[n,String(n)]),true)}
   <p className="tiny-note">Stockfish 19 Lite runs in this browser. Thinking time applies to analysis, game review and hints. Quick suits phones; Deep is stronger but slower. Opponent strength is set separately in Game Options.</p>
  </>:<>
