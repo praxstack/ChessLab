@@ -14,7 +14,7 @@
     "build:app": "VITE_BACKEND=local vite build --outDir dist-app",
     "dev:app": "VITE_BACKEND=local vite",
     "preview:app": "vite preview --outDir dist-app",
-    "test": "node --test --test-concurrency=1 server/*.test.mjs web/src/*.test.js web/src/local/*.test.js web/src/local/*/*.test.js",
+    "test": "node --test --test-concurrency=1 server/*.test.mjs web/src/*.test.js web/src/local/*.test.js web/src/local/*/*.test.js deploy/coach-worker/*.test.mjs",
     "build:sites": "npm run build && node scripts/build_sites.mjs"
   },
   "dependencies": {

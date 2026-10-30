@@ -1,0 +1,24 @@
+# AskTheMove coach Worker. Free plan only: Workers + D1, no paid add-ons.
+# Deploy steps are in README.md. Nothing secret goes in this file.
+name = "askthemove-coach"
+main = "src/worker.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+# Sites allowed to call the coach, comma separated, exact origins (no trailing slash).
+APP_ORIGINS = "https://askthemove-app.pages.dev,https://app.askthemove.online"
+# Explanations per invite code per UTC day.
+COACH_MAX_PER_DAY = "50"
+# Claude model for explanations.
+ANTHROPIC_MODEL = "claude-opus-5-5"
+
+# Secrets, set with `wrangler secret put NAME`, never written here:
+#   ANTHROPIC_API_KEY     the owner's Claude key
+#   COACH_INVITE_DIGESTS  SHA-256 hex digests of the invite codes, comma separated
+
+[[d1_databases]]
+binding = "DB"
+database_name = "askthemove-coach"
+# Replace with the id that `wrangler d1 create askthemove-coach` prints.
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
