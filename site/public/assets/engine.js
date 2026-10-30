@@ -278,6 +278,7 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
   }
 
   async function start() {
+    let url = null;
     aborter = typeof AbortController === 'function' ? new AbortController() : null;
     const signal = aborter ? aborter.signal : undefined;
     try {
@@ -289,7 +290,7 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
       if (quit || (signal && signal.aborted)) throw cancelError();
       aborter = null;
       set({ phase: 'start', fromDevice: saved.fromDevice });
-      const url = URL.createObjectURL(blob);
+      url = URL.createObjectURL(blob);
       // The engine script reads where its .wasm file is from the part after #.
       worker = new Worker(`${script.path}#${encodeURIComponent(url)}`);
       worker.addEventListener('message', (e) => {
@@ -307,9 +308,11 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
       send('isready');
       await ready;
       URL.revokeObjectURL(url);
+      url = null;
       set({ phase: 'ready', fromDevice: saved.fromDevice });
     } catch (err) {
       aborter = null;
+      if (url) URL.revokeObjectURL(url); // don't keep a 99 MB blob alive after a failed start
       if (isCancel(err) || quit) {
         if (worker) worker.terminate();
         worker = null;

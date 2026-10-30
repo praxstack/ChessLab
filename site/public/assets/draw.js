@@ -331,7 +331,10 @@ export function createDrawLayer(els, { orientation = () => 'white' } = {}) {
     els.clear.disabled = !sketch.shapes.length;
     for (const b of els.tools) b.setAttribute('aria-pressed', String(b.dataset.tool === tool));
     for (const b of els.colors) b.setAttribute('aria-pressed', String(b.dataset.color === color));
-    if (els.hint) els.hint.textContent = hintText();
+    if (els.hint) {
+      const text = hintText();
+      if (els.hint.textContent !== text) els.hint.textContent = text; // don't re-announce the same hint
+    }
   }
 
   function hintText() {

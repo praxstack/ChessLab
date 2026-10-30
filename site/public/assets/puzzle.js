@@ -642,6 +642,7 @@ function showEngine(s) {
 
 // Swap the engine in use: the old one is stopped (its download too), the new one waits to be loaded.
 function useEngine(spec) {
+  checkSeq += 1; // a check the old engine was running is thrown away
   if (engine) engine.stop();
   active = spec;
   engine = createEngine({ spec, onState: showEngine });
