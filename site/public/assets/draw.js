@@ -306,6 +306,7 @@ export function createDrawLayer(els, { orientation = () => 'white' } = {}) {
   let live = null; // the stroke being drawn
   let penUpAt = -Infinity;
   let frame = 0;
+  let menuShutUntil = 0;
 
   const done = document.createElementNS(SVGNS, 'g');
   done.setAttribute('class', 'desk__drawn');
@@ -379,6 +380,10 @@ export function createDrawLayer(els, { orientation = () => 'white' } = {}) {
 
   function onDown(e) {
     if (e.target.closest && e.target.closest('.desk__promo')) return; // the promotion picker takes its own taps
+    if (live && e.pointerId === live.id) {
+      // The last stroke never got its pointerup (e.g. Firefox kept the right-click menu): drop it.
+      onUp(e, true);
+    }
     if (live) {
       // One stroke at a time; a hand resting on the screen while a stylus draws is ignored.
       if (e.pointerId !== live.id) stop(e);
@@ -454,6 +459,7 @@ export function createDrawLayer(els, { orientation = () => 'white' } = {}) {
     stop(e);
     const l = live;
     live = null;
+    menuShutUntil = performance.now() + 300;
     if (frame) cancelAnimationFrame(frame);
     frame = 0;
     if (l.pen) penUpAt = performance.now();
@@ -490,8 +496,16 @@ export function createDrawLayer(els, { orientation = () => 'white' } = {}) {
     },
     opts,
   );
-  // The right button draws here, so the browser's menu stays shut over the board.
+  // The right button draws here, so the browser's menu stays shut over the board,
+  // and also just after a right-drag that ended off the board (Windows opens it on mouseup).
   els.board.addEventListener('contextmenu', (e) => e.preventDefault());
+  document.addEventListener('contextmenu', (e) => {
+    if (live || performance.now() < menuShutUntil) e.preventDefault();
+  });
+  // Switching windows mid-stroke may swallow the pointerup.
+  window.addEventListener('blur', () => {
+    if (live) onUp({ pointerId: live.id, stopImmediatePropagation() {}, cancelable: false }, true);
+  });
 
   els.mode.addEventListener('click', () => {
     drawMode = !drawMode;
@@ -532,7 +546,7 @@ export function createDrawLayer(els, { orientation = () => 'white' } = {}) {
     },
     /** A new position: no drawings and no history. */
     reset() {
-      live = null;
+      if (live) onUp({ pointerId: live.id, stopImmediatePropagation() {}, cancelable: false }, true);
       preview.innerHTML = '';
       sketch.reset();
       render();
