@@ -1,4 +1,5 @@
 import {randomUUID} from 'node:crypto';
+import {collectionDetails,checkCollectionRevision,collectionSelection,MAX_COLLECTIONS} from '../shared/game-collections.js';
 
 const fail=(status,message)=>{throw Object.assign(new Error(message),{status});};
 export function installCollections(app,db){
@@ -14,18 +15,14 @@ export function installCollections(app,db){
   if(!row)fail(404,'This collection was not found.');
   return {...row,gameIds:db.prepare('SELECT game_id FROM collection_games WHERE collection_id=? ORDER BY rowid').all(id).map(x=>x.game_id)};
  };
- const details=body=>{
-  if(typeof body.name!=='string'||!body.name.trim()||body.name.trim().length>80||/[\u0000-\u001f\u007f]/.test(body.name))fail(400,'Use a collection name of 1–80 characters.');
-  if(body.description!==undefined&&(typeof body.description!=='string'||body.description.length>1000))fail(400,'Keep the description under 1000 characters.');
-  return {name:body.name.trim(),description:(body.description||'').trim()};
- };
+ const details=collectionDetails;
  const transaction=fn=>{
   db.exec('BEGIN IMMEDIATE');try{const result=fn();db.exec('COMMIT');return result;}
   catch(error){db.exec('ROLLBACK');if(String(error.message).includes('UNIQUE constraint failed: game_collections.user_id'))fail(409,'You already have a collection with that name.');throw error;}
  };
  const current=req=>{
   const c=read(req.params.id,req.user.id);
-  if(!Number.isInteger(req.body.revision)||c.revision!==req.body.revision)fail(409,'This collection changed. Refresh the library and try again.');
+  checkCollectionRevision(c,req.body);
   return c;
  };
  const touch=(c,userId)=>db.prepare('UPDATE game_collections SET revision=revision+1,updated_at=? WHERE id=? AND user_id=?').run(new Date().toISOString(),c.id,userId);
@@ -33,7 +30,7 @@ export function installCollections(app,db){
  app.post('/api/collections',(req,res)=>{
   const value=details(req.body),id=randomUUID();
   transaction(()=>{
-   if(db.prepare('SELECT COUNT(*) n FROM game_collections WHERE user_id=?').get(req.user.id).n>=100)fail(409,'This account has reached the 100-collection limit.');
+   if(db.prepare('SELECT COUNT(*) n FROM game_collections WHERE user_id=?').get(req.user.id).n>=MAX_COLLECTIONS)fail(409,'This account has reached the 100-collection limit.');
    db.prepare('INSERT INTO game_collections(id,user_id,name,description,updated_at) VALUES(?,?,?,?,?)').run(id,req.user.id,value.name,value.description,new Date().toISOString());
   });res.status(201).json({collection:read(id,req.user.id)});
  });
@@ -43,9 +40,7 @@ export function installCollections(app,db){
  });
  app.post('/api/collections/:id/games',(req,res)=>{
   transaction(()=>{
-   const c=current(req),{gameIds,present}=req.body;
-   if(!Array.isArray(gameIds)||!gameIds.length||gameIds.length>500||gameIds.some(id=>typeof id!=='string'||id.length>80)||typeof present!=='boolean')fail(400,'Select 1–500 saved games and an add or remove action.');
-   const ids=[...new Set(gameIds)];
+   const c=current(req),{ids,present}=collectionSelection(req.body);
    for(const id of ids)if(!db.prepare('SELECT 1 FROM games WHERE id=? AND user_id=?').get(id,req.user.id))fail(404,'A selected saved game was not found.');
    const update=db.prepare(present?'INSERT OR IGNORE INTO collection_games VALUES(?,?)':'DELETE FROM collection_games WHERE collection_id=? AND game_id=?');
    for(const id of ids)update.run(c.id,id);

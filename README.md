@@ -27,12 +27,14 @@ npm run dev
 
 Open [AskTheMove at localhost:8770](http://127.0.0.1:8770). Check `STOCKFISH_PATH` in `.env` against `command -v stockfish`, especially on Intel Macs or other operating systems. The server runs Stockfish as a process. It sends moves and analysis to the browser, with no engine or model download.
 
-For the built application:
+For the built application on this server:
 
 ```sh
 npm run build
 npm start
 ```
+
+`npm run build`, `npm run dev`, Docker and `scripts/host_on_mac.sh` all make the server app, which keeps games in the server's SQLite database. The browser app (`openspec/changes/browser-first-app/`) is a separate build while it catches up with the server app: `npm run dev:app` runs it with Vite, and `npm run build:app` builds it into `web/dist-app/` for `npm run preview:app`. It needs no server and keeps data in the browser's IndexedDB. Until its in-browser engine lands, it cannot play bots or run engine review; use the server app for those.
 
 Read [the application guide](docs/application.md) for accounts, studies, settings, backups, checks and limits. Start with [the product context](CONTEXT.md) and [the current OpenSpec change](openspec/changes/build-coach-web-platform/proposal.md) before changing product behavior.
 

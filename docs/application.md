@@ -26,7 +26,7 @@ npm run build
 npm start
 ```
 
-Production mode serves `web/dist`. This is a local run command, not a public deployment. Stop the server with Ctrl-C before switching between development and production on the same port.
+Production mode serves `web/dist`. This is a local run command, not a public deployment. `npm run build` always makes this server app. The browser-only app, which keeps data in the browser instead of the server, is a separate build: `npm run build:app` writes it to `web/dist-app/`, and `npm start` never serves it. Stop the server with Ctrl-C before switching between development and production on the same port.
 
 | Setting | Default in `.env.example` | Purpose |
 | --- | --- | --- |

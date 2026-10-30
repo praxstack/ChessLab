@@ -2,7 +2,7 @@ import {readFileSync,writeFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {Chess} from 'chess.js';
 
-const source=new URL('../references/openings/',import.meta.url),output=new URL('../server/openings.json',import.meta.url);
+const source=new URL('../references/openings/',import.meta.url),output=new URL('../shared/openings.json',import.meta.url);
 const provenance=JSON.parse(readFileSync(new URL('provenance.json',source),'utf8'));
 const entries=[],seen=new Set();
 for(const volume of 'abcde'){

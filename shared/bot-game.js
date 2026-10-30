@@ -1,0 +1,114 @@
+import {randomInt} from './random.js';
+import {createChess,chess960Fen,gameVariant} from './chess.js';
+import {replay} from './replay.js';
+import {shiftOnLadder} from './strength-ladder.js';
+
+const fail = message => { throw Object.assign(new Error(message), {status:400}); };
+export const assistanceDefaults = {chat:true,evaluation:false,threats:false,suggestions:false,feedback:false,engine:false};
+// Saved games and rematches can name a bot from an earlier roster. Such an id resolves to the current
+// bot nearest the requested strength (first-moves bots below 250), so old games keep working.
+export function resolveProfile(botId, profiles, rating) {
+ if(typeof botId!=='string'||!/^[a-z0-9][a-z0-9-]{0,63}$/.test(botId))fail('Choose a bot from the current catalog.');
+ const exact=profiles.find(p=>p.id===botId);
+ if(exact)return exact;
+ const target=Number.isInteger(rating)?rating:1050;
+ const candidates=profiles.filter(p=>!p.adaptive&&(target<250?p.rating<250:p.rating>=250));
+ const pool=candidates.length?candidates:profiles;
+ if(!pool.length)fail('Choose a bot from the current catalog.');
+ return pool.reduce((best,p)=>Math.abs(p.rating-target)<Math.abs(best.rating-target)?p:best);
+}
+export function setupOptions(body, profiles) {
+ let variant;try{variant=gameVariant(body.variant);}catch(error){fail(error.message);}
+ if(body.positionNumber!==undefined&&body.positionNumber!==null&&(!Number.isInteger(body.positionNumber)||body.positionNumber<0||body.positionNumber>959||variant!=='chess960'))fail('Choose a Chess960 position from 0 to 959.');
+ const positionNumber=variant==='chess960'?(body.positionNumber??randomInt(960)):undefined;
+ const {color='w',level=2,title,botId=null,engineId='stockfish19'}=body;
+ if(!['w','b','random'].includes(color)||!Number.isInteger(level)||level<1||level>5||typeof engineId!=='string'||(title!==undefined&&(typeof title!=='string'||title.length>100)))fail('Choose a color, an available engine and a valid strength.');
+ const profile=botId===null?null:resolveProfile(botId,profiles,body.rating);
+ const rating=body.rating??profile?.rating??[400,800,1200,1800,2600][level-1];
+ // The picker offers ladder levels only (strengthChoices). Any target in range stays valid here so rematches of saved games from earlier rosters, such as 925, still start.
+ if(!Number.isInteger(rating)||rating<(profile&&profile.rating<250?100:250)||rating>3200)fail('Choose a target rating between 250 and 3200.');
+ const timeControl=body.timeControl??{initialSeconds:0,incrementSeconds:0};
+ if(!timeControl||Array.isArray(timeControl)||!Number.isInteger(timeControl.initialSeconds)||!(timeControl.initialSeconds===0||(timeControl.initialSeconds>=60&&timeControl.initialSeconds<=3600))||!Number.isInteger(timeControl.incrementSeconds)||timeControl.incrementSeconds<0||timeControl.incrementSeconds>60||(timeControl.initialSeconds===0&&timeControl.incrementSeconds!==0))fail('Choose no clock, or 1–60 minutes with an increment of 0–60 seconds.');
+ const assistance={...assistanceDefaults};
+ if(body.assistance!==undefined){if(!body.assistance||Array.isArray(body.assistance)||typeof body.assistance!=='object')fail('Invalid assistance settings.');for(const [key,value] of Object.entries(body.assistance)){if(!Object.hasOwn(assistance,key)||typeof value!=='boolean')fail('Invalid assistance setting.');assistance[key]=value;}}
+ return {...(variant==='chess960'?{variant,positionNumber,initialFen:chess960Fen(positionNumber)}:{}),color:color==='random'?(randomInt(2)?'w':'b'):color,level,title:title||profile?.name||`Practice · level ${level}`,botId:profile?.id??null,botName:profile?.name||'Engine opponent',engineId,rating,currentRating:rating,style:profile?.style||'balanced',adaptive:profile?.adaptive||false,timeControl:{initialSeconds:timeControl.initialSeconds,incrementSeconds:timeControl.incrementSeconds},assistance,hintsUsed:0,undosUsed:0,crownsAwarded:0,resultReason:null,chat:assistance.chat?[profile?(profile.description||`I'm ${profile.name}. Let's play.`):'Ready when you are. Choose your move.']:[],legacyStrength:body.rating===undefined&&!profile&&!body.engineId};
+}
+export function practiceSnapshot(source,body) {
+ if(body.restart!==undefined&&typeof body.restart!=='boolean')fail('Invalid practice restart.');
+ let history=source.moves,ply=body.ply,branchId=body.branchId??null;
+ if(body.restart){
+  if(!source.practice)fail('This game did not start from a practice position.');
+  ply=source.practice.startPly;branchId=null;
+ }else if(branchId!==null){
+  if(typeof branchId!=='string')fail('Choose a saved variation.');
+  if(body.studyRevision!==(source.studyRevision||0))throw Object.assign(new Error('The source study changed. Save or reload it before practicing.'),{status:409});
+  const branch=source.study?.branches?.find(branch=>branch.id===branchId);
+  if(!branch)fail('The selected variation was not found.');
+  history=branch.moves;
+ }
+ if(!Number.isInteger(ply)||ply<0||ply>history.length||ply>=1000)fail('Choose a position within the saved history with room to continue.');
+ const moves=history.slice(0,ply),initialFen=source.initialFen??null;
+ if(replay(moves,initialFen,source.variant).isGameOver())fail('This position is already over. Choose an earlier position to practice.');
+ const practice=body.restart?{...source.practice}:{sourceGameId:source.id,sourceBranchId:branchId,sourcePly:ply,sourceTitle:source.title,startPly:ply,...(source.endgameId&&branchId===null&&ply===0?{endgameId:source.endgameId}:{})};
+ return {moves,initialFen,variant:source.variant||'standard',positionNumber:source.positionNumber??null,practice};
+}
+export function beginClock(game,stamp) {
+ const ms=(game.timeControl?.initialSeconds||0)*1000;
+ game.clock={whiteMs:ms,blackMs:ms,activeSince:ms?stamp:null};
+ game.clockHistory=[{whiteMs:ms,blackMs:ms}];
+}
+export function settleClock(game,stamp) {
+ if(game.result||!game.timeControl?.initialSeconds||game.clock?.activeSince==null)return false;
+ const board=replay(game.moves,game.initialFen,game.variant),turn=board.turn(),key=turn==='w'?'whiteMs':'blackMs';
+ game.clock[key]=Math.max(0,game.clock[key]-Math.max(0,stamp-game.clock.activeSince));game.clock.activeSince=stamp;
+ if(game.clock[key]>0)return false;
+ const winner=turn==='w'?'b':'w';
+ const winnerPieces=board.board().flat().filter(p=>p?.color===winner);
+ const cannotMate=winnerPieces.every(p=>p.type==='k')||board.isInsufficientMaterial();
+ game.result=cannotMate?'1/2-1/2':winner==='w'?'1-0':'0-1';game.resultReason=cannotMate?'Time expired; opponent has insufficient mating material':'Time expired';game.clock.activeSince=null;
+ return true;
+}
+export function finishMoveClock(game,color,stamp) {
+ if(!game.clock)return;
+ if(game.timeControl?.initialSeconds){game.clock[color==='w'?'whiteMs':'blackMs']+=(game.timeControl.incrementSeconds||0)*1000;game.clock.activeSince=game.result?null:stamp;}
+ game.clockHistory??=[];game.clockHistory.push({whiteMs:game.clock.whiteMs,blackMs:game.clock.blackMs});
+}
+export function crownsFor(game) {
+ if(game.practice||!game.botId||game.source!=='bot'||game.result!==(game.color==='w'?'1-0':'0-1'))return 0;
+ const automatic=game.reviewUsed||Object.entries(game.assistance||{}).some(([key,value])=>key!=='chat'&&value);
+ const help=(game.hintsUsed||0)+(game.undosUsed||0);
+ return automatic||help>3?1:help?2:3;
+}
+export function adaptiveRating(game) {
+ if(!game.adaptive)return game.rating;
+ const values={p:1,n:3,b:3,r:5,q:9,k:0};let advantage=0;
+ for(const p of replay(game.moves,game.initialFen,game.variant).board().flat())if(p)advantage+=(p.color===game.color?1:-1)*values[p.type];
+ // About 80 points per pawn, capped at 350, landing on a ladder level (OA-005).
+ return shiftOnLadder(game.rating,Math.max(-350,Math.min(350,advantage*80)));
+}
+export function addBotChat(game,move) {
+ if(!game.assistance?.chat)return;
+ let text=game.result?'Good game. Let’s look at the decisions that mattered.':move.san.includes('+')?'Check. Look for a capture, a block, or a king move.':move.captured?'I captured a piece. Check the whole exchange before replying.':!game.practice&&game.moves.length<6?'The center and development both matter here.':game.adaptive&&game.currentRating!==game.rating?'I’m adjusting the challenge as the material balance changes.':game.style==='aggressive'?'Keep an eye on checks and threats.':game.style==='solid'?'I’m looking for a safe position. What is your plan?':'Your move. Take a moment to look at the position.';
+ game.chat=[...(game.chat||[]),text].slice(-30);
+}
+export function undoTurn(game,stamp) {
+ if(game.result||game.source!=='bot')fail('Only a game still in progress can be taken back.');
+ const board=replay(game.moves,game.initialFen,game.variant);
+ const target=game.moves.length-(board.turn()===game.color?2:1);
+ const start=game.practice?.startPly||0;
+ if(target<start)fail('Play a move before taking back a turn. The starting position is preserved.');
+ if((game.study?.annotations||[]).some(a=>a.branchId===null&&a.ply>target)||(game.study?.anchorPly||0)>target||(game.study?.branches||[]).some(b=>!b.parentId&&b.anchorPly>target))fail('A saved study uses this part of the game. Keep its history and start a rematch instead.');
+ game.moves=game.moves.slice(0,target);game.undosUsed=(game.undosUsed||0)+1;game.lastFeedback=null;
+ const prior=game.clockHistory?.[target-start];
+ if(prior)game.clock={...prior,activeSince:game.timeControl?.initialSeconds?stamp:null};
+ game.clockHistory=game.clockHistory?.slice(0,target-start+1)||[];
+ if(game.assistance?.chat)game.chat=[...(game.chat||[]),'Turn taken back. Try a different idea.'].slice(-30);
+ return game;
+}
+export function attackedPieces(game) {
+ const board=replay(game.moves,game.initialFen,game.variant),enemy=game.color==='w'?'b':'w';
+ if(board.variant==='chess960')return board.threats(enemy);
+ const fields=board.fen().split(' ');if(fields[1]!==enemy){fields[1]=enemy;fields[3]='-';}
+ const opponent=createChess(fields.join(' '),game.variant);
+ return opponent.moves({verbose:true}).filter(move=>move.captured).map(move=>({from:move.from,to:move.to}));
+}
