@@ -34,7 +34,7 @@ npm run build
 npm start
 ```
 
-`npm run build`, `npm run dev`, Docker and `scripts/host_on_mac.sh` all make the server app, which keeps games in the server's SQLite database. The browser app (`openspec/changes/browser-first-app/`) is a separate build while it catches up with the server app: `npm run dev:app` runs it with Vite, and `npm run build:app` builds it into `web/dist-app/` for `npm run preview:app`. It needs no server and keeps data in the browser's IndexedDB. Until its in-browser engine lands, it cannot play bots or run engine review; use the server app for those.
+`npm run build`, `npm run dev`, Docker and `scripts/host_on_mac.sh` all make the server app, which keeps games in the server's SQLite database. The browser app (`openspec/changes/browser-first-app/`) is a separate build while it catches up with the server app: `npm run dev:app` runs it with Vite, and `npm run build:app` builds it into `web/dist-app/` for `npm run preview:app`. It needs no server and keeps data in the browser's IndexedDB. It runs Stockfish 19 Lite in the browser for bots, analysis and review, and its coach uses the learner's own Claude key or an invite code (`deploy/coach-worker/`). `npm run smoke:app` checks it in a hidden browser with the real security headers, and `docs/deploy-browser-app.md` has the steps to put it on Cloudflare Pages.
 
 Read [the application guide](docs/application.md) for accounts, studies, settings, backups, checks and limits. Start with [the product context](CONTEXT.md) and [the current OpenSpec change](openspec/changes/build-coach-web-platform/proposal.md) before changing product behavior.
 

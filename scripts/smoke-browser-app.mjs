@@ -141,11 +141,40 @@ async function main() {
     assert.equal(engineReady, 'ok', 'Stockfish did not start under the CSP');
     check('engine start');
 
-    // TODO: extend this smoke with a full bot game and review:
-    //   1. Play bots: start a game against a low-rated bot and play a few moves until the bot replies.
-    //   2. Resign or finish, then "Review whole game" and wait for "Review complete".
-    //   3. Reload and check the game and its review are still there.
-    //   The engine files under /engine/ must load with the same CSP (worker-src 'self', 'wasm-unsafe-eval').
+    // A bot game on the in-browser engine: play 1. e4, wait for the bot's reply, resign.
+    await nav.getByRole('button', {name: 'Play bots', exact: true}).click();
+    await page.getByRole('button', {name: 'New game', exact: true}).click();
+    const setup = page.getByRole('dialog');
+    const botName = (await setup.locator('.start-button').innerText()).replace(/^Play\s+/, '').replace(/[^\p{L}\p{N} ].*$/su, '').trim();
+    await setup.locator('.start-button').click();
+    await setup.waitFor({state: 'detached'});
+    const board = page.getByRole('group', {name: /board/i}).first();
+    await board.getByRole('button', {name: 'e2, white pawn'}).click();
+    await board.getByRole('button', {name: /^e4, empty/}).click();
+    await board.getByRole('button', {name: 'e4, white pawn'}).waitFor();
+    // Every first move for Black lands on rank 5 or 6.
+    await page.waitForFunction(() => [...document.querySelectorAll('.board .square')].some(el => /^[a-h][56], black /.test(el.getAttribute('aria-label') || '')), null, {timeout: 30000});
+    await page.getByRole('button', {name: 'Resign', exact: true}).click();
+    await page.getByRole('button', {name: 'Resign game', exact: true}).click();
+    await page.getByRole('dialog').waitFor({state: 'detached'});
+    check('bot game');
+
+    // Review the whole game with Stockfish in the browser.
+    await page.getByRole('button', {name: 'Review whole game', exact: true}).click();
+    await page.getByRole('button', {name: 'Review complete', exact: true}).waitFor({timeout: 90000});
+    await page.getByText(/Stockfish 19 Lite WASM/).first().waitFor();
+    check('review');
+
+    // Reload: the game and its review are still there.
+    await page.reload();
+    await page.getByText('Your games stay on this device').waitFor();
+    await nav.getByRole('button', {name: 'My games', exact: true}).click();
+    const botCard = page.locator('.game-card').filter({hasText: botName});
+    await botCard.first().waitFor();
+    assert.equal(await botCard.count(), 1, 'The bot game should be saved exactly once');
+    await botCard.click();
+    await page.getByRole('button', {name: 'Review complete', exact: true}).waitFor();
+    check('reload after review');
 
     if (screenshot) await page.screenshot({path: screenshot, fullPage: true});
     console.log(`Browser app smoke passed under CSP: ${csp}`);
