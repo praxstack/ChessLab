@@ -20,6 +20,7 @@
 import { arrowPoints } from './board.js';
 import { arrow, arrowHead, loop, rng, seedFrom, smoothPath } from './ink.js';
 import { lineText, nextStep } from './line.js';
+import { guard, loose, reach } from './helpers.js';
 
 const FILES = 'abcdefgh';
 export const SIZE = 80;
@@ -268,6 +269,40 @@ export function stickerFor(sq, glyph) {
   return { kind: 'sticker', sq, glyph };
 }
 
+/**
+ * The helpers' answer as SVG, in board units: dots where a piece can go (a
+ * ring where it takes), a red tag on each loose piece, a tally on a square.
+ */
+export function aidSVG(aid, o) {
+  if (!aid) return '';
+  if (aid.kind === 'reach') {
+    const dots = aid.to
+      .map((sq) => {
+        const [x, y] = squareCentre(sq, o);
+        return aid.takes.includes(sq) ? `<circle class="aid-take" cx="${x}" cy="${y}" r="4.4"/>` : `<circle class="aid-dot" cx="${x}" cy="${y}" r="1.35"/>`;
+      })
+      .join('');
+    const [fx, fy] = squareCentre(aid.sq, o);
+    return `<rect class="aid-from" x="${fx - 5}" y="${fy - 5}" width="10" height="10"/>${dots}`;
+  }
+  if (aid.kind === 'loose') {
+    return aid.squares
+      .map((sq) => {
+        const [x, y] = squareCentre(sq, o);
+        return `<g class="aid-loose" transform="rotate(-8 ${x} ${y + 3.2})"><rect x="${x - 3.6}" y="${y + 2}" width="7.2" height="2.5"/><text x="${x}" y="${r2(y + 3.85)}">loose</text></g>`;
+      })
+      .join('');
+  }
+  if (aid.kind === 'guard' && aid.g) {
+    const [x, y] = squareCentre(aid.sq, o);
+    const g = aid.g;
+    const label = g.empty ? `W${g.white} · B${g.black}` : `${g.attackers} v ${g.defenders}`;
+    const cls = g.empty ? 'aid-tally' : g.short ? 'aid-tally is-short' : 'aid-tally';
+    return `<g class="${cls}"><rect x="${x - 4.4}" y="${y - 5.6}" width="8.8" height="3"/><text x="${x}" y="${r2(y - 3.45)}">${label}</text></g>`;
+  }
+  return '';
+}
+
 /** The numbered line among the drawings, in move order. */
 export function lineSteps(shapes) {
   return shapes.filter((s) => s.kind === 'step').sort((a, b) => a.n - b.n);
@@ -510,13 +545,18 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
   let menuShutUntil = 0;
   let note = ''; // a one-off message in place of the hint, e.g. why a line step didn't fit
   let stickerPick = remembered('sticker', [...GLYPHS, ...WORDS], '!!');
+  let asking = null; // 'reach' or 'guard': the next tap on the board picks the square
+  let aid = null; // what a helper is showing; gone at the next touch or move
+  let looseSide = 0; // 0 off, 1 the side to move, 2 the other side
 
   const done = document.createElementNS(SVGNS, 'g');
   done.setAttribute('class', 'desk__drawn');
   const preview = document.createElementNS(SVGNS, 'g');
   preview.setAttribute('class', 'desk__live');
   els.svg.insertAdjacentHTML('afterbegin', GRAIN);
-  els.svg.append(done, preview);
+  const aidLayer = document.createElementNS(SVGNS, 'g');
+  aidLayer.setAttribute('class', 'desk__aid');
+  els.svg.append(done, preview, aidLayer);
 
   const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
 
@@ -525,10 +565,51 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
     const badges = []; // a line's numbers, placed in order so they don't cover each other
     const ordered = [...sketch.shapes.filter((s) => s.kind !== 'step'), ...lineSteps(sketch.shapes)];
     done.innerHTML = ordered.map((s) => shapeSVG(s, o, '', badges)).join('');
+    aidLayer.innerHTML = aidSVG(aid, o);
     syncButtons();
     const steps = lineSteps(sketch.shapes);
     const start = steps.length ? steps[0].start : '';
     onLine(steps.length ? { fen: start, steps, text: lineText(start, steps) } : null);
+  }
+
+  function ask(kind, sq) {
+    asking = null;
+    const fen = boardFen();
+    if (kind === 'reach') {
+      const r = reach(fen, sq);
+      if (!r.piece) {
+        aid = null;
+        note = `There’s no piece on ${sq}. Tap Reach again, then a piece.`;
+      } else {
+        aid = { kind: 'reach', sq, to: r.to, takes: r.takes };
+        const n = r.to.length;
+        note = n ? `The piece on ${sq} can go to ${n === 1 ? '1 square' : `${n} squares`}${r.takes.length ? `, taking on ${r.takes.join(', ')}` : ''}.` : `The piece on ${sq} has no legal move.`;
+      }
+    } else {
+      const g = guard(fen, sq);
+      aid = g ? { kind: 'guard', sq, g } : null;
+      note = g ? g.text : '';
+    }
+    looseSide = 0;
+    render();
+  }
+
+  function showLoose() {
+    const fen = boardFen();
+    const toMove = fen.split(/\s+/)[1] === 'b' ? 'b' : 'w';
+    const side = looseSide === 1 ? toMove : toMove === 'w' ? 'b' : 'w';
+    const squares = loose(fen, side);
+    const who = looseSide === 1 ? 'Yours (the side to move)' : 'Theirs';
+    aid = { kind: 'loose', squares };
+    note = squares.length ? `${who}: loose on ${squares.join(', ')}. Tap Loose again for ${looseSide === 1 ? 'the other side' : 'none'}.` : `${who}: nothing loose right now. Tap Loose again for ${looseSide === 1 ? 'the other side' : 'none'}.`;
+  }
+
+  function dropAid() {
+    aid = null;
+    looseSide = 0;
+    note = '';
+    aidLayer.innerHTML = '';
+    syncButtons();
   }
 
   /** One glyph and one word per square: the same one again peels it off, another replaces it. */
@@ -577,6 +658,10 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
     for (const b of els.sizes || []) b.setAttribute('aria-pressed', String(b.dataset.size === size));
     for (const b of els.stickers || []) b.setAttribute('aria-pressed', String(b.dataset.sticker === stickerPick));
     if (els.sheet) els.sheet.hidden = tool !== 'sticker';
+    for (const b of els.helps || []) {
+      const h = b.dataset.help;
+      b.setAttribute('aria-pressed', String(h === 'loose' ? looseSide > 0 : asking === h || (aid && aid.kind === h)));
+    }
     if (els.hint) {
       const text = note || hintText();
       if (els.hint.textContent !== text) els.hint.textContent = text; // don't re-announce the same hint
@@ -663,6 +748,14 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
       stop(e);
       return;
     }
+    if (asking && e.button === 0) {
+      // A helper is waiting for a square: this tap answers it, and draws or moves nothing.
+      stop(e);
+      const sq = squareAtPoint(point(e, measure()), orientation());
+      if (sq) ask(asking, sq);
+      return;
+    }
+    if (aid) dropAid(); // a helper's answer fades at the next touch
     const intent = intentFor(e, drawMode);
     if (!intent) return;
     stop(e);
@@ -823,6 +916,29 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
       syncButtons();
     });
   }
+  for (const b of els.helps || []) {
+    b.addEventListener('click', () => {
+      const h = b.dataset.help;
+      if (h === 'loose') {
+        asking = null;
+        looseSide = (looseSide + 1) % 3;
+        if (looseSide) showLoose();
+        else {
+          aid = null;
+          note = '';
+        }
+      } else if (asking === h) {
+        asking = null; // a second tap puts the question away
+        note = '';
+      } else {
+        asking = h;
+        aid = null;
+        looseSide = 0;
+        note = h === 'reach' ? 'Reach: tap a piece to see where it can go.' : 'Guard count: tap a square to count who attacks and defends it.';
+      }
+      render();
+    });
+  }
   for (const b of els.stickers || []) {
     b.addEventListener('click', () => {
       stickerPick = b.dataset.sticker;
@@ -848,6 +964,13 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
       if (sketch.clear()) render();
     },
     /** A new position: no drawings and no history. */
+    /** Put a helper's answer away (the position changed, so it no longer fits). */
+    dropAid() {
+      if (aid || asking) {
+        asking = null;
+        dropAid();
+      }
+    },
     /** Take the numbered line off the board, as one undo step. */
     clearLine() {
       if (sketch.keep((s) => s.kind !== 'step')) render();
@@ -856,6 +979,9 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
       if (live) onUp({ pointerId: live.id, stopImmediatePropagation() {}, cancelable: false }, true);
       preview.innerHTML = '';
       note = '';
+      asking = null;
+      aid = null;
+      looseSide = 0;
       sketch.reset();
       render();
     },

@@ -286,6 +286,8 @@ let todayFen = '';
 let desk = { kind: 'today', fen: '', iso: '' };
 let deskSeq = 0;
 
+// The pens learn about moves once they exist (the board can't call them before).
+let pensSeeMove = () => {};
 const play = createDesk(
   {
     board: $('desk-board'),
@@ -320,6 +322,7 @@ const pens = createDrawLayer(
     sizes: [...document.querySelectorAll('#pens [data-size]')],
     stickers: [...document.querySelectorAll('#pens [data-sticker]')],
     sheet: $('draw-sheet'),
+    helps: [...document.querySelectorAll('#pens [data-help]')],
   },
   {
     orientation: () => play.orientation,
@@ -354,6 +357,7 @@ $('draw-line-play').addEventListener('click', () => {
   if (!fens.length) return;
   $('draw-line-play').textContent = 'Stop';
   playingLine = lineKey(shownLine);
+  pens.dropAid(); // a helper's answer is about the real board, not the line being shown
   const fast = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let i = 0;
   const next = () => {
@@ -368,12 +372,16 @@ $('draw-line-play').addEventListener('click', () => {
   playing = setTimeout(next, 150);
 });
 $('draw-line-clear').addEventListener('click', () => pens.clearLine());
+pensSeeMove = () => pens.dropAid(); // a helper's answer is about one position only
+// Helpers read the real board, so asking one ends Play it and puts the real board back.
+for (const b of document.querySelectorAll('#pens [data-help]')) b.addEventListener('click', stopLine);
 $('tool-flip').addEventListener('click', () => pens.render());
 $('tool-reset').addEventListener('click', () => pens.clear());
 
 // After every move, take-back or new position: the turn note, the links, and the engine button follow the board.
 function boardChanged() {
   stopLine(); // a real move, take-back or new position ends Play it
+  pensSeeMove();
   if (!desk.fen) return;
   const fen = play.fen;
   const moved = play.moved;
