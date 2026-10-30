@@ -7,6 +7,8 @@ import {
   clientToBoard,
   createSketch,
   finishFree,
+  ghostFor,
+  pieceForGhost,
   intentFor,
   jiggle,
   markFor,
@@ -201,4 +203,25 @@ test('draw: nibs and sizes set the line', () => {
 
   assert.match(shapeSVG({ kind: 'arrow', from: 'a1', to: 'a4', color: 'blue', seed: 1, width: 2.34 }, 'white'), /stroke-width="2.34"/);
   assert.match(shapeSVG({ kind: 'circle', sq: 'e4', color: 'blue', seed: 1 }, 'white'), /stroke-width="1.3"/, 'older marks keep the medium line');
+});
+
+test('draw: a ghost move sketches a piece elsewhere and leaves the real one', () => {
+  assert.equal(ghostFor('g1', 'g1', 'wN'), null, 'no move, no ghost');
+  assert.equal(ghostFor('g1', 'f3', null), null, 'nothing to pick up');
+  assert.equal(ghostFor('g1', 'f3', '"><script>'), null, 'only real piece codes');
+  const g = ghostFor('g1', 'f3', 'wN');
+  assert.deepEqual(g, { kind: 'ghost', from: 'g1', to: 'f3', piece: 'wN' });
+  assert.ok(sameMark({ ...g, color: 'blue' }, { ...g, color: 'blue' }), 'the same ghost again takes it off');
+  assert.ok(!sameMark({ ...g, color: 'blue' }, { ...g, to: 'h3', color: 'blue' }));
+
+  const shapes = [{ kind: 'ghost', from: 'g1', to: 'f3', piece: 'wN' }];
+  assert.equal(pieceForGhost('f3', shapes, null), 'wN', 'walk a ghost on from where it landed');
+  assert.equal(pieceForGhost('e4', shapes, 'bP'), 'bP', 'else the real piece');
+  assert.equal(pieceForGhost('e4', shapes, null), null);
+
+  const white = shapeSVG({ ...g, color: 'blue', seed: 2 }, 'white');
+  assert.match(white, /class="dr dr--ghost tone--blue"/);
+  assert.match(white, /<image class="dr-ghost" href="\/assets\/pieces\/wN.svg" x="50.4" y="50.4"/, 'f3 from White');
+  assert.match(shapeSVG({ ...g, color: 'blue', seed: 2 }, 'black'), /x="20.4" y="20.4"/, 'f3 from Black');
+  assert.doesNotMatch(shapeSVG({ ...g, piece: 'xx', color: 'blue' }, 'white'), /<image/);
 });
