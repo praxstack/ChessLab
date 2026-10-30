@@ -2,6 +2,7 @@ import {createLocalRouter} from './router.js';
 import {createIdbStore} from './store/idb-store.js';
 import {createMemoryStore} from './store/memory-store.js';
 import {createUnavailableEngine} from './engine-stub.js';
+import {browserEngineSupported, createBrowserEngine, createLocalOpponent} from './engine/index.js';
 import {createEngineOnlyCoach} from './coach-fallback.js';
 import {createBackup, restoreBackup, inspectBackup, requestPersistentStorage, backupFilename} from './backup.js';
 
@@ -24,7 +25,11 @@ function start() {
   started ??= (async () => {
     const store = await openStore();
     requestPersistentStorage();
-    return {store, router: createLocalRouter({store, engine: createUnavailableEngine(), coach: createEngineOnlyCoach()})};
+    // Stockfish runs in a Web Worker; without worker or WebAssembly support the stub keeps the
+    // app usable and every engine screen shows its "engine unavailable" state.
+    const engine = browserEngineSupported() ? createBrowserEngine() : createUnavailableEngine();
+    const opponent = browserEngineSupported() ? createLocalOpponent() : undefined;
+    return {store, router: createLocalRouter({store, engine, opponent, coach: createEngineOnlyCoach()})};
   })();
   // A failed start is not remembered, so the next request tries again.
   started.catch(() => { started = null; });
