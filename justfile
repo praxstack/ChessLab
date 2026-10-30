@@ -29,7 +29,7 @@ app-check:
     npm run build
 
 e2e:
-    npm run build
+    npm run build:server
     node scripts/check_app_browser.cjs
 
 report:
@@ -45,9 +45,9 @@ report-zip:
     python3 scripts/build_report.py --zip
 
 proof:
-    npm run build
+    npm run build:server
     CHESSLAB_EVIDENCE_DIR="data/proof-$(date +%Y%m%d-%H%M%S)" node scripts/check_app_browser.cjs
 
 local-check:
-    npm run build
+    npm run build:server
     node scripts/check_local_server.mjs

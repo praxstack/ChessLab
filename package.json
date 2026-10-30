@@ -10,8 +10,9 @@
     "dev": "node --env-file-if-exists=.env server/index.mjs",
     "start": "NODE_ENV=production node --env-file-if-exists=.env server/index.mjs",
     "build": "vite build",
+    "build:server": "VITE_BACKEND=server vite build",
     "test": "node --test --test-concurrency=1 server/*.test.mjs web/src/*.test.js web/src/local/*.test.js web/src/local/*/*.test.js",
-    "build:sites": "npm run build && node scripts/build_sites.mjs"
+    "build:sites": "npm run build:server && node scripts/build_sites.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.131.0",

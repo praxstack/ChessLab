@@ -12,7 +12,7 @@ RUN npm ci --no-audit --no-fund
 COPY vite.config.mjs ./
 COPY shared ./shared
 COPY web ./web
-RUN npm run build
+RUN npm run build:server
 
 # Official Stockfish 18 release binary, checked against a pinned SHA-256.
 # Use --build-arg STOCKFISH_BUILD=sse41-popcnt on hosts without AVX2.
