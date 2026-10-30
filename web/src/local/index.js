@@ -2,7 +2,7 @@ import {createLocalRouter} from './router.js';
 import {createIdbStore} from './store/idb-store.js';
 import {createMemoryStore} from './store/memory-store.js';
 import {createUnavailableEngine} from './engine-stub.js';
-import {createEngineOnlyCoach} from './coach-fallback.js';
+import {createBrowserCoach} from './coach/client.js';
 import {createBackup, restoreBackup, inspectBackup, requestPersistentStorage, backupFilename} from './backup.js';
 
 // The browser app's data door: one IndexedDB store and one router per tab, created on first use.
@@ -24,7 +24,7 @@ function start() {
   started ??= (async () => {
     const store = await openStore();
     requestPersistentStorage();
-    return {store, router: createLocalRouter({store, engine: createUnavailableEngine(), coach: createEngineOnlyCoach()})};
+    return {store, router: createLocalRouter({store, engine: createUnavailableEngine(), coach: createBrowserCoach({coachUrl: import.meta.env?.VITE_COACH_URL})})};
   })();
   // A failed start is not remembered, so the next request tries again.
   started.catch(() => { started = null; });
