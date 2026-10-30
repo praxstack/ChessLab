@@ -48,9 +48,13 @@ export default function gameRoutes(ctx) {
       const values = await validatedOptions({...body, variant: source.variant || 'standard', positionNumber: null});
       return atomic(async () => {
         const fresh = await owned(params.id); expected(body, fresh); const snapshot = practiceSnapshot(fresh, body);
-        if (fresh.source === 'bot' && !fresh.result && !fresh.reviewUsed) { fresh.reviewUsed = true; await store.put('games', fresh); }
+        const marking = fresh.source === 'bot' && !fresh.result && !fresh.reviewUsed;
+        if (marking) await store.put('games', {...fresh, reviewUsed: true});
         Object.assign(values, snapshot, {title: `Position practice · ${values.botName}`.slice(0, 100)}); beginClock(values, now());
-        return respond(201, {game: await insertGameNow(values)});
+        // The server rolls back its transaction when the insert fails (the 500-game limit); here the
+        // source game is put back as it was, so a refused practice does not count as review use.
+        try { return respond(201, {game: await insertGameNow(values)}); }
+        catch (error) { if (marking) await store.put('games', fresh); throw error; }
       });
     }],
     ['GET', '/api/games/:id', async ({params}) => ({game: await liveGame(params.id)})],

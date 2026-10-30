@@ -175,3 +175,19 @@ test('bots rated under 250 pass profileRating to the opponent, as the server doe
     assert.equal('profileRating' in calls.at(-1), expected !== undefined, `${botId} sends profileRating only under 250`);
   }
 });
+
+test('a practice refused by the 500-game limit does not mark the source game as reviewed', async () => {
+  const f = fixture({engine: createFakeEngine({pick: replyE5})});
+  const source = (await f.post('/api/games', {color: 'w', botId: 'marlo'})).body.game, route = `/api/games/${source.id}`;
+  await f.post(route + '/move', {move: 'e2e4', revision: 0}); await f.post(route + '/bot', {revision: 1});
+  for (let i = 1; i < 500; i++) await f.store.put('games', {id: `filler-${i}`, moves: [], revision: 0, source: 'import'});
+  const body = {revision: 2, ply: 1, botId: 'marlo', engineId: 'stockfish19', rating: 250, color: 'w', timeControl: {initialSeconds: 60, incrementSeconds: 0}};
+  const refused = await f.post(route + '/practice', body);
+  assert.equal(refused.status, 409); assert.match(refused.body.error, /500-game limit/);
+  const after = (await f.get(route)).body.game;
+  assert.equal(after.reviewUsed, false, 'the review mark is rolled back with the refused insert');
+  assert.equal(after.revision, 2);
+  await f.store.delete('games', 'filler-1');
+  assert.equal((await f.post(route + '/practice', body)).status, 201);
+  assert.equal((await f.get(route)).body.game.reviewUsed, true, 'a practice that is saved still counts as review use');
+});
