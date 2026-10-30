@@ -564,6 +564,248 @@
   display: none;
 }
 
+/* Which engine is in use, and the way to change it. */
+.engine__which {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-1) var(--s-3);
+  margin: 0;
+  font-size: var(--text-small);
+  color: var(--ink-2);
+}
+
+.engine__name b {
+  color: var(--ink);
+}
+
+.engine__pick {
+  padding: var(--s-1) 0;
+  border: 0;
+  background: none;
+  color: var(--blue);
+  font-family: var(--font-book);
+  font-size: var(--text-small);
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.engine__pick:hover {
+  text-decoration-style: solid;
+}
+
+.engine__stop[hidden] {
+  display: none;
+}
+
+/* ---------- The engine picker (pop-up) ---------- */
+
+.engines {
+  width: min(92vw, 40rem);
+}
+
+.engines__view[hidden],
+.engines__warn[hidden],
+.engines__handheld[hidden],
+.engines__soon-note[hidden],
+.engines__go .btn[hidden] {
+  display: none;
+}
+
+.engines__handheld {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+  margin: 0 var(--s-5) var(--s-4);
+  padding: var(--s-3);
+  border: 1px dashed var(--graphite-2);
+  border-radius: var(--radius);
+  font-size: var(--text-small);
+  color: var(--ink-2);
+}
+
+.engines__group {
+  margin: var(--s-4) var(--s-5) var(--s-2);
+  font-family: var(--font-print);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.engines__group-note {
+  margin: 0 var(--s-5) var(--s-3);
+  font-size: var(--text-small);
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.engines__list {
+  margin: 0 var(--s-5);
+  padding: 0;
+  list-style: none;
+}
+
+.engines__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px var(--s-3);
+  align-items: start;
+  padding: var(--s-3) 0;
+  border-top: 1px solid var(--rule-soft);
+}
+
+.engines__row > p {
+  grid-column: 1;
+  margin: 0;
+}
+
+.engines__row.is-active .engines__name {
+  color: var(--blue);
+}
+
+.engines__row[data-status='soon'] .engines__name {
+  color: var(--ink-2);
+}
+
+.engines__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px var(--s-2);
+}
+
+.engines__name {
+  font-family: var(--font-book);
+  font-size: 1.0625rem;
+  font-weight: 700;
+}
+
+.engines__tag {
+  padding: 0 0.45em;
+  border: 1px solid var(--graphite-2);
+  border-radius: var(--radius);
+  font-family: var(--font-print);
+  font-size: 0.75rem;
+  color: var(--ink-2);
+}
+
+.engines__tag--on {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.engines__tag--heavy {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.engines__about {
+  font-size: var(--text-small);
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+.engines__meta {
+  font-family: var(--font-print);
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+}
+
+.engines__bytes {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.engines__use {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  align-self: center;
+  white-space: nowrap;
+}
+
+.engines__use:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.engines__foot {
+  margin: var(--s-4) var(--s-5) var(--s-5);
+  padding-top: var(--s-4);
+  border-top: 1px dashed var(--graphite-2);
+  font-size: var(--text-small);
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+/* The heavy-download warning: red pen, the size written large, then the second yes. */
+.engines__warn {
+  padding-bottom: var(--s-5);
+}
+
+.engines__flag {
+  margin: 0 var(--s-5) var(--s-2);
+  font-family: var(--font-print);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--red);
+}
+
+.engines__size {
+  margin: 0 var(--s-5) var(--s-3);
+  font-family: var(--font-hand);
+  font-size: 2.5rem;
+  line-height: 1;
+  color: var(--red);
+  transform: rotate(-1.2deg);
+  transform-origin: left center;
+}
+
+.engines__risks {
+  margin: 0 var(--s-5) var(--s-4);
+  padding: var(--s-3) var(--s-4) var(--s-3) 1.6em;
+  border-left: 3px solid var(--red);
+  background: var(--paper-2);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  line-height: 1.5;
+}
+
+.engines__risks li {
+  margin-bottom: var(--s-1);
+}
+
+.engines__soon-note {
+  margin: 0 var(--s-5) var(--s-4);
+  font-size: 1.25rem;
+  color: var(--blue);
+}
+
+.engines__go {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin: 0 var(--s-5);
+}
+
+@media (max-width: 30rem) {
+  .engines__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .engines__use {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: start;
+    margin-top: var(--s-2);
+  }
+}
+
 /* ---------- Date picker (pop-up) and the paste help sheet ---------- */
 
 /* "Pick a date" and "Where do I find a FEN or PGN?": quiet, underlined prompts. */

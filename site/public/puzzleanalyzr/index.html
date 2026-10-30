@@ -88,6 +88,11 @@
           <progress class="engine__bar" id="engine-bar" max="1" value="0" aria-label="Stockfish download"></progress>
           <p class="engine__state" id="engine-state">Stockfish loads after the puzzle.</p>
         </div>
+        <p class="engine__which">
+          <span class="engine__name">Engine: <b id="engine-name">Stockfish 19 Lite</b></span>
+          <button class="engine__pick" id="engine-pick" type="button" aria-haspopup="dialog" aria-controls="engine-pop">Change engine</button>
+          <button class="btn btn--plain btn--small engine__stop" id="engine-stop" type="button" hidden>Stop download</button>
+        </p>
         <p class="note-hand engine__say" id="engine-say" aria-live="polite"></p>
         <button class="btn btn--plain btn--small engine__show" id="engine-show" type="button" hidden>Show Stockfish’s move</button>
       </div>
@@ -157,6 +162,38 @@
       <p><span class="ink ink--circle cal__sample" data-draw>12<svg class="ink__svg" viewBox="0 0 101 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M17.74 10.44 C19.47 9.42 24.45 5.86 28.09 4.3 C31.73 2.74 35.71 1.69 39.58 1.05 C43.46 0.42 47.53 0.05 51.36 0.46 C55.2 0.88 59 2.23 62.58 3.52 C66.15 4.81 69.48 6.49 72.81 8.22 C76.13 9.95 79.74 11.49 82.52 13.9 C85.31 16.31 87.29 19.66 89.51 22.68 C91.72 25.69 94.24 28.64 95.81 32.01 C97.37 35.39 98.12 39.19 98.9 42.91 C99.69 46.63 100.64 50.55 100.51 54.35 C100.38 58.16 99.32 62.08 98.11 65.75 C96.91 69.42 95.34 73.12 93.25 76.37 C91.17 79.61 88.4 82.51 85.62 85.22 C82.83 87.93 79.94 90.84 76.56 92.63 C73.18 94.42 69.09 95.19 65.34 95.96 C61.6 96.74 57.8 97.31 54.08 97.29 C50.37 97.28 46.61 96.66 43.04 95.87 C39.46 95.07 35.95 93.96 32.63 92.53 C29.31 91.1 25.93 89.48 23.11 87.3 C20.3 85.12 18.04 82.18 15.75 79.44 C13.46 76.7 11.12 73.95 9.36 70.87 C7.59 67.78 6.35 64.38 5.17 60.93 C4 57.49 2.62 53.86 2.3 50.21 C1.98 46.56 2.54 42.71 3.28 39.04 C4.01 35.38 5.03 31.6 6.69 28.24 C8.34 24.89 10.72 21.75 13.21 18.93 C15.7 16.11 18.5 13.35 21.62 11.3 C24.73 9.26 28.37 7.75 31.9 6.65 C35.43 5.54 39.17 4.98 42.78 4.67 C46.4 4.36 51.79 4.75 53.59 4.76"/></svg></span> Circled: Lichess’s puzzle of that day. It goes on the board here.</p>
       <p><span class="cal__sample cal__sample--plain">12</span> Plain: not saved. Lichess only shares today’s puzzle, so its days fill in from 28 October 2026 onwards, one a day.</p>
     </div>
+  </dialog>
+
+  <dialog class="howto engines" id="engine-pop" aria-labelledby="engine-title">
+    <div class="howto__top">
+      <p class="howto__kicker">chess engines</p>
+      <button class="btn btn--plain btn--small howto__close" id="engine-close" type="button" aria-label="Close">×</button>
+    </div>
+    <div class="engines__view" id="engine-list-view">
+      <h2 class="howto__title" id="engine-title">Pick an engine</h2>
+      <p class="howto__lede">Every engine here runs on your own device; nothing is sent anywhere. <b>Stockfish 19 Lite</b> is the default: small, quick, and far stronger than any human.</p>
+      <p class="engines__handheld" id="engine-handheld" hidden>
+        <span>On a phone or tablet this list starts with the light engines.</span>
+        <button class="btn btn--plain btn--small" id="engine-all" type="button" aria-pressed="false">Show all engines</button>
+      </p>
+      <h3 class="engines__group">Ready now</h3>
+      <ul class="engines__list" id="engine-ready"></ul>
+      <h3 class="engines__group">Coming later</h3>
+      <p class="engines__group-note">Listed so you can see what’s out there. They don’t run here yet: the neural models need a runtime (onnxruntime-web) that comes in a later update. Big ones show the same warning first.</p>
+      <ul class="engines__list" id="engine-soon"></ul>
+      <p class="engines__foot">Downloaded engines stay on this device for 30 days. On iPhone and iPad, Safari may delete them sooner, after 7 days without a visit, unless this page is on your Home Screen. Stockfish is free software under the <a href="/assets/engine/COPYING.txt">GNU GPL v3</a>.</p>
+    </div>
+    <section class="engines__warn" id="engine-warn" aria-labelledby="engine-warn-title" hidden>
+      <p class="engines__flag">heavy download</p>
+      <h2 class="howto__title" id="engine-warn-title">Download this engine?</h2>
+      <p class="engines__size" id="engine-warn-size">99 MB</p>
+      <ul class="engines__risks" id="engine-warn-list"></ul>
+      <p class="note-hand engines__soon-note" id="engine-warn-soon" hidden>This one isn’t in the page yet. This is the warning you’ll see before it downloads, once it is.</p>
+      <div class="engines__go">
+        <button class="btn btn--pen" id="engine-yes" type="button">Yes, download it</button>
+        <button class="btn btn--plain" id="engine-no" type="button">Cancel</button>
+      </div>
+    </section>
   </dialog>
 
   <section class="paste rows" id="paste-sec" aria-labelledby="paste-title" data-ink-group>
@@ -301,6 +338,7 @@
           <p>It downloads once, in the background, while you can already move the pieces. Your browser keeps it for 30 days, so it starts straight away next time.</p>
           <p>It never shows a score or a move by itself. Tap <b>Check my move</b> after you play one and it says how good it was. Only <b>Show Stockfish’s move</b> gives the answer away.</p>
           <p>With Data Saver on, it waits until you tap Check my move.</p>
+          <p><b>Change engine</b> under the board lists the other engines. On a computer you can swap in the full Stockfish 19, the strongest one here, a 99 MB download. Big engines show a warning first and ask twice, and you can stop the download. If an engine can’t start, the page goes back to Lite by itself.</p>
         </div>
       </details>
       <details>
@@ -315,7 +353,7 @@
         </div>
       </details>
     </div>
-    <p class="pz-setup__credit">Positions and games come from the <a href="https://www.chess.com/news/view/published-data-api" rel="noopener">Chess.com public API</a> and the <a href="https://lichess.org/api" rel="noopener">Lichess API</a>. This page never shows a puzzle’s answer or its name unless you ask Stockfish for it. It isn’t made by Chess.com or Lichess. Moves are checked by <a href="https://github.com/jhlywa/chess.js" rel="noopener">chess.js</a> (BSD licence). The engine is <a href="https://stockfishchess.org" rel="noopener">Stockfish 19</a>, free software under the <a href="/assets/engine/COPYING.txt">GNU GPL v3</a>, in the <a href="https://github.com/nmrugg/stockfish.js" rel="noopener">stockfish.js</a> browser build, whose source is linked there.</p>
+    <p class="pz-setup__credit">Positions and games come from the <a href="https://www.chess.com/news/view/published-data-api" rel="noopener">Chess.com public API</a> and the <a href="https://lichess.org/api" rel="noopener">Lichess API</a>. This page never shows a puzzle’s answer or its name unless you ask Stockfish for it. It isn’t made by Chess.com or Lichess. Moves are checked by <a href="https://github.com/jhlywa/chess.js" rel="noopener">chess.js</a> (BSD licence). The engines are <a href="https://stockfishchess.org" rel="noopener">Stockfish 19</a> (and 18 Lite), free software under the <a href="/assets/engine/COPYING.txt">GNU GPL v3</a>, in the <a href="https://github.com/nmrugg/stockfish.js" rel="noopener">stockfish.js</a> browser build, whose source is linked there.</p>
   </section>
 
 </main>
