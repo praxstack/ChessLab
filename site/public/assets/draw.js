@@ -331,7 +331,9 @@ function remember(name, value) {
 }
 
 // Pencil grain: the line breaks up where noise thins it, with a slightly ragged edge.
-const GRAIN = `<defs><filter id="dr-grain" x="-10%" y="-10%" width="120%" height="120%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse"><feTurbulence type="fractalNoise" baseFrequency="2.4" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="0.35" xChannelSelector="R" yChannelSelector="G" result="d"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.6 2.15" result="m"/><feComposite in="d" in2="m" operator="in"/></filter></defs>`;
+// The filter covers the whole board in board units, so a dead-straight line (a
+// zero-height box) still shows.
+const GRAIN = `<defs><filter id="dr-grain" x="-8" y="-8" width="96" height="96" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse"><feTurbulence type="fractalNoise" baseFrequency="2.4" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="0.35" xChannelSelector="R" yChannelSelector="G" result="d"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.6 2.15" result="m"/><feComposite in="d" in2="m" operator="in"/></filter></defs>`;
 
 /**
  * els: { board, svg, mode, show, undo, clear, tools: [buttons with data-tool], colors: [buttons with data-color], sizes: [buttons with data-size], hint }
