@@ -35,8 +35,26 @@ async function readBody(request) {
   const declared = Number(request.headers.get('content-length'));
   if (declared > MAX_BODY_BYTES) return {error: [413, 'The request is too large.']};
   if (!/^application\/json\b/i.test(request.headers.get('content-type') || '')) return {error: [415, 'Send JSON.']};
-  const bytes = await request.arrayBuffer();
-  if (bytes.byteLength > MAX_BODY_BYTES) return {error: [413, 'The request is too large.']};
+  // Read the stream piece by piece and stop at the limit, so a body without Content-Length
+  // never gets buffered in full.
+  const chunks = [];
+  let size = 0;
+  if (request.body) {
+    const reader = request.body.getReader();
+    for (;;) {
+      const {done, value} = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > MAX_BODY_BYTES) {
+        await reader.cancel().catch(() => {});
+        return {error: [413, 'The request is too large.']};
+      }
+      chunks.push(value);
+    }
+  }
+  const bytes = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
   try { return {body: JSON.parse(new TextDecoder().decode(bytes))}; }
   catch { return {error: [400, 'The request is not valid JSON.']}; }
 }

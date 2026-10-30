@@ -111,6 +111,24 @@ test('a wrong code, a foreign site or an oversized body is refused before any wo
   assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM coach_daily').get().n, 0);
 });
 
+test('a streamed body with no length is cut off at the limit, not read in full', async () => {
+  const {env} = await setup();
+  const chunk = new Uint8Array(4096).fill(32);
+  let pulled = 0;
+  let canceled = false;
+  const stream = new ReadableStream({
+    pull(controller) { pulled += 1; if (pulled > 512) controller.close(); else controller.enqueue(chunk); },
+    cancel() { canceled = true; },
+  });
+  const request = new Request('https://coach.example.workers.dev/explain', {method: 'POST', headers: {origin: ORIGIN, 'content-type': 'application/json'}, body: stream, duplex: 'half'});
+  assert.equal(request.headers.get('content-length'), null);
+  const response = await handle(request, env, {fetch: async () => { throw new Error('no upstream call'); }});
+  assert.equal(response.status, 413);
+  assert.equal((await response.json()).reason, 'too_large');
+  assert.ok(canceled, 'the stream is canceled once the limit is passed');
+  assert.ok(pulled * chunk.byteLength < MAX_BODY_BYTES + 4 * chunk.byteLength, `read ${pulled} chunks, should stop near the limit`);
+});
+
 test('preflight answers only the allowed origins', async () => {
   const {send} = await setup();
   const ok = await send(null, {method: 'OPTIONS'});
