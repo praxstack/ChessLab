@@ -4,6 +4,7 @@ import {replay} from '../../../../shared/replay.js';
 import {validateStudy, readAnnotatedPgn, writeAnnotatedPgn, portableStudy, readPortableStudy} from '../../../../shared/study-format.js';
 import {analyzePosition, engineMove} from '../analysis.js';
 import {engineCatalog} from './status.js';
+import {thinkingTimes} from '../../settings-state.js';
 import {fail, respond, moveOn, uci, gameResult, LOCAL_USER} from '../context.js';
 
 // Saved games and bot play, as server/app.mjs serves them.
@@ -98,7 +99,10 @@ export default function gameRoutes(ctx) {
     ['POST', '/api/games/:id/hint', async ({params, body, signal}) => {
       const game = await liveGame(params.id), chess = playable(body, game);
       if (chess.turn() !== game.color) fail(409, 'Wait for your turn before asking for a hint.');
-      const analysis = await analyzePosition(engine, {moves: game.moves, initialFen: game.initialFen, variant: game.variant, movetime: 400, lines: 1}, {signal});
+      // The browser app sends its thinking time; without one the hint searches 400 ms, as on the server.
+      // engineId lifts analyzePosition's 2000 ms cap so Deep (4000 ms) is allowed.
+      if (body.movetime !== undefined && !thinkingTimes.some(([ms]) => ms === body.movetime)) fail(400, 'Choose one of the thinking times in Settings.');
+      const analysis = await analyzePosition(engine, {moves: game.moves, initialFen: game.initialFen, variant: game.variant, movetime: body.movetime ?? 400, lines: 1, ...(body.movetime ? {engineId: 'stockfish19'} : {})}, {signal});
       if (!analysis.bestmove) fail(503, 'The coach returned no hint. Try again.');
       const move = moveOn(chess, analysis.bestmove), fresh = await owned(params.id); expected(body, fresh);
       if (settleClock(fresh, now())) return {game: await storeGame(fresh, fresh.revision)};
