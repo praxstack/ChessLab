@@ -1,5 +1,5 @@
 import React from 'react';
-import {pieceSet, boardThemes} from './settings-state.js';
+import {pieceSet, boardThemes, thinkingTimes} from './settings-state.js';
 import CoachSettings from './local/coach/CoachSettings.jsx';
 
 // The browser build keeps its own AI coach access (own key or invite code) in a Coach tab.
@@ -8,7 +8,7 @@ const browserBuild = import.meta.env.VITE_BACKEND === 'local';
 export {settingDefaults} from './settings-state.js';
 export function SettingSelect({label,value,onChange,options}) {const id=React.useId();return <div className="setting-row"><label htmlFor={id}>{label}</label><select id={id} value={value} onChange={e=>onChange(e.target.value)}>{options.map(option=><option key={option.value} value={option.value} disabled={option.disabled}>{option.label}</option>)}</select></div>;}
 export function SettingToggle({label,value,onChange}){return <div className="setting-row"><span>{label}</span><button type="button" className={`toggle ${value?'on':''}`} role="switch" aria-checked={!!value} aria-label={label} onClick={onChange}><span/></button></div>;}
-export default function Settings({settings,tab,onTab,onChange,engines,onCoachChange}) {
+export default function Settings({settings,tab,onTab,onChange,engines,local=false,onCoachChange}) {
  const select=(key,label,options,numeric=false)=><SettingSelect label={label} value={settings[key]} onChange={value=>onChange(key,numeric?Number(value):value)} options={options.map(([value,label,disabled])=>({value,label,disabled}))}/>;
  const toggle=(key,label)=><SettingToggle label={label} value={settings[key]} onChange={()=>onChange(key,!settings[key])}/>;
  const available=id=>engines.some(e=>e.id===id&&e.available);
@@ -22,11 +22,15 @@ export default function Settings({settings,tab,onTab,onChange,engines,onCoachCha
   {select('notation','Move notation',[['figurine','Figurine'],['text','Text']])}
   {select('animation','Piece animation',[[0,'None'],[100,'Fast'],[200,'Medium (default)'],[400,'Slow']],true)}
   {toggle('lastMove','Highlight the last move')}{toggle('sound','Move sounds')}{toggle('legalMoves','Show legal moves')}
-  <h3>Credits</h3><ul className="credits" aria-label="Artwork and software credits"><li>Pieces: cburnett by Colin M.L. Burnett · GPLv2+ · <a href="/licenses/cburnett/README.txt" target="_blank" rel="noreferrer">licence</a></li><li>Navigation icons: Lucide · ISC · <a href="/licenses/lucide/LICENSE.txt" target="_blank" rel="noreferrer">licence</a></li><li>Move rules: chessops · GPL-3.0 · <a href="/licenses/chessops/LICENSE.txt" target="_blank" rel="noreferrer">licence</a></li></ul>
+  <h3>Credits</h3><ul className="credits" aria-label="Artwork and software credits"><li>Pieces: cburnett by Colin M.L. Burnett · GPLv2+ · <a href="/licenses/cburnett/README.txt" target="_blank" rel="noreferrer">licence</a></li><li>Navigation icons: Lucide · ISC · <a href="/licenses/lucide/LICENSE.txt" target="_blank" rel="noreferrer">licence</a></li><li>Move rules: chessops · GPL-3.0 · <a href="/licenses/chessops/LICENSE.txt" target="_blank" rel="noreferrer">licence</a></li>{local&&<li>Chess engine: Stockfish 19 Lite · GPL-3.0 · <a href="/engine/COPYING.txt" target="_blank" rel="noreferrer">licence</a> · <a href="https://github.com/nmrugg/stockfish.js" target="_blank" rel="noreferrer">source</a></li>}</ul>
  </>:tab==='review'?<>
   <h3>Review</h3>{toggle('arrows','Candidate arrows')}{toggle('classification','Move labels on the board')}{toggle('autoplay','Play through suggested lines')}
   {select('pace','Delay between moves',[[500,'0.5 seconds'],[1000,'1 second'],[2000,'2 seconds'],[3000,'3 seconds']],true)}
   {toggle('coachAvatar','Coach avatar')}
+ </>:local?<>
+  <h3>Engine</h3>{select('thinkingTime','Thinking time',thinkingTimes,true)}
+  {select('lines','Lines shown',[1,2,3,4,5].map(n=>[n,String(n)]),true)}
+  <p className="tiny-note">Stockfish 19 Lite runs in this browser. Thinking time applies to analysis, game review and hints. Quick suits phones; Deep is stronger but slower. Opponent strength is set separately in Game Options.</p>
  </>:<>
   <h3>Game review</h3><SettingSelect label="Engine" value="stockfish" onChange={()=>{}} options={[{value:'stockfish',label:'Stockfish'}]}/>
   {select('reviewStrength','Strength',[[1000,'Fast (~1 sec)'],[5000,'Standard (~5 sec)'],[20000,'Deep (~20 sec)'],[90000,'Maximum (~1 min 30 sec)']],true)}

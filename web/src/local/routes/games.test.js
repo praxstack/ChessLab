@@ -191,3 +191,12 @@ test('a practice refused by the 500-game limit does not mark the source game as 
   assert.equal((await f.post(route + '/practice', body)).status, 201);
   assert.equal((await f.get(route)).body.game.reviewUsed, true, 'a practice that is saved still counts as review use');
 });
+
+test('a hint searches for the thinking time the browser app sends, and 400 ms without one', async () => {
+  const f = fixture({engine: createFakeEngine()});
+  const game = (await f.post('/api/games', {color: 'w', level: 2})).body.game;
+  const hint = body => f.post(`/api/games/${game.id}/hint`, body);
+  assert.equal((await hint({revision: 0})).status, 200); assert.equal(f.engine.calls.at(-1).movetime, 400);
+  assert.equal((await hint({revision: 1, movetime: 4000})).status, 200); assert.equal(f.engine.calls.at(-1).movetime, 4000);
+  assert.equal((await hint({revision: 2, movetime: 2500})).status, 400);
+});

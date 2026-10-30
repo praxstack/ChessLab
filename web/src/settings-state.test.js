@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {settingDefaults, normalizeSettings, pieceSet, boardThemes} from './settings-state.js';
+import {settingDefaults, normalizeSettings, pieceSet, boardThemes, thinkingTimes, browserSearchSettings} from './settings-state.js';
 
 test('stored preferences from older builds load with the shipped piece set',()=>{
  assert.equal(settingDefaults.pieceSet,'cburnett');
@@ -39,4 +39,12 @@ test('board coordinates keep 4.5:1 contrast on plain and highlighted squares in 
    const contrast=ratio(text,background);assert.ok(contrast>=4.5,`${theme} ${kind} ${state}: ${text} on ${background} is ${contrast.toFixed(2)}:1`);
   }
  }
+});
+
+test('thinking time defaults to Normal and only takes the three offered values',()=>{
+ assert.equal(settingDefaults.thinkingTime,1500);
+ assert.deepEqual(thinkingTimes.map(([ms])=>ms),[500,1500,4000]);
+ assert.equal(normalizeSettings({thinkingTime:500}).thinkingTime,500);
+ for(const bad of [2000,'4000',null])assert.equal(normalizeSettings({thinkingTime:bad}).thinkingTime,1500);
+ assert.deepEqual(browserSearchSettings(normalizeSettings({thinkingTime:4000,movetime:30000,reviewStrength:90000,threads:8})),{...normalizeSettings({thinkingTime:4000,threads:8}),movetime:4000,reviewStrength:4000,threads:1});
 });
