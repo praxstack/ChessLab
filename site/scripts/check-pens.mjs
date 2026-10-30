@@ -260,9 +260,10 @@ async function run(browserType, base) {
   await mode('draw');
   check('Draw shows them at full strength again', (await drawn.getAttribute('opacity')) === null && (await drawn.getAttribute('display')) === null && (await shapes()) === inked);
   await page.keyboard.press('Escape');
+  const beforeKeys = await pieces();
   await page.focus('#draw-modes [data-mode="draw"]');
   await page.keyboard.press('ArrowLeft');
-  check('arrow keys move between the modes', await modeIs('faint'));
+  check('arrow keys move between the modes, and leave the moves alone', (await modeIs('faint')) && (await pieces()) === beforeKeys, `${await pieces()}`);
   await mode('draw');
 
   // Flipping keeps every drawing.
