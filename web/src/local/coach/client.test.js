@@ -6,6 +6,7 @@ import {fixture} from '../testing/fixture.js';
 import {createBackup, restoreBackup} from '../backup.js';
 import {createMemoryStore} from '../store/memory-store.js';
 import {normalizeSettings} from '../../settings-state.js';
+import {bundleFromWire} from '../../../../shared/coach/payload.js';
 
 // Fakes only: no real key or code, and no network.
 const FAKE_KEY = 'sk-ant-fake-0000000000000000000000';
@@ -78,7 +79,12 @@ test('an invite code picks path B: evidence only to the Worker, never a key or a
   assert.equal(network.calls[0].url, `${WORKER}/explain`);
   assert.deepEqual(Object.keys(sent).sort(), ['asked', 'evidence', 'inviteCode']);
   assert.equal(sent.inviteCode, FAKE_CODE);
-  assert.deepEqual(Object.keys(sent.evidence).sort(), ['engine', 'lines', 'position']);
+  assert.deepEqual(Object.keys(sent.evidence).sort(), ['candidateLines', 'engine', 'position'], 'checked facts only, no summary text');
+  assert.deepEqual(Object.keys(sent.evidence.position).sort(), ['inCheck', 'legalMoveCount', 'material', 'sideToMove'], 'no game history: the Worker does no chess work');
+  assert.equal(sent.evidence.engine.name, undefined, 'no engine name crosses to the Worker');
+  // The Worker accepts exactly what the browser sends.
+  assert.equal(bundleFromWire(sent.evidence, sent.asked).best, 'a3');
+  assert.equal(answer.receipt.engine, 'Fake Stockfish 19', 'the receipt names the engine that searched here');
   assert.doesNotMatch(JSON.stringify(sent), /sk-ant|SYSTEM|<evidence>|Task:/);
 });
 
@@ -99,7 +105,9 @@ test('every failure falls back to the engine summary with a short reason', async
     [{[KEY_ENTRY]: FAKE_KEY}, fakeNetwork({claudeStatus: 401}), 'not_authorized'],
     [{[KEY_ENTRY]: FAKE_KEY}, fakeNetwork({claudeStatus: 429}), 'upstream_busy'],
     [{[KEY_ENTRY]: FAKE_KEY}, {calls: [], fetch: async () => { throw new TypeError('Failed to fetch'); }}, 'unreachable'],
-    [{[INVITE_ENTRY]: FAKE_CODE}, fakeNetwork({worker: () => new Response('{"message":"no"}', {status: 403})}), 'invite_rejected'],
+    [{[INVITE_ENTRY]: FAKE_CODE}, fakeNetwork({worker: () => new Response('{"reason":"invite_rejected","message":"no"}', {status: 403})}), 'invite_rejected'],
+    [{[INVITE_ENTRY]: FAKE_CODE}, fakeNetwork({worker: () => new Response('{"reason":"origin_not_allowed","message":"no"}', {status: 403})}), 'origin_not_allowed'],
+    [{[INVITE_ENTRY]: FAKE_CODE}, fakeNetwork({worker: () => new Response('forbidden', {status: 403})}), 'api_error'],
     [{[INVITE_ENTRY]: FAKE_CODE}, fakeNetwork({worker: () => new Response(JSON.stringify({source: 'engine', text: 'x', citedMoves: [], fallbackReason: 'daily_limit'}), {status: 200})}), 'daily_limit'],
     [{[INVITE_ENTRY]: FAKE_CODE}, fakeNetwork({worker: () => new Response('oops', {status: 502})}), 'upstream_busy'],
     [{[INVITE_ENTRY]: FAKE_CODE}, fakeNetwork({worker: () => new Response('not json', {status: 200})}), 'unreachable'],

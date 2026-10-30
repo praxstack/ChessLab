@@ -80,16 +80,24 @@ export function buildEvidence(analysis, {moves = [], initialFen = null, variant,
     ...(played ? {[asked ? 'askedMove' : 'playedMove']:played} : {}),
     verifiedSummary:analysis.played?.explanation || analysis.explanation || '',
   };
+  return bundleFor(evidence, {asked});
+}
+
+// The vocabulary an answer may use, worked out from the evidence object alone, with no chess rules:
+// its moves, the mates its scores and moves show, its numbers and the piece types its moves capture.
+// The coach Worker calls this directly on checked evidence, which keeps its CPU use tiny.
+export function bundleFor(evidence, {asked = false} = {}) {
+  const {candidateLines} = evidence;
+  const played = evidence.askedMove ?? evidence.playedMove ?? null;
   const allowed = new Map();
   const allow = san => allowed.set(normalizeSan(san), san);
   for (const line of candidateLines) line.moves.forEach(move => allow(move.san));
   if (played) { allow(played.san); played.engineReplyLine?.forEach(move => allow(move.san)); }
   // Which side the evidence shows mating, and in how many moves when the engine gave a mate score.
   const mates = {scores:new Set(), sides:new Set()};
-  for (const score of [...lines.map(line => line.score), analysis.played?.afterScore]) {
-    if (score?.type !== 'mate' || !Number.isFinite(score.value)) continue;
-    const side = score.value > 0 ? 'White' : 'Black';
-    mates.scores.add(`${side} ${Math.abs(score.value)}`); mates.sides.add(side);
+  for (const score of [...candidateLines.map(line => line.score), played?.scoreAfter]) {
+    if (score?.type !== 'mate' || !Number.isFinite(score.movesToMate)) continue;
+    mates.scores.add(`${score.for} ${score.movesToMate}`); mates.sides.add(score.for);
   }
   for (const move of [...candidateLines.flatMap(line => line.moves), ...(played ? [played, ...(played.engineReplyLine ?? [])] : [])]) if (move.checkmate) mates.sides.add(move.side);
   // Every number the evidence states, and every piece type its moves capture.

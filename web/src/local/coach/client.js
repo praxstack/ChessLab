@@ -1,8 +1,8 @@
 import {gameVariant} from '../../../../shared/chess.js';
 import {randomUUID} from '../../../../shared/random.js';
 import {askClaude, DEFAULT_MODEL} from '../../../../shared/coach/messages.js';
-import {toPayload, bundleFromPayload} from '../../../../shared/coach/payload.js';
-import {parseAskedMove} from '../../../../shared/coach/evidence.js';
+import {toWire} from '../../../../shared/coach/payload.js';
+import {buildEvidence, parseAskedMove} from '../../../../shared/coach/evidence.js';
 import {engineAnswer} from '../coach-fallback.js';
 import {createCredentials, coachEndpoint} from './credentials.js';
 
@@ -27,8 +27,12 @@ export function createBrowserCoach({credentials = createCredentials(), coachUrl 
     signal?.addEventListener('abort', forward, {once: true});
     try {
       const response = await fetch(endpoint, {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify({inviteCode: credentials.invite(), evidence: payload, asked}), signal: controller.signal});
-      if (response.status === 403) return {reason: 'invite_rejected'};
-      if (!response.ok) return {reason: response.status === 429 || response.status >= 500 ? 'upstream_busy' : 'api_error'};
+      if (!response.ok) {
+        // The Worker names why it refused: a wrong invite code, or a site it does not serve.
+        const refusal = await response.json().catch(() => null);
+        if (response.status === 403 && ['invite_rejected', 'origin_not_allowed'].includes(refusal?.reason)) return {reason: refusal.reason};
+        return {reason: response.status === 429 || response.status >= 500 ? 'upstream_busy' : 'api_error'};
+      }
       const answer = await response.json();
       if (answer?.source === 'claude' && typeof answer.text === 'string' && Array.isArray(answer.citedMoves)) return {answer};
       return {reason: typeof answer?.fallbackReason === 'string' ? answer.fallbackReason : 'api_error'};
@@ -69,15 +73,15 @@ export function createBrowserCoach({credentials = createCredentials(), coachUrl 
       if (base.fallbackReason === 'no_evidence') return base;
       if (!current) return base;
       const asked = Boolean(input.asked);
-      let payload, bundle;
-      try {
-        payload = toPayload(input);
-        bundle = bundleFromPayload(payload, asked);
-      } catch { return fallback('no_evidence'); }
+      // The evidence is built here with the rules library, as the server builds it.
+      let bundle;
+      try { bundle = buildEvidence(input.analysis, {moves: input.moves, initialFen: input.initialFen, variant: input.variant, asked}); }
+      catch { return fallback('no_evidence'); }
       if (!bundle.explainable) return fallback('no_evidence');
       if (current === 'invite') {
-        const result = await viaWorker(payload, asked, input.signal);
-        return result.answer ? {...base, ...result.answer, question: base.question, fallbackReason: null} : fallback(result.reason);
+        const result = await viaWorker(toWire(bundle.evidence), asked, input.signal);
+        // The receipt names the engine that searched here; the Worker only knows a fixed label.
+        return result.answer ? {...base, ...result.answer, question: base.question, receipt: base.receipt, fallbackReason: null} : fallback(result.reason);
       }
       const reply = await askClaude(bundle, {asked, model, apiKey: credentials.key(), fetch, signal: input.signal, extraHeaders: {'anthropic-dangerous-direct-browser-access': 'true'}});
       if (reply.reason) return fallback(reply.reason);

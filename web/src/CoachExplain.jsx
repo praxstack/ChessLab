@@ -18,6 +18,7 @@ const reasons={
  not_authorized:'Claude did not accept the saved key. Check it in Settings, Coach.',
  invite_rejected:'The invite code was not accepted. Check it in Settings, Coach.',
  unreachable:'The AI coach could not be reached. Check your connection.',
+ origin_not_allowed:'The coach service is not set up for this site yet.',
 };
 const escape=value=>value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 function MoveText({text,moves,notation}){

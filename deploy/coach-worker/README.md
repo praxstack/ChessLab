@@ -1,6 +1,6 @@
 # AskTheMove coach Worker
 
-A small Cloudflare Worker that lets learners with an invite code use "Explain why" on the owner's Claude key. The browser app sends chess evidence only: the moves of the game and the engine's moves and scores. The Worker replays every move with the rules library, rebuilds the facts, sends the fixed coach prompt to Claude, and checks the answer before returning it. When anything fails, it returns the engine summary with a short reason.
+A small Cloudflare Worker that lets learners with an invite code use "Explain why" on the owner's Claude key. The browser app works out the chess facts with its rules library and sends them as evidence only: moves in chess notation, fixed words (White, Black, knight, Blunder and so on) and numbers. The Worker checks every field against a closed list, names the engine and writes the summary itself, sends the fixed coach prompt to Claude, and checks the answer before returning it. It does no chess work of its own, so each request uses well under a millisecond of the free plan's 10 ms of CPU. When anything fails, it returns the engine summary with a short reason.
 
 It is not a general Claude proxy:
 
@@ -16,7 +16,7 @@ Everything here fits the Cloudflare free plan (Workers: 100,000 requests a day; 
 
 Run these from the repository root on your Mac. `npx wrangler` downloads Wrangler the first time.
 
-1. Install the app's packages, which the Worker bundles (chess rules):
+1. Install the app's packages (the Worker bundles the shared coach code):
 
    ```sh
    npm ci
@@ -73,7 +73,7 @@ Run these from the repository root on your Mac. `npx wrangler` downloads Wrangle
    VITE_COACH_URL=https://askthemove-coach.<your-subdomain>.workers.dev npm run build:app
    ```
 
-   Add the same origin to the app's Content Security Policy `connect-src` (`web/public/_headers`).
+   The build adds that address to the app's Content Security Policy by itself.
 
 ## Everyday changes
 

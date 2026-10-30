@@ -1,10 +1,12 @@
-import {bundleFromPayload, askClaude, engineAnswer, claudeAnswer, DEFAULT_MODEL} from '../../../shared/coach/index.js';
+import {bundleFromWire, askClaude, engineAnswer, claudeAnswer, DEFAULT_MODEL} from '../../../shared/coach/index.js';
 
 // The AskTheMove coach Worker: "Explain why" on the owner's Claude key for learners with an invite code.
-// It takes chess evidence only (moves and engine scores), rebuilds the facts with the rules library,
-// sends the fixed coach prompt and checks the answer. It is not a general Claude proxy: no free text,
+// It takes chess evidence only (SAN moves, fixed words and numbers, checked against a closed schema;
+// see shared/coach/payload.js), sends the fixed coach prompt and checks the answer. It does no chess
+// work, so a request stays far inside the free plan's 10 ms of CPU. It is not a general Claude proxy: no free text,
 // no caller-chosen prompt, model or max_tokens. Each invite code has a daily cap kept in D1.
 export const MAX_BODY_BYTES = 32 * 1024;
+
 const DEFAULT_MAX_PER_DAY = 50;
 
 const list = value => String(value || '').split(/[\s,]+/).map(item => item.trim()).filter(Boolean);
@@ -43,25 +45,26 @@ export async function handle(request, env, {fetch = globalThis.fetch, now = Date
   const url = new URL(request.url);
   const origin = request.headers.get('origin');
   const allowed = origin && list(env.APP_ORIGINS).includes(origin) ? origin : null;
-  if (url.pathname !== '/explain') return json(404, {message: 'Not found.'}, allowed);
-  if (!allowed) return json(403, {message: 'This site may not use the coach.'});
+  if (url.pathname !== '/explain') return json(404, {reason: 'not_found', message: 'Not found.'}, allowed);
+  // Browsers cannot read this answer (no CORS headers); the reason is for other callers and logs.
+  if (!allowed) return json(403, {reason: 'origin_not_allowed', message: 'This site may not use the coach.'});
   if (request.method === 'OPTIONS') return new Response(null, {status: 204, headers: corsHeaders(allowed)});
-  if (request.method !== 'POST') return json(405, {message: 'Use POST.'}, allowed);
+  if (request.method !== 'POST') return json(405, {reason: 'bad_request', message: 'Use POST.'}, allowed);
 
   const {body, error} = await readBody(request);
-  if (error) return json(error[0], {message: error[1]}, allowed);
-  if (!body || typeof body !== 'object' || Array.isArray(body)) return json(400, {message: 'Send an object.'}, allowed);
+  if (error) return json(error[0], {reason: error[0] === 413 ? 'too_large' : 'bad_request', message: error[1]}, allowed);
+  if (!body || typeof body !== 'object' || Array.isArray(body)) return json(400, {reason: 'bad_request', message: 'Send an object.'}, allowed);
   const unknown = Object.keys(body).find(key => !['inviteCode', 'evidence', 'asked'].includes(key));
-  if (unknown) return json(400, {message: 'The request has fields the coach does not accept.'}, allowed);
-  if (typeof body.inviteCode !== 'string' || !body.inviteCode.trim() || body.inviteCode.length > 100) return json(403, {message: 'Enter a valid invite code.'}, allowed);
-  if (body.asked !== undefined && typeof body.asked !== 'boolean') return json(400, {message: 'asked must be true or false.'}, allowed);
+  if (unknown) return json(400, {reason: 'bad_request', message: 'The request has fields the coach does not accept.'}, allowed);
+  if (typeof body.inviteCode !== 'string' || !body.inviteCode.trim() || body.inviteCode.length > 100) return json(403, {reason: 'invite_rejected', message: 'Enter a valid invite code.'}, allowed);
+  if (body.asked !== undefined && typeof body.asked !== 'boolean') return json(400, {reason: 'bad_request', message: 'asked must be true or false.'}, allowed);
   const digest = await inviteDigest(body.inviteCode);
-  if (!list(env.COACH_INVITE_DIGESTS).map(item => item.toLowerCase()).includes(digest)) return json(403, {message: 'This invite code is not valid.'}, allowed);
+  if (!list(env.COACH_INVITE_DIGESTS).map(item => item.toLowerCase()).includes(digest)) return json(403, {reason: 'invite_rejected', message: 'This invite code is not valid.'}, allowed);
 
   const asked = Boolean(body.asked);
   let bundle;
-  try { bundle = bundleFromPayload(body.evidence, asked); }
-  catch (failure) { return json(failure.status >= 400 && failure.status < 500 ? failure.status : 400, {message: failure.message || 'The chess evidence is not valid.'}, allowed); }
+  try { bundle = bundleFromWire(body.evidence, asked); }
+  catch (failure) { return json(400, {reason: 'bad_request', message: failure.message || 'The chess evidence is not valid.'}, allowed); }
   if (!bundle.explainable) return json(200, engineAnswer(bundle, asked, 'no_evidence'), allowed);
   if (!env.ANTHROPIC_API_KEY) return json(200, engineAnswer(bundle, asked, 'not_configured'), allowed);
   if (!await takeDaily(env.DB, digest, new Date(now()).toISOString().slice(0, 10), maxPerDay(env))) return json(200, engineAnswer(bundle, asked, 'daily_limit'), allowed);
