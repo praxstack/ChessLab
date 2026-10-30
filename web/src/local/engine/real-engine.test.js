@@ -30,6 +30,8 @@ test('the shipped Stockfish 19 Lite answers analysis, skill moves and cancellati
   const engine = createEngine({createWorker: () => processWorker(dir)});
   t.after(() => { engine.close(); rmSync(dir, {recursive: true, force: true}); });
 
+  assert.equal((await engine.status()).starting, true);
+  await engine.analyze({fen: START, moves: [], movetime: 50});
   const status = await engine.status();
   assert.equal(status.available, true);
   assert.match(status.name, /^Stockfish 19\b/);

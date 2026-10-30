@@ -70,6 +70,9 @@ export function createTablebase({fetch: get = (...args) => globalThis.fetch(...a
       if (cache.size > cacheSize) cache.delete(cache.keys().next().value);
       return answer;
     } catch {
+      // A timeout or network error pauses lookups too, so a hanging connection does not add the
+      // timeout to every endgame position. A cancel by the caller says nothing about the network.
+      if (!signal?.aborted) pausedUntil = now() + pause;
       return null;
     } finally {
       clearTimeout(timer);

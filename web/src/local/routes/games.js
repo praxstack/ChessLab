@@ -100,6 +100,7 @@ export default function gameRoutes(ctx) {
       const game = await liveGame(params.id), chess = playable(body, game);
       if (chess.turn() !== game.color) fail(409, 'Wait for your turn before asking for a hint.');
       // The browser app sends its thinking time; without one the hint searches 400 ms, as on the server.
+      // engineId lifts analyzePosition's 2000 ms cap so Deep (4000 ms) is allowed.
       if (body.movetime !== undefined && !thinkingTimes.some(([ms]) => ms === body.movetime)) fail(400, 'Choose one of the thinking times in Settings.');
       const analysis = await analyzePosition(engine, {moves: game.moves, initialFen: game.initialFen, variant: game.variant, movetime: body.movetime ?? 400, lines: 1, ...(body.movetime ? {engineId: 'stockfish19'} : {})}, {signal});
       if (!analysis.bestmove) fail(503, 'The coach returned no hint. Try again.');

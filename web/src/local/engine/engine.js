@@ -170,13 +170,14 @@ export function createEngine({
   }
 
   return {
+    // Never waits for the worker, so the app can boot while Stockfish downloads. A start under
+    // way counts as available (searches wait for it); only a real failure reports unavailable.
     async status() {
-      try {
-        const found = await start();
-        return {available: true, name: found.name, version: found.name, chess960: found.chess960};
-      } catch (error) {
-        return {available: false, name: 'Stockfish', reason: error.message || UNAVAILABLE};
-      }
+      if (identity) return {available: true, name: identity.name, version: identity.name, chess960: identity.chess960};
+      if (!starting && failedAt !== null && now() - failedAt < retryAfter) return {available: false, name: 'Stockfish', reason: failedReason};
+      start().catch(() => {}); // warm up in the background
+      // The shipped build supports Chess960; a build without it fails that search clearly.
+      return {available: true, starting: true, name: 'Stockfish', version: 'Stockfish', chess960: true};
     },
     // {fen, moves, variant, movetime, lines, skill, signal} -> {engine, bestmove, lines, tablebaseHits, limits}.
     // fen is the game's starting position; scores are from White's side.

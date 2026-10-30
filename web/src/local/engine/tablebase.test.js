@@ -79,6 +79,27 @@ test('a slow tablebase is abandoned after the timeout', async () => {
   assert.ok(Date.now() - started < 1000);
 });
 
+test('a timeout or network error pauses lookups for a minute; a cancel does not', async () => {
+  let clock = 0, calls = 0, mode = 'hang';
+  const fetch = (url, {signal}) => { calls++; return mode === 'hang' ? new Promise((resolve, reject) => signal.addEventListener('abort', () => reject(new DOMException('aborted', 'AbortError')))) : mode === 'down' ? Promise.reject(new TypeError('Failed to fetch')) : Promise.resolve(reply(kpkAnswer)); };
+  const tablebase = createTablebase({fetch, timeout: 20, now: () => clock, online: () => true});
+  assert.equal(await tablebase.analyze({fen: KPK, moves: []}), null);
+  assert.equal(await tablebase.analyze({fen: '4k3/8/8/8/8/8/3P4/4K3 w - - 0 1', moves: []}), null);
+  assert.equal(calls, 1, 'no second wait inside the pause');
+  clock = 61000; mode = 'down';
+  assert.equal(await tablebase.analyze({fen: KPK, moves: []}), null);
+  assert.equal(await tablebase.analyze({fen: KPK, moves: []}), null);
+  assert.equal(calls, 2);
+  clock = 122000; mode = 'hang';
+  const controller = new AbortController();
+  const pending = tablebase.analyze({fen: KPK, moves: [], signal: controller.signal});
+  controller.abort();
+  await assert.rejects(pending, error => error.status === 499);
+  mode = 'ok';
+  assert.equal((await tablebase.analyze({fen: KPK, moves: []})).bestmove, 'e1d2');
+  assert.equal(calls, 4);
+});
+
 test('a rate limit pauses lookups for a minute', async () => {
   let clock = 0;
   const {fetch, calls} = fakeFetch(() => reply({}, 429));

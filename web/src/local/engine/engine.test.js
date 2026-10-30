@@ -68,11 +68,24 @@ test('lines come from the deepest complete iteration that holds the best move, i
 
 test('the handshake reports the engine, sets the hash and runs once', async () => {
   const {engine, workers} = setup();
-  const [first, second] = await Promise.all([engine.status(), engine.status()]);
-  assert.deepEqual(first, {available: true, name: 'Stockfish 19 Lite WASM', version: 'Stockfish 19 Lite WASM', chess960: true});
-  assert.deepEqual(second, first);
+  await Promise.all([engine.status(), engine.status(), engine.analyze({fen: START, moves: [], movetime: 50})]);
+  assert.deepEqual(await engine.status(), {available: true, name: 'Stockfish 19 Lite WASM', version: 'Stockfish 19 Lite WASM', chess960: true});
   assert.equal(workers.length, 1);
-  assert.deepEqual(workers[0].sent, ['uci', 'setoption name Hash value 32', 'isready']);
+  assert.deepEqual(workers[0].sent.slice(0, 3), ['uci', 'setoption name Hash value 32', 'isready']);
+});
+
+test('status answers at once while the engine starts, and starts it in the background', async () => {
+  const {engine, workers} = setup({silent: true}, {startTimeout: 5000});
+  const status = await engine.status();
+  assert.deepEqual(status, {available: true, starting: true, name: 'Stockfish', version: 'Stockfish', chess960: true});
+  assert.equal(workers.length, 1, 'the warm-up began');
+  assert.deepEqual(workers[0].sent, ['uci']);
+  // A search waits for the start; it does not fail because the engine is still loading.
+  const search = engine.analyze({fen: START, moves: [], movetime: 50});
+  workers[0].silent = false;
+  workers[0].onmessage({data: 'id name Stockfish 19 Lite WASM\nuciok'});
+  assert.equal((await search).bestmove, 'e2e4');
+  assert.equal((await engine.status()).starting, undefined);
 });
 
 test('analyze sends MultiPV, skill and the full move history, and turns scores to White', async () => {
@@ -162,6 +175,8 @@ test('stop() cancels the running search and everything waiting', async () => {
 test('a worker that never answers is reported unavailable, then retried after a pause', async () => {
   let clock = 0;
   const {engine, workers} = setup({silent: true}, {startTimeout: 20, retryAfter: 1000, now: () => clock});
+  assert.equal((await engine.status()).starting, true);
+  await assert.rejects(engine.analyze({fen: START, moves: [], movetime: 50}), error => error.status === 503);
   const status = await engine.status();
   assert.equal(status.available, false);
   assert.match(status.reason, /could not start/);
@@ -169,7 +184,7 @@ test('a worker that never answers is reported unavailable, then retried after a 
   await assert.rejects(engine.analyze({fen: START, moves: [], movetime: 50}), error => error.status === 503);
   assert.equal(workers.length, 1, 'no second start inside the pause');
   clock = 2000;
-  await engine.status();
+  assert.equal((await engine.status()).starting, true);
   assert.equal(workers.length, 2);
 });
 
@@ -200,6 +215,7 @@ test('a game-over position returns no move without searching', async () => {
 
 test('a worker that is not Stockfish is refused', async () => {
   const {engine} = setup({name: 'Something Else 1.0'});
+  await assert.rejects(engine.analyze({fen: START, moves: [], movetime: 50}), /Stockfish/);
   const status = await engine.status();
   assert.equal(status.available, false);
   assert.match(status.reason, /Stockfish/);
