@@ -48,3 +48,21 @@ test('helpers draw dots, tags and tallies in board units', () => {
   assert.match(aidSVG({ kind: 'guard', sq: 'e5', g: { empty: false, attackers: 2, defenders: 1, short: true } }, 'black'), /aid-tally is-short[\s\S]*>2 v 1</);
   assert.equal(aidSVG(null, 'white'), '');
 });
+
+test('reach never offers taking the king', () => {
+  // Black's rook gives check; with the turn flipped chess.js would list Rxe1.
+  const r = reach('4k3/8/8/8/8/8/4r3/4K3 w - - 0 1', 'e2');
+  assert.ok(!r.to.includes('e1'));
+  assert.ok(!r.takes.includes('e1'));
+  assert.ok(r.to.includes('e3'));
+});
+
+test('guard: equal counts are not "held" when a cheaper piece attacks', () => {
+  const q = guard('4k3/8/8/3p4/4Q3/5P2/8/4K3 b - - 0 1', 'e4');
+  assert.equal(q.attackers, 1);
+  assert.equal(q.defenders, 1);
+  assert.equal(q.short, true, 'dxe4 fxe4 loses the queen for a pawn');
+  assert.match(q.text, /cheaper piece attacks it/);
+  assert.doesNotMatch(q.text, /held/);
+  assert.match(guard('4k3/8/8/8/8/8/3r4/4K3 w - - 0 1', 'd2').text, /hanging/);
+});

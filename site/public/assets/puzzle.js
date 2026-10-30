@@ -357,6 +357,7 @@ $('draw-line-play').addEventListener('click', () => {
   if (!fens.length) return;
   $('draw-line-play').textContent = 'Stop';
   playingLine = lineKey(shownLine);
+  pens.dropAid(); // a helper's answer is about the real board, not the line being shown
   const fast = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let i = 0;
   const next = () => {
@@ -372,6 +373,8 @@ $('draw-line-play').addEventListener('click', () => {
 });
 $('draw-line-clear').addEventListener('click', () => pens.clearLine());
 pensSeeMove = () => pens.dropAid(); // a helper's answer is about one position only
+// Helpers read the real board, so asking one ends Play it and puts the real board back.
+for (const b of document.querySelectorAll('#pens [data-help]')) b.addEventListener('click', stopLine);
 $('tool-flip').addEventListener('click', () => pens.render());
 $('tool-reset').addEventListener('click', () => pens.clear());
 

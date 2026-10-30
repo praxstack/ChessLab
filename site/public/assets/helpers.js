@@ -36,7 +36,9 @@ export function reach(fen, sq) {
   const p = g && g.get(sq);
   if (!p) return { piece: null, to: [], takes: [] };
   const h = turned(fen, p.color);
-  const moves = h ? h.moves({ square: sq, verbose: true }) : [];
+  // With the turn flipped, the side not to move may be giving check, and chess.js
+  // would then offer "taking the king". That's never a move, so it's left out.
+  const moves = h ? h.moves({ square: sq, verbose: true }).filter((m) => m.captured !== 'k') : [];
   const to = [...new Set(moves.map((m) => m.to))];
   const takes = [...new Set(moves.filter((m) => m.captured).map((m) => m.to))];
   return { piece: p, to, takes };
@@ -78,13 +80,16 @@ export function guard(fen, sq) {
   if (!p) return { sq, empty: true, white, black, text: `${sq}: White hits it ${times(white)}, Black ${times(black)}.` };
   const own = p.color === 'w' ? white : black;
   const them = p.color === 'w' ? black : white;
-  const verdict = them === 0 ? 'safe for now' : own >= them ? 'held' : 'short of defenders';
+  // Same rule as loose(): counts alone don't hold a piece that a cheaper one attacks.
+  const enemy = p.color === 'w' ? 'b' : 'w';
+  const cheaper = p.type !== 'k' && g.attackers(sq, enemy).some((s) => VALUE[g.get(s).type] < VALUE[p.type]);
+  const verdict = them === 0 ? 'safe for now' : own === 0 ? 'hanging' : own < them ? 'short of defenders' : cheaper ? 'but a cheaper piece attacks it' : 'held';
   return {
     sq,
     empty: false,
     attackers: them,
     defenders: own,
-    short: them > own,
+    short: them > 0 && (own < them || cheaper),
     text: `${SIDE[p.color]}’s ${NAME[p.type]} on ${sq}: attacked ${times(them)}, defended ${times(own)}, ${verdict}.`,
   };
 }

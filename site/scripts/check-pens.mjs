@@ -202,6 +202,16 @@ async function run(browserType, base) {
     await drag('a3', 'a3');
     check('a helper fades at the next touch', (await aid('*')) === 0);
     check('helpers never move a piece', (await pieces()) === before);
+    // Asking a helper during Play it ends the show, so the answer fits the board you see.
+    if (await shown('#draw-line')) {
+      await page.click('#draw-line-play');
+      await page.waitForTimeout(1100);
+      await page.click('#pens [data-help="loose"]');
+      await page.waitForTimeout(100);
+      check('a helper during Play it stops the show first', (await page.textContent('#draw-line-play')) === 'Play it' && (await pieces()) === before);
+      await page.click('#pens [data-help="loose"]');
+      await page.click('#pens [data-help="loose"]');
+    }
   }
 
   // Flipping keeps every drawing.
