@@ -2,3 +2,5 @@ node_modules/
 .wrangler/
 .dev.vars
 *.log
+# The beta app, built from web/ by scripts/build-betapp.mjs during deploy.
+public/betapp/

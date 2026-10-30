@@ -104,3 +104,48 @@ The app has one page and changes screens without changing the address, so it nee
 ## Free plan limits
 
 Each uploaded file must be under 25 MB. The largest file today is about 1.1 MB; the chess engine files, when they arrive, are well under the limit.
+
+## The beta app at askthemove.online/betapp
+
+The same app also runs inside the main site at **https://askthemove.online/betapp/**, where only beta testers can open it. A visitor sees a sign-in page first. Cloudflare checks the email and beta code before it sends any file of the app, so nobody can load the app or its engine without signing in. A session lasts 30 days on that device.
+
+The people allowed in are kept in a Cloudflare secret, never in this repository. You set it once, and again whenever you add or remove a tester.
+
+### One-time setup
+
+From the repository folder on your Mac:
+
+1. Choose who can sign in. Write one line per person: their email, a space, then their beta code. Pick codes that are long and hard to guess.
+
+2. Store that list as a secret. The command asks you to paste the value, so it never lands in your shell history:
+
+   ```sh
+   cd site
+   npx --yes wrangler@4.136.3 pages secret put BETA_USERS --project-name askthemove
+   ```
+
+   For several people, paste them on one line separated by commas, like `you@example.com code-one, friend@example.com code-two`.
+
+3. Store a random key that signs the session cookies:
+
+   ```sh
+   openssl rand -hex 32 | npx --yes wrangler@4.136.3 pages secret put BETA_SESSION_SECRET --project-name askthemove
+   ```
+
+4. Deploy the site. The deploy builds the app for /betapp on the way:
+
+   ```sh
+   npm run deploy
+   ```
+
+   To include the invite-code coach, put `VITE_COACH_URL=https://askthemove-coach.YOUR-NAME.workers.dev` in front of `npm run deploy`.
+
+5. Open https://askthemove.online/betapp/, sign in, and play a bot.
+
+### Everyday changes
+
+- **Add or remove a tester:** run step 2 again with the full new list. Someone you remove is signed out at their next click.
+- **Sign everyone out:** run step 3 again.
+- **Update the app:** `git pull`, then `cd site && npm run deploy`.
+
+Wrong codes are limited to 10 tries per 10 minutes from one address. Until both secrets are set, /betapp shows "not set up yet" and serves nothing.

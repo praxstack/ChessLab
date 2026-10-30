@@ -2,11 +2,12 @@ import React, {useId, useState} from 'react';
 import {Piece} from './Board.jsx';
 import {strengthLadder,strengthChoices} from '../../shared/strength-ladder.js';
 import {compatibleEngine,playBlockedReason} from './play-blocked.js';
+import {publicUrl} from './public-url.js';
 
 export const engineRatings=strengthLadder;
 export const assistanceDefaults={chat:true,evaluation:false,threats:false,suggestions:false,feedback:false,engine:false};
 export const timeControls=[['No timer',0,0],['1 min',60,0],['1 + 1',60,1],['2 + 1',120,1],['3 + 2',180,2],['5 min',300,0],['5 + 5',300,5],['10 min',600,0],['15 + 10',900,10],['30 min',1800,0],['10 + 5',600,5],['20 min',1200,0],['60 min',3600,0]];
-export function BotAvatar({bot,className=''}) {return bot?.avatar?<img className={`bot-avatar ${className}`} src={bot.avatar} alt="" width="80" height="80"/>:<span className={`bot-avatar engine-avatar ${className}`}><Piece type="n" color="b"/></span>;}
+export function BotAvatar({bot,className=''}) {return bot?.avatar?<img className={`bot-avatar ${className}`} src={publicUrl(bot.avatar)} alt="" width="80" height="80"/>:<span className={`bot-avatar engine-avatar ${className}`}><Piece type="n" color="b"/></span>;}
 const medals=[null,['bronze','Bronze'],['silver','Silver'],['gold','Gold']];
 // A win against a bot earns a medal: gold without help, silver with a little, bronze with more.
 export function Medal({count=0,label=false}) {const medal=medals[count];if(!medal)return null;return <span className={`medal ${medal[0]}`} role="img" aria-label={`${medal[1]} medal`} title={`${medal[1]} medal`}>{label&&<span aria-hidden="true">{medal[1]} medal</span>}</span>;}

@@ -23,3 +23,4 @@ design/**/*.stderr.txt
 /data
 web/dist/
 web/dist-app/
+web/dist-betapp/
