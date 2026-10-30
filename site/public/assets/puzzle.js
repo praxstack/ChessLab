@@ -9,7 +9,9 @@ import { parsePlacement, pieceHTML } from './board.js';
 import { markSVG, seedFrom } from './ink.js';
 import { createDesk, coordsHTML } from './desk.js';
 import { createDrawLayer } from './draw.js';
-import { createEngine, grade, toCp, WASM_BYTES } from './engine.js';
+import { createEngine, grade, isCancel, isSaved, toCp } from './engine.js';
+import { DEFAULT_ENGINE, createChoice, engineById, formatBytes, needsWarning } from './engine-catalog.js';
+import { createPicker } from './engine-picker.js';
 import * as sound from './sound.js';
 import { nextPuzzleAt, whenText } from './daily-clock.js';
 
@@ -573,34 +575,113 @@ showSound();
  */
 
 const mb = (n) => (n / 1e6).toFixed(1);
-const engine = createEngine({ onState: showEngine });
+const LITE = engineById(DEFAULT_ENGINE);
+let storage = null;
+try {
+  storage = window.localStorage;
+} catch {
+  /* blocked: the choice just isn't remembered */
+}
+// The engine picked last time (Lite unless the learner chose another), and
+// Lite again if that one's last start never finished.
+const choice = createChoice(storage);
+const first = choice.start();
+let active = first.engine;
+let notice = first.note; // why the page is back on Lite, kept on the state line until Lite is ready
+let engine = createEngine({ spec: active, onState: showEngine });
 let checkSeq = 0;
 let checking = false;
 let revealing = false;
 let lastBest = null;
 
 function showEngine(s) {
+  if (s.spec !== active) return; // an engine the learner has swapped away from
   const bar = $('engine-bar');
   const state = $('engine-state');
+  const name = active.name;
   $('engine').dataset.phase = s.phase;
+  $('engine-stop').hidden = !(s.phase === 'download' && needsWarning(active));
   if (s.phase === 'download') {
     bar.max = s.total;
     bar.value = s.got;
-    state.textContent = `Downloading Stockfish: ${mb(s.got)} of ${mb(s.total)} MB. You can move the pieces meanwhile.`;
+    state.textContent = `Downloading ${name}: ${mb(s.got)} of ${mb(s.total)} MB. You can move the pieces meanwhile.`;
   } else if (s.phase === 'start') {
     bar.removeAttribute('value'); // an indeterminate bar while it starts
-    state.textContent = s.fromDevice ? 'Starting Stockfish from this device…' : 'Starting Stockfish…';
+    if (s.checking) state.textContent = `Checking the ${name} download…`;
+    else {
+      choice.starting(active); // if the tab dies while it starts, the next visit uses Lite
+      state.textContent = s.fromDevice ? `Starting ${name} from this device…` : `Starting ${name}…`;
+    }
   } else if (s.phase === 'ready') {
+    choice.ready(active);
     bar.max = 1;
     bar.value = 1;
-    state.textContent = 'Stockfish is ready on this device, kept for 30 days. It stays quiet until you tap Check my move.';
+    state.textContent = `${notice ? `${notice} ` : ''}${name} is ready on this device, kept for 30 days. It stays quiet until you tap Check my move.`;
+    notice = '';
   } else if (s.phase === 'failed') {
     bar.max = 1;
     bar.value = 0;
-    state.textContent = 'Stockfish couldn’t load here. The board still works. Tap Check my move to try again.';
+    const back = choice.failed(active, s.error);
+    if (back) {
+      // Never retry a heavy engine that failed: the choice is Lite again, and Lite starts now.
+      setTimeout(() => {
+        useEngine(back.engine);
+        notice = back.message;
+        engineSay(back.message, 'red');
+        engine.load().catch(() => {});
+      }, 0);
+    } else {
+      state.textContent = 'Stockfish couldn’t load here. The board still works. Tap Check my move to try again.';
+    }
+  } else if (s.phase === 'idle' && s.cancelled) {
+    bar.max = 1;
+    bar.value = 0;
   }
   updateCheckButton();
 }
+
+// Swap the engine in use: the old one is stopped (its download too), the new one waits to be loaded.
+function useEngine(spec) {
+  if (engine) engine.stop();
+  active = spec;
+  engine = createEngine({ spec, onState: showEngine });
+  $('engine-name').textContent = spec.name;
+  $('engine').dataset.phase = 'idle';
+  $('engine-stop').hidden = true;
+  $('engine-bar').max = 1;
+  $('engine-bar').value = 0;
+  $('engine-state').textContent = `${spec.name} is chosen.`;
+  lastBest = null;
+  $('engine-show').hidden = true;
+  updateCheckButton();
+}
+
+// The learner picked an engine in the picker (a heavy one only after its warning and second yes).
+async function chooseEngine(spec) {
+  if (spec.id === active.id) return;
+  const prev = active;
+  useEngine(spec);
+  if (spec.id === DEFAULT_ENGINE) choice.pick(spec);
+  engineSay('');
+  try {
+    await engine.load();
+  } catch (err) {
+    if (!isCancel(err) || active !== spec) return; // a failure falls back to Lite in showEngine
+    // Stopped by the learner: back to the engine before, unless that one would need a big download too.
+    const back = !needsWarning(prev) || (await isSaved(prev)) ? prev : LITE;
+    useEngine(back);
+    choice.pick(back);
+    engineSay(`Download stopped. Check my move uses ${back.name}.`);
+    engine.load().catch(() => {});
+  }
+}
+
+$('engine-stop').addEventListener('click', () => engine.cancel());
+
+const picker = createPicker({ getActive: () => active, isSaved, onChoose: chooseEngine });
+$('engine-pick').addEventListener('click', () => picker.open($('engine-pick')));
+$('engine-name').textContent = active.name;
+if (first.note) engineSay(first.note, 'red');
 
 function engineSay(text, tone = '') {
   say('engine-say', text, tone);
@@ -616,11 +697,21 @@ function startEngineSoon() {
   if (engine.phase !== 'idle' || engineTimer) return;
   const saveData = navigator.connection && navigator.connection.saveData;
   if (saveData) {
-    $('engine-state').textContent = `Data Saver is on, so Stockfish waits. It downloads (${mb(WASM_BYTES)} MB) when you tap Check my move.`;
+    $('engine-state').textContent = `Data Saver is on, so ${active.name} waits. It downloads (${formatBytes(active.bytes)}) when you tap Check my move.`;
     return;
   }
   // Let the puzzle and its pieces arrive first; the engine is a quiet second.
-  engineTimer = setTimeout(() => engine.load().catch(() => {}), 900);
+  engineTimer = setTimeout(async () => {
+    const eng = engine;
+    // A big engine never downloads by itself: only from the device, or when asked.
+    if (needsWarning(eng.spec) && !(await isSaved(eng.spec))) {
+      if (eng === engine && eng.phase === 'idle') {
+        $('engine-state').textContent = `${eng.spec.name} isn’t on this device any more. It downloads (${formatBytes(eng.spec.bytes)}) when you tap Check my move, or pick another engine.`;
+      }
+      return;
+    }
+    if (eng === engine) eng.load().catch(() => {});
+  }, 900);
 }
 
 const VERDICT = {
@@ -657,9 +748,10 @@ $('engine-check').addEventListener('click', async () => {
     sound.play(verdict === 'best' || verdict === 'good' ? 'good' : 'hmm');
     lastBest = before.move && !playedBest ? { move: before.move, after: m.after } : null;
     $('engine-show').hidden = !lastBest || verdict === 'best';
-  } catch {
+  } catch (err) {
     if (seq !== checkSeq) return;
-    engineSay('Stockfish couldn’t check that one. Try again.', 'red');
+    if (isCancel(err)) engineSay('Download stopped. Tap Check my move to start it again, or pick another engine.');
+    else engineSay('Stockfish couldn’t check that one. Try again.', 'red');
   } finally {
     checking = false;
     updateCheckButton();
