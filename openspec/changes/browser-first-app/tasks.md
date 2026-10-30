@@ -17,12 +17,12 @@ Files: `web/src/local/**` (except `engine/`), `shared/**` moves of rules modules
 
 Files: `web/src/local/engine/**`, `web/public/engine/**`, engine settings in `web/src/settings-state.js`.
 
-- [ ] 2.1 Copy Stockfish 19 Lite single-thread files and `COPYING.txt` into `web/public/engine/`.
-- [ ] 2.2 `createEngine()` per design.md seam 5: UCI handshake, `analyze` with MultiPV, `bestMove` with skill level, cancel on new request, one queue.
-- [ ] 2.3 Port the bot move policy (`stockfishPolicy` in `server/opponent-engines.mjs`) and `engineControls` ratings to use `bestMove`.
-- [ ] 2.4 Thinking-time setting: Quick 0.5 s, Normal 1.5 s (default), Deep 4 s; used by analysis, review and hints.
-- [ ] 2.5 Lichess tablebase lookup (`https://tablebase.lichess.ovh/standard?fen=`) for 7 or fewer pieces, with a timeout and graceful fallback to the engine.
-- [ ] 2.6 Tests: UCI parsing and queue with a fake worker; tablebase client with a fake fetch.
+- [x] 2.1 Copy Stockfish 19 Lite single-thread files and `COPYING.txt` into `web/public/engine/`.
+- [x] 2.2 `createEngine()` per design.md seam 5: UCI handshake, `analyze` with MultiPV, `bestMove` with skill level, cancel on new request, one queue.
+- [x] 2.3 Port the bot move policy (`stockfishPolicy` in `server/opponent-engines.mjs`) and `engineControls` ratings to use `bestMove`.
+- [x] 2.4 Thinking-time setting: Quick 0.5 s, Normal 1.5 s (default), Deep 4 s; used by analysis, review and hints.
+- [x] 2.5 Lichess tablebase lookup (`https://tablebase.lichess.ovh/standard?fen=`) for 7 or fewer pieces, with a timeout and graceful fallback to the engine.
+- [x] 2.6 Tests: UCI parsing and queue with a fake worker; tablebase client with a fake fetch.
 
 ## Package 3: coach without a server
 
@@ -37,4 +37,4 @@ Files: `shared/coach/**`, `deploy/coach-worker/**`, `web/src/local/coach/**`, co
 
 - [x] 4.1 `_headers` CSP and security headers per design.md, generated into `web/dist-app/` at build time; web app manifest.
 - [x] 4.2 `npm run deploy:app`, `docs/deploy-browser-app.md` (Pages project `askthemove-app`, preview first, `app.askthemove.online` untouched).
-- [ ] 4.3 Browser smoke (Playwright): open the built app with no server, import a game, reload, see the game still there. After package 2 lands, extend it: play a bot game, review it, reload. First part done: `npm run smoke:app` (`scripts/smoke-browser-app.mjs`); the bot game and review steps are a TODO in that script.
+- [x] 4.3 Browser smoke (Playwright): open the built app with no server, import a game, reload, see the game still there; then play a bot game, review it with the in-browser engine, reload and see the review still there. `npm run smoke:app` (`scripts/smoke-browser-app.mjs`).
