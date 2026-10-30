@@ -1,14 +1,19 @@
-// Stockfish 19 (lite, single-threaded) in the learner's own browser.
-// The 1.8 MB engine file downloads once, in the background, while the board
-// already works; it's kept in the browser's file store (Cache Storage) for 30
-// days, so later visits start it straight from the device. The engine never
-// speaks on its own: the page asks it only when the learner taps "Check my move".
+// Stockfish in the learner's own browser. Stockfish 19 Lite (1.8 MB) is the
+// default; the engine picker can swap in another ready engine from
+// engine-catalog.js, such as the full Stockfish 19 (99 MB, shipped in parts).
+// The engine file downloads once, in the background, while the board already
+// works; it's kept in the browser's file store (Cache Storage) for 30 days,
+// so later visits start it straight from the device. The engine never speaks
+// on its own: the page asks it only when the learner taps "Check my move".
 //
 // Stockfish is free software under the GNU GPL v3; see /assets/engine/COPYING.txt.
 
-const BASE = '/assets/engine/stockfish-19-lite-single';
-export const WASM_URL = `${BASE}.wasm`;
-export const WASM_BYTES = 1845971;
+import { DEFAULT_ENGINE, engineById, engineFiles } from './engine-catalog.js';
+import { checkJoined, checkPart, createJoiner } from './engine-parts.js';
+
+const LITE = engineById(DEFAULT_ENGINE);
+export const WASM_URL = engineFiles(LITE).wasm.path;
+export const WASM_BYTES = engineFiles(LITE).wasm.bytes;
 const STORE = 'pz-engine-v1';
 const KEEP_MS = 30 * 24 * 60 * 60 * 1000;
 const SAVED_AT = 'x-pz-saved-at';
@@ -53,71 +58,190 @@ export function parseInfo(line) {
   };
 }
 
-async function fromDevice() {
+async function fromDevice(url) {
   if (!('caches' in window)) return null;
   try {
     const store = await caches.open(STORE);
-    const hit = await store.match(WASM_URL);
+    const hit = await store.match(url);
     if (!hit) return null;
     const at = Number(hit.headers.get(SAVED_AT)) || 0;
     if (Date.now() - at > KEEP_MS) {
-      await store.delete(WASM_URL);
+      await store.delete(url);
       return null;
     }
-    return { blob: await hit.blob(), at };
+    // WebAssembly only compiles a blob typed application/wasm, whatever the stored copy says.
+    return { blob: new Blob([await hit.arrayBuffer()], { type: 'application/wasm' }), at };
   } catch {
     return null;
   }
 }
 
-async function download(onProgress) {
-  const res = await fetch(WASM_URL);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  // Cloudflare may compress the file on the way, and then there's no length to go by.
-  const total = Number(res.headers.get('content-length')) || WASM_BYTES;
-  let blob;
-  if (res.body && res.body.getReader) {
-    const reader = res.body.getReader();
-    const parts = [];
-    let got = 0;
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      parts.push(value);
-      got += value.length;
-      onProgress(Math.min(got, total), total);
-    }
-    blob = new Blob(parts, { type: 'application/wasm' });
-  } else {
-    blob = new Blob([await res.arrayBuffer()], { type: 'application/wasm' });
-  }
-  onProgress(blob.size, blob.size);
+async function openStore() {
   try {
-    if ('caches' in window) {
-      const store = await caches.open(STORE);
-      await store.put(WASM_URL, new Response(blob, { headers: { 'content-type': 'application/wasm', [SAVED_AT]: String(Date.now()) } }));
-    }
+    return typeof window !== 'undefined' && 'caches' in window ? await caches.open(STORE) : null;
+  } catch {
+    return null;
+  }
+}
+
+const fresh = (hit) => Boolean(hit) && Date.now() - (Number(hit.headers.get(SAVED_AT)) || 0) <= KEEP_MS;
+
+/** Whether this engine (every part of it, for a split one) is already kept on this device, and young enough to use. */
+export async function isSaved(spec) {
+  const store = await openStore();
+  if (!store) return false;
+  try {
+    const { wasm } = engineFiles(spec);
+    const paths = wasm.parts ? wasm.parts.map((p) => p.path) : [wasm.path];
+    for (const path of paths) if (!fresh(await store.match(path))) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function keep(url, body, store, type = 'application/wasm') {
+  try {
+    store = store || (await openStore());
+    if (store) await store.put(url, new Response(body, { headers: { 'content-type': type, [SAVED_AT]: String(Date.now()) } }));
   } catch {
     /* no room, or private mode: it just downloads again next visit */
   }
+}
+
+// Read a response body chunk by chunk, so the bar moves while it arrives.
+async function readBody(res, onChunk) {
+  if (res.body && res.body.getReader) {
+    const reader = res.body.getReader();
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      onChunk(value);
+    }
+  } else {
+    onChunk(new Uint8Array(await res.arrayBuffer()));
+  }
+}
+
+// One file, as it is on the server.
+async function downloadWhole(wasm, signal, onProgress) {
+  const res = await fetch(wasm.path, { signal });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  // Cloudflare may compress the file on the way, and then there's no length to go by.
+  const total = Number(res.headers.get('content-length')) || wasm.bytes;
+  const parts = [];
+  let got = 0;
+  await readBody(res, (chunk) => {
+    parts.push(chunk);
+    got += chunk.length;
+    onProgress(Math.min(got, total), total);
+  });
+  const blob = new Blob(parts, { type: 'application/wasm' });
+  onProgress(blob.size, blob.size);
   return blob;
 }
 
+// One part kept on this device, if it is there, young enough and intact.
+async function partFromDevice(store, part) {
+  if (!store) return null;
+  try {
+    const hit = await store.match(part.path);
+    if (!hit) return null;
+    if (!fresh(hit)) {
+      await store.delete(part.path);
+      return null;
+    }
+    const bytes = new Uint8Array(await hit.arrayBuffer());
+    await checkPart(bytes, part);
+    return bytes;
+  } catch {
+    try {
+      await store.delete(part.path);
+    } catch {
+      /* gone already */
+    }
+    return null;
+  }
+}
+
+// A file too big to host in one piece. Its parts come in the manifest's
+// order, each from this device when it is kept there, otherwise downloaded,
+// checked against its own SHA-256 and kept on its own, so a download that
+// breaks picks up at the part that failed. Then the joined file's SHA-256 is
+// checked before it may run.
+async function loadParts(wasm, signal, onProgress, onCheck) {
+  const store = await openStore();
+  const joiner = createJoiner(wasm.bytes);
+  let fetched = false;
+  for (const part of wasm.parts) {
+    if (signal && signal.aborted) throw cancelError();
+    let bytes = await partFromDevice(store, part);
+    if (!bytes) {
+      fetched = true;
+      const base = joiner.length;
+      onProgress(base, wasm.bytes);
+      const res = await fetch(part.path, { signal });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const one = createJoiner(part.bytes);
+      await readBody(res, (chunk) => onProgress(base + one.write(chunk), wasm.bytes));
+      bytes = one.done();
+      await checkPart(bytes, part);
+      await keep(part.path, bytes, store, 'application/octet-stream');
+    }
+    joiner.write(bytes);
+    if (fetched) onProgress(joiner.length, wasm.bytes);
+  }
+  const bytes = joiner.done();
+  onCheck(fetched);
+  try {
+    await checkJoined(bytes, wasm);
+  } catch (err) {
+    // Every part matched but the whole didn't: start clean next time.
+    if (store) await Promise.all(wasm.parts.map((p) => store.delete(p.path).catch(() => {})));
+    throw err;
+  }
+  return { blob: new Blob([bytes], { type: 'application/wasm' }), fromDevice: !fetched };
+}
+
+async function loadWhole(wasm, signal, onProgress) {
+  const saved = await fromDevice(wasm.path);
+  if (saved) return { blob: saved.blob, fromDevice: true };
+  onProgress(0, wasm.bytes);
+  const blob = await downloadWhole(wasm, signal, onProgress);
+  await keep(wasm.path, blob);
+  return { blob, fromDevice: false };
+}
+
+/** True for the error a cancelled download ends with. */
+export const isCancel = (err) => Boolean(err) && (err.name === 'AbortError' || err.cancelled === true);
+
+function cancelError() {
+  const err = new Error('Download stopped');
+  err.cancelled = true;
+  return err;
+}
+
 /**
- * The engine, started on demand.
- * onState({ phase, got, total, fromDevice, error }) reports progress:
+ * The engine, started on demand. `spec` is a ready entry from engine-catalog.js
+ * (Stockfish 19 Lite when left out).
+ * onState({ phase, got, total, fromDevice, checking, error, cancelled }) reports progress:
  * phase is 'idle' | 'download' | 'start' | 'ready' | 'failed'.
  */
-export function createEngine({ onState = () => {} } = {}) {
+export function createEngine({ spec = LITE, onState = () => {} } = {}) {
+  const { worker: script, wasm } = engineFiles(spec);
+  // A big engine takes longer to compile before it can answer "uci".
+  const startMs = 20000 + Math.round(wasm.bytes / 1e6) * 400;
   let worker = null;
   let phase = 'idle';
   let starting = null;
   let listener = null;
   let queue = Promise.resolve();
+  let aborter = null;
+  let quit = false;
 
   const set = (s) => {
     phase = s.phase;
-    onState(s);
+    if (!quit) onState({ ...s, spec });
   };
 
   // A worker that crashed or hung is thrown away, so the next tap starts a fresh one.
@@ -154,18 +278,21 @@ export function createEngine({ onState = () => {} } = {}) {
   }
 
   async function start() {
+    let url = null;
+    aborter = typeof AbortController === 'function' ? new AbortController() : null;
+    const signal = aborter ? aborter.signal : undefined;
     try {
-      const saved = await fromDevice();
-      let blob;
-      if (saved) blob = saved.blob;
-      else {
-        set({ phase: 'download', got: 0, total: WASM_BYTES });
-        blob = await download((got, total) => set({ phase: 'download', got, total }));
-      }
-      set({ phase: 'start', fromDevice: Boolean(saved) });
-      const url = URL.createObjectURL(blob);
+      const progress = (got, total) => set({ phase: 'download', got, total });
+      const saved = wasm.parts
+        ? await loadParts(wasm, signal, progress, (fetched) => fetched && set({ phase: 'start', checking: true }))
+        : await loadWhole(wasm, signal, progress);
+      const { blob } = saved;
+      if (quit || (signal && signal.aborted)) throw cancelError();
+      aborter = null;
+      set({ phase: 'start', fromDevice: saved.fromDevice });
+      url = URL.createObjectURL(blob);
       // The engine script reads where its .wasm file is from the part after #.
-      worker = new Worker(`${BASE}.js#${encodeURIComponent(url)}`);
+      worker = new Worker(`${script.path}#${encodeURIComponent(url)}`);
       worker.addEventListener('message', (e) => {
         const line = typeof e.data === 'string' ? e.data : '';
         if (listener) listener(line);
@@ -174,15 +301,26 @@ export function createEngine({ onState = () => {} } = {}) {
         if (listener) listener('error');
         if (phase === 'ready') reset('The engine stopped');
       });
-      const ok = waitFor('uciok');
+      const ok = waitFor('uciok', startMs);
       send('uci');
       await ok;
-      const ready = waitFor('readyok');
+      const ready = waitFor('readyok', startMs);
       send('isready');
       await ready;
       URL.revokeObjectURL(url);
-      set({ phase: 'ready', fromDevice: Boolean(saved) });
+      url = null;
+      set({ phase: 'ready', fromDevice: saved.fromDevice });
     } catch (err) {
+      aborter = null;
+      if (url) URL.revokeObjectURL(url); // don't keep a 99 MB blob alive after a failed start
+      if (isCancel(err) || quit) {
+        if (worker) worker.terminate();
+        worker = null;
+        starting = null;
+        listener = null;
+        set({ phase: 'idle', cancelled: true });
+        throw cancelError();
+      }
       reset(String(err && err.message ? err.message : err));
       throw err;
     }
@@ -191,6 +329,21 @@ export function createEngine({ onState = () => {} } = {}) {
   function load() {
     if (!starting) starting = start();
     return starting;
+  }
+
+  /** Stop a download that is under way. load() then rejects with a cancel error (see isCancel). */
+  function cancel() {
+    if (aborter) aborter.abort();
+  }
+
+  /** Throw this engine away: stop any download, end the worker, report nothing more. */
+  function stop() {
+    cancel();
+    quit = true;
+    if (listener) listener('error'); // a look under way ends now, not at its timeout
+    if (worker) worker.terminate();
+    worker = null;
+    listener = null;
   }
 
   /**
@@ -232,8 +385,11 @@ export function createEngine({ onState = () => {} } = {}) {
   }
 
   return {
+    spec,
     load,
     look,
+    cancel,
+    stop,
     get phase() {
       return phase;
     },
