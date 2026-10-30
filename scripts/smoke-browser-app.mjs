@@ -130,7 +130,18 @@ async function main() {
     await page.getByText(title).first().waitFor();
     check('reload');
 
-    // TODO(package 2, engine Web Worker): once the engine lands, extend this smoke:
+    // The engine Worker and its WebAssembly must start under the same CSP.
+    const engineReady = await page.evaluate(() => new Promise(resolve => {
+      const worker = new Worker('/engine/stockfish-19-lite-single.js');
+      const timer = setTimeout(() => { worker.terminate(); resolve('timeout'); }, 30000);
+      worker.onerror = event => { clearTimeout(timer); resolve(`error: ${event.message}`); };
+      worker.onmessage = event => { if (String(event.data).includes('uciok')) { clearTimeout(timer); worker.terminate(); resolve('ok'); } };
+      worker.postMessage('uci');
+    }));
+    assert.equal(engineReady, 'ok', 'Stockfish did not start under the CSP');
+    check('engine start');
+
+    // TODO: extend this smoke with a full bot game and review:
     //   1. Play bots: start a game against a low-rated bot and play a few moves until the bot replies.
     //   2. Resign or finish, then "Review whole game" and wait for "Review complete".
     //   3. Reload and check the game and its review are still there.
