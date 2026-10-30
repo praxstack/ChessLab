@@ -6,7 +6,13 @@
 // gets the warning first), status ('ready' runs now; 'soon' is listed but not
 // wired up yet) and files.
 //
-// A ready engine's files are a worker script and its .wasm. A .wasm too big
+// A ready engine's files have roles: 'worker' (the script the page starts),
+// 'wasm' (handed to the script after #, as a blob URL), 'model' (the same,
+// for a neural model), 'net' (a separate Stockfish net, loaded with
+// setoption EvalFile) and 'runtime' (files the worker fetches by itself,
+// listed for their size). A plain-JavaScript engine is `scriptOnly`; one
+// whose script is an ES module is `module`; `hash: 'raw'` passes the blob
+// URL unencoded, for Stockfish 11. A file too big
 // for Cloudflare Pages (25 MiB a file) lists its parts in joining order, each
 // with its SHA-256, and the joined file's SHA-256; scripts/split-engine.mjs
 // makes them and writes the same numbers to <file>.parts.json. Sizes marked `approx` are
@@ -31,7 +37,18 @@ const MIT_URL = 'https://opensource.org/license/mit';
 const SFJS = 'https://github.com/nmrugg/stockfish.js';
 const LICHESS_SF = 'https://github.com/lichess-org/stockfish-web';
 const SF_NETS = 'https://tests.stockfishchess.org/nns';
-const ORT = 'Runs with onnxruntime-web (MIT), which this page doesn’t load yet.';
+const ORT = 'It would run with onnxruntime-web (MIT), which the page already loads for DeepMind 9M and Maia-1, but it isn’t wired up yet.';
+const CC_BY = 'https://creativecommons.org/licenses/by/4.0/';
+const DM_SOURCE = 'https://huggingface.co/cstr/searchless-chess-onnx';
+/** CC BY 4.0 asks for the authors, the licence and what was changed; the picker and the page footer show this. */
+export const DM_CREDIT =
+  'Model from “Grandmaster-Level Chess Without Search” (Ruoss et al., 2024), © 2024 DeepMind Technologies Limited, CC BY 4.0. Converted to ONNX by cstr, with no change to the weights; run here with onnxruntime-web (MIT).';
+/** The sizes of the neural workers; the catalog test checks them against the files. */
+const SEARCHLESS_WORKER_BYTES = 3786;
+const MAIA_WORKER_BYTES = 3904;
+/** GPL-3.0 asks that the authors and the source be named; the picker and the page footer show this. */
+export const MAIA_CREDIT =
+  'Maia by Reid McIlroy-Young, Siddhartha Sen, Jon Kleinberg and Ashton Anderson (CSSLab, University of Toronto, 2020), GPL-3.0, source github.com/CSSLab/maia-chess. Converted to ONNX by shermansiu; run here with onnxruntime-web (MIT).';
 
 const file = (path, bytes, more = {}) => ({ path, bytes, ...more });
 const sum = (files) => files.reduce((n, f) => n + f.bytes, 0);
@@ -40,8 +57,18 @@ function entry(e) {
   return { ...e, bytes: e.bytes ?? sum(e.files) };
 }
 
+/** onnxruntime-web 1.31.1 (MIT), fetched by the neural workers themselves. */
+const ORT_FILES = [
+  file('/assets/engine/ort/ort.wasm.bundle.min.mjs', 77024, { role: 'runtime' }),
+  file('/assets/engine/ort/ort-wasm-simd-threaded.wasm', 14848852, { role: 'runtime' }),
+];
+
 export const ENGINES = [
   /* ---------------------------------------------------------- ready now */
+  // Stockfish files come unchanged (but for one line of 17.1's script, below) from the npm package `stockfish` (stockfish.js by Nathan Rugg and
+  // Chess.com): 19 and 19 Lite from 19.0.1, 18 and 18 Lite from 18.0.8, 17.1 and 17.1 Lite from 17.1.0,
+  // 16 from 16.0.0 (stockfish-nnue-16-single.*, net src/nn-5af11540bbfe.nnue), 11 from 11.0.0
+  // (src/stockfish.js and .wasm). Single-threaded builds only: the page has no COOP/COEP headers.
   entry({
     id: 'sf19-lite',
     name: 'Stockfish 19 Lite',
@@ -98,6 +125,179 @@ export const ENGINES = [
     ],
   }),
 
+  entry({
+    id: 'sf17-lite',
+    name: 'Stockfish 17.1 Lite',
+    family: 'Stockfish',
+    about: 'Stockfish 17.1 with a small net, from 2025. Light and quick; here to compare with 18 and 19.',
+    license: GPL,
+    licenseUrl: COPYING,
+    source: SFJS,
+    device: 'light',
+    status: 'ready',
+    files: [
+      file('/assets/engine/stockfish-17.1-lite-single.js', 20672, { role: 'worker' }),
+      file('/assets/engine/stockfish-17.1-lite-single.wasm', 7280741, { role: 'wasm' }),
+    ],
+  }),
+  entry({
+    id: 'sf19-asm',
+    name: 'Stockfish 19, plain JavaScript',
+    family: 'Stockfish',
+    about: 'Stockfish 19 Lite as one plain JavaScript file, for browsers without WebAssembly. Several times slower, so it sees less in the same time.',
+    license: GPL,
+    licenseUrl: COPYING,
+    source: SFJS,
+    device: 'light',
+    status: 'ready',
+    scriptOnly: true,
+    files: [file('/assets/engine/stockfish-19-asm.js', 3155627, { role: 'worker' })],
+  }),
+  entry({
+    id: 'sf11',
+    name: 'Stockfish 11',
+    family: 'Stockfish',
+    about: 'The last “classical” Stockfish (2020), with no neural net at all. Still stronger than any human. For history.',
+    license: GPL,
+    licenseUrl: COPYING,
+    source: SFJS,
+    device: 'light',
+    status: 'ready',
+    hash: 'raw', // this older script reads the .wasm address after # as it is, not URL-encoded
+    files: [
+      file('/assets/engine/stockfish-11.js', 2329105, { role: 'worker' }),
+      file('/assets/engine/stockfish-11.wasm', 1413916, { role: 'wasm' }),
+    ],
+  }),
+  entry({
+    id: 'sf17-full',
+    name: 'Stockfish 17.1',
+    family: 'Stockfish',
+    about: 'Stockfish 17.1 with its full-size net. Strong, but 19 is stronger and a little bigger.',
+    license: GPL,
+    licenseUrl: COPYING,
+    source: SFJS,
+    device: 'heavy',
+    status: 'ready',
+    memory: 'about 200 to 300 MB while it runs (an estimate)',
+    files: [
+      // stockfish@17.1.0 src/stockfish-17.1-single-a496a04.js fetches its own six parts; this copy has that one
+      // line changed (and says so at its top) to read the joined file the page hands it instead.
+      file('/assets/engine/stockfish-17.1-single.js', 20886, { role: 'worker' }),
+      file('/assets/engine/stockfish-17.1-single.wasm', 79053306, {
+        role: 'wasm',
+        sha256: '14b25e2973a52e6095ee0ce7283ce3ff776a5e56bfe393333fe0066f6ccd666e',
+        parts: [
+          file('/assets/engine/stockfish-17.1-single.wasm.part0', 19763327, { sha256: 'bc7c3261a770f59bebab0d9a06e19e8a8fe5045002a747511b4bb64b570143ff' }),
+          file('/assets/engine/stockfish-17.1-single.wasm.part1', 19763327, { sha256: '2ec32479f9af6b151536e8a11c53d6a0d9541af1d551f462e1d368777c304774' }),
+          file('/assets/engine/stockfish-17.1-single.wasm.part2', 19763326, { sha256: '330ffa4f3984e664f52c69a4a81fb469ccecc6fe5bb5e544fa8f39004d225f84' }),
+          file('/assets/engine/stockfish-17.1-single.wasm.part3', 19763326, { sha256: 'd878d95193eff84f41f1057f5936b59edebb68e0960dca35f70c7b34b1799e1a' }),
+        ],
+      }),
+    ],
+  }),
+  entry({
+    id: 'sf18-full',
+    name: 'Stockfish 18',
+    family: 'Stockfish',
+    about: 'The previous version with its full net. Bigger than 19 but weaker; only for comparing.',
+    license: GPL,
+    licenseUrl: COPYING,
+    source: SFJS,
+    device: 'heavy',
+    status: 'ready',
+    memory: 'about 250 to 350 MB while it runs (an estimate)',
+    files: [
+      file('/assets/engine/stockfish-18-single.js', 21330, { role: 'worker' }),
+      file('/assets/engine/stockfish-18-single.wasm', 112992459, {
+        role: 'wasm',
+        sha256: 'f611ac05ddb248fe975a4f180ac9fec7f7fb650f8f17f5fe4230fcc0fe6419c7',
+        parts: [
+          file('/assets/engine/stockfish-18-single.wasm.part0', 22598492, { sha256: 'f61e45f008a4d45927256e2028b6860d585e92da2402df44df35e569eda270b4' }),
+          file('/assets/engine/stockfish-18-single.wasm.part1', 22598492, { sha256: 'faf5cb5e206d50c5f440fb0d4a3dc41b2c90263f66b4ca89b0057552b18a4f3b' }),
+          file('/assets/engine/stockfish-18-single.wasm.part2', 22598492, { sha256: '34a49336cdb07eb18de825223e8b9d91319099da773ea9cfa1656d35a9815a6e' }),
+          file('/assets/engine/stockfish-18-single.wasm.part3', 22598492, { sha256: 'ea983407086000586bd424419b57eb5d2378407e7744296a792779eedd2cf013' }),
+          file('/assets/engine/stockfish-18-single.wasm.part4', 22598491, { sha256: 'bd402474f163f1c6202ef947126e57d62113a44e9f0cfe1cdb4eb9a1a47c0607' }),
+        ],
+      }),
+    ],
+  }),
+  entry({
+    id: 'sf16',
+    name: 'Stockfish 16',
+    family: 'Stockfish',
+    about: 'Stockfish 16 (2023). The engine is small; its net is a separate 40 MB file it reads after it starts.',
+    license: GPL,
+    licenseUrl: COPYING,
+    source: SFJS,
+    device: 'heavy',
+    status: 'ready',
+    memory: 'about 100 to 150 MB while it runs (an estimate)',
+    files: [
+      file('/assets/engine/stockfish-16-single.js', 25594, { role: 'worker' }),
+      file('/assets/engine/stockfish-16-single.wasm', 575029, { role: 'wasm' }),
+      file('/assets/engine/nn-5af11540bbfe.nnue', 40119326, {
+        role: 'net',
+        sha256: '5af11540bbfefcb54e38c5dd000cab4b469dfa7599a1d55be5d2722c20a8929b',
+        parts: [
+          file('/assets/engine/nn-5af11540bbfe.nnue.part0', 20059663, { sha256: 'db5d40fa62e38aabbc228a0af0f2f00dd93f7a2028754288de9595e0461ad89f' }),
+          file('/assets/engine/nn-5af11540bbfe.nnue.part1', 20059663, { sha256: 'a0620afabb5da6c321edecf088b1d3cda99e95ed55dfa11219b4aab1165de4d5' }),
+        ],
+      }),
+    ],
+  }),
+  entry({
+    id: 'dm-9m',
+    name: 'DeepMind searchless chess 9M',
+    family: 'DeepMind searchless',
+    about: 'A small transformer from Google DeepMind that picks a move by looking at the board once, with no search. Much weaker than Stockfish, and its score is only its guess at the winning chances.',
+    license: 'CC-BY-4.0',
+    licenseUrl: CC_BY,
+    source: DM_SOURCE,
+    credit: DM_CREDIT,
+    device: 'heavy',
+    status: 'ready',
+    module: true,
+    memory: 'a few hundred MB',
+    files: [
+      file('/assets/engine/searchless-worker.js', SEARCHLESS_WORKER_BYTES, { role: 'worker' }),
+      ...ORT_FILES,
+      file('/assets/engine/searchless-9m.onnx', 35871373, {
+        role: 'model',
+        sha256: 'ec45313c1ed1451acdf09e56f46fa6dee72698b8cea6803ad0f30c526659dac6',
+        parts: [
+          file('/assets/engine/searchless-9m.onnx.part0', 17935687, { sha256: 'bb8dc6444dc2006c5310567116979b7db8ae9f8c0bdfead3a8e4bf3a43a91557' }),
+          file('/assets/engine/searchless-9m.onnx.part1', 17935686, { sha256: '57fd1369986ac821d0343d3b85f70ce8940bee1544ce4ad57f9519a469778bef' }),
+        ],
+      }),
+    ],
+  }),
+
+  ...[
+    ['1100', 'a club beginner', '67922d80f645d8153b29df1dcf516c1a13a1ec4f474c06649f4b82d58258ec60'],
+    ['1500', 'a club player', '2c39eae560305e4d3158259346c33bfefb4b6c4dbb0e0e9856f5749a52737498'],
+    ['1900', 'a strong club player', '29bef50a33fbfd4b879cae91d3359cb15f9d168fc423b53e5dda71cc8cf11cca'],
+  ].map(([elo, who, sha256]) =>
+    entry({
+      id: `maia1-${elo}`,
+      name: `Maia-1 ${elo}`,
+      family: 'Maia',
+      about: `Plays the move a human rated about ${elo} (${who}) would most likely play, not the best move. Good for “what would a ${elo} play here?”. It doesn’t search, so its score is only its guess at the result.`,
+      license: GPL,
+      licenseUrl: GPL_URL,
+      source: `https://huggingface.co/shermansiu/maia-${elo}`,
+      credit: MAIA_CREDIT,
+      device: 'light',
+      status: 'ready',
+      module: true,
+      files: [
+        file('/assets/engine/maia-worker.js', MAIA_WORKER_BYTES, { role: 'worker' }),
+        ...ORT_FILES,
+        file(`/assets/engine/maia-${elo}.onnx`, 3483886, { role: 'model', sha256 }),
+      ],
+    }),
+  ),
+
   /* ---------------------------------------------------- listed, not yet */
   entry({
     id: 'sf19-lite-mt',
@@ -128,7 +328,7 @@ export const ENGINES = [
     id: 'sf19-lichess-big',
     name: 'Stockfish 19 (Lichess build)',
     family: 'Stockfish',
-    about: 'Lichess’s own browser build with the full net, as two files. As strong as Stockfish 19 above.',
+    about: 'Lichess’s own browser build with the full net, as two files. As strong as Stockfish 19 above. It always starts extra threads, which need page headers this site doesn’t send yet.',
     license: 'AGPL-3.0 + GPL-3.0',
     licenseUrl: AGPL_URL,
     source: LICHESS_SF,
@@ -141,7 +341,7 @@ export const ENGINES = [
     id: 'sf19-lichess-small',
     name: 'Stockfish 19 Lite (Lichess build)',
     family: 'Stockfish',
-    about: 'Lichess’s tiny build with the small net. Much like Lite.',
+    about: 'Lichess’s tiny build with the small net. Much like Lite. It always starts extra threads, which need page headers this site doesn’t send yet.',
     license: 'AGPL-3.0 + GPL-3.0',
     licenseUrl: AGPL_URL,
     source: LICHESS_SF,
@@ -150,89 +350,16 @@ export const ENGINES = [
     files: [file('engine', 0.5e6, { approx: true }), file('small net', 1.2e6, { approx: true })],
   }),
   entry({
-    id: 'sf19-asm',
-    name: 'Stockfish 19, plain JavaScript',
-    family: 'Stockfish',
-    about: 'For very old browsers without WebAssembly. Slow and much weaker.',
-    license: GPL,
-    licenseUrl: GPL_URL,
-    source: SFJS,
-    device: 'light',
-    status: 'soon',
-    files: [file('stockfish-19-asm.js', 3155627)],
-  }),
-  entry({
-    id: 'sf18-full',
-    name: 'Stockfish 18',
-    family: 'Stockfish',
-    about: 'The previous version with its full net. Bigger than 19 but weaker; only for comparing.',
-    license: GPL,
-    licenseUrl: GPL_URL,
-    source: SFJS,
-    device: 'heavy',
-    status: 'soon',
-    memory: 'about 250 to 350 MB while it runs (an estimate)',
-    files: [file('stockfish-18-single.js', 21330), file('stockfish-18-single.wasm', 112992459)],
-  }),
-  entry({
-    id: 'sf17-full',
-    name: 'Stockfish 17.1',
-    family: 'Stockfish',
-    about: 'An older Stockfish with its full net.',
-    license: GPL,
-    licenseUrl: GPL_URL,
-    source: SFJS,
-    device: 'heavy',
-    status: 'soon',
-    files: [file('stockfish-17.1 (6 parts)', 79e6, { approx: true })],
-  }),
-  entry({
-    id: 'sf17-lite',
-    name: 'Stockfish 17.1 Lite',
-    family: 'Stockfish',
-    about: 'An older Stockfish with a small net.',
-    license: GPL,
-    licenseUrl: GPL_URL,
-    source: SFJS,
-    device: 'light',
-    status: 'soon',
-    files: [file('stockfish-17.1-lite', 7.1e6, { approx: true })],
-  }),
-  entry({
-    id: 'sf16',
-    name: 'Stockfish 16',
-    family: 'Stockfish',
-    about: 'An older Stockfish; the engine and its net are separate files.',
-    license: GPL,
-    licenseUrl: GPL_URL,
-    source: SF_NETS,
-    device: 'heavy',
-    status: 'soon',
-    files: [file('engine', 0.7e6, { approx: true }), file('net', 40.1e6, { approx: true })],
-  }),
-  entry({
     id: 'sf15',
     name: 'Stockfish 15 / 14.1',
     family: 'Stockfish',
-    about: 'Older Stockfish versions with their nets.',
+    about: 'Older Stockfish versions with their nets. Only published as several-core builds, which need page headers this site doesn’t send yet.',
     license: GPL,
     licenseUrl: GPL_URL,
     source: SF_NETS,
     device: 'heavy',
     status: 'soon',
     files: [file('engine', 0.7e6, { approx: true }), file('net', 47e6, { approx: true })],
-  }),
-  entry({
-    id: 'sf11',
-    name: 'Stockfish 11 / 10',
-    family: 'Stockfish',
-    about: 'The old “classical” Stockfish, with no neural net at all. Still stronger than any human. For history.',
-    license: GPL,
-    licenseUrl: GPL_URL,
-    source: SFJS,
-    device: 'light',
-    status: 'soon',
-    files: [file('stockfish-11.wasm', 1.4e6, { approx: true })],
   }),
   entry({
     id: 'fairy-sf14',
@@ -245,18 +372,6 @@ export const ENGINES = [
     device: 'light',
     status: 'soon',
     files: [file('fairy-stockfish-nnue.wasm', 1.7e6, { approx: true })],
-  }),
-  entry({
-    id: 'maia1',
-    name: 'Maia-1 (1100 to 1900)',
-    family: 'Maia',
-    about: 'Plays like a human of a chosen rating, not the best move. Good for “what would a 1200 play here?”. ' + ORT,
-    license: GPL,
-    licenseUrl: GPL_URL,
-    source: 'https://github.com/CSSLab/maia-chess',
-    device: 'light',
-    status: 'soon',
-    files: [file('one rating level', 1.3e6, { approx: true }), file('onnxruntime-web', 10e6, { approx: true })],
   }),
   ...[
     ['3m', 'Maia3-3M', 'Maia-3 3M', 12659441, 'light'],
@@ -294,7 +409,6 @@ export const ENGINES = [
     files: [file('model.safetensors', 93223920)],
   }),
   ...[
-    ['9m', '9M', 'model.onnx', 35871373],
     ['136m', '136M', 'model_fp16.onnx', 273016527],
     ['270m', '270M', 'model_fp16.onnx', 541571344],
   ].map(([id, size, name, bytes]) =>
@@ -304,8 +418,8 @@ export const ENGINES = [
       family: 'DeepMind searchless',
       about: `A transformer that plays grandmaster-level chess by looking at the board once, with no search. ${ORT}`,
       license: 'CC-BY-4.0',
-      licenseUrl: 'https://creativecommons.org/licenses/by/4.0/',
-      source: 'https://huggingface.co/cstr/searchless-chess-onnx',
+      licenseUrl: CC_BY,
+      source: DM_SOURCE,
       device: 'heavy',
       status: 'soon',
       memory: bytes > HEAVY_BYTES ? 'over 1 GB' : 'a few hundred MB',
@@ -391,12 +505,18 @@ export function needsWarning(e) {
   return e.device === 'heavy' || e.bytes > HEAVY_BYTES || HEAVY_FAMILIES.includes(e.family);
 }
 
-/** A ready engine's worker script and its .wasm. */
+/**
+ * A ready engine's files: its worker script; the file the script is handed
+ * after # (its .wasm, or a neural model), unless the script is the whole
+ * engine (plain JavaScript); and a separate net, for an engine that reads
+ * its net through `setoption name EvalFile`.
+ */
 export function engineFiles(e) {
   const worker = e.files.find((f) => f.role === 'worker');
-  const wasm = e.files.find((f) => f.role === 'wasm');
-  if (!worker || !wasm) throw new Error(`${e.id} has no worker and wasm`);
-  return { worker, wasm };
+  const wasm = e.files.find((f) => f.role === 'wasm' || f.role === 'model');
+  const net = e.files.find((f) => f.role === 'net');
+  if (!worker || (!wasm && !e.scriptOnly)) throw new Error(`${e.id} has no worker and wasm`);
+  return { worker, wasm, net };
 }
 
 /**

@@ -4,6 +4,34 @@ These are chess engines that can run inside the learner's browser. All of them r
 
 Checked 28 Oct 2026. Sizes come from the actual files: npm packages `stockfish`, `@lichess-org/stockfish-web` and `fairy-stockfish-nnue.wasm`, the Stockfish net server at tests.stockfishchess.org, and the Hugging Face and GitHub releases. 1 MB = 1,000,000 bytes.
 
+## Status in the picker (30 Oct 2026)
+
+Thirteen engines now download and run on the puzzle page (`site/public/assets/engine-catalog.js`, status `ready`). Each one was checked in Chromium with the site's own CSP: it downloads, starts, answers `uci` / `isready`, finds Ra8# in `6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1`, and grades it through **Check my move**. Screenshots: `askthemove/puzzle-board/engines-wave2/`. Sizes are exact byte counts of what the learner downloads; 1 MB = 1,000,000 bytes.
+
+| id | Engine | Download | Checked | Notes |
+|---|---|---|---|---|
+| `sf19-lite` | Stockfish 19 Lite (default) | 1.9 MB | as before | Unchanged. |
+| `sf19-full` | Stockfish 19 | 99.2 MB, 4 parts | SHA-256 per part and whole | Unchanged. |
+| `sf18-lite` | Stockfish 18 Lite | 7.3 MB | as before | Unchanged. |
+| `sf17-lite` | Stockfish 17.1 Lite | 7.3 MB | file sizes | npm `stockfish@17.1.0`, unchanged. |
+| `sf19-asm` | Stockfish 19, plain JavaScript | 3.2 MB, one script | file size | npm `stockfish@19.0.1`, unchanged. No WebAssembly needed. |
+| `sf11` | Stockfish 11 (classical, no net) | 3.7 MB | file sizes | npm `stockfish@11.0.0`. Reads its .wasm address after # unencoded, so the catalog marks it `hash: 'raw'`. |
+| `sf17-full` | Stockfish 17.1 | 79.1 MB, 4 parts | SHA-256 per part and whole | npm `stockfish@17.1.0`. Its six npm parts are joined and re-split to our manifest; one line of its script is changed (`var enginePartsCount=6;` became `var enginePartsCount;`) so it takes the joined file from the page, with a note at the top of the script. A test restores the line and matches the published file's SHA-256. |
+| `sf18-full` | Stockfish 18 | 113.0 MB, 5 parts | SHA-256 per part and whole | npm `stockfish@18.0.8`, unchanged. |
+| `sf16` | Stockfish 16 | 0.6 MB engine + 40.1 MB net (2 parts) | SHA-256 of the net's parts and whole (it starts `5af11540bbfe`, its name) | npm `stockfish@16.0.0`. The net is read through `setoption name EvalFile value <blob URL>` and then `Use NNUE value true`; the engine must answer `Load eval file success: 1` or the start fails. |
+| `dm-9m` | DeepMind searchless chess 9M | 35.9 MB model (2 parts) + 14.9 MB onnxruntime-web | SHA-256 per part and whole; matches Hugging Face's | `cstr/searchless-chess-onnx` 9M/model.onnx, CC BY 4.0, credited in the picker and the page footer. onnxruntime-web 1.31.1 (MIT) is vendored from npm, single-threaded WASM. No search: one batch of every legal move, highest win probability wins; the score is that win probability turned into centipawns. |
+| `maia1-1100`, `maia1-1500`, `maia1-1900` | Maia-1 | 3.5 MB model each + 14.9 MB onnxruntime-web | SHA-256 of each model; matches Hugging Face's | `shermansiu/maia-NNNN` model.onnx (leela2onnx format), GPL-3.0, credited. Lc0 112-plane input and 1858-move policy written in `site/public/assets/lc0.js`; the policy list matches lczerolens's exactly. Plays the highest-policy legal move; the score comes from its win/draw/loss head. |
+
+Still listed as "soon", and why:
+
+- **Multi-thread builds** (Stockfish 19 / 19 Lite several cores, Stockfish 15 and 14.1): they need `Cross-Origin-Embedder-Policy`, which the site doesn't send. npm `stockfish@15.0.0` and `@14.1.0` only ship multi-thread builds.
+- **Lichess `@lichess-org/stockfish-web` 0.5.0** (sf_19 small and big net): an ES-module factory, easy to wrap, but it is a pthreads build that starts its search thread in a Worker over shared memory. Without cross-origin isolation it never answers `uci` (tried in Chromium).
+- **DeepMind 136M / 270M** (273 / 542 MB, fp16): far past the warning limits for a WASM run; they would want WebGPU.
+- **Maia-1 1200, 1300, 1400, 1600, 1700, 1800**: the same code would run them; left out to keep the list short. Each is one more 3.5 MB file.
+- **Maia-2, Maia-3**: no ONNX published; converting them needs PyTorch, skipped.
+- **Lc0 BT3 / BT4, C1-4B, Allie 2.0, Fairy-Stockfish**: unchanged from the list below (too big, need search code, or need variants).
+- **Stockfish 10**: works the same way as 11, but 11 is enough for history.
+
 ## The picture
 
 ```
@@ -34,7 +62,7 @@ Strongest is not the same as biggest. Stockfish 19 full is the strongest engine 
 | 2 | Stockfish 19 Lite, multi-thread | Same, uses several CPU cores | 1.7 MB | GPL-3.0 | Yes | Needs special page headers (see below). |
 | 3 | **Stockfish 19 full, single** | Newest Stockfish with the big net: the strongest engine here | **99.2 MB** | GPL-3.0 | Yes, split into parts | The "Deep" option. Over Cloudflare's 25 MB file limit, so we split it. |
 | 4 | Stockfish 19 full, multi-thread | Same, several cores, so faster and deeper | 99.1 MB | GPL-3.0 | Yes, split | Needs special headers. |
-| 5 | Stockfish 19 asm.js | Plain JavaScript, no WebAssembly | 3.2 MB | GPL-3.0 | Yes | For very old browsers without WebAssembly. Slow and weak. Not shipped today: the page has no asm.js fallback yet. |
+| 5 | Stockfish 19 asm.js | Plain JavaScript, no WebAssembly | 3.2 MB | GPL-3.0 | Yes | For very old browsers without WebAssembly. Slow and weak. Shipped 30 Oct as a picker choice (`sf19-asm`). |
 | 6 | Stockfish 19 (Lichess build, big net) | Lichess's own build; engine and net are separate files | 0.6 + 98.5 = 99.1 MB | AGPL-3.0 (engine), GPL-3.0 (net) | Yes, split | Same strength as #3. Harder to wire up. |
 | 7 | Stockfish 19 (Lichess build, small net) | Lichess's tiny build | 0.5 + 1.2 = 1.7 MB | AGPL-3.0 / GPL-3.0 | Yes | Same idea as #1. |
 | 8 | Stockfish 18 full | Previous version | 113 MB | GPL-3.0 | Yes, split | Bigger but weaker than #3. For comparison only. |

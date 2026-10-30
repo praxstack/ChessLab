@@ -587,6 +587,8 @@ try {
 const choice = createChoice(storage);
 const first = choice.start();
 let active = first.engine;
+/** Who checks the move, in the words the page uses: "Stockfish", or the engine's own name for anything else. */
+const engineWho = () => (active.family === 'Stockfish' ? 'Stockfish' : active.name);
 let notice = first.note; // why the page is back on Lite, kept on the state line until Lite is ready
 let engine = createEngine({ spec: active, onState: showEngine });
 let checkSeq = 0;
@@ -647,6 +649,7 @@ function useEngine(spec) {
   active = spec;
   engine = createEngine({ spec, onState: showEngine });
   $('engine-name').textContent = spec.name;
+  $('engine-show').textContent = `Show ${engineWho()}’s move`;
   $('engine').dataset.phase = 'idle';
   $('engine-stop').hidden = true;
   $('engine-bar').max = 1;
@@ -682,6 +685,7 @@ $('engine-stop').addEventListener('click', () => engine.cancel());
 const picker = createPicker({ getActive: () => active, isSaved, onChoose: chooseEngine });
 $('engine-pick').addEventListener('click', () => picker.open($('engine-pick')));
 $('engine-name').textContent = active.name;
+$('engine-show').textContent = `Show ${engineWho()}’s move`;
 if (first.note) engineSay(first.note, 'red');
 
 function engineSay(text, tone = '') {
@@ -716,10 +720,10 @@ function startEngineSoon() {
 }
 
 const VERDICT = {
-  best: ['That’s the move. Stockfish agrees.', 'blue'],
-  good: ['Good move, close to Stockfish’s choice.', 'blue'],
-  ok: ['Playable, but there’s a stronger move here. Take it back and look again: checks, captures, threats.', 'red'],
-  miss: ['That one lets something go. Take it back and try another.', 'red'],
+  best: [() => `That’s the move. ${engineWho()} agrees.`, 'blue'],
+  good: [() => `Good move, close to ${engineWho()}’s choice.`, 'blue'],
+  ok: [() => 'Playable, but there’s a stronger move here. Take it back and look again: checks, captures, threats.', 'red'],
+  miss: [() => 'That one lets something go. Take it back and try another.', 'red'],
 };
 
 $('engine-check').addEventListener('click', async () => {
@@ -730,7 +734,7 @@ $('engine-check').addEventListener('click', async () => {
   checking = true;
   updateCheckButton();
   $('engine-show').hidden = true;
-  engineSay(engine.phase === 'ready' ? 'Stockfish is looking…' : 'Getting Stockfish ready, then it looks…');
+  engineSay(engine.phase === 'ready' ? `${engineWho()} is looking…` : `Getting ${engineWho()} ready, then it looks…`);
   try {
     const line = play.line();
     const ended = play.result;
@@ -745,21 +749,21 @@ $('engine-check').addEventListener('click', async () => {
     if (seq !== checkSeq) return; // the board moved on while it looked
     const verdict = grade({ bestCp: toCp(before.score), afterCp, playedBest });
     const [text, tone] = VERDICT[verdict];
-    engineSay(text, tone);
+    engineSay(text(), tone);
     sound.play(verdict === 'best' || verdict === 'good' ? 'good' : 'hmm');
     lastBest = before.move && !playedBest ? { move: before.move, after: m.after } : null;
     $('engine-show').hidden = !lastBest || verdict === 'best';
   } catch (err) {
     if (seq !== checkSeq) return;
     if (isCancel(err)) engineSay('Download stopped. Tap Check my move to start it again, or pick another engine.');
-    else engineSay('Stockfish couldn’t check that one. Try again.', 'red');
+    else engineSay(`${engineWho()} couldn’t check that one. Try again.`, 'red');
   } finally {
     checking = false;
     updateCheckButton();
   }
 });
 
-// The answer only on purpose: take the learner's move back and draw Stockfish's in blue.
+// The answer only on purpose: take the learner's move back and draw the engine's in blue.
 $('engine-show').addEventListener('click', () => {
   if (!lastBest || play.fen !== lastBest.after) return;
   const { move } = lastBest;
@@ -767,7 +771,7 @@ $('engine-show').addEventListener('click', () => {
   play.undo();
   revealing = false;
   play.showArrow(move.slice(0, 2), move.slice(2, 4));
-  engineSay('Stockfish’s move is drawn in blue. Your move is taken back, so you can try it.', 'blue');
+  engineSay(`${engineWho()}’s move is drawn in blue. Your move is taken back, so you can try it.`, 'blue');
   $('engine-show').hidden = true;
   lastBest = null;
 });
