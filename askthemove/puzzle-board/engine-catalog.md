@@ -83,11 +83,11 @@ Skipped: other Hugging Face "chess transformer" uploads that have no license or 
 
 ## How the big files reach the learner
 
-- **Cloudflare Pages has a 25 MB limit per file.** Files above that (#3, #4, #6, #8, #10, #12, #13) are cut into parts under 25 MB and joined back together in the browser before the engine starts. Stockfish 17.1 already ships this way, so the method is proven. Hosting stays $0.
+- **Cloudflare Pages has a 25 MB limit per file.** Files above that (#3, #4, #6, #8, #10, #12, #13) are cut into parts under 25 MB and joined back together in the browser before the engine starts. The Stockfish 17.1 npm package already ships its engine this way, but our site has no loader that joins parts yet, so the engine picker must add one (fixed part order, a SHA-256 check per part, one cache entry per part). Hosting stays $0.
 - **Backup source:** unpkg.com serves the npm files with open CORS (checked: 200 for the 99 MB file). jsDelivr refuses files this big (403). GitHub release downloads don't allow other websites to fetch them. So we self-host the split files, and unpkg is only the backup.
 - **Saved on the device:** files go into the browser's Cache Storage, as Lite does today. On iPhone and iPad, Safari may delete saved files after 7 days without a visit unless the page is added to the Home Screen. The picker should tell the learner that.
 - **Multi-thread engines (#2, #4)** need the page to send two extra headers (`Cross-Origin-Opener-Policy` and `Cross-Origin-Embedder-Policy`). Our calls to Chess.com, Lichess and GitHub already use CORS, so they should keep working with `credentialless`, but this needs testing before we turn it on. Until then, single-thread only.
-- **Memory:** a 99 MB engine plus its working memory needs roughly 200–300 MB (estimate, to measure). That's fine on iPads and recent phones; very old Android phones may close the tab. Fall back to Lite if the engine fails to start.
+- **Memory:** a 99 MB engine plus its working memory needs roughly 200–300 MB (estimate, to measure). That's fine on iPads and recent phones; very old Android phones may close the tab. If a heavy engine fails to start, the picker switches the saved choice back to Lite, tells the learner why, and the next load uses Lite.
 
 ## Decision (Prax, 28 Oct 2026)
 
