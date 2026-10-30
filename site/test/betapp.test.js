@@ -144,3 +144,31 @@ test('an app build missing from the deploy is a 503, not an unprotected file', a
   assert.equal((await call(withCookie('/betapp/', cookie))).status, 503);
   assert.deepEqual(served, []);
 });
+
+test('an oversized sign-in body is cut off while streaming, before the rate limiter or any check', async () => {
+  const { call } = setup();
+  let pulled = 0;
+  let cancelled = false;
+  const chunk = new TextEncoder().encode('x'.repeat(1024));
+  const body = new ReadableStream({
+    pull(controller) {
+      pulled += chunk.byteLength;
+      controller.enqueue(chunk);
+      if (pulled >= 4 * 1024 * 1024) controller.close();
+    },
+    cancel() {
+      cancelled = true;
+    },
+  });
+  const req = new Request('https://askthemove.online/betapp/sign-in', {
+    method: 'POST',
+    body,
+    duplex: 'half',
+    headers: { origin: 'https://askthemove.online', 'content-type': 'application/x-www-form-urlencoded', 'cf-connecting-ip': '203.0.113.50' },
+  });
+  const res = await call(req);
+  assert.equal(res.status, 413);
+  assert.equal(res.headers.get('set-cookie'), null);
+  assert.ok(cancelled, 'the upload is cancelled');
+  assert.ok(pulled < 64 * 1024, `read only ${pulled} bytes`);
+});

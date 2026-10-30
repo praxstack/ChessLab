@@ -111,7 +111,7 @@ export function browserAppHosting() {
     transformIndexHtml() {
       if (!active()) return;
       return [
-        {tag: 'link', attrs: {rel: 'manifest', href: `${base}manifest.webmanifest`}, injectTo: 'head'},
+        {tag: 'link', attrs: {rel: 'manifest', href: `${base}manifest.webmanifest`, crossorigin: 'use-credentials'}, injectTo: 'head'},
         {tag: 'link', attrs: {rel: 'apple-touch-icon', href: `${base}apple-touch-icon.png`}, injectTo: 'head'},
       ];
     },

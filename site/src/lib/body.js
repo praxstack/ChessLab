@@ -6,7 +6,7 @@ export class BodyError extends Error {}
  * Reads the body as UTF-8 text, stopping as soon as it passes maxBytes, so a
  * chunked request without a Content-Length can't make us buffer all of it.
  */
-async function readCappedText(request, maxBytes) {
+export async function readCappedText(request, maxBytes) {
   if (!request.body) return '';
   const reader = request.body.getReader();
   const chunks = [];

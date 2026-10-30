@@ -8,11 +8,12 @@
 //   npx wrangler pages secret put BETA_SESSION_SECRET --project-name askthemove
 //
 // The cookie holds the email, an expiry and an HMAC over both. Removing someone from
-// BETA_USERS (or changing BETA_SESSION_SECRET) ends their session at once.
+// BETA_USERS (or changing BETA_SESSION_SECRET) and deploying again ends their session.
 // Sign-in attempts share the waitlist's per-IP rate limit table, under their own scope.
 import { hashIp, timingSafeEqualText } from './hash.js';
 import { countSubmission, retryAfterSeconds } from './ratelimit.js';
 import { clientIp, isAllowedOrigin } from './http.js';
+import { readCappedText } from './body.js';
 
 export const BASE = '/betapp';
 export const COOKIE = 'atm_beta';
@@ -140,8 +141,13 @@ function redirect(location, cookie) {
 async function readForm(request) {
   const declared = Number(request.headers.get('content-length'));
   if (declared > MAX_FORM_BYTES) return null;
-  const text = await request.text();
-  if (text.length > MAX_FORM_BYTES) return null;
+  let text;
+  try {
+    // Stops reading (and cancels the upload) as soon as it passes the cap.
+    text = await readCappedText(request, MAX_FORM_BYTES);
+  } catch {
+    return null;
+  }
   const form = new URLSearchParams(text);
   return { email: String(form.get('email') || '').trim().toLowerCase(), code: String(form.get('code') || '').trim() };
 }

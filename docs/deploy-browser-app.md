@@ -144,8 +144,8 @@ From the repository folder on your Mac:
 
 ### Everyday changes
 
-- **Add or remove a tester:** run step 2 again with the full new list. Someone you remove is signed out at their next click.
-- **Sign everyone out:** run step 3 again.
+- **Add or remove a tester:** run step 2 again with the full new list, then deploy again (step 4). Cloudflare only uses a new secret from the next deploy, so until you deploy, the old list still works. After the deploy, someone you removed is signed out at their next click.
+- **Sign everyone out:** run step 3 again, then deploy again (step 4).
 - **Update the app:** `git pull`, then `cd site && npm run deploy`.
 
 Wrong codes are limited to 10 tries per 10 minutes from one address. Until both secrets are set, /betapp shows "not set up yet" and serves nothing.
