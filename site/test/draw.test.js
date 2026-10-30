@@ -10,6 +10,11 @@ import {
   intentFor,
   jiggle,
   markFor,
+  markWidth,
+  nibWidth,
+  NIBS,
+  SIZES,
+  TOOLS,
   matrixAngle,
   orient,
   outlinePath,
@@ -171,4 +176,29 @@ test('draw: undo steps back through adds, removals and a clear; a new position f
   assert.equal(s.shapes.length, 0);
   assert.equal(s.canUndo, false);
   assert.equal(s.undo(), false);
+});
+
+test('draw: nibs and sizes set the line', () => {
+  assert.deepEqual(NIBS, ['pen', 'pencil', 'marker']);
+  for (const n of NIBS) assert.ok(TOOLS.includes(n), `${n} is a tool`);
+  assert.equal(nibWidth(), 1.15, 'medium pen is the old default');
+  assert.ok(nibWidth('pen', 'thin') < nibWidth('pen', 'medium'));
+  assert.ok(nibWidth('pen', 'medium') < nibWidth('pen', 'thick'));
+  assert.ok(nibWidth('marker') > 2 * nibWidth('pen'), 'a marker is wide');
+  assert.equal(nibWidth('nope', 'huge'), nibWidth('pen', 'medium'), 'unknown values fall back');
+  assert.equal(markWidth(), 1.3);
+  assert.ok(markWidth('thick') > markWidth('thin'));
+  assert.equal(Object.keys(SIZES).length, 3);
+
+  const pencil = shapeSVG({ kind: 'free', nib: 'pencil', color: 'blue', pts: [[1, 1], [9, 9]], width: 0.95 }, 'white');
+  assert.match(pencil, /class="dr dr--free dr--pencil tone--blue"/);
+  const marker = shapeSVG({ kind: 'free', nib: 'marker', color: 'red', pts: [[1, 1], [9, 9]], width: 3.4 }, 'white');
+  assert.match(marker, /dr--marker/);
+  assert.match(marker, /stroke-width="3.4"/);
+  const pen = shapeSVG({ kind: 'free', nib: 'pen', color: 'red', pts: [[1, 1], [9, 9]], width: 1.15 }, 'white');
+  assert.doesNotMatch(pen, /dr--pen/, 'plain pen needs no extra class');
+  assert.doesNotMatch(shapeSVG({ kind: 'free', nib: '<x>', color: 'red', pts: [[1, 1], [9, 9]], width: 1 }, 'white'), /<x>/, 'unknown nib is ignored');
+
+  assert.match(shapeSVG({ kind: 'arrow', from: 'a1', to: 'a4', color: 'blue', seed: 1, width: 2.34 }, 'white'), /stroke-width="2.34"/);
+  assert.match(shapeSVG({ kind: 'circle', sq: 'e4', color: 'blue', seed: 1 }, 'white'), /stroke-width="1.3"/, 'older marks keep the medium line');
 });

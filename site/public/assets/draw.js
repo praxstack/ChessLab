@@ -1,5 +1,6 @@
 // The learner's own pen on the desk board: freehand lines, arrows from square
-// to square, and circled squares, in blue, red or green ink. Lichess-style:
+// to square, and circled squares, in blue, red or green ink. Freehand lines
+// come in three nibs (pen, pencil, marker) and every drawing in three sizes. Lichess-style:
 // a right-drag draws an arrow and a right-click circles a square at any time;
 // Draw mode lets a finger or the left button draw; a stylus always draws.
 //
@@ -16,7 +17,22 @@ import { arrow, loop, rng, seedFrom, smoothPath } from './ink.js';
 const FILES = 'abcdefgh';
 export const SIZE = 80;
 export const COLORS = ['blue', 'red', 'green'];
-export const TOOLS = ['pen', 'arrow', 'circle'];
+export const TOOLS = ['pen', 'pencil', 'marker', 'arrow', 'circle'];
+/** Freehand nibs: smooth ink, grainy pencil, a wide see-through marker. */
+export const NIBS = ['pen', 'pencil', 'marker'];
+/** Line sizes, as a multiple of the medium line. */
+export const SIZES = { thin: 0.6, medium: 1, thick: 1.8 };
+const NIB_WIDTH = { pen: 1.15, pencil: 0.95, marker: 3.4 };
+
+/** How wide a freehand line starts for this nib and size, in board units. */
+export function nibWidth(nib = 'pen', size = 'medium') {
+  return r2((NIB_WIDTH[nib] ?? NIB_WIDTH.pen) * (SIZES[size] ?? 1));
+}
+
+/** Arrow and circle line width for this size. */
+export function markWidth(size = 'medium') {
+  return r2(1.3 * (SIZES[size] ?? 1));
+}
 
 const r2 = (n) => Math.round(n * 100) / 100;
 
@@ -215,9 +231,12 @@ const TONE = new Set(COLORS);
 /** One drawing as SVG markup. A stylus line is filled; everything else is stroked. */
 export function shapeSVG(shape, o, extra = '') {
   const tone = TONE.has(shape.color) ? shape.color : 'blue';
-  const filled = shape.kind === 'free' && (shape.widths || shape.pts.length === 1);
-  const cls = `dr dr--${shape.kind} tone--${tone}${filled ? ' dr--fill' : ''}${extra ? ` ${extra}` : ''}`;
-  const width = shape.kind === 'free' && !filled && shape.width ? ` stroke-width="${shape.width}"` : '';
+  const free = shape.kind === 'free';
+  const filled = free && (shape.widths || shape.pts.length === 1);
+  const nib = free && NIBS.includes(shape.nib) && shape.nib !== 'pen' ? ` dr--${shape.nib}` : '';
+  const cls = `dr dr--${shape.kind}${nib} tone--${tone}${filled ? ' dr--fill' : ''}${extra ? ` ${extra}` : ''}`;
+  const w = free ? (!filled && shape.width) || 0 : shape.width || markWidth();
+  const width = w ? ` stroke-width="${w}"` : '';
   return `<g class="${cls}"${width}>${shapePaths(shape, o)
     .map((d) => `<path d="${d}"/>`)
     .join('')}</g>`;
@@ -293,16 +312,40 @@ export function intentFor({ pointerType, button }, drawMode) {
 const SVGNS = 'http://www.w3.org/2000/svg';
 const PALM_MS = 400; // touches this soon after a stylus lifts are a resting hand
 
+// The last tool and size picked come back next visit; storage may be off.
+const KEY = 'puzzleanalyzr.pens.';
+function remembered(name, allowed, fallback) {
+  try {
+    const v = localStorage.getItem(KEY + name);
+    return allowed.includes(v) ? v : fallback;
+  } catch {
+    return fallback;
+  }
+}
+function remember(name, value) {
+  try {
+    localStorage.setItem(KEY + name, value);
+  } catch {
+    /* fine without it */
+  }
+}
+
+// Pencil grain: the line breaks up where noise thins it, with a slightly ragged edge.
+// The filter covers the whole board in board units, so a dead-straight line (a
+// zero-height box) still shows.
+const GRAIN = `<defs><filter id="dr-grain" x="-8" y="-8" width="96" height="96" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse"><feTurbulence type="fractalNoise" baseFrequency="2.4" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="0.35" xChannelSelector="R" yChannelSelector="G" result="d"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.6 2.15" result="m"/><feComposite in="d" in2="m" operator="in"/></filter></defs>`;
+
 /**
- * els: { board, svg, mode, show, undo, clear, tools: [buttons with data-tool], colors: [buttons with data-color], hint }
+ * els: { board, svg, mode, show, undo, clear, tools: [buttons with data-tool], colors: [buttons with data-color], sizes: [buttons with data-size], hint }
  * orientation(): the board's orientation now.
  */
 export function createDrawLayer(els, { orientation = () => 'white' } = {}) {
   const sketch = createSketch();
   let drawMode = false;
   let visible = true;
-  let tool = 'pen';
+  let tool = remembered('tool', TOOLS, 'pen');
   let color = 'blue';
+  let size = remembered('size', Object.keys(SIZES), 'medium');
   let live = null; // the stroke being drawn
   let penUpAt = -Infinity;
   let frame = 0;
@@ -312,6 +355,7 @@ export function createDrawLayer(els, { orientation = () => 'white' } = {}) {
   done.setAttribute('class', 'desk__drawn');
   const preview = document.createElementNS(SVGNS, 'g');
   preview.setAttribute('class', 'desk__live');
+  els.svg.insertAdjacentHTML('afterbegin', GRAIN);
   els.svg.append(done, preview);
 
   const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
@@ -331,6 +375,7 @@ export function createDrawLayer(els, { orientation = () => 'white' } = {}) {
     els.clear.disabled = !sketch.shapes.length;
     for (const b of els.tools) b.setAttribute('aria-pressed', String(b.dataset.tool === tool));
     for (const b of els.colors) b.setAttribute('aria-pressed', String(b.dataset.color === color));
+    for (const b of els.sizes || []) b.setAttribute('aria-pressed', String(b.dataset.size === size));
     if (els.hint) {
       const text = hintText();
       if (els.hint.textContent !== text) els.hint.textContent = text; // don't re-announce the same hint
@@ -364,13 +409,14 @@ export function createDrawLayer(els, { orientation = () => 'white' } = {}) {
       let d;
       if (pts.length === 1) d = outlinePath(pts, [live.width]);
       else d = smoothPath(pts);
-      preview.innerHTML = `<g class="dr dr--free tone--${color}${pts.length === 1 ? ' dr--fill' : ''}" stroke-width="${live.width}"><path d="${d}"/></g>`;
+      const nib = live.nib !== 'pen' ? ` dr--${live.nib}` : '';
+      preview.innerHTML = `<g class="dr dr--free${nib} tone--${color}${pts.length === 1 ? ' dr--fill' : ''}" stroke-width="${live.width}"><path d="${d}"/></g>`;
       return;
     }
     const at = squareAtPoint(live.pts[live.pts.length - 1], o);
     const mark = live.kind === 'circle' ? markFor(at, at) : markFor(live.from, at);
     live.mark = mark;
-    preview.innerHTML = mark ? shapeSVG({ ...mark, color, seed: live.seed }, o, 'is-live') : '';
+    preview.innerHTML = mark ? shapeSVG({ ...mark, color, seed: live.seed, width: markWidth(size) }, o, 'is-live') : '';
   }
   const schedule = () => {
     if (!frame) frame = requestAnimationFrame(paint);
@@ -402,20 +448,26 @@ export function createDrawLayer(els, { orientation = () => 'white' } = {}) {
     const o = orientation();
     const box = measure();
     const p = point(e, box);
-    const kind = intent === 'mark' ? 'arrow' : tool === 'pen' ? 'free' : tool;
+    const nib = NIBS.includes(tool) ? tool : 'pen';
+    const kind = intent === 'mark' ? 'arrow' : NIBS.includes(tool) ? 'free' : tool;
     const from = squareAtPoint(p, o);
     if (kind !== 'free' && !from) return;
     if (!visible) visible = true;
     const pen = e.pointerType === 'pen';
+    const base = nibWidth(nib, size);
+    // A marker lays down an even band; pen and pencil follow stylus pressure.
+    const pressed = pen && nib !== 'marker';
     live = {
       id: e.pointerId,
       box,
       kind,
+      nib,
+      base,
       pen,
       from,
       pts: [p],
-      widths: pen ? [pressureWidth(e.pressure)] : null,
-      width: pen ? pressureWidth(e.pressure) : 1.15,
+      widths: pressed ? [pressureWidth(e.pressure, base)] : null,
+      width: pressed ? pressureWidth(e.pressure, base) : base,
       seed: sketch.nextSeed(`${kind}:${from || ''}`),
     };
     try {
@@ -444,7 +496,7 @@ export function createDrawLayer(els, { orientation = () => 'white' } = {}) {
         if (live.widths) {
           // Pressure eases in and out, so the width doesn't jump between points.
           const prev = live.widths[live.widths.length - 1];
-          live.widths.push(r2(prev * 0.6 + pressureWidth(ev.pressure) * 0.4));
+          live.widths.push(r2(prev * 0.6 + pressureWidth(ev.pressure, live.base) * 0.4));
           live.width = live.widths[live.widths.length - 1];
         }
       } else {
@@ -476,12 +528,12 @@ export function createDrawLayer(els, { orientation = () => 'white' } = {}) {
       const o = orientation();
       if (l.kind === 'free') {
         const fin = finishFree(l.pts, { orientation: o, seed: l.seed, widths: l.widths });
-        sketch.add({ kind: 'free', color, seed: l.seed, ...fin, ...(fin.widths ? {} : { width: l.width }) });
+        sketch.add({ kind: 'free', nib: l.nib, color, seed: l.seed, ...fin, ...(fin.widths ? {} : { width: l.width }) });
       } else {
         if (e.type === 'pointerup') l.pts[1] = point(e, l.box);
         const at = squareAtPoint(l.pts[l.pts.length - 1], o);
         const mark = l.kind === 'circle' ? markFor(at, at) : markFor(l.from, at);
-        if (mark) sketch.toggle({ ...mark, color, seed: l.seed });
+        if (mark) sketch.toggle({ ...mark, color, seed: l.seed, width: markWidth(size) });
       }
     }
     render();
@@ -528,12 +580,20 @@ export function createDrawLayer(els, { orientation = () => 'white' } = {}) {
   for (const b of els.tools) {
     b.addEventListener('click', () => {
       tool = b.dataset.tool;
+      remember('tool', tool);
       syncButtons();
     });
   }
   for (const b of els.colors) {
     b.addEventListener('click', () => {
       color = b.dataset.color;
+      syncButtons();
+    });
+  }
+  for (const b of els.sizes || []) {
+    b.addEventListener('click', () => {
+      size = b.dataset.size;
+      remember('size', size);
       syncButtons();
     });
   }
