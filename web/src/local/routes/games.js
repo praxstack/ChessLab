@@ -25,6 +25,7 @@ export default function gameRoutes(ctx) {
     return values;
   }
   // The bot's move: a weakened search for games from before the bot roster, otherwise the roster engine.
+  // New-player bots rated under 250 pass profileRating, as server/app.mjs does, so the policy may go below 250.
   async function chooseMove(game) {
     if (game.legacyStrength || !game.engineId) {
       const analysis = await analyzePosition(engine, {moves: game.moves, initialFen: game.initialFen, variant: game.variant, movetime: [80, 150, 250, 400, 700][game.level - 1], lines: 1, skill: [0, 4, 8, 14, 20][game.level - 1]});
@@ -33,7 +34,7 @@ export default function gameRoutes(ctx) {
     const selected = (await engineCatalog(engine)).find(entry => entry.id === game.engineId);
     if (!selected?.available) fail(503, selected?.reason || 'This engine is unavailable in this browser.');
     const {skill, movetime} = engineControls(game.currentRating);
-    const decision = await (ctx.opponent?.chooseMove ?? engineMove)(engine, {engineId: game.engineId, moves: game.moves, initialFen: game.initialFen, variant: game.variant, rating: game.currentRating, skill, movetime, style: game.style});
+    const decision = await (ctx.opponent?.chooseMove ?? engineMove)(engine, {engineId: game.engineId, moves: game.moves, initialFen: game.initialFen, variant: game.variant, rating: game.currentRating, ...(game.botId && game.rating < 250 ? {profileRating: game.rating} : {}), skill, movetime, style: game.style});
     return {...decision, engineId: game.engineId};
   }
   return [

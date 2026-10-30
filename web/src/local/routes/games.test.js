@@ -162,3 +162,16 @@ test('undo cannot remove an annotated original-game position', async () => {
   assert.equal((await f.post(route + '/study', {study, studyRevision: 0})).status, 200); assert.equal((await f.post(route + '/undo', {revision: 2})).status, 400);
   assert.deepEqual((await f.get(route)).body.game.moves, ['e2e4', 'e7e5']);
 });
+
+test('bots rated under 250 pass profileRating to the opponent, as the server does', async () => {
+  const calls = [];
+  const opponent = {chooseMove: async (engine, input) => { calls.push(input); return {move: input.moves.length % 2 ? 'e7e5' : 'e2e4', engine: 'Fake'}; }};
+  const f = fixture({opponent});
+  for (const [botId, expected] of [['pip', 100], ['bramble', undefined]]) {
+    const game = (await f.post('/api/games', {color: 'w', botId})).body.game;
+    await f.post(`/api/games/${game.id}/move`, {move: 'e2e4', revision: 0});
+    assert.equal((await f.post(`/api/games/${game.id}/bot`, {revision: 1})).status, 200);
+    assert.equal(calls.at(-1).profileRating, expected, botId);
+    assert.equal('profileRating' in calls.at(-1), expected !== undefined, `${botId} sends profileRating only under 250`);
+  }
+});
