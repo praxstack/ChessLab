@@ -5,6 +5,7 @@
 // from assistive technology.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -34,8 +35,20 @@ for (const rel of PAGES) {
   });
 
   test(`${rel}: no inline scripts, styles or event handlers`, () => {
-    for (const script of tags(html, 'script')) {
+    // The one exception is the import map (cache-busting), allowed by its exact hash.
+    const maps = [...html.matchAll(/<script type="importmap">([^<]*)<\/script>/g)];
+    assert.ok(maps.length <= 1, 'one import map at most');
+    for (const [, body] of maps) {
+      const hash = `'sha256-${createHash('sha256').update(body).digest('base64')}'`;
+      assert.ok(read('_headers').includes(hash), 'the import map’s hash is in the CSP');
+      for (const url of Object.values(JSON.parse(body).imports)) assert.match(url, /^\/assets\/[^?]+\.js\?v=[0-9a-f]{10}$/);
+    }
+    for (const script of tags(html.replace(/<script type="importmap">[^<]*<\/script>/, ''), 'script')) {
       assert.notEqual(attr(script, 'src'), null, `inline script: ${script}`);
+    }
+    for (const t of [...tags(html, 'script'), ...tags(html, 'link')]) {
+      const url = attr(t, 'src') ?? attr(t, 'href');
+      if (url && /^\/assets\/.+\.(js|css)/.test(url)) assert.match(url, /\?v=[0-9a-f]{10}$/, `unversioned asset: ${url}`);
     }
     assert.doesNotMatch(html, /<style\b/i);
     assert.doesNotMatch(html, /\sstyle="/i);
@@ -154,7 +167,8 @@ test('index.html: the walkthrough is pre-rendered with a board, a note and the s
 
 test('_headers and the manage page share one set of security headers', async () => {
   const { pageHeaders } = await import('../src/lib/security-headers.js');
-  const headers = read('_headers');
+  // Static pages also allow their import map by hash; the manage page has none.
+  const headers = read('_headers').replace(/ 'sha256-[^']+'/g, '');
   for (const [name, value] of Object.entries(pageHeaders())) {
     const line = new RegExp(`^  ${name.replace(/(^|-)([a-z])/g, (m) => m.toUpperCase()).replace(/-/g, '-')}: ${value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'mi');
     assert.match(headers, line, `${name} missing from _headers`);
@@ -167,13 +181,15 @@ test('puzzleanalyzr: its own policy lets it read the chess APIs and run Stockfis
   for (const path of ['/puzzleanalyzr', '/puzzleanalyzr/*']) {
     const block = new RegExp(`^${path.replace(/[*]/g, '\\*')}\n  ! Content-Security-Policy\n  Content-Security-Policy: ([^\n]+)$`, 'm').exec(headers);
     assert.ok(block, `no policy block for ${path}`);
-    assert.equal(block[1], csp({ connect: PUZZLE_CONNECT, wasm: true }));
-    assert.match(block[1], /script-src 'self' 'wasm-unsafe-eval';/);
+    const hashes = block[1].match(/'sha256-[^']+'/g) || [];
+    assert.equal(hashes.length, 1, 'the import map hash');
+    assert.equal(block[1], csp({ connect: PUZZLE_CONNECT, wasm: true, hashes }));
+    assert.match(block[1], /script-src 'self' 'sha256-[^']+' 'wasm-unsafe-eval';/);
     for (const origin of PUZZLE_CONNECT) assert.match(block[1], new RegExp(`connect-src [^;]*${origin.replace(/[.]/g, '\\.')}`));
   }
   // Every other page keeps connect-src 'self' only, and runs no WebAssembly.
   assert.match(headers, /^\/\*\n(?:  .+\n)*  Content-Security-Policy: [^\n]*connect-src 'self';/m);
-  assert.match(headers, /^\/\*\n(?:  .+\n)*  Content-Security-Policy: [^\n]*script-src 'self';/m);
+  assert.match(headers, /^\/\*\n(?:  .+\n)*  Content-Security-Policy: [^\n]*script-src 'self' 'sha256-[^']+';/m);
   // Stockfish's worker has its own policy, so it can compile the engine.
   const engine = /^\/assets\/engine\/\*\n  ! Content-Security-Policy\n  Content-Security-Policy: ([^\n]+)\n  Cache-Control: ([^\n]+)$/m.exec(headers);
   assert.ok(engine, 'no header block for /assets/engine/*');
@@ -190,7 +206,7 @@ test('puzzleanalyzr: its own policy lets it read the chess APIs and run Stockfis
   for (const id of ['desk-board', 'desk-pieces', 'desk-marks', 'desk-ink', 'desk-promo', 'desk-say', 'desk-moves', 'tool-undo', 'tool-redo', 'tool-reset', 'tool-flip', 'tool-sound', 'engine-check', 'engine-bar', 'engine-state', 'engine-say', 'engine-show', 'engine-name', 'engine-pick', 'engine-stop', 'engine-pop', 'engine-ready', 'engine-soon', 'engine-warn', 'engine-yes', 'engine-no','go-analysis', 'go-solve', 'pick-date', 'cal-pop', 'cal-grid', 'card-name', 'card-next', 'how-open', 'how-sheet', 'paste', 'games-form', 'games-sheet', 'bm']) {
     assert.match(html, new RegExp(`id="${id}"`), `#${id} missing`);
   }
-  assert.match(html, /<script type="module" src="\/assets\/puzzle\.js"><\/script>/);
+  assert.match(html, /<script type="module" src="\/assets\/puzzle\.js\?v=[0-9a-f]{10}"><\/script>/);
 });
 
 test('styles: every font and image the stylesheet uses exists, and the fonts are credited', () => {

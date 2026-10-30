@@ -621,6 +621,31 @@
   background: var(--highlight);
 }
 
+/* Every tool and size says its name under its picture, so nobody has to guess (no hover on touch). */
+.pens__tools {
+  flex-wrap: wrap;
+}
+
+.pens__pick--named {
+  width: auto;
+  min-width: 46px;
+  height: auto;
+  min-height: 48px;
+  padding: 4px 5px 3px;
+  gap: 2px;
+  grid-template-rows: 24px auto;
+}
+
+.pens__name {
+  font: 600 0.72rem/1 var(--font-hand);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.pens__pick--named[aria-pressed='true'] .pens__name {
+  color: var(--ink);
+}
+
 @media (hover: hover) and (pointer: fine) {
   .pens__pick[aria-pressed='false']:hover {
     background: var(--paper-2);
@@ -2041,6 +2066,12 @@ button.cal__day {
   .pens__pick {
     width: 34px;
     height: 40px;
+  }
+
+  .pens__pick--named {
+    width: auto;
+    min-width: 40px;
+    height: auto;
   }
 
   .engine {
