@@ -316,6 +316,7 @@ const pens = createDrawLayer(
     hint: $('draw-hint'),
     tools: [...document.querySelectorAll('#pens [data-tool]')],
     colors: [...document.querySelectorAll('#pens [data-color]')],
+    sizes: [...document.querySelectorAll('#pens [data-size]')],
   },
   { orientation: () => play.orientation },
 );
