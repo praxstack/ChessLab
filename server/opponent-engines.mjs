@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { analyze, engineStatus, replay, localTablebasePath } from './engine.mjs';
-import { engineControls } from '../shared/strength-ladder.js';
+import { stockfishPolicy as sharedStockfishPolicy } from '../shared/opponent-policy.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const data = resolve(process.env.CHESSLAB_ENGINES_DIR || resolve(root, 'data/engines'));
@@ -73,21 +73,9 @@ function command(id) {
   return [resolve(data, `${id}/stockfish`), []];
 }
 
+// The policy itself lives in shared/ so the browser app's bots play the same way.
 function stockfishPolicy(result, board, rating, skill, style) {
-  const probability = engineControls(rating).sampledShare;
-  const applied = probability > 0 && randomInt(1_000_000) < probability * 1_000_000;
-  const baseMove = result.move;
-  if (applied) {
-    // ponytail: local move weighting is uncalibrated; replace only with measured human play evidence.
-    const candidates = board.moves({ verbose: true }).map(move => ({
-      move: move.from + move.to + (move.promotion || ''),
-      weight: style === 'aggressive' && (move.captured || /[+#]/.test(move.san)) ? 4
-        : style === 'solid' && !move.captured && ['n', 'b'].includes(move.piece) && ['1', '8'].includes(move.from[1]) ? 4 : 1,
-    }));
-    let pick = randomInt(1_000_000) / 1_000_000 * candidates.reduce((sum, item) => sum + item.weight, 0);
-    result.move = candidates.find(item => (pick -= item.weight) < 0)?.move || candidates.at(-1).move;
-  }
-  return { ...result, baseMove, policy: { id: probability ? 'stockfish-local-novice' : 'stockfish-skill', applied, probability, skill, style, calibrated: false } };
+  return sharedStockfishPolicy(result, board, rating, skill, style, randomInt);
 }
 
 function runUci(id, input) {

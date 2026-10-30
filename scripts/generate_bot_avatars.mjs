@@ -113,7 +113,7 @@ export function avatarSvg(profile) {
 export function avatarPath(profile) { return `web/public/bots/${profile.id}.svg`; }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const profiles = JSON.parse(readFileSync(new URL('../server/bot-profiles.json', import.meta.url), 'utf8'));
+  const profiles = JSON.parse(readFileSync(new URL('../shared/bot-profiles.json', import.meta.url), 'utf8'));
   const check = process.argv.includes('--check');
   const expected = new Set(profiles.map(profile => `${profile.id}.svg`));
   let problems = 0;

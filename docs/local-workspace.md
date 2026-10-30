@@ -6,7 +6,7 @@ To stop the installed service, run `launchctl bootout gui/$(id -u)/com.prax.ches
 
 Install the declared packages with `npm ci`. Native Stockfish must be installed on the Mac. The existing engine collection is in `data/engines/`; reproduce it with `python3 scripts/install_engines.py` if needed.
 
-Copy `.env.example` to `.env` only when no configuration exists. Set `CHESSLAB_DB` to the account database you want to use. Build with `npm run build`, then run `npm start` and open the printed loopback address.
+Copy `.env.example` to `.env` only when no configuration exists. Set `CHESSLAB_DB` to the account database you want to use. Build with `npm run build`, then run `npm start` and open the printed loopback address. `npm run build` makes the server app that reads this database; `npm run build:app` makes the browser-only app in `web/dist-app/`, which this service does not serve.
 
 The application, API, portraits, pieces, icons, and engine models work without a hosted proxy. The server also serves the existing sites at `/research/` and `/design/`. It does not serve the repository root or account database directory.
 

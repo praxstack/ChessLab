@@ -22,3 +22,4 @@ design/**/*.stderr.txt
 # Local application accounts, sessions and saved games.
 /data
 web/dist/
+web/dist-app/

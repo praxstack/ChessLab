@@ -10,7 +10,11 @@
     "dev": "node --env-file-if-exists=.env server/index.mjs",
     "start": "NODE_ENV=production node --env-file-if-exists=.env server/index.mjs",
     "build": "vite build",
-    "test": "node --test --test-concurrency=1 server/*.test.mjs web/src/*.test.js",
+    "build:server": "vite build",
+    "build:app": "VITE_BACKEND=local vite build --outDir dist-app",
+    "dev:app": "VITE_BACKEND=local vite",
+    "preview:app": "vite preview --outDir dist-app",
+    "test": "node --test --test-concurrency=1 server/*.test.mjs web/src/*.test.js web/src/local/*.test.js web/src/local/*/*.test.js",
     "build:sites": "npm run build && node scripts/build_sites.mjs"
   },
   "dependencies": {

@@ -1,0 +1,36 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {fixture} from '../testing/fixture.js';
+
+test('collections reject stale or partial edits and keep games through reload and deletion', async () => {
+  let stamp = 1e12; const f = fixture({now: () => stamp += 1000});
+  const a = (await f.post('/api/import', {pgn: '[White "Archive"]\n[Black "Study"]\n\n1. e4 e5 2. Nf3 *'})).body.game;
+  const b = (await f.post('/api/games', {color: 'w'})).body.game;
+  const original = (await f.get(`/api/games/${a.id}`)).body.game;
+  assert.equal((await f.post('/api/collections', {name: '  '})).status, 400);
+  assert.equal((await f.post('/api/collections', {name: 'x'.repeat(81)})).status, 400);
+  const created = await f.post('/api/collections', {name: '  Opening ideas  ', description: 'Lines to revisit'}); assert.equal(created.status, 201);
+  let c = created.body.collection; assert.equal(c.name, 'Opening ideas'); assert.deepEqual(c.gameIds, []); assert.equal(c.revision, 0);
+  assert.deepEqual(Object.keys(c).sort(), ['description', 'gameIds', 'id', 'name', 'revision', 'updatedAt']);
+  const other = (await f.post('/api/collections', {name: 'Favorites'})).body.collection;
+  assert.equal((await f.post('/api/collections', {name: 'opening ideas'})).status, 409, 'names are unique ignoring case');
+  const route = `/api/collections/${c.id}`;
+  assert.equal((await f.post(route + '/games', {revision: 0, gameIds: [a.id, 'missing'], present: true})).status, 404);
+  assert.deepEqual((await f.get('/api/collections')).body.collections.find(x => x.id === c.id).gameIds, [], 'a partial add changes nothing');
+  assert.equal((await f.post(route + '/games', {revision: 0, gameIds: [a.id], present: 'yes'})).status, 400);
+  c = (await f.post(route + '/games', {revision: 0, gameIds: [a.id, b.id, a.id], present: true})).body.collection; assert.deepEqual(c.gameIds, [a.id, b.id]); assert.equal(c.revision, 1);
+  assert.equal((await f.post(route + '/games', {revision: 0, gameIds: [a.id], present: false})).status, 409);
+  assert.equal((await f.post(route, {revision: 1, name: 'Favorites'})).status, 409);
+  c = (await f.post(route, {revision: 1, name: 'My openings', description: 'Saved lines'})).body.collection; assert.equal(c.revision, 2); assert.equal(c.name, 'My openings');
+  await f.post(`/api/collections/${other.id}/games`, {revision: 0, gameIds: [a.id], present: true});
+  c = (await f.post(route + '/games', {revision: 2, gameIds: [a.id], present: false})).body.collection; assert.deepEqual(c.gameIds, [b.id]);
+  f.reload(); const all = (await f.get('/api/collections')).body.collections;
+  assert.deepEqual(all.map(x => x.id), [c.id, other.id], 'most recently changed first');
+  assert.deepEqual(all.find(x => x.id === other.id).gameIds, [a.id]);
+  assert.equal((await f.post(route + '/delete', {revision: 2})).status, 409);
+  assert.deepEqual((await f.post(route + '/delete', {revision: 3})).body, {deleted: true});
+  assert.deepEqual(await f.store.list('collection_games', {index: 'collectionId', value: c.id}), []);
+  assert.equal((await f.post(route, {revision: 3, name: 'Gone'})).status, 404);
+  assert.equal((await f.get('/api/games')).body.games.length, 2);
+  assert.deepEqual((await f.get(`/api/games/${a.id}`)).body.game, original);
+});

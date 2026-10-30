@@ -1,3 +1,2 @@
-import {readFileSync} from 'node:fs';
-export const endgames=JSON.parse(readFileSync(new URL('./endgames.json',import.meta.url),'utf8'));
-export const endgameById=id=>endgames.find(item=>item.id===id);
+// Moved to shared/ so the browser app can use it; the server keeps this path.
+export * from '../shared/endgames.js';

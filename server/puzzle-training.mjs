@@ -1,40 +1,11 @@
 import {DatabaseSync} from 'node:sqlite';
 import {existsSync} from 'node:fs';
-import {createHash,randomInt,randomUUID} from 'node:crypto';
-import {Chess} from 'chess.js';
+import {createHash,randomInt} from 'node:crypto';
 import {createRush} from './puzzle-rush.mjs';
+import {localDay,ratingUpdate,preparePuzzle,advancePuzzle,visibleAttempt,newAttempt,attemptSummary,dailyStreak,scoreAttempt,checkAttemptAction,attemptStudy,trainingMode,defaultPuzzleProfile,missingCatalogue} from '../shared/puzzle-training.js';
+export {localDay,ratingUpdate,preparePuzzle,advancePuzzle};
 
 const fail=(status,message)=>{throw Object.assign(new Error(message),{status});};
-const movePattern=/^[a-h][1-8][a-h][1-8][qrbn]?$/;
-const play=(chess,move)=>chess.move({from:move.slice(0,2),to:move.slice(2,4),promotion:move[4]});
-export const localDay=milliseconds=>{const d=new Date(milliseconds);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
-export const ratingUpdate=(rating,puzzleRating,won)=>Math.round(rating+32*((won?1:0)-1/(1+10**((puzzleRating-rating)/400))));
-export function preparePuzzle(row){
- const moves=row.moves.split(' '),board=new Chess(row.fen);
- if(moves.length<2||moves.length>100||moves.length%2||moves.some(move=>!movePattern.test(move)))throw new Error('Invalid source solution.');
- const trigger=play(board,moves[0]),fen=board.fen(),side=board.turn();
- for(const move of moves.slice(1))play(board,move);
- return {id:row.id,initialFen:row.fen,fen,side,trigger:moves[0],triggerSan:trigger.san,solution:moves.slice(1),rating:row.rating,themes:row.themes.split(' '),gameUrl:row.game_url,openingTags:row.opening_tags};
-}
-export function advancePuzzle(a,body){
-  const board=new Chess(a.puzzle.fen);for(const move of a.moves)play(board,move);
-  let correct=null,message;
-  if(body.action==='move'){
-   if(typeof body.move!=='string'||!movePattern.test(body.move))fail(400,'Submit one coordinate move.');
-   let played;try{played=play(board,body.move);}catch{fail(400,'That move is not legal in this position.');}
-   const alternateMate=board.isCheckmate();correct=body.move===a.puzzle.solution[a.moves.length]||alternateMate;
-   if(correct){
-    a.hint=null;a.moves.push(body.move);
-    if(alternateMate||a.moves.length===a.puzzle.solution.length){a.state='solved';message=alternateMate?`${played.san} is checkmate.`:'You completed the verified source line.';}
-    else {const reply=a.puzzle.solution[a.moves.length];play(board,reply);a.moves.push(reply);message='Correct. Find your continuation after the reply.';}
-   }else{a.mistakes++;message='That is not the source solution. The position is unchanged; try again.';}
-  }else if(body.action==='hint'){
-   a.assisted=true;a.hint=a.puzzle.solution[a.moves.length].slice(0,2);message=`Look at the piece on ${a.hint}. This attempt now uses assistance.`;
-  }else if(body.action==='reveal'){a.assisted=true;a.state='revealed';a.moves=[...a.puzzle.solution];message='Solution revealed. Play through it or analyze the position.';}
-  else if(body.action==='skip'){a.state='skipped';message='Puzzle skipped. You can return to it from recent attempts.';}
-  else fail(400,'Choose move, hint, reveal or skip.');
-  return {correct,message};
-}
 export function createTrainer({db,cataloguePath,nowMs=Date.now,insertStudy}){
  const source=existsSync(cataloguePath)?new DatabaseSync(cataloguePath,{readOnly:true}):null;
  const metadata=source?JSON.parse(source.prepare("SELECT value FROM metadata WHERE key='catalogue'").get().value):null;
@@ -45,23 +16,21 @@ export function createTrainer({db,cataloguePath,nowMs=Date.now,insertStudy}){
  CREATE TABLE IF NOT EXISTS daily_puzzles(date TEXT PRIMARY KEY,data TEXT NOT NULL);
  CREATE INDEX IF NOT EXISTS puzzle_seen ON puzzle_attempts(user_id,json_extract(data,'$.puzzle.id'));
  CREATE UNIQUE INDEX IF NOT EXISTS puzzle_daily_once ON puzzle_attempts(user_id,json_extract(data,'$.dailyDate')) WHERE json_extract(data,'$.mode')='daily';`);
- const catalogue=()=>metadata?{today:localDay(nowMs()),timeZone:Intl.DateTimeFormat().resolvedOptions().timeZone,available:true,count:metadata.count,themes:metadata.themes,source:metadata.source,license:metadata.license,archiveSha256:metadata.archiveSha256}:{available:false,count:0,themes:{},message:'The local puzzle catalogue is not installed.'};
+ const catalogue=()=>metadata?{today:localDay(nowMs()),timeZone:Intl.DateTimeFormat().resolvedOptions().timeZone,available:true,count:metadata.count,themes:metadata.themes,source:metadata.source,license:metadata.license,archiveSha256:metadata.archiveSha256}:missingCatalogue();
  const owned=(userId,id)=>{if(typeof id!=='string')fail(400,'Invalid attempt.');const row=db.prepare('SELECT data FROM puzzle_attempts WHERE id=? AND user_id=?').get(id,userId);if(!row)fail(404,'Puzzle attempt not found.');return JSON.parse(row.data);};
- const visible=attempt=>{if(!attempt)return null;const {solution,initialFen,...puzzle}=attempt.puzzle;return {...attempt,puzzle,...(attempt.state==='revealed'?{solution}: {})};};
+ const visible=visibleAttempt;
  const store=(userId,attempt)=>{attempt.updatedAt=nowMs();db.prepare('UPDATE puzzle_attempts SET state=?,updated_at=?,data=? WHERE id=? AND user_id=?').run(attempt.state,attempt.updatedAt,JSON.stringify(attempt),attempt.id,userId);return visible(attempt);};
- const profile=userId=>db.prepare('SELECT rating,best,rated_count ratedCount FROM puzzle_profiles WHERE user_id=?').get(userId)||{rating:1500,best:1500,ratedCount:0};
+ const profile=userId=>db.prepare('SELECT rating,best,rated_count ratedCount FROM puzzle_profiles WHERE user_id=?').get(userId)||defaultPuzzleProfile();
  const dailyProgress=userId=>{
   const date=localDay(nowMs()),today=db.prepare("SELECT data FROM puzzle_attempts WHERE user_id=? AND json_extract(data,'$.mode')='daily' AND json_extract(data,'$.dailyDate')=?").get(userId,date);
   const completedDates=db.prepare("SELECT json_extract(data,'$.dailyDate') date FROM puzzle_attempts WHERE user_id=? AND json_extract(data,'$.mode')='daily' AND state='solved' ORDER BY date DESC").all(userId).map(row=>row.date);
-  const days=new Set(completedDates);let cursor=new Date(date+'T12:00:00Z'),streak=0;
-  if(!days.has(date))cursor.setUTCDate(cursor.getUTCDate()-1);
-  while(days.has(cursor.toISOString().slice(0,10))){streak++;cursor.setUTCDate(cursor.getUTCDate()-1);}
+  const streak=dailyStreak(date,completedDates);
   const attempt=today?JSON.parse(today.data):null;return {date,streak,completedDates,today:attempt?{id:attempt.id,state:attempt.state,assisted:attempt.assisted}:null};
  };
  const state=userId=>{
   const activeRush=rush.active(userId);
   const active=db.prepare("SELECT data FROM puzzle_attempts WHERE user_id=? AND state='active'").get(userId);
-  const history=db.prepare("SELECT data FROM puzzle_attempts WHERE user_id=? AND state!='active' ORDER BY updated_at DESC,rowid DESC LIMIT 20").all(userId).map(row=>{const a=JSON.parse(row.data);return {id:a.id,mode:a.mode||'custom',ratingChange:a.ratingChange||null,dailyDate:a.dailyDate||null,puzzleId:a.puzzle.id,rating:a.puzzle.rating,themes:a.puzzle.themes,state:a.state,mistakes:a.mistakes,assisted:a.assisted,updatedAt:a.updatedAt};});
+  const history=db.prepare("SELECT data FROM puzzle_attempts WHERE user_id=? AND state!='active' ORDER BY updated_at DESC,rowid DESC LIMIT 20").all(userId).map(row=>attemptSummary(JSON.parse(row.data)));
   const totals=db.prepare(`SELECT COUNT(*) attempts,COALESCE(SUM(state='solved'),0) solved,COALESCE(SUM(state='solved' AND json_extract(data,'$.mistakes')=0 AND json_extract(data,'$.assisted')=0),0) unassisted FROM puzzle_attempts WHERE user_id=? AND state!='active'`).get(userId);
   return {rush:activeRush?{id:activeRush.id}:null,attempt:active?visible(JSON.parse(active.data)):null,history,totals,profile:profile(userId),daily:dailyProgress(userId)};
  };
@@ -78,7 +47,7 @@ export function createTrainer({db,cataloguePath,nowMs=Date.now,insertStudy}){
  }
  function start(userId,body){
   if(rush.active(userId))fail(409,'Finish your current Rush run first.');
-  const mode=body.fromAttempt!==undefined?'custom':body.mode??'custom';if(!['custom','rated','daily'].includes(mode))fail(400,'Choose rated, daily or custom mode.');
+  const mode=trainingMode(body);
   const date=localDay(nowMs());
   if(mode==='daily'){
    const existing=db.prepare("SELECT data FROM puzzle_attempts WHERE user_id=? AND json_extract(data,'$.mode')='daily' AND json_extract(data,'$.dailyDate')=?").get(userId,date);
@@ -116,22 +85,19 @@ export function createTrainer({db,cataloguePath,nowMs=Date.now,insertStudy}){
  }
  function insertAttempt(userId,puzzle,{mode='custom',difficulty=null,dailyDate=null}={}){
   if(db.prepare("SELECT id FROM puzzle_attempts WHERE user_id=? AND state='active'").get(userId))fail(409,'Finish, reveal or skip the current puzzle first.');
-  const attempt={id:randomUUID(),mode,difficulty,dailyDate,ratingChange:null,puzzle,moves:[],revision:0,state:'active',mistakes:0,assisted:false,hint:null,createdAt:nowMs(),updatedAt:nowMs()};
+  const attempt=newAttempt(puzzle,{mode,difficulty,dailyDate},nowMs());
   db.prepare('INSERT INTO puzzle_attempts VALUES (?,?,?,?,?)').run(attempt.id,userId,attempt.state,attempt.updatedAt,JSON.stringify(attempt));return visible(attempt);
  }
  function score(userId,a){
-  if(a.mode!=='rated'||a.ratingChange||(a.state==='active'&&!a.mistakes&&!a.assisted))return;
-  const previous=profile(userId),won=a.state==='solved'&&!a.mistakes&&!a.assisted,after=ratingUpdate(previous.rating,a.puzzle.rating,won);
-  a.ratingChange={before:previous.rating,after,delta:after-previous.rating,result:won?'win':'loss',algorithm:'local-elo-32'};
-  db.prepare('INSERT INTO puzzle_profiles VALUES (?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET rating=excluded.rating,best=excluded.best,rated_count=excluded.rated_count').run(userId,after,Math.max(previous.best,after),previous.ratedCount+1);
+  const next=scoreAttempt(profile(userId),a);if(!next)return;
+  db.prepare('INSERT INTO puzzle_profiles VALUES (?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET rating=excluded.rating,best=excluded.best,rated_count=excluded.rated_count').run(userId,next.rating,next.best,next.ratedCount);
  }
  function act(userId,id,body){
-  const a=owned(userId,id);if(!Number.isInteger(body.revision)||body.revision!==a.revision)fail(409,'This attempt changed. Reload it before continuing.');
-  if(a.state!=='active')fail(409,'This puzzle attempt is already finished.');
+  const a=owned(userId,id);checkAttemptAction(a,body);
   const {correct,message}=advancePuzzle(a,body);
   a.revision++;let attempt;db.exec('BEGIN IMMEDIATE');try{score(userId,a);attempt=store(userId,a);db.exec('COMMIT');}catch(error){db.exec('ROLLBACK');throw error;}return {attempt,correct,message,profile:profile(userId),daily:dailyProgress(userId)};
  }
- function study(userId,id){const a=owned(userId,id);if(a.state==='active')fail(409,'Finish or reveal the puzzle before analysis.');return insertStudy(userId,{title:`Puzzle ${a.puzzle.id}`,source:'import',initialFen:a.puzzle.initialFen,moves:[a.puzzle.trigger,...(a.state==='solved'?a.moves:a.puzzle.solution)],headers:{White:'Puzzle White',Black:'Puzzle Black'},puzzleSource:{id:a.puzzle.id,url:a.puzzle.gameUrl,rating:a.puzzle.rating,themes:a.puzzle.themes}});}
+ function study(userId,id){return insertStudy(userId,attemptStudy(owned(userId,id)));}
  const rush=createRush({db,nowMs,advancePuzzle,insertPractice:insertAttempt,selectPuzzle:(min,seen)=>{
   if(!source)fail(503,'Install the local puzzle catalogue before starting Rush.');
   const lookup=source.prepare('SELECT seq FROM puzzles WHERE id=?'),excluded=JSON.stringify(seen.map(id=>lookup.get(id)?.seq).filter(Number.isInteger));
