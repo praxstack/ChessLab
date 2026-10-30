@@ -8,6 +8,7 @@
 // Change the domain, contact address or Turnstile site key in site.config.json,
 // then run `npm run build`. public/ is committed so it can be deployed as-is.
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, unlinkSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { dirname, join, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DEMO } from '../public/assets/demo-data.js';
@@ -307,6 +308,33 @@ function render(template, vars, depth = 0) {
   return out;
 }
 
+// Cache-busting. Cloudflare keeps /assets/*.js and *.css in the browser for hours,
+// while the pages themselves are always fresh, so a deploy could pair a new page
+// with yesterday's scripts. Every script and stylesheet URL therefore carries a
+// hash of its content: the page links name it directly, and an import map gives
+// each module's own imports (./draw.js and the rest) the same treatment. A file
+// that didn't change keeps its URL and stays cached.
+const ASSETS = join(root, 'public', 'assets');
+const version = (file) => createHash('sha256').update(readFileSync(file)).digest('hex').slice(0, 10);
+function moduleVersions() {
+  const map = {};
+  for (const rel of readdirSync(ASSETS, { recursive: true }).map((r) => String(r).split(sep).join('/')).sort()) {
+    if (!rel.endsWith('.js') || rel.startsWith('engine/')) continue;
+    map[`/assets/${rel}`] = `/assets/${rel}?v=${version(join(ASSETS, rel))}`;
+  }
+  return map;
+}
+const IMPORT_MAP = `<script type="importmap">${JSON.stringify({ imports: moduleVersions() })}</script>`;
+const IMPORT_MAP_HASH = `'sha256-${createHash('sha256').update(IMPORT_MAP.slice('<script type="importmap">'.length, -'</script>'.length)).digest('base64')}'`;
+function versionAssets(html) {
+  const out = html.replace(/(href|src)="(\/assets\/[^"?]+\.(?:css|js))"/g, (m, attr, url) => {
+    const file = join(root, 'public', url);
+    return existsSync(file) ? `${attr}="${url}?v=${version(file)}"` : m;
+  });
+  // The map must come before any module loads, so it goes first in <head>.
+  return /<script type="module"/.test(out) ? out.replace(/<head>\n?/, (h) => `${h}${IMPORT_MAP}\n`) : out;
+}
+
 // The header names as Cloudflare's _headers file conventionally spells them.
 const HEADER_CASE = {
   'content-security-policy': 'Content-Security-Policy',
@@ -318,7 +346,7 @@ const HEADER_CASE = {
 };
 
 function securityHeaderLines() {
-  return Object.entries(pageHeaders({ turnstileHost: turnstileKey ? TURNSTILE_HOST : '' })).map(
+  return Object.entries(pageHeaders({ turnstileHost: turnstileKey ? TURNSTILE_HOST : '', hashes: [IMPORT_MAP_HASH] })).map(
     ([name, value]) => `  ${HEADER_CASE[name] || name}: ${value}`,
   );
 }
@@ -356,7 +384,7 @@ function outputs() {
     html = renderMarks(html);
     // Empty optional slots (such as the Turnstile widget) leave blank, indented lines.
     html = html.replace(/[ \t]+$/gm, '').replace(/\n{3,}/g, '\n\n');
-    files.set(page.out, html);
+    files.set(page.out, versionAssets(html));
   }
 
   files.set('robots.txt', `User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
@@ -378,7 +406,7 @@ function outputs() {
       ...['/puzzleanalyzr', '/puzzleanalyzr/*'].flatMap((path) => [
         path,
         '  ! Content-Security-Policy',
-        `  Content-Security-Policy: ${csp({ turnstileHost: turnstileKey ? TURNSTILE_HOST : '', connect: PUZZLE_CONNECT, wasm: true })}`,
+        `  Content-Security-Policy: ${csp({ turnstileHost: turnstileKey ? TURNSTILE_HOST : '', connect: PUZZLE_CONNECT, wasm: true, hashes: [IMPORT_MAP_HASH] })}`,
         '',
       ]),
       // Stockfish's worker gets its own small policy, and its files are kept for 30 days.

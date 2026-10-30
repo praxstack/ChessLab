@@ -5,8 +5,8 @@
 /** The content-security policy. Turnstile, when on, needs its script and frame.
  *  `connect` adds origins the page may fetch from (the puzzle page reads public chess APIs).
  *  `wasm` lets the page run WebAssembly (the puzzle page's Stockfish). */
-export function csp({ turnstileHost = '', connect = [], wasm = false } = {}) {
-  const script = ["'self'"];
+export function csp({ turnstileHost = '', connect = [], wasm = false, hashes = [] } = {}) {
+  const script = ["'self'", ...hashes];
   if (wasm) script.push("'wasm-unsafe-eval'");
   const frame = ["'none'"];
   if (turnstileHost) {
@@ -31,9 +31,9 @@ export function csp({ turnstileHost = '', connect = [], wasm = false } = {}) {
 }
 
 /** Headers every HTML page carries, static or generated. Keys are lower case. */
-export function pageHeaders({ turnstileHost = '', connect = [] } = {}) {
+export function pageHeaders({ turnstileHost = '', connect = [], hashes = [] } = {}) {
   return {
-    'content-security-policy': csp({ turnstileHost, connect }),
+    'content-security-policy': csp({ turnstileHost, connect, hashes }),
     'x-content-type-options': 'nosniff',
     'referrer-policy': 'strict-origin-when-cross-origin',
     'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()',
