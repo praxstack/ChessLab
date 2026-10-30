@@ -359,7 +359,7 @@ function outputs() {
     files.set(page.out, html);
   }
 
-  files.set('robots.txt', `User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
+  files.set('robots.txt', `User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /betapp/\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
   const urls = PAGES.filter((p) => !p.robots)
     .map((p) => `  <url><loc>${siteUrl}${p.path}</loc></url>`)
     .join('\n');
@@ -467,7 +467,8 @@ for (const [rel, content] of files) {
 const generatedPages = new Set([...files.keys()].filter((rel) => rel.endsWith('.html')));
 const builtPages = readdirSync(join(root, 'public'), { recursive: true })
   .map((rel) => String(rel).split(sep).join('/'))
-  .filter((rel) => rel.endsWith('.html') && !rel.startsWith('assets/'));
+  // betapp/ is the browser app, built from web/ by build-betapp.mjs, not a page from pages/.
+  .filter((rel) => rel.endsWith('.html') && !rel.startsWith('assets/') && !rel.startsWith('betapp/'));
 for (const rel of builtPages) {
   if (generatedPages.has(rel)) continue;
   if (check) {

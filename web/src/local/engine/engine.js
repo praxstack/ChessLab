@@ -1,5 +1,6 @@
 import {replay} from '../../../../shared/replay.js';
 import {createLineCollector, candidateCount, parseBestMove, sideToMove} from './uci.js';
+import {publicUrl} from '../../public-url.js';
 
 // Stockfish in a Web Worker behind the engine seam (design.md seam 5):
 // {status(), analyze(input), bestMove(input), stop()}. One worker runs one search at a time;
@@ -7,7 +8,7 @@ import {createLineCollector, candidateCount, parseBestMove, sideToMove} from './
 // if it is searching, the engine is told to stop and the request fails with 499 at once.
 // Waiting requests are never cancelled by newer ones, so a bot move or a background review
 // step is not lost when the learner opens another position.
-export const ENGINE_URL = '/engine/stockfish-19-lite-single.js';
+export const ENGINE_URL = publicUrl('engine/stockfish-19-lite-single.js');
 
 const failure = (message, status) => Object.assign(new Error(message), {status});
 export const canceled = () => failure('Analysis canceled.', 499);

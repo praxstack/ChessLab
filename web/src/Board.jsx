@@ -1,10 +1,11 @@
 import React,{useEffect,useId,useRef,useState} from 'react';
 import {markColors} from '../../shared/board-marks.js';
 import {isDarkSquare} from './square-color.js';
+import {publicUrl} from './public-url.js';
 
 const names = {p:'pawn',n:'knight',b:'bishop',r:'rook',q:'queen',k:'king'};
 export function Piece({type, color, animation=0, offset}) {
-  return <img src={`/pieces/cburnett/${color}${type.toUpperCase()}.svg`} className={`piece ${offset?'moving':''}`} style={{animationDuration:`${animation}ms`,'--move-x':`${offset?.[0]||0}%`,'--move-y':`${offset?.[1]||0}%`}} width="45" height="45" alt="" aria-hidden="true" draggable={false}/>;
+  return <img src={publicUrl(`pieces/cburnett/${color}${type.toUpperCase()}.svg`)} className={`piece ${offset?'moving':''}`} style={{animationDuration:`${animation}ms`,'--move-x':`${offset?.[0]||0}%`,'--move-y':`${offset?.[1]||0}%`}} width="45" height="45" alt="" aria-hidden="true" draggable={false}/>;
 }
 export default function Board({chess, orientation='w', selected, onSquare, onMove, enabled, settings, arrows=[], lastMove, lastMoveDetails, classification, label, editing=false,marks=[],onMark,markTool='move',markColor='Y',positionKey}) {
   const markerId=useId().replace(/[^a-zA-Z0-9_-]/g,''),gesture=useRef(null),[tapFrom,setTapFrom]=useState(null);
