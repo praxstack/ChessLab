@@ -1,5 +1,5 @@
 import React from 'react';
-import {pieceSet, boardThemes, thinkingTimes, settingDefaults} from './settings-state.js';
+import {pieceSet, boardThemes, colorThemes, thinkingTimes, settingDefaults} from './settings-state.js';
 import CoachSettings from './local/coach/CoachSettings.jsx';
 import {publicUrl} from './public-url.js';
 
@@ -15,6 +15,8 @@ export default function Settings({settings,tab,onTab,onChange,engines,local=fals
  const available=id=>engines.some(e=>e.id===id&&e.available);
  return <><div className="settings-tabs" role="tablist" aria-label="Settings sections">{['board','review','engine',...(browserBuild?['coach']:[])].map(id=><button type="button" role="tab" aria-selected={tab===id} key={id} className={tab===id?'active':''} onClick={()=>onTab(id)}>{id==='review'?'Interface':id}</button>)}</div>
  <div className="settings-body">{tab==='coach'&&browserBuild?<CoachSettings onChange={onCoachChange}/>:tab==='board'?<>
+  <h3>Appearance</h3>
+  {select('theme','Theme',colorThemes)}
   <h3>Board</h3>
   <div className="setting-row"><span>Pieces</span><span className="setting-value">{pieceSet.label}</span></div>
   {select('boardTheme','Board',boardThemes)}
@@ -23,7 +25,7 @@ export default function Settings({settings,tab,onTab,onChange,engines,local=fals
   {select('notation','Move notation',[['figurine','Figurine'],['text','Text']])}
   {select('animation','Piece animation',[[0,'None'],[100,'Fast'],[200,'Medium (default)'],[400,'Slow']],true)}
   {toggle('lastMove','Highlight the last move')}{toggle('sound','Move sounds')}{toggle('legalMoves','Show legal moves')}
-  <h3>Credits</h3><ul className="credits" aria-label="Artwork and software credits"><li>Pieces: cburnett by Colin M.L. Burnett · GPLv2+ · <a href={publicUrl('licenses/cburnett/README.txt')} target="_blank" rel="noreferrer">licence</a></li><li>Navigation icons: Lucide · ISC · <a href={publicUrl('licenses/lucide/LICENSE.txt')} target="_blank" rel="noreferrer">licence</a></li><li>Move rules: chessops · GPL-3.0 · <a href={publicUrl('licenses/chessops/LICENSE.txt')} target="_blank" rel="noreferrer">licence</a></li>{local&&<li>Chess engine: Stockfish 19 Lite · GPL-3.0 · <a href={publicUrl('engine/COPYING.txt')} target="_blank" rel="noreferrer">licence</a> · <a href="https://github.com/nmrugg/stockfish.js" target="_blank" rel="noreferrer">source</a></li>}</ul>
+  <h3>Credits</h3><ul className="credits" aria-label="Artwork and software credits"><li>Pieces: cburnett by Colin M.L. Burnett · GPLv2+ · <a href={publicUrl('licenses/cburnett/README.txt')} target="_blank" rel="noreferrer">licence</a></li><li>Type: Vollkorn, Kalam and Courier Prime · SIL Open Font License 1.1 · <a href={publicUrl('fonts/OFL.txt')} target="_blank" rel="noreferrer">licence</a></li><li>Navigation icons: Lucide · ISC · <a href={publicUrl('licenses/lucide/LICENSE.txt')} target="_blank" rel="noreferrer">licence</a></li><li>Move rules: chessops · GPL-3.0 · <a href={publicUrl('licenses/chessops/LICENSE.txt')} target="_blank" rel="noreferrer">licence</a></li>{local&&<li>Chess engine: Stockfish 19 Lite · GPL-3.0 · <a href={publicUrl('engine/COPYING.txt')} target="_blank" rel="noreferrer">licence</a> · <a href="https://github.com/nmrugg/stockfish.js" target="_blank" rel="noreferrer">source</a></li>}</ul>
  </>:tab==='review'?<>
   <h3>Review</h3>{toggle('arrows','Candidate arrows')}{toggle('classification','Move labels on the board')}{toggle('autoplay','Play through suggested lines')}
   {select('pace','Delay between moves',[[500,'0.5 seconds'],[1000,'1 second'],[2000,'2 seconds'],[3000,'3 seconds']],true)}
