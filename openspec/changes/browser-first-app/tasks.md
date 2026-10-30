@@ -35,6 +35,6 @@ Files: `shared/coach/**`, `deploy/coach-worker/**`, `web/src/local/coach/**`, co
 
 ## Package 4: hosting (after package 1)
 
-- [ ] 4.1 `web/public/_headers` CSP and security headers per design.md; web app manifest.
-- [ ] 4.2 `npm run deploy:app`, `docs/deploy-browser-app.md` (Pages project `askthemove-app`, preview first, `app.askthemove.online` untouched).
-- [ ] 4.3 Browser smoke (Playwright): open the built app with no server, import a game, reload, see the game still there. After package 2 lands, extend it: play a bot game, review it, reload.
+- [x] 4.1 `_headers` CSP and security headers per design.md, generated into `web/dist-app/` at build time; web app manifest.
+- [x] 4.2 `npm run deploy:app`, `docs/deploy-browser-app.md` (Pages project `askthemove-app`, preview first, `app.askthemove.online` untouched).
+- [ ] 4.3 Browser smoke (Playwright): open the built app with no server, import a game, reload, see the game still there. After package 2 lands, extend it: play a bot game, review it, reload. First part done: `npm run smoke:app` (`scripts/smoke-browser-app.mjs`); the bot game and review steps are a TODO in that script.
