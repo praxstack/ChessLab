@@ -1,6 +1,8 @@
 // The learner's own pen on the desk board: freehand lines, arrows from square
 // to square, and circled squares, in blue, red or green ink. Freehand lines
-// come in three nibs (pen, pencil, marker) and every drawing in three sizes. Lichess-style:
+// come in three nibs (pen, pencil, marker) and every drawing in three sizes.
+// A ghost move sketches a piece on another square (a see-through copy and a
+// dashed arrow) while the real position stays as it is. Lichess-style:
 // a right-drag draws an arrow and a right-click circles a square at any time;
 // Draw mode lets a finger or the left button draw; a stylus always draws.
 //
@@ -17,7 +19,9 @@ import { arrow, loop, rng, seedFrom, smoothPath } from './ink.js';
 const FILES = 'abcdefgh';
 export const SIZE = 80;
 export const COLORS = ['blue', 'red', 'green'];
-export const TOOLS = ['pen', 'pencil', 'marker', 'arrow', 'circle'];
+export const TOOLS = ['pen', 'pencil', 'marker', 'arrow', 'circle', 'ghost'];
+const PIECE = /^[wb][KQRBNP]$/;
+const PIECES = '/assets/pieces/';
 /** Freehand nibs: smooth ink, grainy pencil, a wide see-through marker. */
 export const NIBS = ['pen', 'pencil', 'marker'];
 /** Line sizes, as a multiple of the medium line. */
@@ -206,13 +210,33 @@ export function sameMark(a, b) {
   if (!a || !b || a.kind !== b.kind || a.color !== b.color) return false;
   if (a.kind === 'arrow') return a.from === b.from && a.to === b.to;
   if (a.kind === 'circle') return a.sq === b.sq;
+  if (a.kind === 'ghost') return a.from === b.from && a.to === b.to;
   return false;
+}
+
+/**
+ * What a ghost drag from one square to another keeps: the piece seen at the
+ * start (a real one, or a ghost already sketched there, so a piece can be
+ * walked on square by square), or null when there's nothing to move.
+ */
+export function ghostFor(from, to, piece) {
+  if (!from || !to || from === to || !PIECE.test(piece || '')) return null;
+  return { kind: 'ghost', from, to, piece };
+}
+
+/** The piece a ghost drag starting on this square picks up: the newest ghost there, else the real piece. */
+export function pieceForGhost(sq, shapes, real) {
+  for (let i = shapes.length - 1; i >= 0; i -= 1) {
+    const s = shapes[i];
+    if (s.kind === 'ghost' && s.to === sq) return s.piece;
+  }
+  return PIECE.test(real || '') ? real : null;
 }
 
 /** The SVG path data for one drawing on a board with this orientation. */
 export function shapePaths(shape, o) {
   const seed = shape.seed ?? seedFrom(JSON.stringify(shape));
-  if (shape.kind === 'arrow') return arrow(arrowPoints(shape.from, shape.to, o), { seed, head: 2.7 });
+  if (shape.kind === 'arrow' || shape.kind === 'ghost') return arrow(arrowPoints(shape.from, shape.to, o), { seed, head: 2.7 });
   if (shape.kind === 'circle') {
     const [cx, cy] = squareCentre(shape.sq, o);
     return [loop(cx, cy, 4.6, 4.3, { seed, turns: 1.12, tilt: -0.15 })];
@@ -237,9 +261,14 @@ export function shapeSVG(shape, o, extra = '') {
   const cls = `dr dr--${shape.kind}${nib} tone--${tone}${filled ? ' dr--fill' : ''}${extra ? ` ${extra}` : ''}`;
   const w = free ? (!filled && shape.width) || 0 : shape.width || markWidth();
   const width = w ? ` stroke-width="${w}"` : '';
+  let ghost = '';
+  if (shape.kind === 'ghost' && PIECE.test(shape.piece || '')) {
+    const [x, y] = squareCentre(shape.to, o);
+    ghost = `<image class="dr-ghost" href="${PIECES}${shape.piece}.svg" x="${x - 4.6}" y="${y - 4.6}" width="9.2" height="9.2"/>`;
+  }
   return `<g class="${cls}"${width}>${shapePaths(shape, o)
     .map((d) => `<path d="${d}"/>`)
-    .join('')}</g>`;
+    .join('')}${ghost}</g>`;
 }
 
 /**
@@ -339,7 +368,7 @@ const GRAIN = `<defs><filter id="dr-grain" x="-8" y="-8" width="96" height="96" 
  * els: { board, svg, mode, show, undo, clear, tools: [buttons with data-tool], colors: [buttons with data-color], sizes: [buttons with data-size], hint }
  * orientation(): the board's orientation now.
  */
-export function createDrawLayer(els, { orientation = () => 'white' } = {}) {
+export function createDrawLayer(els, { orientation = () => 'white', pieceAt = () => null } = {}) {
   const sketch = createSketch();
   let drawMode = false;
   let visible = true;
@@ -383,6 +412,7 @@ export function createDrawLayer(els, { orientation = () => 'white' } = {}) {
   }
 
   function hintText() {
+    if (drawMode && tool === 'ghost') return 'Ghost: drag a piece to try it on another square. The real position stays put. Drag the ghost on to keep going.';
     if (drawMode) return fine.matches ? 'Draw is on: drag on the board to draw. Turn it off to move pieces.' : 'Draw is on: your finger draws. Tap Draw again to move pieces.';
     return fine.matches ? 'Right-drag on the board for an arrow, right-click a square to circle it.' : 'Tap Draw to draw on the board with your finger. A stylus always draws.';
   }
@@ -414,6 +444,11 @@ export function createDrawLayer(els, { orientation = () => 'white' } = {}) {
       return;
     }
     const at = squareAtPoint(live.pts[live.pts.length - 1], o);
+    if (live.kind === 'ghost') {
+      const g = ghostFor(live.from, at, live.piece);
+      preview.innerHTML = g ? shapeSVG({ ...g, color, seed: live.seed, width: markWidth(size) }, o, 'is-live') : '';
+      return;
+    }
     const mark = live.kind === 'circle' ? markFor(at, at) : markFor(live.from, at);
     live.mark = mark;
     preview.innerHTML = mark ? shapeSVG({ ...mark, color, seed: live.seed, width: markWidth(size) }, o, 'is-live') : '';
@@ -452,6 +487,8 @@ export function createDrawLayer(els, { orientation = () => 'white' } = {}) {
     const kind = intent === 'mark' ? 'arrow' : NIBS.includes(tool) ? 'free' : tool;
     const from = squareAtPoint(p, o);
     if (kind !== 'free' && !from) return;
+    const piece = kind === 'ghost' ? pieceForGhost(from, sketch.shapes, pieceAt(from)) : null;
+    if (kind === 'ghost' && !piece) return; // an empty square: nothing to pick up
     if (!visible) visible = true;
     const pen = e.pointerType === 'pen';
     const base = nibWidth(nib, size);
@@ -465,6 +502,7 @@ export function createDrawLayer(els, { orientation = () => 'white' } = {}) {
       base,
       pen,
       from,
+      piece,
       pts: [p],
       widths: pressed ? [pressureWidth(e.pressure, base)] : null,
       width: pressed ? pressureWidth(e.pressure, base) : base,
@@ -532,7 +570,7 @@ export function createDrawLayer(els, { orientation = () => 'white' } = {}) {
       } else {
         if (e.type === 'pointerup') l.pts[1] = point(e, l.box);
         const at = squareAtPoint(l.pts[l.pts.length - 1], o);
-        const mark = l.kind === 'circle' ? markFor(at, at) : markFor(l.from, at);
+        const mark = l.kind === 'ghost' ? ghostFor(l.from, at, l.piece) : l.kind === 'circle' ? markFor(at, at) : markFor(l.from, at);
         if (mark) sketch.toggle({ ...mark, color, seed: l.seed, width: markWidth(size) });
       }
     }

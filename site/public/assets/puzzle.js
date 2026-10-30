@@ -318,7 +318,7 @@ const pens = createDrawLayer(
     colors: [...document.querySelectorAll('#pens [data-color]')],
     sizes: [...document.querySelectorAll('#pens [data-size]')],
   },
-  { orientation: () => play.orientation },
+  { orientation: () => play.orientation, pieceAt: (sq) => play.pieceAt(sq) },
 );
 $('tool-flip').addEventListener('click', () => pens.render());
 $('tool-reset').addEventListener('click', () => pens.clear());

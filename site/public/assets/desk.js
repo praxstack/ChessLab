@@ -581,6 +581,10 @@ export function createDesk(els, { onChange = () => {} } = {}) {
       const moves = game ? game.history({ verbose: true }).map((m) => `${m.from}${m.to}${m.promotion || ''}`) : [];
       return { fen: startFen, moves };
     },
+    /** The piece on a square now, as 'wN' / 'bP', or null. */
+    pieceAt(sq) {
+      return boardMap(game ? game.fen() : startFen).get(sq) || null;
+    },
     get turn() {
       return game ? game.turn() : startFen.split(/\s+/)[1] || 'w';
     },

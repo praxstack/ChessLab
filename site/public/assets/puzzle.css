@@ -386,6 +386,17 @@
   mix-blend-mode: multiply;
 }
 
+/* Ghost move: a dashed pencil arrow and a see-through piece on the square tried. */
+.desk__draw .dr--ghost {
+  stroke-width: 1.1;
+  stroke-dasharray: 1.8 1.4;
+}
+
+.desk__draw .dr-ghost {
+  opacity: 0.5;
+  filter: grayscale(0.6) drop-shadow(0 0 0.4px var(--tone));
+}
+
 /* While the pointer is down: an arrow or circle shows where it will land, lighter. */
 .desk__draw .is-live {
   opacity: 0.55;
@@ -518,6 +529,10 @@
 .pens__icon--pencil {
   stroke-width: 1.4;
   stroke-dasharray: 2.2 1.1;
+}
+
+.pens__icon--ghost {
+  stroke-dasharray: 2 1.6;
 }
 
 .pens__icon--marker {
