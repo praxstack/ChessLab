@@ -9,6 +9,7 @@ import { parsePlacement, pieceHTML } from './board.js';
 import { markSVG, seedFrom } from './ink.js';
 import { createDesk, coordsHTML } from './desk.js';
 import { createDrawLayer } from './draw.js';
+import { replay as replayLine } from './line.js';
 import { createEngine, grade, isCancel, isSaved, toCp } from './engine.js';
 import { DEFAULT_ENGINE, createChoice, engineById, formatBytes, needsWarning } from './engine-catalog.js';
 import { createPicker } from './engine-picker.js';
@@ -318,13 +319,59 @@ const pens = createDrawLayer(
     colors: [...document.querySelectorAll('#pens [data-color]')],
     sizes: [...document.querySelectorAll('#pens [data-size]')],
   },
-  { orientation: () => play.orientation, pieceAt: (sq) => play.pieceAt(sq) },
+  {
+    orientation: () => play.orientation,
+    pieceAt: (sq) => play.pieceAt(sq),
+    boardFen: () => play.fen,
+    onLine: showLine,
+  },
 );
+
+// The numbered line under the pens: its moves as text, Play it, Clear line.
+let shownLine = null;
+let playing = null;
+let playingLine = ''; // the line Play it is showing, so an edit to it stops the show
+const lineKey = (line) => (line ? `${line.fen}|${line.steps.map((s) => s.from + s.to).join(' ')}` : '');
+function showLine(line) {
+  shownLine = line;
+  $('draw-line').hidden = !line;
+  $('draw-line-text').textContent = line ? line.text : '';
+  if (playing && lineKey(line) !== playingLine) stopLine();
+}
+function stopLine() {
+  if (!playing) return;
+  clearTimeout(playing);
+  playing = null;
+  play.peek(null);
+  $('draw-line-play').textContent = 'Play it';
+}
+$('draw-line-play').addEventListener('click', () => {
+  if (playing) return stopLine();
+  if (!shownLine) return;
+  const fens = replayLine(shownLine.fen, shownLine.steps).fens;
+  if (!fens.length) return;
+  $('draw-line-play').textContent = 'Stop';
+  playingLine = lineKey(shownLine);
+  const fast = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let i = 0;
+  const next = () => {
+    if (i < fens.length) {
+      play.peek(fens[i]);
+      i += 1;
+      playing = setTimeout(next, fast ? 450 : 850);
+    } else {
+      playing = setTimeout(stopLine, 900); // a beat on the last position, then back to the board
+    }
+  };
+  playing = setTimeout(next, 150);
+});
+$('draw-line-clear').addEventListener('click', () => pens.clearLine());
 $('tool-flip').addEventListener('click', () => pens.render());
 $('tool-reset').addEventListener('click', () => pens.clear());
 
 // After every move, take-back or new position: the turn note, the links, and the engine button follow the board.
 function boardChanged() {
+  stopLine(); // a real move, take-back or new position ends Play it
   if (!desk.fen) return;
   const fen = play.fen;
   const moved = play.moved;
