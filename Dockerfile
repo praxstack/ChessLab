@@ -10,6 +10,8 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY vite.config.mjs ./
+# vite.config.mjs loads this plugin; it only acts on the browser build.
+COPY scripts/browser-app-hosting.mjs ./scripts/
 COPY shared ./shared
 COPY web ./web
 RUN npm run build

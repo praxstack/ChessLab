@@ -1,4 +1,4 @@
-# The image copies only package files, server/, shared/, web/, docker/ and vite.config.mjs.
+# The image copies only package files, server/, shared/, web/, docker/, vite.config.mjs and scripts/browser-app-hosting.mjs.
 # Keep secrets, local data and large reference material out of the build context.
 **/.DS_Store
 .git
@@ -29,6 +29,7 @@ skills
 skills.local.json
 openspec
 scripts
+!scripts/browser-app-hosting.mjs
 justfile
 AGENTS.md
 CLAUDE.md
