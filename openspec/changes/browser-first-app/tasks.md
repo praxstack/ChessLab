@@ -6,12 +6,12 @@ Each package is one pull request from `main`. Packages 1, 2 and 3 run in paralle
 
 Files: `web/src/local/**` (except `engine/`), `shared/**` moves of rules modules, re-exports in `server/*.mjs`, `web/src/main.jsx` (only `api()`, export, accounts UI), `package.json` scripts.
 
-- [ ] 1.1 Move rules modules to `shared/` with no Node imports: `engine.mjs#replay`, `move-grade`, `tutor-loop`, `review-practice`, `game-review`, `bot-game`, `curriculum` (+ json), `course-progress`, `puzzle-rush`, `puzzle-training` logic, `content`, `endgames`, `openings`, `study-format`, `vision-training`, `game-collections`. `server/` re-exports; `npm test` still passes, apart from the tests that already fail on `main` in a machine without Stockfish, python-chess, tablebases or the extra engines (compare against `main`).
-- [ ] 1.2 Storage interface + `memory-store.js` + `idb-store.js`, with tests on the memory store and a contract test both must pass.
-- [ ] 1.3 Local router: every route in `server/app.mjs` after `requireUser`, plus the public ones, returns the same JSON. Register/login/logout become no-ops; `/api/me` returns the local profile.
-- [ ] 1.4 Switch `api()` to the local router; `VITE_BACKEND=server` keeps the old path. PGN and study export build the file in the browser.
-- [ ] 1.5 Back up / Restore in Settings (one JSON file, versioned) and `navigator.storage.persist()`.
-- [ ] 1.6 Tests: router tests per area using the memory store and a fake engine, ported from `server/app.test.mjs` where they apply.
+- [x] 1.1 Move rules modules to `shared/` with no Node imports: `engine.mjs#replay`, `move-grade`, `tutor-loop`, `review-practice`, `game-review`, `bot-game`, `curriculum` (+ json), `course-progress`, `puzzle-rush`, `puzzle-training` logic, `content`, `endgames`, `openings`, `study-format`, `vision-training`, `game-collections`. `server/` re-exports; `npm test` still passes, apart from the tests that already fail on `main` in a machine without Stockfish, python-chess, tablebases or the extra engines (compare against `main`).
+- [x] 1.2 Storage interface + `memory-store.js` + `idb-store.js`, with tests on the memory store and a contract test both must pass.
+- [x] 1.3 Local router: every route in `server/app.mjs` after `requireUser`, plus the public ones, returns the same JSON. Register/login/logout become no-ops; `/api/me` returns the local profile.
+- [x] 1.4 Switch `api()` to the local router; `VITE_BACKEND=server` keeps the old path. PGN and study export build the file in the browser.
+- [x] 1.5 Back up / Restore in Settings (one JSON file, versioned) and `navigator.storage.persist()`.
+- [x] 1.6 Tests: router tests per area using the memory store and a fake engine, ported from `server/app.test.mjs` where they apply.
 
 ## Package 2: engine in a Web Worker
 
