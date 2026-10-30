@@ -312,8 +312,11 @@ const pens = createDrawLayer(
   {
     board: $('desk-board'),
     svg: $('desk-draw'),
-    mode: $('draw-mode'),
-    show: $('draw-show'),
+    modes: [...document.querySelectorAll('#draw-modes [data-mode]')],
+    kit: $('draw-kit'),
+    fadeBox: $('draw-fade-box'),
+    fade: $('draw-fade'),
+    fadeOut: $('draw-fade-out'),
     undo: $('draw-undo'),
     clear: $('draw-clear'),
     hint: $('draw-hint'),

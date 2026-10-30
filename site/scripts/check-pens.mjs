@@ -86,8 +86,32 @@ async function run(browserType, base) {
   check('the line box is hidden before there is a line', !(await shown('#draw-line')));
   if (await page.locator('#draw-sheet').count()) check('the sticker sheet is hidden until Sticker is picked', !(await shown('#draw-sheet')));
 
-  await page.click('#draw-mode');
-  check('Draw turns on', (await page.getAttribute('#draw-mode', 'aria-pressed')) === 'true');
+  // A fresh page is in Move: pieces only. Nothing draws, whatever presses the board.
+  const mode = (m) => page.click(`#draw-modes [data-mode="${m}"]`);
+  const modeIs = async (m) => (await page.getAttribute(`#draw-modes [data-mode="${m}"]`, 'aria-checked')) === 'true';
+  const shapes = () => page.locator('#desk-draw .desk__drawn > *').count();
+  check('a fresh page opens in Move, with the drawing kit put away', (await modeIs('move')) && !(await shown('#draw-kit')) && !(await shown('#pens [data-tool="pen"]')));
+  check('the helpers are there in Move', await shown('#pens [data-help="reach"]'));
+  const penDrag = (a, b) =>
+    page.evaluate(([p, q]) => {
+      const el = document.querySelector('#desk-board');
+      const ev = (type, [x, y], buttons) => el.dispatchEvent(new PointerEvent(type, { bubbles: true, cancelable: true, pointerId: 77, pointerType: 'pen', button: type === 'pointermove' ? -1 : 0, buttons, clientX: x, clientY: y, pressure: 0.5 }));
+      ev('pointerdown', p, 1);
+      ev('pointermove', q, 1);
+      ev('pointerup', q, 0);
+    }, [at(a), at(b)]);
+  const rightDrag = async (a, b) => {
+    await page.mouse.move(...at(a));
+    await page.mouse.down({ button: 'right' });
+    await page.mouse.move(...at(b), { steps: 6 });
+    await page.mouse.up({ button: 'right' });
+  };
+  await rightDrag('b1', 'c3');
+  await penDrag('a7', 'a5');
+  check('Move: a right-drag and a stylus draw nothing', (await shapes()) === 0);
+
+  await mode('draw');
+  check('Draw turns on and shows the kit', (await modeIs('draw')) && (await shown('#pens [data-tool="pen"]')));
 
   // Freehand nibs and sizes, including a dead-straight pencil line.
   for (const [nib, sz] of [['pen', 'thin'], ['pencil', 'medium'], ['marker', 'thick']]) {
@@ -138,9 +162,9 @@ async function run(browserType, base) {
   await page.click('#draw-undo');
   check('Undo brings the line back', (await count('.dr--step')) === 2);
   // A line from another position replaces this one; undo brings this one back, still playable.
-  await page.click('#draw-mode');
+  await mode('move');
   await drag('d2', 'd4'); // a real move on the board
-  await page.click('#draw-mode');
+  await mode('draw');
   await drag('g8', 'f6');
   check('a line from a new position replaces the old one', (await page.textContent('#draw-line-text')) === '3… Nf6', `${await page.textContent('#draw-line-text')} / ${await hint()} / ${await page.textContent('#desk-turn')}`);
   await page.click('#draw-undo');
@@ -214,11 +238,46 @@ async function run(browserType, base) {
     }
   }
 
+  // Faint: the drawings stay, faint, and nothing new draws; Move hides them; Draw brings them back whole.
+  const inked = await shapes();
+  await mode('faint');
+  const drawn = page.locator('#desk-draw .desk__drawn');
+  check('Faint shows the drawings at 50% and puts the kit away', (await drawn.getAttribute('opacity')) === '0.5' && (await drawn.getAttribute('display')) === null && !(await shown('#draw-kit')) && (await shown('#draw-fade-box')));
+  await page.locator('#draw-fade').fill('30');
+  check('the How faint slider sets the level', (await drawn.getAttribute('opacity')) === '0.3' && (await page.textContent('#draw-fade-out')) === '30%');
+  const beforeFaint = await pieces();
+  await drag('a2', 'a3');
+  await rightDrag('h2', 'h4');
+  await penDrag('h7', 'h5');
+  check('Faint: a drag moves the piece and nothing draws', (await shapes()) === inked && (await pieces()) !== beforeFaint);
+  await page.click('#tool-undo');
+  await mode('move');
+  check('Move hides the drawings without losing them', (await drawn.getAttribute('display')) === 'none' && (await shapes()) === inked && !(await shown('#draw-fade-box')));
+  await page.click('#pens [data-help="reach"]');
+  await drag('f3', 'f3');
+  check('a helper still answers in Move', (await page.locator('#desk-draw .desk__aid .aid-dot').count()) > 0);
+  await drag('a3', 'a3');
+  await mode('draw');
+  check('Draw shows them at full strength again', (await drawn.getAttribute('opacity')) === null && (await drawn.getAttribute('display')) === null && (await shapes()) === inked);
+  await page.keyboard.press('Escape');
+  const beforeKeys = await pieces();
+  await page.focus('#draw-modes [data-mode="draw"]');
+  await page.keyboard.press('ArrowLeft');
+  check('arrow keys move between the modes, and leave the moves alone', (await modeIs('faint')) && (await pieces()) === beforeKeys, `${await pieces()}`);
+  await mode('draw');
+
   // Flipping keeps every drawing.
   const before = await count('g');
   await page.click('#tool-flip');
   check('flipping the board keeps the drawings', (await count('g')) === before);
   await page.click('#tool-flip');
+
+  // Coming back: Faint and its level are remembered; a page never opens in Draw.
+  await mode('faint');
+  await mode('draw');
+  await page.reload({ waitUntil: 'load' });
+  await page.waitForSelector('#desk-board img.pc');
+  check('a reload never opens in Draw, and keeps the last other mode and level', (await modeIs('faint')) && (await page.locator('#draw-fade').inputValue()) === '30');
 
   // A phone: the pens wrap and the page never scrolls sideways.
   await page.setViewportSize({ width: 375, height: 900 });
