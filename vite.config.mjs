@@ -1,2 +1,3 @@
 import { defineConfig } from 'vite';
-export default defineConfig({ root: 'web', build: { outDir: 'dist', emptyOutDir: true } });
+import { browserAppHosting } from './scripts/browser-app-hosting.mjs';
+export default defineConfig({ root: 'web', build: { outDir: 'dist', emptyOutDir: true }, plugins: [browserAppHosting()] });
