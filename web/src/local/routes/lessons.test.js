@@ -35,3 +35,11 @@ test('the course curriculum protects answers and completes after every challenge
   assert.deepEqual((await f.get('/api/me')).body.progress.lessons, ['rook-lines']);
   assert.deepEqual((await f.get('/api/lesson-progress')).body.sessions.map(s => s.lessonId), ['rook-lines']);
 });
+
+test('two starts of the same course lesson at once share one session', async () => {
+  const f = fixture(), route = '/api/course-lessons/rook-lines/start';
+  const [a, b] = await Promise.all([f.post(route, {}), f.post(route, {})]);
+  assert.equal(a.body.session.id, b.body.session.id);
+  const after = await f.post('/api/course-lessons/rook-lines/action', {id: a.body.session.id, revision: 0, action: 'move', move: 'a1a2'});
+  assert.equal(after.status, 200, 'the session either caller holds is the saved one');
+});

@@ -18,8 +18,12 @@ export default function lessonRoutes(ctx) {
     ['GET', '/api/curriculum', () => curriculumCatalog()],
     ['GET', '/api/lesson-progress', () => list()],
     ['POST', '/api/course-lessons/:id/start', async ({params, body}) => {
-      const {session, fresh} = startLesson(params.id, await store.get('lesson_sessions', params.id), body, now());
-      if (fresh) await store.put('lesson_sessions', session);
+      // Read and save in one step, so two starts at once resume one session instead of making two.
+      const session = await atomic(async () => {
+        const {session, fresh} = startLesson(params.id, await store.get('lesson_sessions', params.id), body, now());
+        if (fresh) await store.put('lesson_sessions', session);
+        return session;
+      });
       return respond(201, await response(session));
     }],
     ['POST', '/api/course-lessons/:id/action', async ({params, body}) => {
