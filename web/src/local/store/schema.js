@@ -1,3 +1,5 @@
+import {replay} from '../../chess-state.js';
+
 // Collections replace the server's SQLite tables one to one (design.md seam 4). users, sessions and
 // coach_daily are not needed: the browser holds one local profile and the coach keeps its own limits.
 // key names the field each value is stored under; indexes name fields that list() can filter by quickly.
@@ -46,6 +48,9 @@ function checkGame(game) {
   if (!plain(game) || typeof game.id !== 'string' || !game.id) refuse('A game in this backup has no id.');
   if (!Array.isArray(game.moves) || !game.moves.every(move => typeof move === 'string')) refuse(`The backup's game ${game.id} has damaged moves.`);
   if (!Number.isInteger(game.revision) || game.revision < 0) refuse(`The backup's game ${game.id} has no valid revision.`);
+  // Play the moves through from the game's start, as the board will when it opens the game.
+  try { replay(game.moves, game.initialFen || null, game.variant); }
+  catch { refuse(`The backup's game ${game.id} has moves that can't be played.`); }
 }
 
 // Validates a backup before anything is replaced, so a bad file leaves the current data untouched.
