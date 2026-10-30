@@ -343,6 +343,11 @@ export function createSketch() {
       commit([]);
       return true;
     },
+    /** Add a drawing in place of the ones it replaces, as one undo step. */
+    put(shape, replaces) {
+      made += 1;
+      commit([...shapes.filter((s) => !replaces(s)), shape]);
+    },
     /** Keep only the drawings that pass, as one undo step. */
     keep(test) {
       const next = shapes.filter(test);
@@ -414,7 +419,6 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
   let frame = 0;
   let menuShutUntil = 0;
   let note = ''; // a one-off message in place of the hint, e.g. why a line step didn't fit
-  let lineFen = ''; // the position the numbered line starts from
 
   const done = document.createElementNS(SVGNS, 'g');
   done.setAttribute('class', 'desk__drawn');
@@ -432,32 +436,32 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
     done.innerHTML = ordered.map((s) => shapeSVG(s, o, '', badges)).join('');
     syncButtons();
     const steps = lineSteps(sketch.shapes);
-    onLine(steps.length ? { fen: lineFen, steps, text: lineText(lineFen, steps) } : null);
+    const start = steps.length ? steps[0].start : '';
+    onLine(steps.length ? { fen: start, steps, text: lineText(start, steps) } : null);
   }
 
   /** Add the next step of the line, or say why it doesn't fit. */
   function addStep(from, to, seed) {
     if (!from || !to || from === to) return;
     let steps = lineSteps(sketch.shapes);
+    // Every step carries the position its line starts from, so undo brings an old line back whole.
+    const fen = boardFen();
+    const fresh = !steps.length || steps[0].start !== fen;
     const last = steps[steps.length - 1];
-    if (last && last.from === from && last.to === to) {
+    if (!fresh && last.from === from && last.to === to) {
       sketch.keep((s) => s !== last); // the last arrow again takes it back
       return;
     }
-    const fen = boardFen();
-    if (!steps.length || fen !== lineFen) {
-      // A new line from the position on the board now; an old one from another position goes.
-      if (steps.length) sketch.keep((s) => s.kind !== 'step');
-      lineFen = fen;
-      steps = [];
-    }
-    const step = nextStep(lineFen, steps, from, to);
+    if (fresh) steps = []; // a new line from the board as it is now; an old one from another position goes
+    const step = nextStep(fen, steps, from, to);
     if (step.error) {
       note = step.error;
       return;
     }
-    const starter = lineFen.split(/\s+/)[1] === 'b' ? 'b' : 'w';
-    sketch.add({ kind: 'step', ...step, color: step.side === starter ? 'green' : 'red', seed, width: markWidth(size) });
+    const starter = fen.split(/\s+/)[1] === 'b' ? 'b' : 'w';
+    const shape = { kind: 'step', ...step, start: fen, color: step.side === starter ? 'green' : 'red', seed, width: markWidth(size) };
+    if (fresh) sketch.put(shape, (s) => s.kind === 'step'); // replacing the old line is one undo step
+    else sketch.add(shape);
   }
 
   function syncButtons() {
@@ -727,7 +731,6 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
     reset() {
       if (live) onUp({ pointerId: live.id, stopImmediatePropagation() {}, cancelable: false }, true);
       preview.innerHTML = '';
-      lineFen = '';
       note = '';
       sketch.reset();
       render();

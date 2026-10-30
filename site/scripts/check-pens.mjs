@@ -125,11 +125,26 @@ async function run(browserType, base) {
   check('Play it shows the line on the board', (await pieces()) !== start);
   await page.waitForFunction(() => document.querySelector('#draw-line-play').textContent === 'Play it', null, { timeout: 8000 });
   check('Play it puts the board back', (await pieces()) === start);
+  // Editing the line while it plays stops the show and puts the board back.
+  await page.click('#draw-line-play');
+  await page.waitForTimeout(300);
+  await drag('g8', 'f6'); // the last arrow again takes it back
+  await page.waitForTimeout(100);
+  check('editing the line stops Play it', (await page.textContent('#draw-line-play')) === 'Play it' && (await pieces()) === start);
+  await drag('g8', 'f6');
   await page.click('#draw-line-clear');
   check('Clear line takes the line off and hides the box', (await count('.dr--step')) === 0 && !(await shown('#draw-line')));
   check('Clear line leaves the ghosts', (await count('.dr--ghost')) === 2);
   await page.click('#draw-undo');
   check('Undo brings the line back', (await count('.dr--step')) === 2);
+  // A line from another position replaces this one; undo brings this one back, still playable.
+  await page.click('#draw-mode');
+  await drag('d2', 'd4'); // a real move on the board
+  await page.click('#draw-mode');
+  await drag('g8', 'f6');
+  check('a line from a new position replaces the old one', (await page.textContent('#draw-line-text')) === '3… Nf6', `${await page.textContent('#draw-line-text')} / ${await hint()} / ${await page.textContent('#desk-turn')}`);
+  await page.click('#draw-undo');
+  check('undo brings the old line back with its own start', (await page.textContent('#draw-line-text')) === '3. Bc4 Nf6');
 
   // Stickers and tape, when this build has them.
   if (await page.locator('#pens [data-tool="sticker"]').count()) {

@@ -70,3 +70,20 @@ test('line: steps are drawn as numbered arrows and kept in order', () => {
   assert.ok(sk.undo());
   assert.equal(lineSteps(sk.shapes).length, 2, 'clearing the line is one undo step');
 });
+
+test('line: a new line replaces the old one in one undo step, and undo brings back its own start', () => {
+  const sk = createSketch();
+  const startA = ITALIAN;
+  const a = nextStep(startA, [], 'f1', 'c4');
+  sk.add({ kind: 'step', ...a, start: startA, color: 'green' });
+  const startB = 'r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3';
+  const b = nextStep(startB, [], 'g8', 'f6');
+  sk.put({ kind: 'step', ...b, start: startB, color: 'green' }, (s) => s.kind === 'step');
+  assert.deepEqual(lineSteps(sk.shapes).map((s) => s.san), ['Nf6']);
+  assert.ok(sk.undo());
+  const back = lineSteps(sk.shapes);
+  assert.deepEqual(back.map((s) => s.san), ['Bc4']);
+  assert.equal(back[0].start, startA, 'the old line keeps the position it started from');
+  assert.equal(lineText(back[0].start, back), '3. Bc4');
+  assert.equal(replay(back[0].start, back).ok, 1);
+});

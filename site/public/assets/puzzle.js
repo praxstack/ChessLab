@@ -330,11 +330,13 @@ const pens = createDrawLayer(
 // The numbered line under the pens: its moves as text, Play it, Clear line.
 let shownLine = null;
 let playing = null;
+let playingLine = ''; // the line Play it is showing, so an edit to it stops the show
+const lineKey = (line) => (line ? `${line.fen}|${line.steps.map((s) => s.from + s.to).join(' ')}` : '');
 function showLine(line) {
   shownLine = line;
   $('draw-line').hidden = !line;
   $('draw-line-text').textContent = line ? line.text : '';
-  if (!line) stopLine();
+  if (playing && lineKey(line) !== playingLine) stopLine();
 }
 function stopLine() {
   if (!playing) return;
@@ -349,6 +351,7 @@ $('draw-line-play').addEventListener('click', () => {
   const fens = replayLine(shownLine.fen, shownLine.steps).fens;
   if (!fens.length) return;
   $('draw-line-play').textContent = 'Stop';
+  playingLine = lineKey(shownLine);
   const fast = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let i = 0;
   const next = () => {
