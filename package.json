@@ -14,7 +14,8 @@
     "build:app": "VITE_BACKEND=local vite build --outDir dist-app",
     "dev:app": "VITE_BACKEND=local vite",
     "preview:app": "vite preview --outDir dist-app",
-    "test": "node --test --test-concurrency=1 server/*.test.mjs web/src/*.test.js web/src/local/*.test.js web/src/local/*/*.test.js",
+    "smoke:app": "npm run build:app && node scripts/smoke-browser-app.mjs",
+    "test": "node --test --test-concurrency=1 server/*.test.mjs web/src/*.test.js web/src/local/*.test.js web/src/local/*/*.test.js scripts/*.test.mjs",
     "build:sites": "npm run build && node scripts/build_sites.mjs"
   },
   "dependencies": {
