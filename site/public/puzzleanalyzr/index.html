@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script type="importmap">{"imports":{"/assets/app.js":"/assets/app.js?v=90fa02be76","/assets/board.js":"/assets/board.js?v=1f62d4f452","/assets/daily-clock.js":"/assets/daily-clock.js?v=a54f71532e","/assets/demo-data.js":"/assets/demo-data.js?v=3eb10a8ec8","/assets/desk.js":"/assets/desk.js?v=f3ebb85f14","/assets/draw.js":"/assets/draw.js?v=b8152de6b9","/assets/engine-catalog.js":"/assets/engine-catalog.js?v=80b1617001","/assets/engine-parts.js":"/assets/engine-parts.js?v=a069783ea3","/assets/engine-picker.js":"/assets/engine-picker.js?v=4a37829336","/assets/engine.js":"/assets/engine.js?v=4bcc4cf7cb","/assets/helpers.js":"/assets/helpers.js?v=28055a8597","/assets/ink.js":"/assets/ink.js?v=215171e886","/assets/lc0.js":"/assets/lc0.js?v=7a4ebf132a","/assets/line.js":"/assets/line.js?v=ef28aaa10c","/assets/puzzle.js":"/assets/puzzle.js?v=4b4ec0e23d","/assets/rules.js":"/assets/rules.js?v=01cddd3ef6","/assets/searchless.js":"/assets/searchless.js?v=5602d641ee","/assets/sound.js":"/assets/sound.js?v=8759e04c61","/assets/vendor/chess.js":"/assets/vendor/chess.js?v=0fd3d85b71"}}</script>
+<script type="importmap">{"imports":{"/assets/app.js":"/assets/app.js?v=90fa02be76","/assets/board.js":"/assets/board.js?v=1f62d4f452","/assets/daily-clock.js":"/assets/daily-clock.js?v=a54f71532e","/assets/demo-data.js":"/assets/demo-data.js?v=3eb10a8ec8","/assets/desk.js":"/assets/desk.js?v=f3ebb85f14","/assets/draw.js":"/assets/draw.js?v=76457daa84","/assets/engine-catalog.js":"/assets/engine-catalog.js?v=80b1617001","/assets/engine-parts.js":"/assets/engine-parts.js?v=a069783ea3","/assets/engine-picker.js":"/assets/engine-picker.js?v=4a37829336","/assets/engine.js":"/assets/engine.js?v=4bcc4cf7cb","/assets/helpers.js":"/assets/helpers.js?v=28055a8597","/assets/ink.js":"/assets/ink.js?v=215171e886","/assets/lc0.js":"/assets/lc0.js?v=7a4ebf132a","/assets/line.js":"/assets/line.js?v=ef28aaa10c","/assets/puzzle.js":"/assets/puzzle.js?v=74fceed096","/assets/rules.js":"/assets/rules.js?v=01cddd3ef6","/assets/searchless.js":"/assets/searchless.js?v=5602d641ee","/assets/sound.js":"/assets/sound.js?v=8759e04c61","/assets/vendor/chess.js":"/assets/vendor/chess.js?v=0fd3d85b71"}}</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Puzzle analyzr · AskTheMove</title>
@@ -37,7 +37,7 @@
   https://cloudflareinsights.com to connect-src in scripts/build.mjs (CSP), and rebuild.
   No other trackers, no cookies.
 -->
-<link rel="stylesheet" href="/assets/puzzle.css?v=fc9a09a67e">
+<link rel="stylesheet" href="/assets/puzzle.css?v=e63e398fcc">
 </head>
 <body class="page-puzzles">
 <a class="skip" href="#main">Skip to content</a>
@@ -82,7 +82,13 @@
         <button class="btn btn--plain btn--small desk__sound" id="tool-sound" type="button" aria-pressed="true">Sound on</button>
       </div>
       <div class="pens" id="pens" role="group" aria-label="Draw on the board">
-        <button class="btn btn--plain btn--small pens__mode" id="draw-mode" type="button" aria-pressed="false" aria-describedby="draw-hint"><svg class="pens__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17 C3.5 15.67 5 9.33 6 9 C7 8.67 7.83 15.33 9 15 C10.17 14.67 11.83 7.17 13 7 C14.17 6.83 14.83 14.17 16 14 C17.17 13.83 19.33 7.33 20 6"/></svg>Draw</button>
+        <div class="pens__modes" id="draw-modes" role="radiogroup" aria-label="Board mode" aria-describedby="draw-hint">
+          <button class="pens__modebtn" type="button" role="radio" data-mode="move" aria-checked="true" title="Move pieces only. Drawings hidden; nothing can draw.">Move</button>
+          <button class="pens__modebtn" type="button" role="radio" data-mode="faint" aria-checked="false" title="Move pieces only. Drawings stay, faint; nothing can draw.">Faint</button>
+          <button class="pens__modebtn" type="button" role="radio" data-mode="draw" aria-checked="false" title="Draw on the board."><svg class="pens__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17 C3.5 15.67 5 9.33 6 9 C7 8.67 7.83 15.33 9 15 C10.17 14.67 11.83 7.17 13 7 C14.17 6.83 14.83 14.17 16 14 C17.17 13.83 19.33 7.33 20 6"/></svg>Draw</button>
+        </div>
+        <label class="pens__fade" id="draw-fade-box" hidden><span class="pens__fade-label">How faint</span><input type="range" id="draw-fade" min="10" max="90" step="10" value="50" aria-describedby="draw-fade-out"><output class="pens__fade-out" id="draw-fade-out" for="draw-fade">50%</output></label>
+        <div class="pens__kit" id="draw-kit" hidden>
         <div class="pens__set pens__tools" role="group" aria-label="Drawing tool">
           <button class="pens__pick pens__pick--named" type="button" data-tool="pen" aria-pressed="true" aria-label="Pen: smooth ink, freehand" title="Pen"><svg class="pens__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17 C3.5 15.67 5 9.33 6 9 C7 8.67 7.83 15.33 9 15 C10.17 14.67 11.83 7.17 13 7 C14.17 6.83 14.83 14.17 16 14 C17.17 13.83 19.33 7.33 20 6"/></svg><span class="pens__name" aria-hidden="true">Pen</span></button>
           <button class="pens__pick pens__pick--named" type="button" data-tool="pencil" aria-pressed="false" aria-label="Pencil: soft grainy line, freehand" title="Pencil"><svg class="pens__icon pens__icon--pencil" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17 C3.5 15.67 5 9.33 6 9 C7 8.67 7.83 15.33 9 15 C10.17 14.67 11.83 7.17 13 7 C14.17 6.83 14.83 14.17 16 14 C17.17 13.83 19.33 7.33 20 6"/></svg><span class="pens__name" aria-hidden="true">Pencil</span></button>
@@ -119,15 +125,15 @@
           <button class="pens__pick pens__ink tone--red" type="button" data-color="red" aria-pressed="false" title="Theirs: their threats, in red with a double head"><span class="pens__dot" aria-hidden="true"></span><span class="pens__role">Theirs</span></button>
           <button class="pens__pick pens__ink tone--blue" type="button" data-color="blue" aria-pressed="false" title="Idea: a move you're testing, in blue"><span class="pens__dot" aria-hidden="true"></span><span class="pens__role">Idea</span></button>
         </div>
+        <div class="pens__keep">
+          <button class="btn btn--plain btn--small pens__act" id="draw-undo" type="button" aria-label="Undo the last drawing" disabled>Undo</button>
+          <button class="btn btn--plain btn--small pens__act" id="draw-clear" type="button" aria-label="Clear all drawings" disabled>Clear</button>
+        </div>
+        </div>
         <div class="pens__set pens__helps" role="group" aria-label="Helpers: answer one question when you tap">
           <button class="pens__help" type="button" data-help="reach" aria-pressed="false" title="Reach: tap a piece to see where it can go">Reach</button>
           <button class="pens__help" type="button" data-help="loose" aria-pressed="false" title="Loose: your attacked, under-defended pieces (tap again for theirs)">Loose</button>
           <button class="pens__help" type="button" data-help="guard" aria-pressed="false" title="Guard count: tap a square to count attackers and defenders">Guard count</button>
-        </div>
-        <div class="pens__keep">
-          <button class="btn btn--plain btn--small pens__act" id="draw-undo" type="button" aria-label="Undo the last drawing" disabled>Undo</button>
-          <button class="btn btn--plain btn--small pens__act" id="draw-clear" type="button" aria-label="Clear all drawings" disabled>Clear</button>
-          <button class="btn btn--plain btn--small pens__show" id="draw-show" type="button" aria-pressed="true">Show drawings</button>
         </div>
         <p class="pens__hint" id="draw-hint" aria-live="polite"></p>
         <div class="pens__line" id="draw-line" hidden>
@@ -440,6 +446,6 @@
   </div>
 </footer>
 <script type="module" src="/assets/app.js?v=90fa02be76"></script>
-<script type="module" src="/assets/puzzle.js?v=4b4ec0e23d"></script>
+<script type="module" src="/assets/puzzle.js?v=74fceed096"></script>
 </body>
 </html>

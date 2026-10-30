@@ -10,6 +10,8 @@ import {
   ghostFor,
   pieceForGhost,
   intentFor,
+  inkFor,
+  MODES,
   jiggle,
   markFor,
   markWidth,
@@ -73,16 +75,27 @@ test('draw: a drag between squares is an arrow, on one square a circle', () => {
   assert.ok(!sameMark({ kind: 'circle', sq: 'a1', color: 'red' }, { kind: 'circle', sq: 'a2', color: 'red' }));
 });
 
-test('draw: who draws — right button and stylus always, finger and left button only in Draw mode', () => {
-  assert.equal(intentFor({ pointerType: 'mouse', button: 2 }, false), 'mark');
-  assert.equal(intentFor({ pointerType: 'mouse', button: 0 }, false), null);
+test('draw: who draws — only in Draw mode, and then right button and stylus too', () => {
+  // Move and Faint: nothing draws, not a stylus, not a right-drag.
+  for (const pointerType of ['mouse', 'touch', 'pen']) {
+    for (const button of [0, 1, 2, 5]) assert.equal(intentFor({ pointerType, button }, false), null, `${pointerType} ${button}`);
+  }
+  assert.equal(intentFor({ pointerType: 'mouse', button: 2 }, true), 'mark');
   assert.equal(intentFor({ pointerType: 'mouse', button: 0 }, true), 'tool');
   assert.equal(intentFor({ pointerType: 'mouse', button: 1 }, true), null);
-  assert.equal(intentFor({ pointerType: 'touch', button: 0 }, false), null);
   assert.equal(intentFor({ pointerType: 'touch', button: 0 }, true), 'tool');
-  assert.equal(intentFor({ pointerType: 'pen', button: 0 }, false), 'tool');
-  assert.equal(intentFor({ pointerType: 'pen', button: 2 }, false), 'mark');
+  assert.equal(intentFor({ pointerType: 'pen', button: 0 }, true), 'tool');
+  assert.equal(intentFor({ pointerType: 'pen', button: 2 }, true), 'mark');
   assert.equal(intentFor({ pointerType: 'pen', button: 5 }, true), null);
+});
+
+test('draw: Move hides the drawings, Faint shows them at the chosen level, Draw at full', () => {
+  assert.deepEqual(MODES, ['move', 'faint', 'draw']);
+  assert.deepEqual(inkFor('move', 50), { hidden: true, opacity: 1 });
+  assert.deepEqual(inkFor('faint'), { hidden: false, opacity: 0.5 });
+  assert.deepEqual(inkFor('faint', 30), { hidden: false, opacity: 0.3 });
+  assert.deepEqual(inkFor('faint', 55), { hidden: false, opacity: 0.5 }, 'an odd level falls back to 50%');
+  assert.deepEqual(inkFor('draw', 30), { hidden: false, opacity: 1 });
 });
 
 test('draw: an arrow is never ruler-straight, and the same seed draws it the same', () => {

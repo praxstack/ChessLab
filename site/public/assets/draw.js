@@ -488,16 +488,32 @@ export function createSketch() {
   };
 }
 
-/** What a pointer pressed on the board should do: 'mark' (right button), 'tool', or null (leave it to the pieces). */
+/**
+ * What a pointer pressed on the board should do: 'mark' (right button), 'tool',
+ * or null (leave it to the pieces). Outside Draw nothing draws, not even a
+ * stylus or a right-drag, so moving pieces never leaves a stray mark.
+ */
 export function intentFor({ pointerType, button }, drawMode) {
+  if (!drawMode) return null;
   if (pointerType === 'pen') {
     if (button === 2) return 'mark'; // the barrel button
     if (button === 5) return null; // the eraser end: not a drawing tool here
     return 'tool';
   }
   if (button === 2 && pointerType === 'mouse') return 'mark';
-  if (drawMode && button === 0) return 'tool';
+  if (button === 0) return 'tool';
   return null;
+}
+
+/** The board's three modes: Move (pieces only, drawings hidden), Faint (pieces only, drawings shown faint), Draw. */
+export const MODES = ['move', 'faint', 'draw'];
+export const FADES = [10, 20, 30, 40, 50, 60, 70, 80, 90];
+
+/** How the finished drawings show in a mode: hidden, at the faint level (percent), or full. */
+export function inkFor(mode, fade = 50) {
+  if (mode === 'move') return { hidden: true, opacity: 1 };
+  if (mode === 'faint') return { hidden: false, opacity: (FADES.includes(Number(fade)) ? Number(fade) : 50) / 100 };
+  return { hidden: false, opacity: 1 };
 }
 
 /* ------------------------------------------------------------------ Page */
@@ -534,8 +550,9 @@ const GRAIN = `<defs><filter id="dr-grain" x="-8" y="-8" width="96" height="96" 
  */
 export function createDrawLayer(els, { orientation = () => 'white', pieceAt = () => null, boardFen = () => '', onLine = () => {} } = {}) {
   const sketch = createSketch();
-  let drawMode = false;
-  let visible = true;
+  // A page opens in Move or Faint, never Draw, so the first touch can't leave a mark.
+  let mode = remembered('mode', ['move', 'faint'], 'move');
+  let fade = Number(remembered('fade', FADES.map(String), '50'));
   let tool = remembered('tool', TOOLS, 'pen');
   let color = remembered('color', COLORS, 'green');
   let size = remembered('size', Object.keys(SIZES), 'medium');
@@ -647,9 +664,22 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
   }
 
   function syncButtons() {
-    els.mode.setAttribute('aria-pressed', String(drawMode));
-    els.show.setAttribute('aria-pressed', String(visible));
-    els.svg.classList.toggle('is-hidden', !visible);
+    const drawMode = mode === 'draw';
+    for (const b of els.modes || []) {
+      const on = b.dataset.mode === mode;
+      b.setAttribute('aria-checked', String(on));
+      b.tabIndex = on ? 0 : -1;
+    }
+    const ink = inkFor(mode, fade);
+    // Only the finished drawings fade or hide; a helper's answer and the stroke being drawn stay clear.
+    if (ink.hidden) done.setAttribute('display', 'none');
+    else done.removeAttribute('display');
+    if (ink.opacity < 1) done.setAttribute('opacity', String(ink.opacity));
+    else done.removeAttribute('opacity');
+    if (els.kit) els.kit.hidden = !drawMode;
+    if (els.fadeBox) els.fadeBox.hidden = mode !== 'faint';
+    if (els.fade && Number(els.fade.value) !== fade) els.fade.value = String(fade);
+    if (els.fadeOut) els.fadeOut.textContent = `${fade}%`;
     els.board.classList.toggle('is-drawing', drawMode);
     els.undo.disabled = !sketch.canUndo;
     els.clear.disabled = !sketch.shapes.length;
@@ -669,12 +699,14 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
   }
 
   function hintText() {
+    const drawMode = mode === 'draw';
+    if (mode === 'move') return sketch.shapes.length ? 'Move: drag pieces. Your drawings are hidden and nothing draws. Faint shows them faintly.' : 'Move: drag pieces. Nothing draws here. Pick Draw to draw on the board.';
+    if (mode === 'faint') return 'Faint: drag pieces with your drawings shown faintly. Nothing new draws. Pick Draw to add more.';
     if (drawMode && tool === 'sticker') return 'Sticker: pick one from the sheet, then tap a square. Tap it again to peel it off.';
     if (drawMode && tool === 'tape') return 'Tape: drag along a rank, file or diagonal. It snaps to the line.';
     if (drawMode && tool === 'line') return 'Line: drag the moves you think come next, both sides, in order. Each arrow gets its number. Then tap Play it.';
     if (drawMode && tool === 'ghost') return 'Ghost: drag a piece to try it on another square. The real position stays put. Drag the ghost on to keep going.';
-    if (drawMode) return fine.matches ? 'Draw is on: drag on the board to draw. Turn it off to move pieces.' : 'Draw is on: your finger draws. Tap Draw again to move pieces.';
-    return fine.matches ? 'Right-drag on the board for an arrow, right-click a square to circle it.' : 'Tap Draw to draw on the board with your finger. A stylus always draws.';
+    return fine.matches ? 'Draw: drag on the board to draw; right-drag for an arrow. Pick Move to move pieces.' : 'Draw: your finger or stylus draws. Pick Move to move pieces.';
   }
 
   // Where the board is on screen, turn included; measured once per stroke.
@@ -756,7 +788,7 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
       return;
     }
     if (aid) dropAid(); // a helper's answer fades at the next touch
-    const intent = intentFor(e, drawMode);
+    const intent = intentFor(e, mode === 'draw');
     if (!intent) return;
     stop(e);
     const o = orientation();
@@ -769,7 +801,6 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
     if (kind !== 'free' && !from) return;
     const piece = kind === 'ghost' ? pieceForGhost(from, sketch.shapes, pieceAt(from)) : null;
     if (kind === 'ghost' && !piece) return; // an empty square: nothing to pick up
-    if (!visible) visible = true;
     const pen = e.pointerType === 'pen';
     const base = nibWidth(nib, size);
     // A marker lays down an even band; pen and pencil follow stylus pressure.
@@ -886,13 +917,32 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
     if (live) onUp({ pointerId: live.id, stopImmediatePropagation() {}, cancelable: false }, true);
   });
 
-  els.mode.addEventListener('click', () => {
-    drawMode = !drawMode;
-    if (drawMode) visible = true;
+  function setMode(next) {
+    if (!MODES.includes(next) || next === mode) return;
+    if (live) onUp({ pointerId: live.id, stopImmediatePropagation() {}, cancelable: false }, true);
+    mode = next;
+    note = '';
+    if (mode !== 'draw') remember('mode', mode); // Draw is never where a page opens
     syncButtons();
+  }
+  const modeButtons = els.modes || [];
+  modeButtons.forEach((b, i) => {
+    b.addEventListener('click', () => setMode(b.dataset.mode));
+    // A radio group: arrow keys move between the modes.
+    b.addEventListener('keydown', (e) => {
+      const step = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
+      if (!step) return;
+      e.preventDefault();
+      const next = modeButtons[(i + step + modeButtons.length) % modeButtons.length];
+      setMode(next.dataset.mode);
+      next.focus();
+    });
   });
-  els.show.addEventListener('click', () => {
-    visible = !visible;
+  els.fade?.addEventListener('input', () => {
+    const v = Math.round(Number(els.fade.value) / 10) * 10;
+    if (!FADES.includes(v)) return;
+    fade = v;
+    remember('fade', String(v));
     syncButtons();
   });
   els.undo.addEventListener('click', () => {
@@ -989,7 +1039,10 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
       return sketch.shapes;
     },
     get drawMode() {
-      return drawMode;
+      return mode === 'draw';
+    },
+    get mode() {
+      return mode;
     },
   };
 }

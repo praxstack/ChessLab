@@ -595,6 +595,75 @@
   margin-top: var(--s-3);
 }
 
+/* Move · Faint · Draw: one switch decides whether the board draws and how the drawings show. */
+.pens__modes {
+  display: flex;
+  padding: 2px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+
+.pens__modebtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  min-width: 64px;
+  justify-content: center;
+  padding: 0 12px;
+  border: 0;
+  border-radius: calc(var(--radius) - 2px);
+  background: transparent;
+  color: var(--ink);
+  font: 600 1rem/1 var(--font-book);
+  cursor: pointer;
+}
+
+.pens__modebtn .pens__icon {
+  width: 20px;
+  height: 20px;
+}
+
+.pens__modebtn[aria-checked='true'] {
+  background: var(--ink);
+  color: var(--card);
+}
+
+.pens__modebtn[data-mode='draw'][aria-checked='true'] {
+  background: var(--blue);
+}
+
+.pens__fade {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 44px;
+  font: 600 0.95rem/1 var(--font-hand);
+  color: var(--ink);
+}
+
+.pens__fade input {
+  width: 140px;
+  accent-color: var(--blue);
+}
+
+.pens__fade-out {
+  min-width: 3ch;
+  font: 400 0.9rem/1 var(--font-print);
+  color: var(--graphite);
+}
+
+/* The drawing kit only shows in Draw; display: contents keeps its sets in the row. */
+.pens__kit {
+  display: contents;
+}
+
+.pens__kit[hidden],
+.pens__fade[hidden] {
+  display: none;
+}
+
 .pens__set {
   display: flex;
   gap: 2px;
