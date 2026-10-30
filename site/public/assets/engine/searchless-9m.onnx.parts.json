@@ -1,0 +1,17 @@
+{
+  "file": "searchless-9m.onnx",
+  "bytes": 35871373,
+  "sha256": "ec45313c1ed1451acdf09e56f46fa6dee72698b8cea6803ad0f30c526659dac6",
+  "parts": [
+    {
+      "file": "searchless-9m.onnx.part0",
+      "bytes": 17935687,
+      "sha256": "bb8dc6444dc2006c5310567116979b7db8ae9f8c0bdfead3a8e4bf3a43a91557"
+    },
+    {
+      "file": "searchless-9m.onnx.part1",
+      "bytes": 17935686,
+      "sha256": "57fd1369986ac821d0343d3b85f70ce8940bee1544ce4ad57f9519a469778bef"
+    }
+  ]
+}

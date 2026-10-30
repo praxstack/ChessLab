@@ -1,0 +1,27 @@
+{
+  "file": "stockfish-17.1-single.wasm",
+  "bytes": 79053306,
+  "sha256": "14b25e2973a52e6095ee0ce7283ce3ff776a5e56bfe393333fe0066f6ccd666e",
+  "parts": [
+    {
+      "file": "stockfish-17.1-single.wasm.part0",
+      "bytes": 19763327,
+      "sha256": "bc7c3261a770f59bebab0d9a06e19e8a8fe5045002a747511b4bb64b570143ff"
+    },
+    {
+      "file": "stockfish-17.1-single.wasm.part1",
+      "bytes": 19763327,
+      "sha256": "2ec32479f9af6b151536e8a11c53d6a0d9541af1d551f462e1d368777c304774"
+    },
+    {
+      "file": "stockfish-17.1-single.wasm.part2",
+      "bytes": 19763326,
+      "sha256": "330ffa4f3984e664f52c69a4a81fb469ccecc6fe5bb5e544fa8f39004d225f84"
+    },
+    {
+      "file": "stockfish-17.1-single.wasm.part3",
+      "bytes": 19763326,
+      "sha256": "d878d95193eff84f41f1057f5936b59edebb68e0960dca35f70c7b34b1799e1a"
+    }
+  ]
+}
