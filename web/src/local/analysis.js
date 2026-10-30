@@ -20,10 +20,13 @@ const startFen = (initialFen, variant) => replay([], initialFen, variant).fen();
 // Engine lines may arrive without san, move or depth; the rules library fills them in.
 // Scores must already be from White's perspective, as server/engine.mjs reports them.
 function normalizeLines(lines, moves, initialFen, variant) {
-  return (Array.isArray(lines) ? lines : []).filter(line => Array.isArray(line?.moves) && line.moves.length && line.score).map(line => {
+  return (Array.isArray(lines) ? lines : []).filter(line => Array.isArray(line?.moves) && line.moves.length && line.score).flatMap(line => {
     const board = replay(moves, initialFen, variant), san = [];
-    for (const move of line.moves.slice(0, 20)) san.push(board.move({from: move.slice(0, 2), to: move.slice(2, 4), ...(move[4] ? {promotion: move[4]} : {})}).san);
-    return {move: line.moves[0], moves: line.moves.slice(0, 20), san, score: line.score, depth: line.depth ?? null};
+    // A line with a malformed or illegal move is dropped, as the server engine does; the others stay.
+    try {
+      for (const move of line.moves.slice(0, 20)) san.push(board.move({from: move.slice(0, 2), to: move.slice(2, 4), ...(move[4] ? {promotion: move[4]} : {})}).san);
+    } catch { return []; }
+    return [{move: line.moves[0], moves: line.moves.slice(0, 20), san, score: line.score, depth: line.depth ?? null}];
   });
 }
 

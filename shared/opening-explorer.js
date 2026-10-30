@@ -32,7 +32,7 @@ export function personalRows(games,key){
  }
  return {rows:[...byMove.values()],examples};
 }
-export const personalMetadata=count=>({label:'My completed games',count,maxPlies,selection:'Your completed standard games on this Mac',counting:'First encounter per game; first 60 half-moves.'});
+export const personalMetadata=count=>({label:'My completed games',count,maxPlies,selection:'Your completed standard games saved here',counting:'First encounter per game; first 60 half-moves.'});
 export function explorerResponse(board,rows,metadata,examples){
  const moves=rows.map(row=>{
   const next=new Chess(board.fen()),move=next.move({from:row.move.slice(0,2),to:row.move.slice(2,4),promotion:row.move[4]});

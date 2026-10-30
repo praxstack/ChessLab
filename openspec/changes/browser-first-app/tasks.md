@@ -37,4 +37,4 @@ Files: `shared/coach/**`, `deploy/coach-worker/**`, `web/src/local/coach/**`, co
 
 - [ ] 4.1 `web/public/_headers` CSP and security headers per design.md; web app manifest.
 - [ ] 4.2 `npm run deploy:app`, `docs/deploy-browser-app.md` (Pages project `askthemove-app`, preview first, `app.askthemove.online` untouched).
-- [ ] 4.3 Browser smoke (Playwright): open the built app with no server, play a bot game, review it, reload, see the game still there.
+- [ ] 4.3 Browser smoke (Playwright): open the built app with no server, import a game, reload, see the game still there. After package 2 lands, extend it: play a bot game, review it, reload.

@@ -22,10 +22,12 @@ export const RESPONSE = Symbol('response');
 export function createContext({store, engine, coach, now = Date.now}) {
   const iso = () => new Date(now()).toISOString();
   // Read-modify-write steps run one at a time, as SQLite transactions do on the server. Engine searches
-  // happen outside this lock, so a slow search never holds up other requests.
+  // happen outside this lock, so a slow search never holds up other requests. Web Locks extend the
+  // lock to other tabs on the same saved data; without them it covers this tab only.
   let queue = Promise.resolve();
   const atomic = work => {
-    const run = queue.then(work);
+    const locked = () => globalThis.navigator?.locks ? globalThis.navigator.locks.request('askthemove-store', work) : work();
+    const run = queue.then(locked);
     queue = run.catch(() => {});
     return run;
   };

@@ -4,7 +4,7 @@ import {localBackup, localRestore, inspectBackup} from './index.js';
 // Settings section for the browser app: save everything to one file, or load such a file back.
 // A restore replaces what is here and cannot be undone, so it first checks the file, then asks the
 // learner to save the current data (one click) or confirm they already have a copy.
-export default function BackupRestore({settings, onRestored}) {
+export default function BackupRestore({settings, onRestored, canRestore = true}) {
   const input = useRef(null), [message, setMessage] = useState(''), [busy, setBusy] = useState(false);
   const [pending, setPending] = useState(null), [saved, setSaved] = useState(false);
   async function backUp() {
@@ -39,10 +39,11 @@ export default function BackupRestore({settings, onRestored}) {
     <p className="tiny-note">Games, lessons, puzzles and settings are saved only in this browser. Back up to keep a copy or to move to another browser. A backup never includes a Claude key.</p>
     <div className="backup-actions">
       <button type="button" className="button secondary" disabled={busy} onClick={backUp}>Back up</button>
-      <button type="button" className="button secondary" disabled={busy} onClick={() => input.current?.click()}>Restore</button>
+      <button type="button" className="button secondary" disabled={busy || !canRestore} onClick={() => input.current?.click()}>Restore</button>
       <input ref={input} type="file" accept=".json,application/json" hidden aria-label="Choose a backup file" onChange={e => choose(e.target.files?.[0])}/>
     </div>
-    {pending && <div className="restore-confirm" role="group" aria-label="Confirm restore">
+    {!canRestore && <p className="tiny-note">Restore is off because this browser isn't saving data right now (a private window or blocked site data can cause this). A restored backup would be gone after the page reloads. Back up still works.</p>}
+    {pending && canRestore && <div className="restore-confirm" role="group" aria-label="Confirm restore">
       <p className="tiny-note"><strong>{pending.name}</strong> holds {games(pending.games)}{pending.exportedAt ? `, saved ${pending.exportedAt.slice(0, 10)}` : ''}. Restoring replaces every game, lesson and puzzle in this browser{pending.hasSettings ? ' and your settings' : '; your settings stay as they are'}. This cannot be undone.</p>
       <div className="backup-actions">
         <button type="button" className="button secondary" disabled={busy} onClick={async () => { if (await backUp()) setSaved(true); }}>Save current data first</button>

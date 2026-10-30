@@ -24,12 +24,15 @@ export function createLocalRush(ctx, {activeAttempt, insertPractice, selectPuzzl
   const next = run => { const {min, seen} = rushNextRequest(run); return rushItem(selectPuzzle(min, seen)); };
   async function start(body) {
     const variant = rushVariant(body);
-    if (await active()) fail(409, 'Finish your current Rush run first.');
-    if (await activeAttempt()) fail(409, 'Finish, reveal or skip the current puzzle first.');
-    const run = newRun(variant, now());
-    run.current = next(run); if (!run.current) fail(404, 'No local Rush puzzles are available.');
-    startClock(run, now());
-    await save(run); return response(run);
+    const run = await atomic(async () => {
+      if (await active()) fail(409, 'Finish your current Rush run first.');
+      if (await activeAttempt()) fail(409, 'Finish, reveal or skip the current puzzle first.');
+      const created = newRun(variant, now());
+      created.current = next(created); if (!created.current) fail(404, 'No local Rush puzzles are available.');
+      startClock(created, now());
+      await save(created); return created;
+    });
+    return response(run);
   }
   async function act(id, body) {
     const run = await owned(id); checkRushAction(run, body);

@@ -21,7 +21,7 @@ export function upgradeDatabase(db) {
 const done = request => new Promise((resolve, reject) => { request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error); });
 const finished = transaction => new Promise((resolve, reject) => {
   transaction.oncomplete = () => resolve();
-  transaction.onerror = () => reject(transaction.error);
+  transaction.onerror = event => reject(event.target?.error || transaction.error || new Error('The browser stopped saving. Your last change may not be saved.'));
   transaction.onabort = () => reject(transaction.error || new Error('The browser stopped saving. Your last change may not be saved.'));
 });
 

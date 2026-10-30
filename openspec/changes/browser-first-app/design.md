@@ -35,7 +35,7 @@ Browser (one tab)
 
 - `npm run build:app` (`VITE_BACKEND=local`) outputs `web/dist-app`; plain `vite build` stays the server app until parity. `web/public/_headers` sets a CSP: `connect-src 'self' https://tablebase.lichess.ovh https://lichess.org https://api.anthropic.com <coach worker origin>`, `script-src 'self' 'wasm-unsafe-eval'`, plus the security headers the site uses.
 - Engine files are copied from `site/public/assets/engine/` into `web/public/engine/` with `COPYING.txt` (GPL v3), cached by the browser.
-- `npm run deploy:app` runs `wrangler pages deploy web/dist --project-name askthemove-app`. Documented in `docs/deploy-browser-app.md`.
+- `npm run deploy:app` runs `wrangler pages deploy web/dist-app --project-name askthemove-app`. Documented in `docs/deploy-browser-app.md`.
 
 ## Risks
 

@@ -27,6 +27,7 @@ export function createLocalTrainer(ctx) {
     return {rush: activeRush ? {id: activeRush.id} : null, attempt: visibleAttempt(await activeAttempt()), history, totals, profile: await profile(), daily: await dailyProgress()};
   }
   const insertAttempt = (puzzle, options) => atomic(async () => {
+    if (await rush.active()) fail(409, 'Finish your current Rush run first.');
     if (await activeAttempt()) fail(409, 'Finish, reveal or skip the current puzzle first.');
     const attempt = newAttempt(puzzle, options, now());
     await store.put('puzzle_attempts', attempt);
