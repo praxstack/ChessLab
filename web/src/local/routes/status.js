@@ -13,7 +13,7 @@ export async function engineCatalog(engine) {
 
 export default function statusRoutes(ctx) {
   return [
-    ['GET', '/api/status', async () => ({engine: await ctx.engine.status(), billingEnabled: false, coachAi: ctx.coach.status(), inviteRequired: false, hosted: false, archives: false, local: true})],
+    ['GET', '/api/status', async () => ({engine: await ctx.engine.status(), billingEnabled: false, coachAi: ctx.coach.status(), inviteRequired: false, hosted: false, archives: false, local: true, storage: ctx.store.kind})],
     ['GET', '/api/bots', async () => ({bots: ctx.profiles, engines: await engineCatalog(ctx.engine)})],
     ['GET', '/api/me', () => ctx.me()],
     ['POST', '/api/register', async () => respond(201, await ctx.me())],

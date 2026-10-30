@@ -17,7 +17,8 @@ test('accounts are no-ops: every sign-in route returns the one local profile', a
 test('status, bots and errors keep the server shapes', async () => {
   const f = fixture();
   const status = (await f.get('/api/status')).body;
-  assert.deepEqual(Object.keys(status).sort(), ['archives', 'billingEnabled', 'coachAi', 'engine', 'hosted', 'inviteRequired', 'local']);
+  assert.deepEqual(Object.keys(status).sort(), ['archives', 'billingEnabled', 'coachAi', 'engine', 'hosted', 'inviteRequired', 'local', 'storage']);
+  assert.equal(status.storage, 'memory', 'status names the store, so the app can warn when nothing is saved');
   assert.equal(status.engine.available, true);
   assert.deepEqual(status.coachAi, {enabled: false});
   const bots = (await f.get('/api/bots')).body;

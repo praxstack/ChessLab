@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createMemoryStore} from './memory-store.js';
-import {createIdbStore, wrapRecord, unwrapRecords} from './idb-store.js';
+import {createIdbStore, openDatabase, wrapRecord, unwrapRecords} from './idb-store.js';
 import {readBackup} from './schema.js';
 import {storeContract} from './store-contract.js';
 
@@ -27,4 +27,15 @@ test('backups from a newer app skip unknown collections and reject damaged lists
   assert.deepEqual(Object.keys(read), ['games']);
   assert.throws(() => readBackup({format: 'askthemove-backup', version: 2, collections: {}}), /version 2/);
   assert.throws(() => readBackup({format: 'askthemove-backup', version: 1, collections: {games: {}}}), /damaged/);
+});
+
+test('a database held by another tab is reported as blocked, and a late open is closed', async () => {
+  let request, closed = false;
+  const indexedDB = {open() { request = {}; return request; }};
+  const opening = openDatabase(indexedDB, 'blocked-test');
+  request.onblocked();
+  await assert.rejects(opening, error => error.code === 'blocked' && /Close other AskTheMove tabs/.test(error.message));
+  request.result = {close() { closed = true; }};
+  request.onsuccess();
+  assert.equal(closed, true, 'the connection that opens after giving up does not stay open');
 });

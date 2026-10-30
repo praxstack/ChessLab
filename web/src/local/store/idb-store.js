@@ -25,19 +25,27 @@ const finished = transaction => new Promise((resolve, reject) => {
   transaction.onabort = () => reject(transaction.error || new Error('The browser stopped saving. Your last change may not be saved.'));
 });
 
+export const BLOCKED_MESSAGE = 'Another AskTheMove tab is keeping your saved games locked. Close other AskTheMove tabs, then refresh this page.';
+export const databaseBlocked = () => Object.assign(new Error(BLOCKED_MESSAGE), {status: 503, code: 'blocked'});
+
 export function openDatabase(indexedDB = globalThis.indexedDB, name = DATABASE_NAME) {
   if (!indexedDB) return Promise.reject(new Error('This browser cannot save data (IndexedDB is unavailable).'));
   return new Promise((resolve, reject) => {
+    let blocked = false;
     const request = indexedDB.open(name, DATABASE_VERSION);
     request.onupgradeneeded = () => upgradeDatabase(request.result);
     request.onsuccess = () => {
       const db = request.result;
+      // Opened after this tab already gave up: close it so the next attempt starts clean.
+      if (blocked) { db.close(); return; }
       // Another tab upgrading the database closes this connection instead of blocking it.
       db.onversionchange = () => db.close();
       resolve(db);
     };
     request.onerror = () => reject(request.error);
-    request.onblocked = () => reject(new Error('Close other AskTheMove tabs, then reload this one.'));
+    // An older tab still holds the database open. The data is fine, so this is not a reason to run
+    // without saving: the learner closes the other tab and tries again.
+    request.onblocked = () => { blocked = true; reject(databaseBlocked()); };
   });
 }
 

@@ -7,18 +7,27 @@ import {createBackup, restoreBackup, requestPersistentStorage, backupFilename} f
 
 // The browser app's data door: one IndexedDB store and one router per tab, created on first use.
 let started = null;
+// Without IndexedDB (some private windows) the app still runs on a memory store, and /api/status
+// reports storage: 'memory' so the app can warn that nothing survives closing the tab. A database
+// held by another tab is different: the saved games exist, so this tab waits for the learner to
+// close the other one instead of starting empty.
+export async function openStore({openIdb = createIdbStore, warn = console.warn} = {}) {
+  try { return await openIdb(); }
+  catch (error) {
+    if (error?.code === 'blocked') throw error;
+    warn('Saving is unavailable in this browser; using memory only.', error);
+    return createMemoryStore();
+  }
+}
+
 function start() {
   started ??= (async () => {
-    let store;
-    try { store = await createIdbStore(); }
-    catch (error) {
-      // Without IndexedDB (some private windows) the app still runs, but nothing survives a reload.
-      console.warn('Saving is unavailable in this browser; using memory only.', error);
-      store = createMemoryStore();
-    }
+    const store = await openStore();
     requestPersistentStorage();
     return {store, router: createLocalRouter({store, engine: createUnavailableEngine(), coach: createEngineOnlyCoach()})};
   })();
+  // A failed start is not remembered, so the next request tries again.
+  started.catch(() => { started = null; });
   return started;
 }
 
