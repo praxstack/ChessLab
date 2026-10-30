@@ -138,7 +138,7 @@ From the repository folder on your Mac:
    npm run deploy
    ```
 
-   To include the invite-code coach, put `VITE_COACH_URL=https://askthemove-coach.YOUR-NAME.workers.dev` in front of `npm run deploy`.
+   To include the invite-code coach, put `VITE_COACH_URL=https://askthemove-coach.YOUR-NAME.workers.dev` in front of `npm run deploy`. The coach Worker already lists `https://askthemove.online` in `APP_ORIGINS` (deploy/coach-worker/wrangler.toml). If you deployed the Worker before that line was added, deploy the Worker again first, or the coach refuses the beta site and explanations fall back to the engine summary.
 
 5. Open https://askthemove.online/betapp/, sign in, and play a bot.
 
