@@ -318,6 +318,8 @@ const pens = createDrawLayer(
     tools: [...document.querySelectorAll('#pens [data-tool]')],
     colors: [...document.querySelectorAll('#pens [data-color]')],
     sizes: [...document.querySelectorAll('#pens [data-size]')],
+    stickers: [...document.querySelectorAll('#pens [data-sticker]')],
+    sheet: $('draw-sheet'),
   },
   {
     orientation: () => play.orientation,

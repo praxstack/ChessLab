@@ -225,3 +225,34 @@ test('draw: a ghost move sketches a piece elsewhere and leaves the real one', ()
   assert.match(shapeSVG({ ...g, color: 'blue', seed: 2 }, 'black'), /x="20.4" y="20.4"/, 'f3 from Black');
   assert.doesNotMatch(shapeSVG({ ...g, piece: 'xx', color: 'blue' }, 'white'), /<image/);
 });
+
+test('draw: tape snaps to a rank, file or diagonal and stays on the board', async () => {
+  const { tapeFor, stickerFor, GLYPHS, WORDS } = await import('../public/assets/draw.js');
+  assert.equal(tapeFor('a1', 'a1'), null);
+  assert.deepEqual(tapeFor('a1', 'h2'), { kind: 'tape', from: 'a1', to: 'h1' }, 'mostly sideways: the rank');
+  assert.deepEqual(tapeFor('e2', 'f7'), { kind: 'tape', from: 'e2', to: 'e7' }, 'mostly up: the file');
+  assert.deepEqual(tapeFor('a1', 'g6'), { kind: 'tape', from: 'a1', to: 'g7' }, 'near a diagonal: the diagonal');
+  assert.deepEqual(tapeFor('c1', 'h7'), { kind: 'tape', from: 'c1', to: 'h6' }, 'cut at the board edge');
+  assert.ok(sameMark({ kind: 'tape', from: 'a1', to: 'h8', color: 'blue' }, { kind: 'tape', from: 'h8', to: 'a1', color: 'blue' }), 'either way round is the same tape');
+  const svg = shapeSVG({ kind: 'tape', from: 'a1', to: 'h8', color: 'blue', seed: 4 }, 'white');
+  assert.match(svg, /class="dr dr--tape tone--blue"/);
+  assert.match(svg, /<path d="M[^"]+Z"\/>/);
+
+  assert.equal(stickerFor('e4', 'nope'), null);
+  assert.equal(stickerFor(null, '!!'), null);
+  assert.ok(GLYPHS.includes('□') && WORDS.includes('OUTPOST'));
+  const glyph = shapeSVG({ ...stickerFor('e4', '??'), color: 'blue', seed: 1 }, 'white');
+  assert.match(glyph, /class="dr-sticker tone--red"/);
+  assert.match(glyph, />\?\?<\/text>/);
+  const word = shapeSVG({ ...stickerFor('d5', 'OUTPOST'), color: 'blue', seed: 1 }, 'black');
+  assert.match(word, /class="dr-word"/);
+  assert.match(word, />OUTPOST<\/text>/);
+  assert.doesNotMatch(shapeSVG({ kind: 'sticker', sq: 'e4', glyph: '<i>', color: 'blue' }, 'white'), /<i>/);
+
+  const sk = createSketch();
+  sk.add({ kind: 'sticker', sq: 'e4', glyph: '!', color: 'blue' });
+  sk.put({ kind: 'sticker', sq: 'e4', glyph: '?', color: 'blue' }, (s) => s.kind === 'sticker' && s.sq === 'e4');
+  assert.deepEqual(sk.shapes.map((s) => s.glyph), ['?'], 'a new glyph replaces the old one');
+  assert.ok(sk.undo());
+  assert.deepEqual(sk.shapes.map((s) => s.glyph), ['!'], 'in one undo step');
+});
