@@ -400,7 +400,7 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
         const timer = setTimeout(() => {
           reset('The engine took too long');
           reject(new Error('The engine took too long'));
-        }, ms + 8000);
+        }, ms + (spec.module ? 30000 : 8000)); // neural models score every move on one thread: give slow phones time
         listener = (line) => {
           if (line.startsWith('info')) {
             const info = parseInfo(line);

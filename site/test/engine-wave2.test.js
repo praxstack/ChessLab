@@ -272,13 +272,18 @@ test('lc0: the 1858 policy moves are exactly Lc0’s policy index, in order', as
 });
 
 test('lc0: moves are looked up from the side to move, a knight promotion is the plain move', async () => {
-  const { POLICY_INDEX, bestPolicyMove, policyIndexOf } = await import('../public/assets/lc0.js');
+  const { POLICY_INDEX, bestPolicyMove, castlingKey, policyIndexOf } = await import('../public/assets/lc0.js');
   assert.equal(POLICY_INDEX[policyIndexOf('e2e4', false)], 'e2e4');
   assert.equal(POLICY_INDEX[policyIndexOf('e7e5', true)], 'e2e4', 'Black’s e7e5 is the mirrored e2e4');
   assert.equal(POLICY_INDEX[policyIndexOf('a7a8n', false)], 'a7a8');
   assert.equal(POLICY_INDEX[policyIndexOf('a7a8q', false)], 'a7a8q');
   assert.equal(POLICY_INDEX[policyIndexOf('b2a1r', true)], 'b7a8r');
-  assert.equal(POLICY_INDEX[policyIndexOf('e1g1', false)], 'e1g1', 'castling is the king’s two-square move');
+  assert.equal(castlingKey({ from: 'e1', to: 'g1', flags: 'k', color: 'w' }), 'e1h1', 'castling is the king taking its rook');
+  assert.equal(castlingKey({ from: 'e8', to: 'c8', flags: 'q', color: 'b' }), 'e8a8');
+  assert.equal(castlingKey({ from: 'f1', to: 'g1', flags: 'n', color: 'w' }), 'f1g1', 'a rook move to g1 stays itself');
+  const castle = new Float32Array(1858).fill(-5);
+  castle[policyIndexOf('e1h1', false)] = 9;
+  assert.equal(bestPolicyMove([{ move: 'e1g1', key: 'e1h1' }, 'd2d4'], castle, false).move, 'e1g1');
   const logits = new Float32Array(1858).fill(-5);
   logits[policyIndexOf('d7d5', true)] = 3;
   logits[policyIndexOf('e7e5', true)] = 2;
@@ -308,7 +313,7 @@ test('lc0: the 112 input planes, from the side to move, with eight positions of 
   assert.equal(at(black, 6, 'e5'), 1, 'their e4 pawn, mirrored to e5');
   assert.equal(at(black, 13 + 6, 'e7'), 1, 'one move back, their pawn was still on e2 (mirrored e7)');
 
-  // A position seen before lights its repetition plane; the 50-move counter is scaled.
+  // A position seen before lights its repetition plane; the 50-move counter is the raw count.
   const back = new Chess(START);
   const fens = [back.fen()];
   for (const m of ['Nf3', 'Nf6', 'Ng1', 'Ng8']) {
@@ -318,7 +323,7 @@ test('lc0: the 112 input planes, from the side to move, with eight positions of 
   const again = encodePlanes(fens);
   assert.equal(count(again, 12), 64, 'the start position again');
   assert.equal(count(again, 13 + 12), 0);
-  assert.ok(Math.abs(again[109 * 64] - 4 / 99) < 1e-6);
+  assert.equal(again[109 * 64], 4);
   // Castling rights: White has only the king side left, Black only the queen side.
   const rights = encodePlanes(['r3k2r/8/8/8/8/8/8/R3K2R w Kq - 0 1']);
   assert.deepEqual([104, 105, 106, 107].map((p) => count(rights, p)), [0, 64, 64, 0]);

@@ -91,7 +91,7 @@ const keyOf = (fen) => fen.split(' ').slice(0, 4).join(' ');
  * and "seen before"), all from the side to move, mirrored when it is Black;
  * when the game is shorter, the oldest position is repeated, as Lc0 does for a
  * game that starts from a FEN. Then our and their castling rights (queen side
- * first), Black to move, the 50-move counter (divided by 99, as Lc0 trains),
+ * first), Black to move, the 50-move counter (raw half-moves),
  * a plane of zeros and a plane of ones.
  */
 export function encodePlanes(fens) {
@@ -128,7 +128,7 @@ export function encodePlanes(fens) {
   if (castling.includes(theirQ)) fill(106);
   if (castling.includes(theirK)) fill(107);
   if (black) fill(108);
-  fill(109, (Number(fields[4]) || 0) / 99);
+  fill(109, Number(fields[4]) || 0); // Lc0 nets take the raw half-move count
   fill(111);
   return out;
 }
@@ -136,8 +136,10 @@ export function encodePlanes(fens) {
 /** The legal move the network rates highest: { move, index } (null without moves). */
 export function bestPolicyMove(moves, logits, black) {
   let best = null;
-  for (const move of moves) {
-    const i = policyIndexOf(move, black);
+  for (const m of moves) {
+    // A move may carry the key the net knows it by (castling: { move: 'e1g1', key: 'e1h1' }).
+    const move = typeof m === 'string' ? m : m.move;
+    const i = policyIndexOf(typeof m === 'string' ? m : m.key, black);
     if (i < 0) continue;
     if (!best || logits[i] > logits[best.index]) best = { move, index: i };
   }
@@ -153,4 +155,11 @@ export function wdlProbabilities(wdl) {
   const e = v.map((x) => Math.exp(x - m));
   const t = e[0] + e[1] + e[2];
   return e.map((x) => x / t);
+}
+
+/** Lc0 nets encode castling as the king taking its own rook. */
+export function castlingKey({ from, to, flags = '', color }) {
+  if (!flags.includes('k') && !flags.includes('q')) return from + to;
+  const rank = color === 'b' ? '8' : '1';
+  return `${from}${flags.includes('k') ? 'h' : 'a'}${rank}`;
 }

@@ -12,7 +12,7 @@
 
 import * as ort from './ort/ort.wasm.bundle.min.mjs';
 import { Chess } from '../vendor/chess.js';
-import { PLANES, bestPolicyMove, encodePlanes, wdlProbabilities } from '../lc0.js';
+import { PLANES, bestPolicyMove, castlingKey, encodePlanes, wdlProbabilities } from '../lc0.js';
 import { winToCp } from '../searchless.js';
 
 const modelUrl = decodeURIComponent(self.location.hash.slice(1));
@@ -64,7 +64,7 @@ async function go() {
   const planes = new ort.Tensor('float32', encodePlanes(fens), [1, PLANES, 8, 8]);
   const out = await session.run({ [session.inputNames[0]]: planes });
   const best = bestPolicyMove(
-    legal.map((m) => m.from + m.to + (m.promotion || '')),
+    legal.map((m) => ({ move: m.from + m.to + (m.promotion || ''), key: castlingKey(m) + (m.promotion || '') })),
     output(out, 'policy'),
     black,
   );

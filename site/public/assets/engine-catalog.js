@@ -45,7 +45,7 @@ export const DM_CREDIT =
   'Model from “Grandmaster-Level Chess Without Search” (Ruoss et al., 2024), © 2024 DeepMind Technologies Limited, CC BY 4.0. Converted to ONNX by cstr, with no change to the weights; run here with onnxruntime-web (MIT).';
 /** The sizes of the neural workers; the catalog test checks them against the files. */
 const SEARCHLESS_WORKER_BYTES = 3786;
-const MAIA_WORKER_BYTES = 3836;
+const MAIA_WORKER_BYTES = 3904;
 /** GPL-3.0 asks that the authors and the source be named; the picker and the page footer show this. */
 export const MAIA_CREDIT =
   'Maia by Reid McIlroy-Young, Siddhartha Sen, Jon Kleinberg and Ashton Anderson (CSSLab, University of Toronto, 2020), GPL-3.0, source github.com/CSSLab/maia-chess. Converted to ONNX by shermansiu; run here with onnxruntime-web (MIT).';
