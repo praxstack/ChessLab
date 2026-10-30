@@ -28,10 +28,10 @@ Files: `web/src/local/engine/**`, `web/public/engine/**`, engine settings in `we
 
 Files: `shared/coach/**`, `deploy/coach-worker/**`, `web/src/local/coach/**`, coach parts of `web/src/Settings.jsx` and `web/src/CoachExplain.jsx`.
 
-- [ ] 3.1 Move the evidence builder, `SYSTEM_PROMPT`, `verifyAnswer` and engine answers from `server/coach-explain.mjs` to `shared/coach/` with no Node or SDK imports; server re-exports; `server/coach-explain.test.mjs` still passes.
-- [ ] 3.2 Coach Worker per design.md: invite digest check, D1 daily cap, fixed prompt, `max_tokens` 400, verification, CORS allow-list, body limits. `wrangler.toml`, D1 migration, README with deploy steps for the owner. Tests with a fake Anthropic fetch and an in-memory D1 stand-in.
-- [ ] 3.3 Browser client: path A (own key, stored only in this browser, `anthropic-dangerous-direct-browser-access: true` header, same verification) and path B (invite code to the Worker). Settings UI: paste key, or enter invite code, with plain-words notes on who pays.
-- [ ] 3.4 Tests for the client choosing A or B, failures falling back to the engine summary, and the key never leaving `localStorage`/IndexedDB except to `api.anthropic.com`.
+- [x] 3.1 Move the evidence builder, `SYSTEM_PROMPT`, `verifyAnswer` and engine answers from `server/coach-explain.mjs` to `shared/coach/` with no Node or SDK imports; server re-exports; `server/coach-explain.test.mjs` still passes.
+- [x] 3.2 Coach Worker per design.md: invite digest check, D1 daily cap, fixed prompt, `max_tokens` 400, verification, CORS allow-list, body limits. `wrangler.toml`, D1 migration, README with deploy steps for the owner. Tests with a fake Anthropic fetch and an in-memory D1 stand-in.
+- [x] 3.3 Browser client: path A (own key, stored only in this browser, `anthropic-dangerous-direct-browser-access: true` header, same verification) and path B (invite code to the Worker). Settings UI: paste key, or enter invite code, with plain-words notes on who pays.
+- [x] 3.4 Tests for the client choosing A or B, failures falling back to the engine summary, and the key never leaving `localStorage`/IndexedDB except to `api.anthropic.com`.
 
 ## Package 4: hosting (after package 1)
 

@@ -73,6 +73,7 @@ export function createPicker({ getActive, isSaved = async () => false, onChoose 
     li.append(head);
 
     li.append(el('p', 'engines__about', e.about));
+    if (e.credit) li.append(el('p', 'engines__credit', e.credit)); // what the licence asks to be said, e.g. CC BY's attribution
 
     const meta = el('p', 'engines__meta');
     meta.append(el('span', 'engines__bytes', sizeText(e)), ' · ', link(e.licenseUrl, e.license, `${e.name} licence: ${e.license}`), ' · ', link(e.source, 'source', `${e.name} source`));

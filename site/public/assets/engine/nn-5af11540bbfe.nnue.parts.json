@@ -1,0 +1,17 @@
+{
+  "file": "nn-5af11540bbfe.nnue",
+  "bytes": 40119326,
+  "sha256": "5af11540bbfefcb54e38c5dd000cab4b469dfa7599a1d55be5d2722c20a8929b",
+  "parts": [
+    {
+      "file": "nn-5af11540bbfe.nnue.part0",
+      "bytes": 20059663,
+      "sha256": "db5d40fa62e38aabbc228a0af0f2f00dd93f7a2028754288de9595e0461ad89f"
+    },
+    {
+      "file": "nn-5af11540bbfe.nnue.part1",
+      "bytes": 20059663,
+      "sha256": "a0620afabb5da6c321edecf088b1d3cda99e95ed55dfa11219b4aab1165de4d5"
+    }
+  ]
+}
