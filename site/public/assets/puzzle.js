@@ -8,6 +8,7 @@
 import { parsePlacement, pieceHTML } from './board.js';
 import { markSVG, seedFrom } from './ink.js';
 import { createDesk, coordsHTML } from './desk.js';
+import { createDrawLayer } from './draw.js';
 import { createEngine, grade, toCp, WASM_BYTES } from './engine.js';
 import * as sound from './sound.js';
 import { nextPuzzleAt, whenText } from './daily-clock.js';
@@ -300,6 +301,25 @@ const play = createDesk(
   { onChange: boardChanged },
 );
 
+// The learner's own pen over the board. Drawings stay while pieces move, so an
+// idea can be tested against them; a new position or Start over rubs them out.
+const pens = createDrawLayer(
+  {
+    board: $('desk-board'),
+    svg: $('desk-draw'),
+    mode: $('draw-mode'),
+    show: $('draw-show'),
+    undo: $('draw-undo'),
+    clear: $('draw-clear'),
+    hint: $('draw-hint'),
+    tools: [...document.querySelectorAll('#pens [data-tool]')],
+    colors: [...document.querySelectorAll('#pens [data-color]')],
+  },
+  { orientation: () => play.orientation },
+);
+$('tool-flip').addEventListener('click', () => pens.render());
+$('tool-reset').addEventListener('click', () => pens.clear());
+
 // After every move, take-back or new position: the turn note, the links, and the engine button follow the board.
 function boardChanged() {
   if (!desk.fen) return;
@@ -336,6 +356,7 @@ function showOnDesk({ kind, fen, iso = '', title, source, name = '', lid = '' })
   $('go-explorer').href = explorerUrl(fen);
   showSolve();
   $('copy-fen').disabled = false;
+  pens.reset();
   play.load(fen).then(() => {
     if (seq !== deskSeq) return;
     writeIn(turn);
