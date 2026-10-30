@@ -5,10 +5,10 @@ import {collectionNames} from './schema.js';
 // Every storage implementation must pass this contract.
 export async function storeContract(store, assert) {
   assert.equal(await store.get('games', 'missing'), null);
-  await store.put('games', {id: 'b', title: 'Second key, first saved', moves: []});
-  await store.put('games', {id: 'a', title: 'First key, second saved', moves: ['e2e4']});
+  await store.put('games', {id: 'b', title: 'Second key, first saved', moves: [], revision: 0});
+  await store.put('games', {id: 'a', title: 'First key, second saved', moves: ['e2e4'], revision: 0});
   assert.deepEqual((await store.list('games')).map(game => game.id), ['b', 'a'], 'list keeps first-put order, not key order');
-  await store.put('games', {id: 'b', title: 'Updated', moves: []});
+  await store.put('games', {id: 'b', title: 'Updated', moves: [], revision: 1});
   assert.deepEqual((await store.list('games')).map(game => game.title), ['Updated', 'First key, second saved'], 'an update keeps its place');
   const read = await store.get('games', 'a');
   read.moves.push('e7e5');
@@ -36,6 +36,7 @@ export async function storeContract(store, assert) {
   await store.put('games', {id: 'z', moves: []});
   await store.put('progress', {key: 'lesson:center', kind: 'lesson', itemId: 'center'});
   await assert.rejects(store.importAll({format: 'other'}), /not an AskTheMove backup/);
+  await assert.rejects(store.importAll({...backup, collections: {}}), /incomplete/);
   assert.ok(await store.get('games', 'z'), 'a rejected backup leaves data untouched');
   await store.importAll(JSON.stringify(backup));
   assert.equal(await store.get('games', 'z'), null, 'restore replaces, it does not merge');

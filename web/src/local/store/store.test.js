@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createMemoryStore} from './memory-store.js';
 import {createIdbStore, openDatabase, wrapRecord, unwrapRecords} from './idb-store.js';
-import {readBackup} from './schema.js';
+import {readBackup, collectionNames} from './schema.js';
 import {storeContract} from './store-contract.js';
 
 test('memory store passes the storage contract', async () => {
@@ -23,10 +23,12 @@ test('IndexedDB records keep first-put order through updates', () => {
 });
 
 test('backups from a newer app skip unknown collections and reject damaged lists', () => {
-  const read = readBackup({format: 'askthemove-backup', version: 1, collections: {games: [{id: 'g'}], coach_keys: [{secret: 'x'}]}});
-  assert.deepEqual(Object.keys(read), ['games']);
+  const empty = Object.fromEntries(collectionNames.map(name => [name, []]));
+  const read = readBackup({format: 'askthemove-backup', version: 1, collections: {...empty, games: [{id: 'g', moves: [], revision: 0}], coach_keys: [{secret: 'x'}]}});
+  assert.deepEqual(Object.keys(read), collectionNames);
+  assert.equal(read.games.length, 1);
   assert.throws(() => readBackup({format: 'askthemove-backup', version: 2, collections: {}}), /version 2/);
-  assert.throws(() => readBackup({format: 'askthemove-backup', version: 1, collections: {games: {}}}), /damaged/);
+  assert.throws(() => readBackup({format: 'askthemove-backup', version: 1, collections: {...empty, games: {}}}), /damaged/);
 });
 
 test('a database held by another tab is reported as blocked, and a late open is closed', async () => {

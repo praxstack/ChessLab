@@ -3,7 +3,7 @@ import {createIdbStore} from './store/idb-store.js';
 import {createMemoryStore} from './store/memory-store.js';
 import {createUnavailableEngine} from './engine-stub.js';
 import {createEngineOnlyCoach} from './coach-fallback.js';
-import {createBackup, restoreBackup, requestPersistentStorage, backupFilename} from './backup.js';
+import {createBackup, restoreBackup, inspectBackup, requestPersistentStorage, backupFilename} from './backup.js';
 
 // The browser app's data door: one IndexedDB store and one router per tab, created on first use.
 let started = null;
@@ -47,9 +47,11 @@ export async function localBackup(settings) {
   return {filename: backupFilename(), text: JSON.stringify(await createBackup(store, settings))};
 }
 
-export async function localRestore(text) {
+export async function localRestore(text, options) {
   const {store} = await start();
-  return restoreBackup(store, text);
+  return restoreBackup(store, text, options);
 }
+
+export {inspectBackup};
 
 export const localStorageKind = async () => (await start()).store.kind;

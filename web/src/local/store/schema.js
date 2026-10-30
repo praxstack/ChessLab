@@ -38,19 +38,38 @@ export function checkCollection(collection) {
 
 const plain = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 
+const refuse = message => { throw Object.assign(new Error(message), {status: 400}); };
+
+// The least a saved game needs for the app to open it. A file failing this is refused whole, so a
+// restore never leaves games behind that crash the board or can never be saved again.
+function checkGame(game) {
+  if (!plain(game) || typeof game.id !== 'string' || !game.id) refuse('A game in this backup has no id.');
+  if (!Array.isArray(game.moves) || !game.moves.every(move => typeof move === 'string')) refuse(`The backup's game ${game.id} has damaged moves.`);
+  if (!Number.isInteger(game.revision) || game.revision < 0) refuse(`The backup's game ${game.id} has no valid revision.`);
+}
+
 // Validates a backup before anything is replaced, so a bad file leaves the current data untouched.
+// Every collection this app knows must be present as a list, even an empty one: a file that leaves
+// one out (for example "collections": {}) is damaged or hand-made, and restoring it would wipe that
+// data. A new collection therefore needs a new BACKUP_VERSION.
 export function readBackup(json) {
   const data = typeof json === 'string' ? JSON.parse(json) : json;
-  if (!plain(data) || data.format !== BACKUP_FORMAT) throw Object.assign(new Error('This file is not an AskTheMove backup.'), {status: 400});
-  if (data.version !== BACKUP_VERSION) throw Object.assign(new Error(`This backup is version ${data.version}; this app reads version ${BACKUP_VERSION}.`), {status: 400});
-  if (!plain(data.collections)) throw Object.assign(new Error('This backup has no saved data.'), {status: 400});
+  if (!plain(data) || data.format !== BACKUP_FORMAT) refuse('This file is not an AskTheMove backup.');
+  if (data.version !== BACKUP_VERSION) refuse(`This backup is version ${data.version}; this app reads version ${BACKUP_VERSION}.`);
+  if (!plain(data.collections)) refuse('This backup has no saved data.');
   const result = {};
-  for (const [name, values] of Object.entries(data.collections)) {
-    if (!Object.hasOwn(collections, name)) continue; // Collections from a newer app are skipped, not guessed at.
-    if (!Array.isArray(values)) throw Object.assign(new Error(`The backup's ${name} list is damaged.`), {status: 400});
-    for (const value of values) keyOf(name, value);
+  for (const name of collectionNames) {
+    const values = data.collections[name];
+    if (values === undefined) refuse(`This backup has no ${name} list, so it is incomplete.`);
+    if (!Array.isArray(values)) refuse(`The backup's ${name} list is damaged.`);
+    for (const value of values) {
+      if (!plain(value)) refuse(`The backup's ${name} list is damaged.`);
+      try { keyOf(name, value); } catch (error) { refuse(error.message); }
+      if (name === 'games') checkGame(value);
+    }
     result[name] = values;
   }
+  // Collections from a newer app are skipped, not guessed at.
   return result;
 }
 
