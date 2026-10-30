@@ -14,6 +14,11 @@ const reasons={
  refusal:'The AI coach declined this request.',
  not_configured:'AI explanations are off on this server.',
  no_evidence:'There is no engine line to explain in this position.',
+ unverified:'The AI answer made claims the engine evidence does not support, so it was withheld.',
+ not_authorized:'Claude did not accept the saved key. Check it in Settings, Coach.',
+ invite_rejected:'The invite code was not accepted. Check it in Settings, Coach.',
+ unreachable:'The AI coach could not be reached. Check your connection.',
+ origin_not_allowed:'The coach service is not set up for this site yet.',
 };
 const escape=value=>value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 function MoveText({text,moves,notation}){

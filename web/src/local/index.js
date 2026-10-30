@@ -3,7 +3,7 @@ import {createIdbStore} from './store/idb-store.js';
 import {createMemoryStore} from './store/memory-store.js';
 import {createUnavailableEngine} from './engine-stub.js';
 import {browserEngineSupported, createBrowserEngine, createLocalOpponent} from './engine/index.js';
-import {createEngineOnlyCoach} from './coach-fallback.js';
+import {createBrowserCoach} from './coach/client.js';
 import {createBackup, restoreBackup, inspectBackup, requestPersistentStorage, backupFilename} from './backup.js';
 
 // The browser app's data door: one IndexedDB store and one router per tab, created on first use.
@@ -29,7 +29,7 @@ function start() {
     // app usable and every engine screen shows its "engine unavailable" state.
     const engine = browserEngineSupported() ? createBrowserEngine() : createUnavailableEngine();
     const opponent = browserEngineSupported() ? createLocalOpponent() : undefined;
-    return {store, router: createLocalRouter({store, engine, opponent, coach: createEngineOnlyCoach()})};
+    return {store, router: createLocalRouter({store, engine, opponent, coach: createBrowserCoach({coachUrl: import.meta.env?.VITE_COACH_URL})})};
   })();
   // A failed start is not remembered, so the next request tries again.
   started.catch(() => { started = null; });

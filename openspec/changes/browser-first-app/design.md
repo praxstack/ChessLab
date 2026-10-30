@@ -28,7 +28,9 @@ Browser (one tab)
 
 - `POST /explain` with `{inviteCode, evidence, asked}`. Rejects bodies over 32 KB, unknown fields, or an invite code whose SHA-256 is not in the `COACH_INVITE_DIGESTS` secret.
 - D1 table `coach_daily(budget TEXT, day TEXT, count INTEGER, PRIMARY KEY(budget, day))`; budget = invite digest; cap from `COACH_MAX_PER_DAY` (default 50). Over the cap returns the engine answer with reason `daily_limit`, like today.
-- Calls `https://api.anthropic.com/v1/messages` with the fixed `SYSTEM_PROMPT`, model from `ANTHROPIC_MODEL` (default `claude-opus-5-5`, same as the server), `max_tokens` 400, then `verifyAnswer`; a failed check returns the engine answer with reason `unverified`.
+- Calls `https://api.anthropic.com/v1/messages` with the fixed `SYSTEM_PROMPT`, model from `ANTHROPIC_MODEL` (default `claude-opus-5-5`, same as the server), effort `low` and `max_tokens` 1024, then `verifyAnswer`; a failed check returns the engine answer with reason `unverified`.
+- `max_tokens` was planned as 400. Claude Opus 5.5 always thinks and its thinking counts toward `max_tokens`, so 400 risked cutting most answers off (`incomplete`); 1024 at low effort still caps each call at about 2 US cents of output.
+- The Worker does no chess work: the free plan allows 10 ms of CPU per request, and replaying engine lines took 5 to 40 ms. The browser builds the evidence with the rules library and sends it without its text fields (`shared/coach/payload.js`). The Worker checks every field against a closed schema (SAN tokens, fixed words, bounded numbers), uses a fixed engine label and writes the summary from the checked fields, so no client text reaches the prompt. A dishonest client can only mislead its own explanation, and every answer still passes `verifyAnswer` and the 110-word cap.
 - CORS allows only the app origins in `APP_ORIGINS`. Secrets set with `wrangler secret put`; never committed.
 
 ## Hosting

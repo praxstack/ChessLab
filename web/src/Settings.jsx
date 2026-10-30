@@ -1,15 +1,19 @@
 import React from 'react';
 import {pieceSet, boardThemes, thinkingTimes} from './settings-state.js';
+import CoachSettings from './local/coach/CoachSettings.jsx';
+
+// The browser build keeps its own AI coach access (own key or invite code) in a Coach tab.
+const browserBuild = import.meta.env.VITE_BACKEND === 'local';
 
 export {settingDefaults} from './settings-state.js';
 export function SettingSelect({label,value,onChange,options}) {const id=React.useId();return <div className="setting-row"><label htmlFor={id}>{label}</label><select id={id} value={value} onChange={e=>onChange(e.target.value)}>{options.map(option=><option key={option.value} value={option.value} disabled={option.disabled}>{option.label}</option>)}</select></div>;}
 export function SettingToggle({label,value,onChange}){return <div className="setting-row"><span>{label}</span><button type="button" className={`toggle ${value?'on':''}`} role="switch" aria-checked={!!value} aria-label={label} onClick={onChange}><span/></button></div>;}
-export default function Settings({settings,tab,onTab,onChange,engines,local=false}) {
+export default function Settings({settings,tab,onTab,onChange,engines,local=false,onCoachChange}) {
  const select=(key,label,options,numeric=false)=><SettingSelect label={label} value={settings[key]} onChange={value=>onChange(key,numeric?Number(value):value)} options={options.map(([value,label,disabled])=>({value,label,disabled}))}/>;
  const toggle=(key,label)=><SettingToggle label={label} value={settings[key]} onChange={()=>onChange(key,!settings[key])}/>;
  const available=id=>engines.some(e=>e.id===id&&e.available);
- return <><div className="settings-tabs" role="tablist" aria-label="Settings sections">{['board','review','engine'].map(id=><button type="button" role="tab" aria-selected={tab===id} key={id} className={tab===id?'active':''} onClick={()=>onTab(id)}>{id==='review'?'Interface':id}</button>)}</div>
- <div className="settings-body">{tab==='board'?<>
+ return <><div className="settings-tabs" role="tablist" aria-label="Settings sections">{['board','review','engine',...(browserBuild?['coach']:[])].map(id=><button type="button" role="tab" aria-selected={tab===id} key={id} className={tab===id?'active':''} onClick={()=>onTab(id)}>{id==='review'?'Interface':id}</button>)}</div>
+ <div className="settings-body">{tab==='coach'&&browserBuild?<CoachSettings onChange={onCoachChange}/>:tab==='board'?<>
   <h3>Board</h3>
   <div className="setting-row"><span>Pieces</span><span className="setting-value">{pieceSet.label}</span></div>
   {select('boardTheme','Board',boardThemes)}
