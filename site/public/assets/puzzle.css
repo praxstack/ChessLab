@@ -439,6 +439,61 @@
   letter-spacing: 0.05px;
 }
 
+/* Helpers: pencil dots where a piece can go, rings where it takes, red
+   "loose" tape on hanging pieces, and a small tally tag on a counted square. */
+.desk__aid {
+  pointer-events: none;
+}
+
+.desk__aid .aid-from {
+  fill: var(--highlight);
+  opacity: 0.45;
+}
+
+.desk__aid .aid-dot {
+  fill: var(--graphite);
+  opacity: 0.7;
+}
+
+.desk__aid .aid-take {
+  fill: none;
+  stroke: var(--graphite);
+  stroke-width: 0.8;
+  opacity: 0.7;
+}
+
+.desk__aid .aid-loose rect {
+  fill: var(--red);
+  opacity: 0.9;
+}
+
+.desk__aid text {
+  text-anchor: middle;
+  font: 700 1.9px var(--font-hand);
+}
+
+.desk__aid .aid-loose text {
+  fill: var(--card);
+}
+
+.desk__aid .aid-tally rect {
+  fill: var(--card);
+  stroke: var(--blue);
+  stroke-width: 0.3;
+}
+
+.desk__aid .aid-tally text {
+  fill: var(--blue);
+}
+
+.desk__aid .aid-tally.is-short rect {
+  stroke: var(--red);
+}
+
+.desk__aid .aid-tally.is-short text {
+  fill: var(--red);
+}
+
 /* Numbered line: each arrow carries its move number in a small paper disc. */
 .desk__draw .dr--step {
   stroke-width: 1.3;
@@ -726,6 +781,21 @@
 .pens__stk[aria-pressed='true'] {
   outline: 2.5px solid var(--blue);
   outline-offset: 1px;
+}
+
+.pens__help {
+  height: 36px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: calc(var(--radius) - 2px);
+  background: transparent;
+  color: var(--ink);
+  font: 600 0.92rem/1 var(--font-hand);
+  cursor: pointer;
+}
+
+.pens__help[aria-pressed='true'] {
+  background: var(--highlight);
 }
 
 .pens__line {

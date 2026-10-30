@@ -181,6 +181,29 @@ async function run(browserType, base) {
     await page.click('#pens [data-color="green"]');
   }
 
+  // Helpers answer one question on a tap and fade at the next touch; they never move a piece.
+  if (await page.locator('#pens [data-help]').count()) {
+    const aid = (sel) => page.locator(`#desk-draw .desk__aid ${sel}`).count();
+    const before = await pieces();
+    await page.click('#pens [data-help="reach"]');
+    await drag('f3', 'f3');
+    check('Reach: dots where the knight can go, a ring where it takes', (await aid('.aid-dot')) === 4 && (await aid('.aid-take')) === 1);
+    check('Reach says it in words', /can go to 5 squares, taking on e5/.test(await hint()));
+    // The board now has 3. d4 played (Black to move), from the line check above.
+    await page.click('#pens [data-help="guard"]');
+    await drag('e5', 'e5');
+    check('Guard count: a red tally when short, and the sentence', (await aid('.aid-tally.is-short')) === 1 && /attacked twice, defended once, short of defenders/.test(await hint()), await hint());
+    await page.click('#pens [data-help="loose"]');
+    check('Loose: the side to move’s hanging pawn gets a tag', (await aid('.aid-loose')) === 1 && /Yours.*loose on e5/.test(await hint()), await hint());
+    await page.click('#pens [data-help="loose"]');
+    check('Loose again: the other side’s, here none', (await aid('.aid-loose')) === 0 && /Theirs: nothing loose/.test(await hint()), await hint());
+    await page.click('#pens [data-help="loose"]');
+    await page.click('#pens [data-help="loose"]');
+    await drag('a3', 'a3');
+    check('a helper fades at the next touch', (await aid('*')) === 0);
+    check('helpers never move a piece', (await pieces()) === before);
+  }
+
   // Flipping keeps every drawing.
   const before = await count('g');
   await page.click('#tool-flip');
