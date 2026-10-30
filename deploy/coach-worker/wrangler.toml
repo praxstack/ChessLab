@@ -6,7 +6,7 @@ compatibility_date = "2026-09-01"
 
 [vars]
 # Sites allowed to call the coach, comma separated, exact origins (no trailing slash).
-APP_ORIGINS = "https://askthemove-app.pages.dev,https://app.askthemove.online"
+APP_ORIGINS = "https://askthemove-app.pages.dev,https://app.askthemove.online,https://askthemove.online"
 # Explanations per invite code per UTC day.
 COACH_MAX_PER_DAY = "50"
 # Claude model for explanations.

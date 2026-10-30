@@ -3,6 +3,7 @@
 .env.*
 !.env.example
 /node_modules
+web/node_modules
 dist/
 coverage/
 __pycache__/
@@ -23,3 +24,4 @@ design/**/*.stderr.txt
 /data
 web/dist/
 web/dist-app/
+web/dist-betapp/
