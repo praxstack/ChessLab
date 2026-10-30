@@ -445,6 +445,7 @@
   background: oklch(23% 0.025 265 / 0.28);
 }
 
+.pens__line[hidden],
 .desk__promo[hidden] {
   display: none;
 }

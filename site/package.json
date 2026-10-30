@@ -15,7 +15,8 @@
     "db:migrate:local": "wrangler d1 migrations apply askthemove-waitlist --local",
     "db:migrate:remote": "wrangler d1 migrations apply askthemove-waitlist --remote",
     "delete-signup": "node scripts/delete-signup.mjs",
-    "deploy": "node scripts/build.mjs --check && wrangler pages deploy --branch main"
+    "deploy": "node scripts/build.mjs --check && wrangler pages deploy --branch main",
+    "check:pens": "node scripts/check-pens.mjs"
   },
   "devDependencies": {
     "chess.js": "1.4.0",
