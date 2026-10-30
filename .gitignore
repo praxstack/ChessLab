@@ -3,6 +3,7 @@
 .env.*
 !.env.example
 /node_modules
+web/node_modules
 dist/
 coverage/
 __pycache__/
