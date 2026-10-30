@@ -170,6 +170,17 @@ async function run(browserType, base) {
     check('tape snaps to the diagonal', (await count('.dr--tape')) === 1);
   }
 
+  // Inks have meanings, and Theirs arrows get a second head.
+  if (await page.locator('#pens .pens__role').count()) {
+    check('the inks read Mine, Theirs and Idea', (await page.locator('#pens .pens__role').allTextContents()).join(' ') === 'Mine Theirs Idea');
+    await tool('arrow');
+    await page.click('#pens [data-color="red"]');
+    await drag('h2', 'h4');
+    const heads = await page.locator('#desk-draw .desk__drawn .dr--arrow.tone--red path').count();
+    check('a Theirs arrow has the double head', heads === 5, `${heads} strokes`);
+    await page.click('#pens [data-color="green"]');
+  }
+
   // Flipping keeps every drawing.
   const before = await count('g');
   await page.click('#tool-flip');

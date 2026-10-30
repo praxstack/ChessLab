@@ -256,3 +256,13 @@ test('draw: tape snaps to a rank, file or diagonal and stays on the board', asyn
   assert.ok(sk.undo());
   assert.deepEqual(sk.shapes.map((s) => s.glyph), ['!'], 'in one undo step');
 });
+
+test('draw: inks mean Mine, Theirs and Idea, and Theirs differs by shape too', async () => {
+  const { ROLES } = await import('../public/assets/draw.js');
+  assert.deepEqual(ROLES, { green: 'Mine', red: 'Theirs', blue: 'Idea' });
+  const paths = (color) => (shapeSVG({ kind: 'arrow', from: 'e2', to: 'e5', color, seed: 3 }, 'white').match(/<path /g) || []).length;
+  assert.equal(paths('green'), 3, 'shaft and one head');
+  assert.equal(paths('blue'), 3);
+  assert.equal(paths('red'), 5, 'a threat chevron: a second head');
+  assert.equal((shapeSVG({ kind: 'ghost', from: 'g1', to: 'f3', piece: 'wN', color: 'red', seed: 3 }, 'white').match(/<path /g) || []).length, 3, 'ghosts keep one head');
+});

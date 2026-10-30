@@ -641,6 +641,18 @@
   --tone: var(--green);
 }
 
+.pens__roles .pens__pick {
+  width: auto;
+  gap: 5px;
+  grid-auto-flow: column;
+  padding: 0 10px 0 8px;
+}
+
+.pens__role {
+  font: 600 0.82rem/1 var(--font-hand);
+  color: var(--ink);
+}
+
 .pens__dot {
   width: 18px;
   height: 18px;

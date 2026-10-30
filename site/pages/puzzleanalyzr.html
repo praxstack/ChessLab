@@ -70,10 +70,10 @@
           <button class="pens__pick" type="button" data-size="medium" aria-pressed="true" aria-label="Medium line" title="Medium"><span class="pens__size pens__size--medium" aria-hidden="true"></span></button>
           <button class="pens__pick" type="button" data-size="thick" aria-pressed="false" aria-label="Thick line" title="Thick"><span class="pens__size pens__size--thick" aria-hidden="true"></span></button>
         </div>
-        <div class="pens__set" role="group" aria-label="Ink colour">
-          <button class="pens__pick pens__ink tone--blue" type="button" data-color="blue" aria-pressed="true" aria-label="Blue ink" title="Blue"><span class="pens__dot" aria-hidden="true"></span></button>
-          <button class="pens__pick pens__ink tone--red" type="button" data-color="red" aria-pressed="false" aria-label="Red ink" title="Red"><span class="pens__dot" aria-hidden="true"></span></button>
-          <button class="pens__pick pens__ink tone--green" type="button" data-color="green" aria-pressed="false" aria-label="Green ink" title="Green"><span class="pens__dot" aria-hidden="true"></span></button>
+        <div class="pens__set pens__roles" role="group" aria-label="What the ink means">
+          <button class="pens__pick pens__ink tone--green" type="button" data-color="green" aria-pressed="true" title="Mine: your plan, in green"><span class="pens__dot" aria-hidden="true"></span><span class="pens__role">Mine</span></button>
+          <button class="pens__pick pens__ink tone--red" type="button" data-color="red" aria-pressed="false" title="Theirs: their threats, in red with a double head"><span class="pens__dot" aria-hidden="true"></span><span class="pens__role">Theirs</span></button>
+          <button class="pens__pick pens__ink tone--blue" type="button" data-color="blue" aria-pressed="false" title="Idea: a move you're testing, in blue"><span class="pens__dot" aria-hidden="true"></span><span class="pens__role">Idea</span></button>
         </div>
         <div class="pens__keep">
           <button class="btn btn--plain btn--small pens__act" id="draw-undo" type="button" aria-label="Undo the last drawing" disabled>Undo</button>

@@ -18,12 +18,18 @@
 // The top half is pure geometry and bookkeeping (tested with node --test);
 // createDrawLayer below it is the only part that touches the page.
 import { arrowPoints } from './board.js';
-import { arrow, loop, rng, seedFrom, smoothPath } from './ink.js';
+import { arrow, arrowHead, loop, rng, seedFrom, smoothPath } from './ink.js';
 import { lineText, nextStep } from './line.js';
 
 const FILES = 'abcdefgh';
 export const SIZE = 80;
 export const COLORS = ['blue', 'red', 'green'];
+/**
+ * What each ink means, the way chess players mark a board: green for your own
+ * plan, red for the other side's threats, blue for an idea you're testing.
+ * Their arrows get a second head, so red and green differ by shape too.
+ */
+export const ROLES = { green: 'Mine', red: 'Theirs', blue: 'Idea' };
 export const TOOLS = ['pen', 'pencil', 'marker', 'arrow', 'circle', 'ghost', 'line', 'sticker', 'tape'];
 /** Move glyphs from chess books, and words taped across a square. */
 export const GLYPHS = ['!!', '!', '!?', '?!', '?', '??', '□', '⊙'];
@@ -293,7 +299,19 @@ export function pieceForGhost(sq, shapes, real) {
 /** The SVG path data for one drawing on a board with this orientation. */
 export function shapePaths(shape, o) {
   const seed = shape.seed ?? seedFrom(JSON.stringify(shape));
-  if (shape.kind === 'arrow' || shape.kind === 'ghost' || shape.kind === 'step') return arrow(arrowPoints(shape.from, shape.to, o), { seed, head: 2.7 });
+  if (shape.kind === 'arrow' || shape.kind === 'ghost' || shape.kind === 'step') {
+    const pts = arrowPoints(shape.from, shape.to, o);
+    const paths = arrow(pts, { seed, head: 2.7 });
+    if (shape.color === 'red' && shape.kind !== 'ghost') {
+      // Theirs: a second head just behind the first, a threat chevron.
+      const a = pts[pts.length - 2];
+      const b = pts[pts.length - 1];
+      const len = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+      const u = [(b[0] - a[0]) / len, (b[1] - a[1]) / len];
+      paths.push(...arrowHead([b[0] - u[0] * 1.7, b[1] - u[1] * 1.7], u, 2.4, { seed: seed + 11 }));
+    }
+    return paths;
+  }
   if (shape.kind === 'tape') {
     const a = squareCentre(shape.from, o);
     const b = squareCentre(shape.to, o);
@@ -484,7 +502,7 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
   let drawMode = false;
   let visible = true;
   let tool = remembered('tool', TOOLS, 'pen');
-  let color = 'blue';
+  let color = remembered('color', COLORS, 'green');
   let size = remembered('size', Object.keys(SIZES), 'medium');
   let live = null; // the stroke being drawn
   let penUpAt = -Infinity;
@@ -801,6 +819,7 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
   for (const b of els.colors) {
     b.addEventListener('click', () => {
       color = b.dataset.color;
+      remember('color', color);
       syncButtons();
     });
   }
