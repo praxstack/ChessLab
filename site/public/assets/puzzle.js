@@ -16,7 +16,7 @@ import { createEngine, grade, isCancel, isSaved, toCp } from './engine.js';
 import { DEFAULT_ENGINE, createChoice, engineById, formatBytes, needsWarning } from './engine-catalog.js';
 import { createPicker } from './engine-picker.js';
 import * as sound from './sound.js';
-import { nextPuzzleAt, whenText } from './daily-clock.js';
+import { appAhead, nextPuzzleAt, whenText } from './daily-clock.js';
 
 const API = 'https://api.chess.com/pub';
 const ARCHIVE = 'https://raw.githubusercontent.com/praxstack/ChessLab/puzzle-archive/puzzles.json';
@@ -585,7 +585,13 @@ function showSolve() {
 function showNext() {
   const row = $('card-next-row');
   row.hidden = desk.kind !== 'today' || !todayIso;
-  if (!row.hidden) $('card-next').textContent = whenText(nextPuzzleAt(todayIso));
+  $('card-app-row').hidden = row.hidden;
+  const when = todayIso ? whenText(nextPuzzleAt(todayIso)) : '';
+  if (!row.hidden) $('card-next').textContent = when;
+  // Past midnight on this device, the Chess.com app has moved on but the public feed hasn't.
+  const ahead = $('card-ahead');
+  ahead.hidden = row.hidden || !appAhead(todayIso);
+  ahead.textContent = ahead.hidden ? '' : `The Chess.com app already has the next puzzle. This page gets it ${when}. Want it now? Paste its position in Bring your own position below.`;
 }
 
 function planNext() {

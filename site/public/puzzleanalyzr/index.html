@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script type="importmap">{"imports":{"/assets/app.js":"/assets/app.js?v=90fa02be76","/assets/board.js":"/assets/board.js?v=1f62d4f452","/assets/bookpage.js":"/assets/bookpage.js?v=317b20dc69","/assets/coach.js":"/assets/coach.js?v=d14550ff4d","/assets/daily-clock.js":"/assets/daily-clock.js?v=a54f71532e","/assets/demo-data.js":"/assets/demo-data.js?v=3eb10a8ec8","/assets/desk.js":"/assets/desk.js?v=12d1a870ed","/assets/draw.js":"/assets/draw.js?v=41a2377171","/assets/engine-catalog.js":"/assets/engine-catalog.js?v=b91368eaef","/assets/engine-parts.js":"/assets/engine-parts.js?v=a069783ea3","/assets/engine-picker.js":"/assets/engine-picker.js?v=bfa20b7b10","/assets/engine.js":"/assets/engine.js?v=7c5e11fe13","/assets/helpers.js":"/assets/helpers.js?v=28055a8597","/assets/ink.js":"/assets/ink.js?v=be5a18e099","/assets/lc0-search.js":"/assets/lc0-search.js?v=b7848d3b7c","/assets/lc0.js":"/assets/lc0.js?v=7a4ebf132a","/assets/line.js":"/assets/line.js?v=ef28aaa10c","/assets/maia2.js":"/assets/maia2.js?v=93c13c9c93","/assets/maia3.js":"/assets/maia3.js?v=48c5f2bda0","/assets/puzzle.js":"/assets/puzzle.js?v=2bd06e8391","/assets/rules.js":"/assets/rules.js?v=01cddd3ef6","/assets/searchless.js":"/assets/searchless.js?v=5602d641ee","/assets/sound.js":"/assets/sound.js?v=8759e04c61","/assets/vendor/chess.js":"/assets/vendor/chess.js?v=0fd3d85b71"}}</script>
+<script type="importmap">{"imports":{"/assets/app.js":"/assets/app.js?v=90fa02be76","/assets/board.js":"/assets/board.js?v=1f62d4f452","/assets/bookpage.js":"/assets/bookpage.js?v=317b20dc69","/assets/coach.js":"/assets/coach.js?v=d14550ff4d","/assets/daily-clock.js":"/assets/daily-clock.js?v=e5a66bd97e","/assets/demo-data.js":"/assets/demo-data.js?v=3eb10a8ec8","/assets/desk.js":"/assets/desk.js?v=12d1a870ed","/assets/draw.js":"/assets/draw.js?v=41a2377171","/assets/engine-catalog.js":"/assets/engine-catalog.js?v=b91368eaef","/assets/engine-parts.js":"/assets/engine-parts.js?v=a069783ea3","/assets/engine-picker.js":"/assets/engine-picker.js?v=bfa20b7b10","/assets/engine.js":"/assets/engine.js?v=7c5e11fe13","/assets/helpers.js":"/assets/helpers.js?v=28055a8597","/assets/ink.js":"/assets/ink.js?v=be5a18e099","/assets/lc0-search.js":"/assets/lc0-search.js?v=b7848d3b7c","/assets/lc0.js":"/assets/lc0.js?v=7a4ebf132a","/assets/line.js":"/assets/line.js?v=ef28aaa10c","/assets/maia2.js":"/assets/maia2.js?v=93c13c9c93","/assets/maia3.js":"/assets/maia3.js?v=48c5f2bda0","/assets/puzzle.js":"/assets/puzzle.js?v=ea6557479f","/assets/rules.js":"/assets/rules.js?v=01cddd3ef6","/assets/searchless.js":"/assets/searchless.js?v=5602d641ee","/assets/sound.js":"/assets/sound.js?v=8759e04c61","/assets/vendor/chess.js":"/assets/vendor/chess.js?v=0fd3d85b71"}}</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Puzzle analyzr · AskTheMove</title>
@@ -37,7 +37,7 @@
   https://cloudflareinsights.com to connect-src in scripts/build.mjs (CSP), and rebuild.
   No other trackers, no cookies.
 -->
-<link rel="stylesheet" href="/assets/puzzle.css?v=254a64b29a">
+<link rel="stylesheet" href="/assets/puzzle.css?v=98fe9f30a6">
 </head>
 <body class="page-puzzles">
 <a class="skip" href="#main">Skip to content</a>
@@ -186,10 +186,12 @@
         <p class="printout__line desk__row" id="card-date-row"><span>date</span><span class="desk__dots" aria-hidden="true"></span><span id="card-date">today</span></p>
         <p class="printout__line desk__row" id="card-name-row" hidden><span>name</span><span class="desk__dots" aria-hidden="true"></span><button class="desk__reveal" id="card-name" type="button">tap to show</button></p>
         <p class="printout__line desk__row"><span>to move</span><span class="desk__dots" aria-hidden="true"></span><span id="card-side">…</span></p>
-        <p class="printout__line desk__row" id="card-next-row" hidden title="Your own time. Chess.com changes the daily puzzle at midnight US Pacific time."><span>next one</span><span class="desk__dots" aria-hidden="true"></span><span id="card-next">…</span></p>
+        <p class="printout__line desk__row" id="card-app-row" hidden title="The Chess.com app changes its puzzle at midnight on your own phone."><span>new in the app</span><span class="desk__dots" aria-hidden="true"></span><span>midnight, your time</span></p>
+        <p class="printout__line desk__row" id="card-next-row" hidden title="Your own time. This page reads Chess.com’s public feed, which changes at midnight US Pacific time."><span>new on this page</span><span class="desk__dots" aria-hidden="true"></span><span id="card-next">…</span></p>
         <p class="printout__line desk__row"><span>from</span><span class="desk__dots" aria-hidden="true"></span><span id="card-src">Chess.com daily puzzle</span></p>
         <p class="printout__line desk__row"><span>answer</span><span class="desk__dots" aria-hidden="true"></span><span class="printout__flag">hidden</span></p>
       </div>
+      <p class="note-hand note-hand--red desk__ahead" id="card-ahead" hidden></p>
 
       <div class="desk__swap">
         <p class="note-hand desk__swap-note">Or put another one on the board:</p>
@@ -417,9 +419,9 @@
       <details>
         <summary><span>When the daily puzzle changes</span><i class="glyph glyph--plus" data-draw><svg class="ink__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M11.24 51.4 C15.72 51.26 29.27 50.91 38.09 50.56 C46.91 50.21 55.49 49.74 64.19 49.29 C72.89 48.85 85.93 48.12 90.28 47.88"/><path class="stroke" pathLength="1" d="M52.72 9.4 C52.16 14.07 50.05 28.15 49.34 37.4 C48.63 46.65 48.7 55.73 48.45 64.89 C48.21 74.06 47.98 87.82 47.88 92.4"/></svg></i></summary>
         <div class="pz-setup__how">
-          <p>Chess.com changes its daily puzzle at midnight US Pacific time. In India that’s <b>12:30 PM</b> from March to early November, and <b>1:30 PM</b> from early November to March, when the US clocks go back.</p>
-          <p>So in the morning you still see the puzzle dated yesterday. That’s Chess.com’s today, not a stale page.</p>
-          <p>The puzzle card shows when the next one comes out, in your own time. Leave this page open and it switches to the new puzzle by itself.</p>
+          <p>There are two clocks. The <b>Chess.com app</b> changes its puzzle at <b>midnight on your own phone</b>.</p>
+          <p>This page can only read Chess.com’s <b>public feed</b>, which changes at midnight US Pacific time. In India that’s <b>12:30 PM</b> from March to early November, and <b>1:30 PM</b> from early November to March, when the US clocks go back.</p>
+          <p>So from midnight until then, the app already has the new puzzle and this page still shows the one before. The puzzle card says when this page gets it, in your own time. To work on the app’s new puzzle sooner, paste its position into <b>Bring your own position</b>. Leave this page open and it switches to the new puzzle by itself.</p>
         </div>
       </details>
       <details>
@@ -479,6 +481,6 @@
   </div>
 </footer>
 <script type="module" src="/assets/app.js?v=90fa02be76"></script>
-<script type="module" src="/assets/puzzle.js?v=2bd06e8391"></script>
+<script type="module" src="/assets/puzzle.js?v=ea6557479f"></script>
 </body>
 </html>

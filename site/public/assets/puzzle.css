@@ -2452,3 +2452,8 @@ button.cal__day {
     background: none;
   }
 }
+
+/* The Chess.com app is ahead of the public feed between local midnight and Pacific midnight. */
+.desk__ahead {
+  margin: var(--s-2) 0 0;
+}
