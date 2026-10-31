@@ -1,4 +1,5 @@
-# The image copies only package files, server/, shared/, web/, docker/, vite.config.mjs and scripts/browser-app-hosting.mjs.
+# The image copies only package files, server/, shared/, web/, docker/, vite.config.mjs, scripts/browser-app-hosting.mjs
+# and the six site/public/assets modules the app's board imports (sound, draw and what draw pulls in).
 # Keep secrets, local data and large reference material out of the build context.
 **/.DS_Store
 .git
@@ -25,6 +26,16 @@ docs
 references
 report
 site
+!site/public
+site/public/*
+!site/public/assets
+site/public/assets/*
+!site/public/assets/sound.js
+!site/public/assets/draw.js
+!site/public/assets/board.js
+!site/public/assets/ink.js
+!site/public/assets/line.js
+!site/public/assets/helpers.js
 skills
 skills.local.json
 openspec

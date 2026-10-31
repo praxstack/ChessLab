@@ -88,8 +88,9 @@ function App() {
   const cachedAnalysis=gameReport&&game&&!branchId&&analysisScope==='review'&&gameReport.gameId===game.id?gameReport.entries[ply-1]?.analysis:null;
   // The AI coach explains the same node as the evidence panel: the position before the selected move.
   const coachNode=game?{gameId:game.id,moves:ply?history.slice(0,ply-1):[],initialFen:game.initialFen??null,...(game.variant?{variant:game.variant}:{}),...(ply?{playedMove:history[ply-1]}:{}),...(analysis?.evidenceId?{evidenceId:analysis.evidenceId}:{})}:null;
-  // The learner's own pens over the board: drawings belong to the position on it.
-  const pens=usePens({positionKey:`${page}|${game?.id||""}|${puzzle?.id||""}|${lesson?.id||""}|${chess.fen()}`,orientation,studyMarks:canDraw});
+  // The learner's own pens over the board: drawings belong to the game, puzzle or lesson on it and
+  // stay while its moves are played (so Faint can show them), as on the puzzle page.
+  const pens=usePens({positionKey:`${page}|${game?.id||""}|${branchId||""}|${puzzle?.id||""}|${lesson?.id||""}`,orientation,studyMarks:canDraw});
   const coachNodeKey=coachKey({gameId:game?.id,branchId,ply,historyKey,scope:analysisScope,analysis});
 
   function startBusy(){if(busyRef.current||savingRef.current)return false;busyRef.current=true;setBusy(true);setError('');return true;}
@@ -165,7 +166,7 @@ function App() {
   },[game?.id,game?.revision,isLive,busy,engineTurn]);
   useEffect(()=>{if(!game?.result||!user)return;let alive=true;const accountId=user.id;api('/api/me').then(data=>{if(!alive||userRef.current?.id!==accountId)return;setProgress(data.progress||{lessons:[],puzzles:[]});if(data.user?.id===accountId&&data.user.coachAi!==userRef.current.coachAi){const next={...userRef.current,coachAi:data.user.coachAi};userRef.current=next;setUser(next);}}).catch(()=>{});return()=>{alive=false;};},[game?.id,game?.result,user?.id]);
   useEffect(()=>{if(!autoplay)return;const timer=setInterval(()=>setPly(current=>{if(current>=history.length){setAutoplay(false);return current;}return current+1;}),Number(settings.pace));return()=>clearInterval(timer);},[autoplay,history.length,settings.pace]);
-  useEffect(()=>{const key=e=>{if(page!=='play'||modal||['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;if(e.key==='ArrowLeft'){e.preventDefault();jump(ply-1);}if(e.key==='ArrowRight'){e.preventDefault();jump(ply+1);}if(e.key==='Home'){e.preventDefault();jump(0);}if(e.key==='End'){e.preventDefault();jump(history.length);}};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key);},[page,modal,ply,history.length]);
+  useEffect(()=>{const key=e=>{if(e.defaultPrevented||page!=='play'||modal||['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;if(e.key==='ArrowLeft'){e.preventDefault();jump(ply-1);}if(e.key==='ArrowRight'){e.preventDefault();jump(ply+1);}if(e.key==='Home'){e.preventDefault();jump(0);}if(e.key==='End'){e.preventDefault();jump(history.length);}};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key);},[page,modal,ply,history.length]);
 
   async function persistStudy(){
     if(!game||!dirty)return true;

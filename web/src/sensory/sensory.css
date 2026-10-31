@@ -13,7 +13,6 @@
   overflow: visible;
   pointer-events: none;
 }
-.sn-ink.is-hidden { visibility: hidden; }
 .sn-ink .dr {
   --tone: var(--sn-blue);
   fill: none;
@@ -38,16 +37,17 @@
   --sn-blue: var(--blue, #1f48ae);
   --sn-red: var(--red, #c92324);
   --sn-green: var(--green, #1d7a4a);
+  --sn-line: var(--line, #364358);
+  --sn-text: var(--paper, #ebedf1);
+  --sn-muted: var(--muted, #adb4bf);
+  --sn-on: var(--surface, #1e2530);
+  --sn-picked: var(--raised, #2f3a4c);
   margin: 12px 0 0;
+  min-width: 0;
 }
-.sn-pens__row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.sn-pens__set {
-  display: flex;
-  gap: 2px;
-  padding: 2px;
-  border: 1px solid var(--line, #ffffff26);
-  border-radius: 8px;
-}
+.sn-pens__row,
+.sn-pens__kit { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.sn-pens__kit { margin-top: 8px; }
 .sn-pens button {
   font: inherit;
   color: inherit;
@@ -55,7 +55,47 @@
   transition: background-color 120ms ease, color 120ms ease;
 }
 .sn-pens button:disabled { cursor: default; opacity: 0.45; }
-.sn-pens button:focus-visible { outline: 2px solid var(--blue, #1f48ae); outline-offset: 2px; }
+.sn-pens button:focus-visible { outline: 2px solid var(--sn-blue); outline-offset: 2px; }
+
+/* Move · Faint · Draw: one switch decides whether the board draws and how the drawings show. */
+.sn-pens__modes {
+  display: flex;
+  padding: 2px;
+  border: 1.5px solid var(--sn-text);
+  border-radius: 9px;
+}
+.sn-pens__modebtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  min-width: 64px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  font-weight: 600;
+}
+.sn-pens__modebtn .sn-icon { width: 20px; height: 20px; }
+.sn-pens__modebtn[aria-checked='true'] { background: var(--sn-text); color: var(--sn-on); }
+.sn-pens__modebtn[data-mode='draw'][aria-checked='true'] { background: var(--sn-blue); color: #fff; }
+@media (hover: hover) and (pointer: fine) {
+  .sn-pens__modebtn[aria-checked='false']:hover { background: var(--sn-picked); }
+}
+
+.sn-pens__fade { display: flex; align-items: center; gap: 8px; min-height: 40px; font-size: 0.85rem; font-weight: 600; }
+.sn-pens__fade input { width: 120px; accent-color: var(--sn-blue); }
+.sn-pens__fade-out { min-width: 3ch; font-variant-numeric: tabular-nums; color: var(--sn-muted); font-weight: 400; }
+
+.sn-pens__set {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--sn-line);
+  border-radius: 8px;
+}
 .sn-pens__pick {
   display: grid;
   place-items: center;
@@ -66,50 +106,51 @@
   border-radius: 6px;
   background: transparent;
 }
-.sn-pens__pick[aria-pressed='true'] { background: var(--highlight, #f3d58c55); }
+.sn-pens__pick[aria-pressed='true'] { background: var(--highlight, var(--sn-picked)); box-shadow: inset 0 0 0 1px var(--sn-muted); }
 @media (hover: hover) and (pointer: fine) {
-  .sn-pens__pick[aria-pressed='false']:hover { background: #8881; }
+  .sn-pens__pick[aria-pressed='false']:hover { background: color-mix(in srgb, var(--sn-picked) 60%, transparent); }
 }
-.sn-pens__mode {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 40px;
-  padding: 0 14px 0 10px;
-  border: 1px solid var(--line, #ffffff26);
-  border-radius: 8px;
-  background: transparent;
-  font-weight: 600;
+/* Every tool and size says its name under its picture, so nobody has to guess (no hover on touch). */
+.sn-pens__pick--named {
+  grid-template-rows: 24px auto;
+  gap: 2px;
+  min-width: 46px;
+  height: auto;
+  min-height: 48px;
+  padding: 4px 5px 3px;
 }
-.sn-pens__mode[aria-pressed='true'] { background: var(--sn-blue); border-color: var(--sn-blue); color: #fff; }
+.sn-pens__name { font-size: 0.72rem; font-weight: 600; line-height: 1; white-space: nowrap; color: var(--sn-muted); }
+.sn-pens__pick--named[aria-pressed='true'] .sn-pens__name { color: var(--sn-text); }
+
 .sn-icon { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .sn-icon--pencil { stroke-width: 1.4; stroke-dasharray: 2.2 1.1; }
 .sn-icon--marker { stroke-width: 4.5; stroke-linecap: square; opacity: 0.55; }
+.sn-pens__sizebox { display: grid; place-items: center; width: 24px; height: 24px; }
 .sn-pens__size { border-radius: 50%; background: currentColor; }
 .sn-pens__size--thin { width: 5px; height: 5px; }
 .sn-pens__size--medium { width: 9px; height: 9px; }
 .sn-pens__size--thick { width: 15px; height: 15px; }
-.sn-pens__ink { --tone: var(--sn-blue); grid-auto-flow: column; gap: 5px; padding: 0 10px 0 8px; }
+.sn-pens__ink { --tone: var(--sn-blue); grid-auto-flow: column; gap: 5px; min-height: 48px; padding: 0 10px 0 8px; }
 .sn-tone--red { --tone: var(--sn-red); }
 .sn-tone--green { --tone: var(--sn-green); }
 .sn-pens__dot { width: 16px; height: 16px; border-radius: 50% 46% 52% 48%; background: var(--tone); }
-.sn-pens__ink[aria-pressed='true'] .sn-pens__dot { box-shadow: 0 0 0 2px var(--paper-2, #fff), 0 0 0 3.5px var(--tone); }
+.sn-pens__ink[aria-pressed='true'] .sn-pens__dot { box-shadow: 0 0 0 2px var(--sn-on), 0 0 0 3.5px var(--tone); }
 .sn-pens__role { font-size: 0.82rem; font-weight: 600; }
-.sn-pens__keep { display: flex; gap: 6px; margin-left: auto; }
-.sn-pens__act,
-.sn-pens__show {
-  min-height: 36px;
-  padding: 0 10px;
-  border: 1px solid var(--line, #ffffff26);
+.sn-pens__keep { display: flex; gap: 6px; }
+.sn-pens__act {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--sn-line);
   border-radius: 8px;
   background: transparent;
   font-size: 0.85rem;
 }
-.sn-pens__show[aria-pressed='false'] { color: var(--graphite, #5b5e66); text-decoration: line-through; }
-.sn-pens__hint { margin: 6px 0 0; font-size: 11px; line-height: 1.5; color: var(--muted, var(--graphite, #5b5e66)); }
+.sn-pens__hint { margin: 6px 0 0; font-size: 11px; line-height: 1.5; color: var(--sn-muted); }
 
+/* A phone: the three sets each take a row's worth, and nothing runs off the side. */
 @media (max-width: 560px) {
-  .sn-pens__keep { margin-left: 0; flex-basis: 100%; }
+  .sn-pens__kit { gap: 6px; }
+  .sn-pens__pick--named { min-width: 44px; padding: 4px 3px 3px; }
 }
 
 /* The ink itself doesn't animate (draw.js draws a stroke as the pointer moves); the toolbar's
