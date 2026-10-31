@@ -36,8 +36,10 @@ test('the app is ahead in India between local midnight and 12:30 pm', async () =
   assert.equal(appAhead('2026-10-31', { now: early, timeZone: IST }), true);
   // 31 Oct, 18:00 IST: same date as the feed, nothing ahead.
   assert.equal(appAhead('2026-10-31', { now: Date.UTC(2026, 9, 31, 12, 30), timeZone: IST }), false);
-  // Once the feed changes (07:00 UTC 1 Nov in US summer time) the page catches up.
-  assert.equal(appAhead('2026-10-31', { now: Date.UTC(2026, 10, 1, 7, 1), timeZone: IST }), false);
+  // Past the feed's change time but the page still holds 31 Oct (late or failed refresh): still ahead.
+  assert.equal(appAhead('2026-10-31', { now: Date.UTC(2026, 10, 1, 7, 1), timeZone: IST }), true);
+  // Once the page has loaded the 1 Nov puzzle it has caught up.
+  assert.equal(appAhead('2026-11-01', { now: Date.UTC(2026, 10, 1, 7, 1), timeZone: IST }), false);
   // In Los Angeles itself the two clocks agree.
   assert.equal(appAhead('2026-10-31', { now: Date.UTC(2026, 10, 1, 6, 30), timeZone: 'America/Los_Angeles' }), false);
   assert.equal(appAhead('', { now: early, timeZone: IST }), false);

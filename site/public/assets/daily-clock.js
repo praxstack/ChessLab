@@ -62,7 +62,11 @@ export function localIso(now = Date.now(), timeZone) {
   return `${p.y}-${String(p.m).padStart(2, '0')}-${String(p.d).padStart(2, '0')}`;
 }
 
-/** True when the Chess.com app (which goes by the phone's date) already has a newer puzzle than the feed's `iso`. */
+/**
+ * True when the Chess.com app (which goes by the phone's date) already has a
+ * newer puzzle than the one this page loaded, dated `iso`. It goes by the
+ * loaded date only, so a late or failed feed refresh keeps the note up.
+ */
 export function appAhead(iso, { now = Date.now(), timeZone } = {}) {
-  return Boolean(iso) && localIso(now, timeZone) > iso && now < nextPuzzleAt(iso);
+  return Boolean(iso) && localIso(now, timeZone) > iso;
 }
