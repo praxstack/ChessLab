@@ -88,8 +88,8 @@ export function appManifest(base = '/') {
     start_url: base,
     scope: base,
     display: 'standalone',
-    background_color: '#262f3e',
-    theme_color: '#1e2530',
+    background_color: '#fbfaf4',
+    theme_color: '#fbfaf4',
     icons: [
       {src: `${base}favicon.svg`, sizes: 'any', type: 'image/svg+xml'},
       {src: `${base}icon-192.png`, sizes: '192x192', type: 'image/png'},

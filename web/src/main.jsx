@@ -20,6 +20,8 @@ import CoachExplain from './CoachExplain.jsx';
 import {toggleMark} from '../../shared/board-marks.js';
 import {localApi, localExportFile} from './local/index.js';
 import BackupRestore from './local/BackupRestore.jsx';
+import BrandMark from './BrandMark.jsx';
+import {applyTheme} from './theme.js';
 import './styles.css';
 import {publicUrl} from './public-url.js';
 
@@ -116,6 +118,7 @@ function App() {
     return()=>{alive=false;};
   },[]);
   useEffect(()=>{localStorage.setItem('chesslab-settings',JSON.stringify(settings));},[settings]);
+  useEffect(()=>{applyTheme(settings.theme);},[settings.theme]);
   useEffect(()=>{studyRef.current=study;},[study]);
   useEffect(()=>{if(!dirty)return;const warn=e=>{e.preventDefault();e.returnValue='';};window.addEventListener('beforeunload',warn);return()=>window.removeEventListener('beforeunload',warn);},[dirty]);
   useEffect(()=>{reviewingRef.current=mode==='review'||!!branchId||page!=='play';},[mode,branchId,page]);
@@ -331,7 +334,7 @@ function App() {
   const setupProps={bots:catalog.bots,engines:catalog.engines,pending:catalogPending,progress,...setup,onChange:patch=>setSetup(current=>({...current,...patch})),onStart:startGame,disabled:busy||booting,busy};
 
   return <div className="app-shell" data-page={page} data-board-theme={settings.boardTheme}>
-    <aside className="navigation"><a className="brand" href="#" aria-label="AskTheMove home" onClick={e=>{e.preventDefault();changePage('play');}}><span className="brand-mark"><Piece type="n" color="w"/></span><span>Ask<span className="brand-light">TheMove</span></span></a>
+    <aside className="navigation"><a className="brand" href="#" aria-label="AskTheMove home" onClick={e=>{e.preventDefault();changePage('play');}}><span className="brand-mark"><BrandMark/></span><span>Ask<span className="brand-light">TheMove</span></span></a>
       <p className="nav-section">Play & practice</p><nav aria-label="Main navigation">{[['play','Play bots','play'],['training','Puzzles','puzzle'],['learn','Learn','learn'],['openings','Openings','openings'],['endgames','Endgames','endgames'],['vision','Vision','vision'],['library','My games','library']].map(([id,label,icon])=><button key={id} aria-label={label} className={`nav-item ${page===id||(id==='training'&&page==='puzzles')?'active':''}`} onClick={()=>changePage(id)}><span className="nav-asset" aria-hidden="true" style={{'--icon':`url(${publicUrl('icons/')}${{play:'bot',puzzle:'puzzle',learn:'graduation-cap',openings:'book-open',vision:'eye',endgames:'hourglass',library:'library'}[icon]}.svg)`}}/><span>{label}</span>{id==='play'&&<span className="nav-dot"/>}</button>)}</nav>
       <div className="rail-bottom"><div className="local-workspace"><span className="status-dot"/>{!serverBackend?<span>In this browser<small>{status?.storage==='indexeddb'?'Your games stay on this device':status?.storage==='memory'?'Not saved after you close this tab':'Opening your saved games'}</small></span>:status?.hosted?<span>Private beta<small>Saved to your account on this server</small></span>:<span>On this Mac<small>Your games stay here</small></span>}</div>{status?.archives!==false&&<div className="archive-links"><a href="/research/" target="_blank" rel="noreferrer">Research</a><a href="/design/" target="_blank" rel="noreferrer">Design archive</a></div>}<button className="nav-item" aria-label="Settings" onClick={()=>setModal('settings')}><Icon name="settings"/><span>Settings</span></button>{serverBackend&&<button className="account-button" aria-label={user?`Account: ${user.username}`:'Sign in'} onClick={()=>{pendingAction.current=null;setModal(user?'account':'auth');}}><span className="small-avatar">{user?.username?.slice(0,1).toUpperCase()||<Icon name="user"/>}</span><span>{user?.username||'Sign in'}<small>{user?(status?.hosted?'Beta account':'Local account'):'Save your progress'}</small></span></button>}</div>
     </aside>
