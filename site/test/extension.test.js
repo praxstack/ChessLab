@@ -47,13 +47,20 @@ test('refuses a board without one king a side', () => {
 });
 
 test('opens our board with the position and where it came from', () => {
-  assert.equal(R.boardUrl('8/8/8/8/8/8/8/K6k w - - 0 1'), 'https://askthemove.online/puzzleanalyzr/?fen=8%2F8%2F8%2F8%2F8%2F8%2F8%2FK6k%20w%20-%20-%200%201&from=chesscom');
+  assert.equal(R.boardUrl('8/8/8/8/8/8/8/K6k w - - 0 1'), 'https://askthemove.online/puzzleanalyzr/#fen=8%2F8%2F8%2F8%2F8%2F8%2F8%2FK6k%20w%20-%20-%200%201&from=chesscom');
 });
 
-test('the extension only runs on puzzle pages', async () => {
+test('only the unrated Daily Puzzle page: never rated puzzles, Rush, Battle or games', async () => {
   const m = JSON.parse(await readFile(new URL('../extension/manifest.json', import.meta.url), 'utf8'));
   const matches = m.content_scripts.flatMap((c) => c.matches);
-  assert.ok(matches.every((u) => /^https:\/\/www\.chess\.com\/(puzzles|daily-chess-puzzle)\*$/.test(u)), matches.join());
+  assert.deepEqual(matches, ['https://www.chess.com/daily-chess-puzzle*']);
+  assert.ok(R.allowed('/daily-chess-puzzle'));
+  assert.ok(R.allowed('/daily-chess-puzzle/2026-11-01'));
+  for (const p of ['/puzzles/rated', '/puzzles/rush', '/puzzles/battle', '/puzzles', '/game/live/1', '/game/daily/1', '/play/online', '/analysis', '/daily-chess-puzzles-hack']) {
+    assert.equal(R.allowed(p), false, p);
+  }
+  const page = (pathname) => ({ location: { pathname }, querySelector: () => ({ querySelectorAll: () => [], getAttribute: () => '' }) });
+  assert.match(R.readPage(page('/puzzles/rated')).error, /only works on Chess.com’s Daily Puzzle/);
   assert.equal(m.permissions, undefined);
   assert.equal(m.host_permissions, undefined);
 });

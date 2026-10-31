@@ -51,8 +51,18 @@
     return { fen: `${rows.join('/')} ${side} - - 0 1` };
   }
 
+  /**
+   * Only the Daily Puzzle page, which is unrated. Chess.com's fair-play rules
+   * ban engines on rated puzzles, Puzzle Rush and games, so never there.
+   */
+  function allowed(path) {
+    return /^\/daily-chess-puzzle(\/|$)/.test(path || '');
+  }
+
   /** Read the board from a page (document). */
   function readPage(doc) {
+    const path = doc.location ? doc.location.pathname : '';
+    if (!allowed(path)) return { error: 'This only works on Chess.com’s Daily Puzzle page (it’s unrated). Rated puzzles, Puzzle Rush and games are off limits.' };
     const board = doc.querySelector('wc-chess-board, chess-board, .board');
     if (!board) return { error: 'No board on this page. Open a Chess.com puzzle first.' };
     const classes = [...board.querySelectorAll('.piece')].map((el) => el.getAttribute('class') || '');
@@ -61,8 +71,9 @@
   }
 
   function boardUrl(fen, from = 'chesscom') {
-    return `${BOARD}?fen=${encodeURIComponent(fen)}&from=${from}`;
+    // After # so the position never reaches any server, ours included.
+    return `${BOARD}#fen=${encodeURIComponent(fen)}&from=${from}`;
   }
 
-  root.AskTheMoveReader = { piecesFromClasses, sideToMove, toFen, readPage, boardUrl };
+  root.AskTheMoveReader = { allowed, piecesFromClasses, sideToMove, toFen, readPage, boardUrl };
 })(typeof globalThis !== 'undefined' ? globalThis : this);

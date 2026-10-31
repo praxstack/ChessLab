@@ -1,10 +1,10 @@
-// Adds "Analyse on AskTheMove" to Chess.com puzzle pages (never game pages:
-// the manifest only matches puzzle URLs). A tap reads the board on screen and
+// Adds "Analyse on AskTheMove" to Chess.com's Daily Puzzle page only (it's
+// unrated; the manifest matches no other page, and reader.js checks again). A tap reads the board on screen and
 // opens it on askthemove.online, where the learner can draw, test a line and
 // check it. Nothing is sent anywhere else and nothing is stored.
 (function () {
   const R = globalThis.AskTheMoveReader;
-  if (!R || document.getElementById('atm-send')) return;
+  if (!R || !R.allowed(location.pathname) || document.getElementById('atm-send')) return;
 
   const btn = document.createElement('button');
   btn.id = 'atm-send';
