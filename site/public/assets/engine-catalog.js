@@ -10,7 +10,9 @@
 // 'wasm' (handed to the script after #, as a blob URL), 'model' (the same,
 // for a neural model), 'net' (a separate Stockfish net, loaded with
 // setoption EvalFile) and 'runtime' (files the worker fetches by itself,
-// listed for their size). A plain-JavaScript engine is `scriptOnly`; one
+// listed for their size). `options` are UCI lines sent once it has said uciok
+// (Maia-2's rating). `threads: true` runs on several cores and needs a
+// cross-origin isolated page (see canRun). A plain-JavaScript engine is `scriptOnly`; one
 // whose script is an ES module is `module`; `hash: 'raw'` passes the blob
 // URL unencoded, for Stockfish 11. A file too big
 // for Cloudflare Pages (25 MiB a file) lists its parts in joining order, each
@@ -46,6 +48,10 @@ export const DM_CREDIT =
 /** The sizes of the neural workers; the catalog test checks them against the files. */
 const SEARCHLESS_WORKER_BYTES = 3786;
 const MAIA_WORKER_BYTES = 3904;
+const MAIA2_WORKER_BYTES = 3953;
+/** MIT asks that the copyright notice be kept; the picker and the page footer show this. */
+export const MAIA2_CREDIT =
+  'Maia-2 by Zhenwei Tang, Difan Jiao, Reid McIlroy-Young, Jon Kleinberg, Siddhartha Sen and Ashton Anderson (CSSLab, University of Toronto, 2024), MIT licence, source github.com/CSSLab/maia2. The rapid model, exported to ONNX for this page with no change to its weights; run here with onnxruntime-web (MIT).';
 /** GPL-3.0 asks that the authors and the source be named; the picker and the page footer show this. */
 export const MAIA_CREDIT =
   'Maia by Reid McIlroy-Young, Siddhartha Sen, Jon Kleinberg and Ashton Anderson (CSSLab, University of Toronto, 2020), GPL-3.0, source github.com/CSSLab/maia-chess. Converted to ONNX by shermansiu; run here with onnxruntime-web (MIT).';
@@ -68,7 +74,9 @@ export const ENGINES = [
   // Stockfish files come unchanged (but for one line of 17.1's script, below) from the npm package `stockfish` (stockfish.js by Nathan Rugg and
   // Chess.com): 19 and 19 Lite from 19.0.1, 18 and 18 Lite from 18.0.8, 17.1 and 17.1 Lite from 17.1.0,
   // 16 from 16.0.0 (stockfish-nnue-16-single.*, net src/nn-5af11540bbfe.nnue), 11 from 11.0.0
-  // (src/stockfish.js and .wasm). Single-threaded builds only: the page has no COOP/COEP headers.
+  // (src/stockfish.js and .wasm). The "several cores" builds (`threads: true`) are 19.0.1's
+  // stockfish-19-lite.* and stockfish-19.*; they need the page to be cross-origin isolated
+  // (COOP + COEP headers, sent for /puzzleanalyzr by scripts/build.mjs) for SharedArrayBuffer.
   entry({
     id: 'sf19-lite',
     name: 'Stockfish 19 Lite',
@@ -105,6 +113,48 @@ export const ENGINES = [
           file('/assets/engine/stockfish-19-single.wasm.part1', 24792264, { sha256: '6c39a4e8f77db1ce16c29a421cc35cf53b2382f4683a76f170af67ab0d76b059' }),
           file('/assets/engine/stockfish-19-single.wasm.part2', 24792263, { sha256: '314e6b9fbe936999ed238949886c8e0f18ba5075aa71211073498e2d18b34e09' }),
           file('/assets/engine/stockfish-19-single.wasm.part3', 24792263, { sha256: 'f1e17ca7f29cff9c0ccdcb972e9880682f0ded324e188f0b85ec4f499bca8f32' }),
+        ],
+      }),
+    ],
+  }),
+  entry({
+    id: 'sf19-lite-mt',
+    name: 'Stockfish 19 Lite, several cores',
+    family: 'Stockfish',
+    about: 'Lite on several CPU cores at once, so it looks deeper in the same time. Same small download as Lite.',
+    license: GPL,
+    licenseUrl: COPYING,
+    source: SFJS,
+    device: 'light',
+    status: 'ready',
+    threads: true,
+    files: [
+      file('/assets/engine/stockfish-19-lite.js', 33426, { role: 'worker' }),
+      file('/assets/engine/stockfish-19-lite.wasm', 1697617, { role: 'wasm' }),
+    ],
+  }),
+  entry({
+    id: 'sf19-full-mt',
+    name: 'Stockfish 19, several cores',
+    family: 'Stockfish',
+    about: 'The full Stockfish 19 on several CPU cores: the strongest setup on this page. A big download, and slower to start.',
+    license: GPL,
+    licenseUrl: COPYING,
+    source: SFJS,
+    device: 'heavy',
+    status: 'ready',
+    threads: true,
+    memory: 'about 200 to 300 MB while it runs (an estimate)',
+    files: [
+      file('/assets/engine/stockfish-19.js', 33326, { role: 'worker' }),
+      file('/assets/engine/stockfish-19.wasm', 99076105, {
+        role: 'wasm',
+        sha256: 'a599d78d72e0722d8895be84aca8b492d12e8bba3cdfcbcbc4a64017888c6667',
+        parts: [
+          file('/assets/engine/stockfish-19.wasm.part0', 24769027, { sha256: '5d1481373652fffaf692cf737d9cd3921d172b0c17131b2d5eb273c2eadac95d' }),
+          file('/assets/engine/stockfish-19.wasm.part1', 24769026, { sha256: '3e96c6675297fc6391ff4abe95e72882a0eee7950db29cef4281247cdc1d7fdd' }),
+          file('/assets/engine/stockfish-19.wasm.part2', 24769026, { sha256: '1652b799cb78d4cfd1b9f54939e1f2c306a5c432fc2c19a00dcc8805bdb6cd5c' }),
+          file('/assets/engine/stockfish-19.wasm.part3', 24769026, { sha256: '7f68dd27127fbf1f4301b05ce8d6780a00c2d02d27d2b2e867cfbf0a18cfc8a4' }),
         ],
       }),
     ],
@@ -300,31 +350,6 @@ export const ENGINES = [
 
   /* ---------------------------------------------------- listed, not yet */
   entry({
-    id: 'sf19-lite-mt',
-    name: 'Stockfish 19 Lite, several cores',
-    family: 'Stockfish',
-    about: 'Lite on several CPU cores, so it looks deeper in the same time. Needs extra page headers that are still being tested.',
-    license: GPL,
-    licenseUrl: GPL_URL,
-    source: SFJS,
-    device: 'light',
-    status: 'soon',
-    files: [file('stockfish-19-lite.js', 33426), file('stockfish-19-lite.wasm', 1697617)],
-  }),
-  entry({
-    id: 'sf19-full-mt',
-    name: 'Stockfish 19, several cores',
-    family: 'Stockfish',
-    about: 'The full Stockfish 19 on several CPU cores. The strongest setup of all, once the page headers allow it.',
-    license: GPL,
-    licenseUrl: GPL_URL,
-    source: SFJS,
-    device: 'heavy',
-    status: 'soon',
-    memory: 'about 200 to 300 MB while it runs (an estimate)',
-    files: [file('stockfish-19.js', 33326), file('stockfish-19.wasm', 99076105)],
-  }),
-  entry({
     id: 'sf19-lichess-big',
     name: 'Stockfish 19 (Lichess build)',
     family: 'Stockfish',
@@ -394,20 +419,41 @@ export const ENGINES = [
       files: [file(`maia3-${size}.pt`, bytes)],
     }),
   ),
-  entry({
-    id: 'maia2',
-    name: 'Maia-2',
-    family: 'Maia-2',
-    about: `One human-like model for every rating. Its authors now point to Maia-3. ${ORT}`,
-    license: 'MIT',
-    licenseUrl: MIT_URL,
-    source: 'https://github.com/CSSLab/maia2',
-    device: 'heavy',
-    status: 'soon',
-    memory: 'several hundred MB',
-    webgpu: 'better',
-    files: [file('model.safetensors', 93223920)],
-  }),
+  ...[
+    ['1100', 'a club beginner'],
+    ['1500', 'a club player'],
+    ['1900', 'a strong club player'],
+  ].map(([elo, who]) =>
+    entry({
+      id: `maia2-${elo}`,
+      name: `Maia-2 ${elo}`,
+      family: 'Maia-2',
+      about: `Plays the move a human rated about ${elo} (${who}) would most likely play, from one model that knows every rating. Newer and closer to real players than Maia-1, but it learned from middlegames: its first few moves can look odd. It doesn’t search, so its score is only its guess at the result. The three ratings share one download.`,
+      license: 'MIT',
+      licenseUrl: MIT_URL,
+      source: 'https://github.com/CSSLab/maia2',
+      credit: MAIA2_CREDIT,
+      device: 'heavy',
+      status: 'ready',
+      module: true,
+      memory: 'a few hundred MB',
+      options: [`setoption name Elo value ${elo}`],
+      files: [
+        file('/assets/engine/maia2-worker.js', MAIA2_WORKER_BYTES, { role: 'worker' }),
+        ...ORT_FILES,
+        file('/assets/engine/maia2-rapid.onnx', 84934218, {
+          role: 'model',
+          sha256: 'e02c24370e11074b10db93c0d1401e5142495448fd22851a2357b7bc0ea944d4',
+          parts: [
+            file('/assets/engine/maia2-rapid.onnx.part0', 21233555, { sha256: 'e122c1b3835b14f9f5e5762bea76ce916a44e85e46409ece08bb71e65b000762' }),
+            file('/assets/engine/maia2-rapid.onnx.part1', 21233555, { sha256: '1d287390f9c11be00b45994b6e3f99f46f3f52887202a1d19e0e809af61095f3' }),
+            file('/assets/engine/maia2-rapid.onnx.part2', 21233554, { sha256: 'c666e54400f54bbb3b98fcaeec81b08efdd7bc644bf47a4fbb8a43549c5dc977' }),
+            file('/assets/engine/maia2-rapid.onnx.part3', 21233554, { sha256: '7f5653090240222e7939dfadebce5c80e896c99b415a25f9f3f2fb8094675bbc' }),
+          ],
+        }),
+      ],
+    }),
+  ),
   ...[
     ['136m', '136M', 'model_fp16.onnx', 273016527],
     ['270m', '270M', 'model_fp16.onnx', 541571344],
@@ -500,6 +546,18 @@ export function engineFor(id) {
   return e && e.status === 'ready' ? e : BY_ID.get(DEFAULT_ENGINE);
 }
 
+/** How many threads a several-cores engine uses: one core left for the page, at least 2, at most 4 (more gains little and costs memory). */
+export function threadCount(cores) {
+  const n = Number(cores) || 2;
+  return Math.max(2, Math.min(4, n - 1));
+}
+
+/** Why this browser can't run this engine here, or '' when it can. isolated: the page's crossOriginIsolated. */
+export function cantRun(e, { isolated = false } = {}) {
+  if (e.threads && !isolated) return 'This browser didn’t switch on several cores for this page, so it can’t run here.';
+  return '';
+}
+
 /** True when this engine gets the big warning and the second "Yes, download it" before it downloads. */
 export function needsWarning(e) {
   return e.device === 'heavy' || e.bytes > HEAVY_BYTES || HEAVY_FAMILIES.includes(e.family);
@@ -576,6 +634,7 @@ export function failureReason(error = '') {
   if (/SHA-256|wrong size|bigger than expected|add up to|bytes, not/i.test(text)) return 'its download arrived damaged';
   if (/HTTP|fetch|network|load failed/i.test(text)) return 'its download failed';
   if (/took too long/i.test(text)) return 'it was too slow on this device';
+  if (/several cores/i.test(text)) return 'this browser didn’t switch on several cores for this page';
   return 'it couldn’t start on this device (it may need more memory than the tab has)';
 }
 

@@ -494,6 +494,20 @@
   fill: var(--red);
 }
 
+/* Coach check: a red pen cross on the move that fails, a blue tick when the line holds. */
+.desk__aid .aid-coach path,
+.desk__aid .aid-coach.is-ok {
+  fill: none;
+  stroke: var(--red);
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.desk__aid .aid-coach.is-ok {
+  stroke: var(--blue);
+}
+
 /* Numbered line: each arrow carries its move number in a small paper disc. */
 .desk__draw .dr--step {
   stroke-width: 1.3;
@@ -543,6 +557,7 @@
 }
 
 .pens__line[hidden],
+.pens__coach[hidden],
 .pens__sheet[hidden],
 .desk__promo[hidden] {
   display: none;
@@ -902,6 +917,21 @@
   border: 1.5px dashed var(--rule);
   border-radius: var(--radius);
   background: var(--card);
+}
+
+.pens__coach {
+  flex-basis: 100%;
+  margin: 0;
+  font: 700 1.02rem/1.35 var(--font-hand);
+  color: var(--red);
+}
+
+.pens__coach.is-ok {
+  color: var(--blue);
+}
+
+.pens__coach.is-busy {
+  color: var(--graphite);
 }
 
 .pens__line-label {

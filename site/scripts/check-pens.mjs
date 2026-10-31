@@ -15,7 +15,7 @@ import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('../public/', import.meta.url));
-const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.json': 'application/json', '.woff2': 'font/woff2', '.wasm': 'application/wasm' };
+const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.json': 'application/json', '.woff2': 'font/woff2', '.wasm': 'application/wasm' };
 // Italian Game, White to move: Nf3 and Bf1 to play with, Black's g8 knight to answer.
 const FEN = 'r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3';
 
@@ -27,15 +27,39 @@ try {
   process.exit(2);
 }
 
+/** The headers Cloudflare Pages would send for a path, from public/_headers (splats and "! Name" detaches). */
+async function headersFor(urlPath) {
+  const rules = [];
+  let rule = null;
+  for (const line of (await readFile(join(ROOT, '_headers'), 'utf8')).split('\n')) {
+    if (!line.trim() || line.startsWith('#')) continue;
+    if (!line.startsWith(' ')) rules.push((rule = { re: new RegExp(`^${line.trim().replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*')}$`), lines: [] }));
+    else if (rule) rule.lines.push(line.trim());
+  }
+  const out = {};
+  for (const r of rules.filter((x) => x.re.test(urlPath))) {
+    for (const l of r.lines) {
+      if (l.startsWith('!')) delete out[l.slice(1).trim().toLowerCase()];
+      else {
+        const i = l.indexOf(':');
+        out[l.slice(0, i).trim().toLowerCase()] = l.slice(i + 1).trim();
+      }
+    }
+  }
+  delete out['content-security-policy']; // upgrade-insecure-requests would send the local http check to https
+  return out;
+}
+
 function serve() {
   const server = createServer(async (req, res) => {
-    let path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+    const urlPath = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+    let path = urlPath;
     path = normalize(join(ROOT, path));
     if (!path.startsWith(ROOT)) return res.writeHead(403).end();
     try {
       if ((await stat(path)).isDirectory()) path = join(path, 'index.html');
       const body = await readFile(path);
-      res.writeHead(200, { 'content-type': TYPES[extname(path)] || 'application/octet-stream' }).end(body);
+      res.writeHead(200, { ...(await headersFor(urlPath)), 'content-type': TYPES[extname(path)] || 'application/octet-stream' }).end(body);
     } catch {
       res.writeHead(404).end();
     }
@@ -289,10 +313,191 @@ async function run(browserType, base) {
   await browser.close();
 }
 
+/** Coach check with the real Stockfish Lite: a reply that fails, a line that ends in mate, and a slip of the learner's. */
+async function runCoach(browserType, base) {
+  let browser;
+  try {
+    browser = await browserType.launch();
+  } catch {
+    return;
+  }
+  console.log(`- ${browserType.name()}: Coach check (real engine)`);
+  const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  const open = async (fen) => {
+    await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(fen)}`, { waitUntil: 'load' });
+    await page.waitForSelector('#desk-board img.pc');
+    await page.click('#draw-modes [data-mode="draw"]');
+    await page.click('#pens [data-tool="line"]');
+  };
+  const drag = async (a, b) => {
+    const box = await page.locator('#desk-board').boundingBox();
+    const at = (sq) => [box.x + ('abcdefgh'.indexOf(sq[0]) + 0.5) * (box.width / 8), box.y + (8 - Number(sq[1]) + 0.5) * (box.height / 8)];
+    await page.mouse.move(...at(a));
+    await page.mouse.down();
+    await page.mouse.move(...at(b), { steps: 6 });
+    await page.mouse.up();
+  };
+  const verdict = async () => {
+    await page.click('#draw-line-check');
+    await page.waitForFunction(() => {
+      const n = document.querySelector('#draw-line-note');
+      return n && !n.hidden && !n.classList.contains('is-busy');
+    }, null, { timeout: 60000 });
+    return page.textContent('#draw-line-note');
+  };
+  const mark = (sel) => page.locator(`#desk-draw .desk__aid ${sel}`).count();
+
+  // 1. e4 e5 2. Qh5 Nc6: the learner draws 3. Bc4 Nf6?? 4. Qxf7#. Black has a better reply.
+  await open('r1bqkbnr/pppp1ppp/2n5/4p2Q/4P3/8/PPPP1PPP/RNB1KBNR w KQkq - 2 3');
+  await drag('f1', 'c4');
+  await drag('g8', 'f6');
+  await drag('h5', 'f7');
+  const button = await page.locator('#draw-line-check').isVisible();
+  check('Coach check: the Check line button sits with the line', button);
+  let say = await verdict();
+  check('Coach check: the weak reply the learner expected is marked, with the reply that holds', /^✗ 3… Nf6\? Black has a better reply: 3… \S+! holds\.$/.test(say), say);
+  check('Coach check: a red cross on the board', (await mark('.aid-coach:not(.is-ok)')) === 1);
+  await page.click('#draw-line-clear');
+  check('Coach check: Clear line takes the verdict and its cross away', !(await page.locator('#draw-line-note').isVisible()) && (await mark('.aid-coach')) === 0);
+  await page.click('#draw-undo'); // the line comes back
+  await verdict();
+  await drag('h5', 'f7'); // taking the last step back changes the line
+  check('Coach check: editing the line clears the verdict and its cross', !(await page.locator('#draw-line-note').isVisible()) && (await mark('.aid-coach')) === 0);
+
+  // A back-rank mate in one, played right.
+  await open('6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 30');
+  await drag('a1', 'a8');
+  say = await verdict();
+  check('Coach check: a line that mates holds, with a blue tick', say === '✓ Your line holds all the way, and 30. Ra8# is mate.' && (await mark('.aid-coach.is-ok')) === 1, say);
+  // A line that runs on past a draw: bare kings are a draw at once, so the tick goes on move 1, not the extra move.
+  await open('k7/8/8/8/8/8/8/K7 w - - 0 1');
+  await drag('a1', 'b1');
+  await drag('a8', 'b7');
+  say = await verdict();
+  const tickAt = await page.evaluate(() => {
+    const d = document.querySelector('#desk-draw .desk__aid .aid-coach.is-ok')?.getAttribute('d') || '';
+    return d.match(/-?[\d.]+/g)?.slice(0, 2).map(Number);
+  });
+  // b1's centre is at x 15, y 75 (board units, White at the bottom); the tick starts 3 left of it.
+  check('Coach check: a line past a draw is ticked on the drawing move', /ends in a draw after 1\. Kb1\./.test(say) && tickAt && tickAt[0] === 12 && Math.abs(tickAt[1] - 75.2) < 0.01, `${say} / ${tickAt}`);
+  await open('6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 30');
+  await drag('a1', 'a8');
+  // The same position, the learner slips: the engine's move stays hidden.
+  await page.click('#draw-line-clear');
+  await drag('a1', 'a7');
+  say = await verdict();
+  check('Coach check: the learner’s slip is marked and no move is given away', /^✗ 30\. Ra7\? This lets it slip/.test(say) && !/Ra8/.test(say), say);
+  check('Coach check: no page errors', errors.length === 0, errors.join(' | '));
+  await browser.close();
+}
+
+/** Several-cores Stockfish: the page is cross-origin isolated, the engine starts its threads and checks a move. */
+async function runCores(browserType, base) {
+  let browser;
+  try {
+    browser = await browserType.launch();
+  } catch {
+    return;
+  }
+  console.log(`- ${browserType.name()}: several-cores Stockfish (real engine)`);
+  const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.addInitScript(() => localStorage.setItem('pz-engine', 'sf19-lite-mt'));
+  await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
+  await page.waitForSelector('#desk-board img.pc');
+  check('the puzzle page is cross-origin isolated', await page.evaluate(() => crossOriginIsolated === true));
+  check('the several-cores engine is the one in use', (await page.textContent('#engine-name')) === 'Stockfish 19 Lite, several cores');
+  await page.waitForFunction(() => /is ready on this device/.test(document.querySelector('#engine-state').textContent), null, { timeout: 60000 });
+  const box = await page.locator('#desk-board').boundingBox();
+  const at = (sq) => [box.x + ('abcdefgh'.indexOf(sq[0]) + 0.5) * (box.width / 8), box.y + (8 - Number(sq[1]) + 0.5) * (box.height / 8)];
+  await page.mouse.move(...at('f1'));
+  await page.mouse.down();
+  await page.mouse.move(...at('b5'), { steps: 6 });
+  await page.mouse.up();
+  await page.click('#engine-check');
+  await page.waitForFunction(() => {
+    const t = document.querySelector('#engine-say').textContent;
+    return t && !/looking|ready, then/.test(t);
+  }, null, { timeout: 60000 });
+  const say = await page.textContent('#engine-say');
+  check('several cores: Check my move gets a verdict', /That’s the move|Good move|Playable|lets something go/.test(say), say);
+  check('several cores: no page errors', errors.length === 0, errors.join(' | '));
+  await browser.close();
+}
+
+/** Maia-2 in the browser: the worker's move matches Python's for every reference case, and the page checks a move with it. */
+async function runMaia2(browserType, base) {
+  let browser;
+  try {
+    browser = await browserType.launch();
+  } catch {
+    return;
+  }
+  console.log(`- ${browserType.name()}: Maia-2 (real model)`);
+  const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
+  const ref = JSON.parse(await readFile(join(ROOT, '../test/fixtures/maia2-reference.json'), 'utf8')).cases;
+  const got = await page.evaluate(async (cases) => {
+    const parts = await Promise.all([0, 1, 2, 3].map((i) => fetch(`/assets/engine/maia2-rapid.onnx.part${i}`).then((r) => r.blob())));
+    const url = URL.createObjectURL(new Blob(parts));
+    const w = new Worker(`/assets/engine/maia2-worker.js#${encodeURIComponent(url)}`, { type: 'module' });
+    let wait = null;
+    w.onmessage = (e) => wait && wait(e.data);
+    const ask = (cmd, word) => new Promise((ok) => {
+      wait = (line) => line.startsWith(word) && ok(line);
+      w.postMessage(cmd);
+    });
+    await ask('uci', 'uciok');
+    const out = [];
+    for (const c of cases) {
+      w.postMessage(`setoption name Elo value ${c.elo}`);
+      w.postMessage(`position fen ${c.fen}`);
+      out.push((await ask('go depth 1', 'bestmove')).split(' ')[1]);
+    }
+    w.terminate();
+    return out;
+  }, ref);
+  const wrong = ref.filter((c, i) => got[i] !== c.move).map((c, i) => `${c.elo} ${c.fen}: ${got[ref.indexOf(c)]} not ${c.move}`);
+  check(`Maia-2: the browser’s move matches Python’s in all ${ref.length} reference cases`, wrong.length === 0, wrong.join(' | '));
+  // On the page: pick Maia-2 1900, play a move, Check my move.
+  await page.evaluate(() => localStorage.setItem('pz-engine', 'maia2-1900'));
+  await page.reload({ waitUntil: 'load' });
+  await page.waitForSelector('#desk-board img.pc');
+  check('Maia-2 1900 is the engine in use', (await page.textContent('#engine-name')) === 'Maia-2 1900');
+  const box = await page.locator('#desk-board').boundingBox();
+  const at = (sq) => [box.x + ('abcdefgh'.indexOf(sq[0]) + 0.5) * (box.width / 8), box.y + (8 - Number(sq[1]) + 0.5) * (box.height / 8)];
+  await page.mouse.move(...at('f1'));
+  await page.mouse.down();
+  await page.mouse.move(...at('c4'), { steps: 6 });
+  await page.mouse.up();
+  await page.click('#engine-check');
+  await page.waitForFunction(() => {
+    const t = document.querySelector('#engine-say').textContent;
+    return t && !/looking|ready, then/.test(t);
+  }, null, { timeout: 120000 });
+  const say = await page.textContent('#engine-say');
+  check('Maia-2: Check my move gets a verdict on the page', /That’s the move|Good move|Playable|lets something go/.test(say), say);
+  check('Maia-2: no page errors', errors.length === 0, errors.join(' | '));
+  await browser.close();
+}
+
 const server = await serve();
 const base = `http://127.0.0.1:${server.address().port}`;
 try {
-  for (const type of [playwright.chromium, playwright.firefox, playwright.webkit]) await run(type, base);
+  for (const type of [playwright.chromium, playwright.firefox, playwright.webkit]) {
+    await run(type, base);
+    await runCoach(type, base);
+    await runCores(type, base);
+    await runMaia2(type, base);
+  }
 } finally {
   server.close();
 }

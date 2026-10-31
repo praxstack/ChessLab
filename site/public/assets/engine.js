@@ -8,7 +8,7 @@
 //
 // Stockfish is free software under the GNU GPL v3; see /assets/engine/COPYING.txt.
 
-import { DEFAULT_ENGINE, engineById, engineFiles } from './engine-catalog.js';
+import { DEFAULT_ENGINE, cantRun, engineById, engineFiles, threadCount } from './engine-catalog.js';
 import { checkJoined, checkPart, createJoiner } from './engine-parts.js';
 
 const LITE = engineById(DEFAULT_ENGINE);
@@ -17,6 +17,17 @@ export const WASM_BYTES = engineFiles(LITE).wasm.bytes;
 const STORE = 'pz-engine-v1';
 const KEEP_MS = 30 * 24 * 60 * 60 * 1000;
 const SAVED_AT = 'x-pz-saved-at';
+
+/**
+ * Engine scripts are kept by the browser for 30 days, with the headers they
+ * came with. When those headers change (as when the puzzle page became
+ * cross-origin isolated and a worker needs Cross-Origin-Embedder-Policy to
+ * start), bump this, so every browser fetches the script again.
+ */
+export const WORKER_VERSION = 'coep1';
+
+/** The URL a worker starts from: the script, its version, then the part after # it reads its .wasm or model from. */
+export const workerUrl = (path, hash = '') => `${path}?v=${WORKER_VERSION}${hash}`;
 
 /** From a UCI score to centipawns for the side to move; a mate is worth far more than any material. */
 export function toCp(score) {
@@ -309,6 +320,9 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
     aborter = typeof AbortController === 'function' ? new AbortController() : null;
     const signal = aborter ? aborter.signal : undefined;
     try {
+      // A several-cores engine needs a cross-origin isolated page: say so before any download.
+      const why = cantRun(spec, { isolated: globalThis.crossOriginIsolated === true });
+      if (why) throw new Error(why);
       const saved = wasm ? await loadFile(wasm, 0, signal) : { blob: null, fromDevice: false };
       const savedNet = net ? await loadFile(net, wasm ? wasm.bytes : 0, signal) : null;
       if (quit || (signal && signal.aborted)) throw cancelError();
@@ -322,7 +336,7 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
         url = URL.createObjectURL(saved.blob);
         hash = `#${spec.hash === 'raw' ? url : encodeURIComponent(url)}`;
       }
-      worker = new Worker(`${script.path}${hash}`, spec.module ? { type: 'module' } : undefined);
+      worker = new Worker(workerUrl(script.path, hash), spec.module ? { type: 'module' } : undefined);
       worker.addEventListener('message', (e) => {
         const line = typeof e.data === 'string' ? e.data : '';
         if (listener) listener(line);
@@ -344,6 +358,9 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
         send('setoption name Use NNUE value true');
         if (!/:\s*1\s*$/.test(await loaded)) throw new Error('The engine couldn’t read its net');
       }
+      for (const line of spec.options || []) send(line);
+      // Several cores: Stockfish starts its extra threads when told how many (they share its memory).
+      if (spec.threads) send(`setoption name Threads value ${threadCount(globalThis.navigator && navigator.hardwareConcurrency)}`);
       const ready = waitFor('readyok', startMs);
       send('isready');
       await ready;

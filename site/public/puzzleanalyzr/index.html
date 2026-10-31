@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script type="importmap">{"imports":{"/assets/app.js":"/assets/app.js?v=90fa02be76","/assets/board.js":"/assets/board.js?v=1f62d4f452","/assets/daily-clock.js":"/assets/daily-clock.js?v=a54f71532e","/assets/demo-data.js":"/assets/demo-data.js?v=3eb10a8ec8","/assets/desk.js":"/assets/desk.js?v=12d1a870ed","/assets/draw.js":"/assets/draw.js?v=414b1705ac","/assets/engine-catalog.js":"/assets/engine-catalog.js?v=80b1617001","/assets/engine-parts.js":"/assets/engine-parts.js?v=a069783ea3","/assets/engine-picker.js":"/assets/engine-picker.js?v=4a37829336","/assets/engine.js":"/assets/engine.js?v=4bcc4cf7cb","/assets/helpers.js":"/assets/helpers.js?v=28055a8597","/assets/ink.js":"/assets/ink.js?v=215171e886","/assets/lc0.js":"/assets/lc0.js?v=7a4ebf132a","/assets/line.js":"/assets/line.js?v=ef28aaa10c","/assets/puzzle.js":"/assets/puzzle.js?v=74fceed096","/assets/rules.js":"/assets/rules.js?v=01cddd3ef6","/assets/searchless.js":"/assets/searchless.js?v=5602d641ee","/assets/sound.js":"/assets/sound.js?v=8759e04c61","/assets/vendor/chess.js":"/assets/vendor/chess.js?v=0fd3d85b71"}}</script>
+<script type="importmap">{"imports":{"/assets/app.js":"/assets/app.js?v=90fa02be76","/assets/board.js":"/assets/board.js?v=1f62d4f452","/assets/coach.js":"/assets/coach.js?v=d14550ff4d","/assets/daily-clock.js":"/assets/daily-clock.js?v=a54f71532e","/assets/demo-data.js":"/assets/demo-data.js?v=3eb10a8ec8","/assets/desk.js":"/assets/desk.js?v=12d1a870ed","/assets/draw.js":"/assets/draw.js?v=0246386b97","/assets/engine-catalog.js":"/assets/engine-catalog.js?v=43e72514a4","/assets/engine-parts.js":"/assets/engine-parts.js?v=a069783ea3","/assets/engine-picker.js":"/assets/engine-picker.js?v=bfa20b7b10","/assets/engine.js":"/assets/engine.js?v=d524227b65","/assets/helpers.js":"/assets/helpers.js?v=28055a8597","/assets/ink.js":"/assets/ink.js?v=215171e886","/assets/lc0.js":"/assets/lc0.js?v=7a4ebf132a","/assets/line.js":"/assets/line.js?v=ef28aaa10c","/assets/maia2.js":"/assets/maia2.js?v=93c13c9c93","/assets/puzzle.js":"/assets/puzzle.js?v=0a5ba70228","/assets/rules.js":"/assets/rules.js?v=01cddd3ef6","/assets/searchless.js":"/assets/searchless.js?v=5602d641ee","/assets/sound.js":"/assets/sound.js?v=8759e04c61","/assets/vendor/chess.js":"/assets/vendor/chess.js?v=0fd3d85b71"}}</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Puzzle analyzr · AskTheMove</title>
@@ -37,7 +37,7 @@
   https://cloudflareinsights.com to connect-src in scripts/build.mjs (CSP), and rebuild.
   No other trackers, no cookies.
 -->
-<link rel="stylesheet" href="/assets/puzzle.css?v=e63e398fcc">
+<link rel="stylesheet" href="/assets/puzzle.css?v=1c19f2aa17">
 </head>
 <body class="page-puzzles">
 <a class="skip" href="#main">Skip to content</a>
@@ -141,8 +141,10 @@
           <span class="pens__moves" id="draw-line-text"></span>
           <span class="pens__line-acts">
             <button class="btn btn--plain btn--small" id="draw-line-play" type="button">Play it</button>
+            <button class="btn btn--plain btn--small" id="draw-line-check" type="button" title="Coach check: the engine finds the first move in your line that fails">Check line</button>
             <button class="btn btn--plain btn--small" id="draw-line-clear" type="button">Clear line</button>
           </span>
+          <p class="pens__coach" id="draw-line-note" aria-live="polite" hidden></p>
         </div>
       </div>
       <p class="note-hand desk__say" id="desk-say" aria-live="polite"></p>
@@ -247,7 +249,7 @@
       <h3 class="engines__group">Coming later</h3>
       <p class="engines__group-note">Listed so you can see what’s out there. They don’t run here yet: the neural models need a runtime (onnxruntime-web) that comes in a later update. Big ones show the same warning first.</p>
       <ul class="engines__list" id="engine-soon"></ul>
-      <p class="engines__foot">Downloaded engines stay on this device for 30 days. On iPhone and iPad, Safari may delete them sooner, after 7 days without a visit, unless this page is on your Home Screen. Stockfish is free software under the <a href="/assets/engine/COPYING.txt">GNU GPL v3</a>. Maia is under the <a href="https://www.gnu.org/licenses/gpl-3.0.html" rel="noopener">GNU GPL v3</a> too. The DeepMind model is under <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>; onnxruntime-web, which runs both, under the <a href="/assets/engine/ort/LICENSE.txt">MIT licence</a>.</p>
+      <p class="engines__foot">Downloaded engines stay on this device for 30 days. On iPhone and iPad, Safari may delete them sooner, after 7 days without a visit, unless this page is on your Home Screen. Stockfish is free software under the <a href="/assets/engine/COPYING.txt">GNU GPL v3</a>. Maia is under the <a href="https://www.gnu.org/licenses/gpl-3.0.html" rel="noopener">GNU GPL v3</a> too, and Maia-2 under the <a href="/assets/engine/MAIA2-LICENSE.txt">MIT licence</a>. The DeepMind model is under <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>; onnxruntime-web, which runs the neural ones, under the <a href="/assets/engine/ort/LICENSE.txt">MIT licence</a>.</p>
     </div>
     <section class="engines__warn" id="engine-warn" aria-labelledby="engine-warn-title" hidden>
       <p class="engines__flag">heavy download</p>
@@ -419,7 +421,7 @@
         </div>
       </details>
     </div>
-    <p class="pz-setup__credit">Positions and games come from the <a href="https://www.chess.com/news/view/published-data-api" rel="noopener">Chess.com public API</a> and the <a href="https://lichess.org/api" rel="noopener">Lichess API</a>. This page never shows a puzzle’s answer or its name unless you ask Stockfish for it. It isn’t made by Chess.com or Lichess. Moves are checked by <a href="https://github.com/jhlywa/chess.js" rel="noopener">chess.js</a> (BSD licence). The engines are <a href="https://stockfishchess.org" rel="noopener">Stockfish</a> 19, 18, 17.1, 16 and 11, free software under the <a href="/assets/engine/COPYING.txt">GNU GPL v3</a>, in the <a href="https://github.com/nmrugg/stockfish.js" rel="noopener">stockfish.js</a> browser build, whose source is linked there (17.1’s script has one line changed so it reads its engine from this page; the change is noted beside it). The DeepMind searchless chess 9M model is from “Grandmaster-Level Chess Without Search” (Ruoss et al., 2024), © 2024 DeepMind Technologies Limited, <a href="https://github.com/google-deepmind/searchless_chess" rel="noopener">source</a>, under <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>; it was converted to ONNX, with no change to its weights, by <a href="https://huggingface.co/cstr/searchless-chess-onnx" rel="noopener">cstr</a>, and runs here with <a href="https://github.com/microsoft/onnxruntime" rel="noopener">onnxruntime-web</a> (<a href="/assets/engine/ort/LICENSE.txt">MIT</a>). <a href="https://github.com/CSSLab/maia-chess" rel="noopener">Maia</a> (1100, 1500 and 1900) is by Reid McIlroy-Young, Siddhartha Sen, Jon Kleinberg and Ashton Anderson (CSSLab, University of Toronto), under the <a href="https://www.gnu.org/licenses/gpl-3.0.html" rel="noopener">GNU GPL v3</a>, converted to ONNX by <a href="https://huggingface.co/shermansiu/maia-1500" rel="noopener">shermansiu</a>, and runs with onnxruntime-web too.</p>
+    <p class="pz-setup__credit">Positions and games come from the <a href="https://www.chess.com/news/view/published-data-api" rel="noopener">Chess.com public API</a> and the <a href="https://lichess.org/api" rel="noopener">Lichess API</a>. This page never shows a puzzle’s answer or its name unless you ask Stockfish for it. It isn’t made by Chess.com or Lichess. Moves are checked by <a href="https://github.com/jhlywa/chess.js" rel="noopener">chess.js</a> (BSD licence). The engines are <a href="https://stockfishchess.org" rel="noopener">Stockfish</a> 19, 18, 17.1, 16 and 11, free software under the <a href="/assets/engine/COPYING.txt">GNU GPL v3</a>, in the <a href="https://github.com/nmrugg/stockfish.js" rel="noopener">stockfish.js</a> browser build, whose source is linked there (17.1’s script has one line changed so it reads its engine from this page; the change is noted beside it). The DeepMind searchless chess 9M model is from “Grandmaster-Level Chess Without Search” (Ruoss et al., 2024), © 2024 DeepMind Technologies Limited, <a href="https://github.com/google-deepmind/searchless_chess" rel="noopener">source</a>, under <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>; it was converted to ONNX, with no change to its weights, by <a href="https://huggingface.co/cstr/searchless-chess-onnx" rel="noopener">cstr</a>, and runs here with <a href="https://github.com/microsoft/onnxruntime" rel="noopener">onnxruntime-web</a> (<a href="/assets/engine/ort/LICENSE.txt">MIT</a>). <a href="https://github.com/CSSLab/maia-chess" rel="noopener">Maia</a> (1100, 1500 and 1900) is by Reid McIlroy-Young, Siddhartha Sen, Jon Kleinberg and Ashton Anderson (CSSLab, University of Toronto), under the <a href="https://www.gnu.org/licenses/gpl-3.0.html" rel="noopener">GNU GPL v3</a>, converted to ONNX by <a href="https://huggingface.co/shermansiu/maia-1500" rel="noopener">shermansiu</a>, and runs with onnxruntime-web too. <a href="https://github.com/CSSLab/maia2" rel="noopener">Maia-2</a> (its rapid model) is by Zhenwei Tang, Difan Jiao, Reid McIlroy-Young, Jon Kleinberg, Siddhartha Sen and Ashton Anderson (CSSLab, University of Toronto), under the <a href="/assets/engine/MAIA2-LICENSE.txt">MIT licence</a>; it was exported to ONNX for this page with no change to its weights.</p>
   </section>
 
 </main>
@@ -446,6 +448,6 @@
   </div>
 </footer>
 <script type="module" src="/assets/app.js?v=90fa02be76"></script>
-<script type="module" src="/assets/puzzle.js?v=74fceed096"></script>
+<script type="module" src="/assets/puzzle.js?v=0a5ba70228"></script>
 </body>
 </html>

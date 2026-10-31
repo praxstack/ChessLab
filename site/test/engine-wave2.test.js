@@ -169,7 +169,7 @@ test('loader: a script-only engine starts its script with nothing after # and do
   const engine = createEngine({ spec: engineById('sf19-asm') });
   const got = await engine.look({ fen: MATE });
   assert.equal(got.move, 'a1a8');
-  assert.equal(workers[0].url, '/assets/engine/stockfish-19-asm.js');
+  assert.equal(workers[0].url, '/assets/engine/stockfish-19-asm.js?v=coep1', 'versioned, nothing after #');
   assert.equal(workers[0].options, undefined, 'a classic worker');
   assert.deepEqual(fetched, []);
   engine.stop();
@@ -181,9 +181,9 @@ test('loader: Stockfish 11 gets its blob address as it is; the others get it enc
   const { createEngine } = await import('../public/assets/engine.js');
   const spec = (more) => ({ id: 'x', name: 'X', files: [{ path: '/w.js', bytes: 9, role: 'worker' }, { path: '/w.wasm', bytes: wasm.length, role: 'wasm' }], ...more });
   for (const [more, url, options] of [
-    [{ hash: 'raw' }, /^\/w\.js#blob:http:\/\/localhost\/\d+$/, undefined],
-    [{}, /^\/w\.js#blob%3Ahttp%3A%2F%2Flocalhost%2F\d+$/, undefined],
-    [{ module: true }, /^\/w\.js#blob%3A/, { type: 'module' }],
+    [{ hash: 'raw' }, /^\/w\.js\?v=coep1#blob:http:\/\/localhost\/\d+$/, undefined],
+    [{}, /^\/w\.js\?v=coep1#blob%3Ahttp%3A%2F%2Flocalhost%2F\d+$/, undefined],
+    [{ module: true }, /^\/w\.js\?v=coep1#blob%3A/, { type: 'module' }],
   ]) {
     const engine = createEngine({ spec: spec(more) });
     await engine.load();
