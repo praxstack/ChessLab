@@ -574,6 +574,83 @@ async function runMaia3(browserType, base) {
   await browser.close();
 }
 
+/** Leela (Lc0): each net loads in the browser and its search finds a mate; T1 256x10 works on the page. */
+async function runLc0(browserType, base) {
+  let browser;
+  try {
+    browser = await browserType.launch();
+  } catch {
+    return;
+  }
+  console.log(`- ${browserType.name()}: Leela / Lc0 (real nets, real search)`);
+  const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
+  const cases = [
+    ['6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 30', 'a1a8'], // back-rank mate
+    ['r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4', 'h5f7'], // Scholar's mate
+    ['2r3k1/5ppp/8/8/8/8/5PPP/2R3K1 b - - 0 1', 'c8c1'], // Black takes the rook with mate
+  ];
+  for (const [net, parts] of [['t1-256x10', 2], ['t1-512x15', 7], ['t82-768x15', 8], ['bt3-768x15', 9]]) {
+    const got = await page.evaluate(
+      async ({ cases, net, parts }) => {
+        const blobs = await Promise.all([...Array(parts).keys()].map((i) => fetch(`/assets/engine/lc0-${net}.onnx.part${i}`).then((r) => r.blob())));
+        const url = URL.createObjectURL(new Blob(blobs));
+        const w = new Worker(`/assets/engine/lc0-worker.js#${encodeURIComponent(url)}`, { type: 'module' });
+        let wait = null;
+        w.onmessage = (e) => wait && wait(e.data);
+        w.onerror = (e) => wait && wait(`error ${e.message}`);
+        const ask = (cmd, word) =>
+          new Promise((ok) => {
+            wait = (line) => (line.startsWith(word) || line.startsWith('error')) && ok(line);
+            w.postMessage(cmd);
+          });
+        await ask('uci', 'uciok');
+        const out = [];
+        for (const [fen] of cases) {
+          w.postMessage(`position fen ${fen}`);
+          let info = '';
+          const best = await new Promise((ok) => {
+            wait = (line) => {
+              if (line.startsWith('info')) info = line;
+              if (line.startsWith('bestmove') || line.startsWith('error')) ok(line);
+            };
+            w.postMessage('go depth 99 movetime 1500');
+          });
+          out.push([best.split(' ')[1], info]);
+        }
+        w.terminate();
+        URL.revokeObjectURL(url);
+        return out;
+      },
+      { cases, net, parts },
+    );
+    const wrong = cases.flatMap(([fen, want], i) => (got[i][0] === want && /score mate 1/.test(got[i][1]) ? [] : [`${fen}: ${got[i][0]} (${got[i][1]})`]));
+    check(`Lc0 ${net}: loads, searches, and finds all ${cases.length} mates in one`, wrong.length === 0, wrong.join(' | '));
+  }
+  await page.evaluate(() => localStorage.setItem('pz-engine', 'lc0-t1-256x10'));
+  await page.reload({ waitUntil: 'load' });
+  await page.waitForSelector('#desk-board img.pc');
+  check('Lc0 T1 256x10 is the engine in use', (await page.textContent('#engine-name')) === 'Lc0 (Leela) T1 256x10');
+  const box = await page.locator('#desk-board').boundingBox();
+  const at = (sq) => [box.x + ('abcdefgh'.indexOf(sq[0]) + 0.5) * (box.width / 8), box.y + (8 - Number(sq[1]) + 0.5) * (box.height / 8)];
+  await page.mouse.move(...at('f1'));
+  await page.mouse.down();
+  await page.mouse.move(...at('c4'), { steps: 6 });
+  await page.mouse.up();
+  await page.click('#engine-check');
+  await page.waitForFunction(() => {
+    const t = document.querySelector('#engine-say').textContent;
+    return t && !/looking|ready, then/.test(t);
+  }, null, { timeout: 120000 });
+  const say = await page.textContent('#engine-say');
+  check('Lc0: Check my move gets a verdict on the page', /That’s the move|Good move|Playable|lets something go/.test(say), say);
+  check('Lc0: no page errors', errors.length === 0, errors.join(' | '));
+  await browser.close();
+}
+
 // CHECK_BASE=https://askthemove.online runs the same checks on the live site.
 const server = process.env.CHECK_BASE ? null : await serve();
 const base = process.env.CHECK_BASE ? process.env.CHECK_BASE.replace(/\/$/, '') : `http://127.0.0.1:${server.address().port}`;
@@ -584,6 +661,7 @@ try {
     await runCores(type, base);
     await runMaia2(type, base);
     await runMaia3(type, base);
+    await runLc0(type, base);
   }
 } finally {
   server?.close();
