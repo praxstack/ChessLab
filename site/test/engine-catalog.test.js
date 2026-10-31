@@ -56,7 +56,7 @@ test('catalog: every entry is complete, ids are unique, and Lite is the ready de
   assert.equal(needsWarning(lite), false);
   assert.deepEqual(
     ENGINES.filter((e) => e.status === 'ready').map((e) => e.id),
-    ['sf19-lite', 'sf19-full', 'sf19-lite-mt', 'sf19-full-mt', 'sf18-lite', 'sf17-lite', 'sf19-asm', 'sf11', 'sf17-full', 'sf18-full', 'sf16', 'dm-9m', 'maia1-1100', 'maia1-1500', 'maia1-1900', 'maia2-1100', 'maia2-1500', 'maia2-1900'],
+    ['sf19-lite', 'sf19-full', 'sf19-lite-mt', 'sf19-full-mt', 'sf18-lite', 'sf17-lite', 'sf19-asm', 'sf11', 'sf17-full', 'sf18-full', 'sf16', 'dm-9m', 'maia1-1100', 'maia1-1500', 'maia1-1900', 'maia3-3m-1100', 'maia3-3m-1500', 'maia3-3m-1900', 'maia3-5m-1100', 'maia3-5m-1500', 'maia3-5m-1900', 'maia3-23m-1100', 'maia3-23m-1500', 'maia3-23m-1900', 'maia3-79m-1100', 'maia3-79m-1500', 'maia3-79m-1900', 'maia2-1100', 'maia2-1500', 'maia2-1900'],
   );
 });
 
@@ -114,7 +114,7 @@ test('catalog: every split file matches its manifest, each part’s hash and the
   const split = ENGINES.filter((e) => e.status === 'ready').flatMap((e) => e.files.filter((f) => f.parts));
   assert.deepEqual(
     split.map((f) => f.path.replace('/assets/engine/', '')),
-    ['stockfish-19-single.wasm', 'stockfish-19.wasm', 'stockfish-17.1-single.wasm', 'stockfish-18-single.wasm', 'nn-5af11540bbfe.nnue', 'searchless-9m.onnx', 'maia2-rapid.onnx', 'maia2-rapid.onnx', 'maia2-rapid.onnx'],
+    ['stockfish-19-single.wasm', 'stockfish-19.wasm', 'stockfish-17.1-single.wasm', 'stockfish-18-single.wasm', 'nn-5af11540bbfe.nnue', 'searchless-9m.onnx', ...['23m', '79m'].flatMap((z) => Array(3).fill(`maia3-${z}.onnx`)), 'maia2-rapid.onnx', 'maia2-rapid.onnx', 'maia2-rapid.onnx'],
   );
   for (const f of split) {
     const manifest = JSON.parse(readFileSync(pub(`${f.path}.parts.json`), 'utf8'));

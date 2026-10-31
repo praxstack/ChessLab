@@ -49,6 +49,10 @@ export const DM_CREDIT =
 const SEARCHLESS_WORKER_BYTES = 3786;
 const MAIA_WORKER_BYTES = 3904;
 const MAIA2_WORKER_BYTES = 3953;
+const MAIA3_WORKER_BYTES = 3912;
+/** AGPL-3.0 asks for the notice and the source; the picker and the page footer show this. */
+export const MAIA3_CREDIT =
+  'Maia-3 (Chessformer) by Daniel Monroe, George Eilender, Philip Chalmers, Zhenwei Tang and Ashton Anderson (CSSLab, University of Toronto, 2026), AGPL-3.0, source github.com/CSSLab/maia3. The published checkpoints, exported to ONNX for this page with their weights stored as 16-bit floats (how: site/tools/maia3-export in github.com/praxstack/ChessLab); run here with onnxruntime-web (MIT).';
 /** MIT asks that the copyright notice be kept; the picker and the page footer show this. */
 export const MAIA2_CREDIT =
   'Maia-2 by Zhenwei Tang, Difan Jiao, Reid McIlroy-Young, Jon Kleinberg, Siddhartha Sen and Ashton Anderson (CSSLab, University of Toronto, 2024), MIT licence, source github.com/CSSLab/maia2. The rapid model, exported to ONNX for this page with no change to its weights; run here with onnxruntime-web (MIT).';
@@ -68,6 +72,33 @@ const ORT_FILES = [
   file('/assets/engine/ort/ort.wasm.bundle.min.mjs', 77024, { role: 'runtime' }),
   file('/assets/engine/ort/ort-wasm-simd-threaded.wasm', 14848852, { role: 'runtime' }),
 ];
+
+/** The four Maia-3 sizes; the ratings of a size share its file. */
+const MAIA3_MODELS = {
+  '3m': file('/assets/engine/maia3-3m.onnx', 6406545, { role: 'model', sha256: '8143e3b5742c59c6d4a5f86e1961bcc1cd2ae4e2be904b3383d09dff578bbe3e' }),
+  '5m': file('/assets/engine/maia3-5m.onnx', 10514156, { role: 'model', sha256: '62d9eca8fe162b858bff0ecb13744eaa51a243afe08ebe91cbf84095a064930e' }),
+  '23m': file('/assets/engine/maia3-23m.onnx', 45527138, {
+        role: 'model',
+        sha256: '2df4328b15c8d47cb73284cb9fb1fa397d629cef2cf2c47dc27b9ae072fbc665',
+        parts: [
+          file('/assets/engine/maia3-23m.onnx.part0', 22763569, { sha256: 'c70c4955e3d97acd5a3614923cc10a4e323b760aefb17c5dd4c5fca0e93d64a3' }),
+          file('/assets/engine/maia3-23m.onnx.part1', 22763569, { sha256: '4379044fd92cd2f2fa68a08daa5ba861333d5afca35a51881da4a04070242077' }),
+        ],
+      }),
+  '79m': file('/assets/engine/maia3-79m.onnx', 155850482, {
+        role: 'model',
+        sha256: 'dc0c820f6a953f5a9c41cc2150dfd77e968ca8d33ca5b55028b367b9ea0f3092',
+        parts: [
+          file('/assets/engine/maia3-79m.onnx.part0', 22264355, { sha256: '895eeda82161bea00a5dc53da4cd3b5f77e50c75e331201f7ad34a68f8ce67e6' }),
+          file('/assets/engine/maia3-79m.onnx.part1', 22264355, { sha256: '7514b867ab59561099f7c6f90f78d309c8441b6c62b8333f8bcb80102d7ad7be' }),
+          file('/assets/engine/maia3-79m.onnx.part2', 22264355, { sha256: '8f2c2a5f6b8a24a2406569cb43e7324b7b649c6ce83bc5daf5a6209151417bb9' }),
+          file('/assets/engine/maia3-79m.onnx.part3', 22264355, { sha256: 'cf43f13cfeb5b0085ff31d2c492c691c176d60411e3345ac3d6c1fbbd8d6a09f' }),
+          file('/assets/engine/maia3-79m.onnx.part4', 22264354, { sha256: 'd2e98b764444497a065bcbe792bfd6bc2381ca26b46f0561c62de0d54f17d790' }),
+          file('/assets/engine/maia3-79m.onnx.part5', 22264354, { sha256: '5e5b7684a6832788203582aead7f33116f872d6710591a48b820fba22dd73b02' }),
+          file('/assets/engine/maia3-79m.onnx.part6', 22264354, { sha256: '0efdf565916214dc9024bd4249ab93ee684700879139b949bc50e019c05def66' }),
+        ],
+      }),
+};
 
 export const ENGINES = [
   /* ---------------------------------------------------------- ready now */
@@ -399,25 +430,34 @@ export const ENGINES = [
     files: [file('fairy-stockfish-nnue.wasm', 1.7e6, { approx: true })],
   }),
   ...[
-    ['3m', 'Maia3-3M', 'Maia-3 3M', 12659441, 'light'],
-    ['5m', 'Maia3-5M', 'Maia-3 5M', 20968049, 'light'],
-    ['23m', 'Maia3-23M', 'Maia-3 23M', 91799307, 'heavy'],
-    ['23m-ponder', 'Maia3-23M-ponder', 'Maia-3 23M ponder', 108644919, 'heavy'],
-    ['79m', 'Maia3-79M', 'Maia-3 79M', 315651851, 'heavy'],
-  ].map(([size, repo, name, bytes, device]) =>
-    entry({
-      id: `maia3-${size}`,
-      name,
-      family: 'Maia',
-      about: `The newest human-like model, for players from about 600 to 2600. Bigger sizes guess human moves a little better. ${ORT}`,
-      license: 'AGPL-3.0',
-      licenseUrl: AGPL_URL,
-      source: `https://huggingface.co/UofTCSSLab/${repo}`,
-      device,
-      status: 'soon',
-      ...(device === 'heavy' ? { memory: 'several hundred MB, more than the download', webgpu: 'better' } : {}),
-      files: [file(`maia3-${size}.pt`, bytes)],
-    }),
+    ['3m', 'Maia3-ablate-3M', '3M', 'light', 'the smallest and quickest'],
+    ['5m', 'Maia3-5M', '5M', 'light', 'small and quick'],
+    ['23m', 'Maia3-23M', '23M', 'heavy', 'bigger: a little closer to real players'],
+    ['79m', 'Maia3-79M', '79M', 'heavy', 'the biggest: closest to real players, slowest to download'],
+  ].flatMap(([size, repo, label, device, what]) =>
+    [
+      ['1100', 'a club beginner'],
+      ['1500', 'a club player'],
+      ['1900', 'a strong club player'],
+    ].map(([elo, who]) =>
+      entry({
+        id: `maia3-${size}-${elo}`,
+        name: `Maia-3 ${label} ${elo}`,
+        family: 'Maia-3',
+        about: `The newest human-like model (2026): plays the move a human rated about ${elo} (${who}) would most likely play. This is the ${label} size, ${what}. It doesn’t search, so its score is only its guess at the result. The three ratings of one size share one download.`,
+        license: 'AGPL-3.0',
+        licenseUrl: AGPL_URL,
+        source: 'https://github.com/CSSLab/maia3',
+        weights: `https://huggingface.co/UofTCSSLab/${repo}`,
+        credit: MAIA3_CREDIT,
+        device,
+        status: 'ready',
+        module: true,
+        memory: device === 'heavy' ? 'several hundred MB' : 'about 100 MB',
+        options: [`setoption name Elo value ${elo}`],
+        files: [file('/assets/engine/maia3-worker.js', MAIA3_WORKER_BYTES, { role: 'worker' }), ...ORT_FILES, MAIA3_MODELS[size]],
+      }),
+    ),
   ),
   ...[
     ['1100', 'a club beginner'],
