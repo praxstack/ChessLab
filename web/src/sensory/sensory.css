@@ -1,7 +1,8 @@
 /* The pens over the board (draw.js) and their toolbar. Colours come from the app's theme
    variables when it has them, with the puzzle page's inks as fallbacks:
    green = Mine, red = Theirs, blue = Idea. */
-.sn-ink {
+.sn-ink,
+.desk__draw--live {
   --sn-blue: var(--blue, #1f48ae);
   --sn-red: var(--red, #c92324);
   --sn-green: var(--green, #1d7a4a);
@@ -13,6 +14,7 @@
   overflow: visible;
   pointer-events: none;
 }
+.desk__draw--live .dr,
 .sn-ink .dr {
   --tone: var(--sn-blue);
   fill: none;
@@ -22,11 +24,17 @@
   opacity: 0.88;
   filter: drop-shadow(0 0 0.35px rgb(255 253 245 / 0.9));
 }
+.desk__draw--live .tone--red,
 .sn-ink .tone--red { --tone: var(--sn-red); }
+.desk__draw--live .tone--green,
 .sn-ink .tone--green { --tone: var(--sn-green); }
+.desk__draw--live .dr--fill,
 .sn-ink .dr--fill { fill: var(--tone); stroke: none; }
+.desk__draw--live .dr--pencil,
 .sn-ink .dr--pencil { opacity: 0.78; filter: url(#dr-grain); }
+.desk__draw--live .dr--marker,
 .sn-ink .dr--marker { opacity: 0.4; stroke-linecap: square; filter: none; mix-blend-mode: multiply; }
+.desk__draw--live .is-live,
 .sn-ink .is-live { opacity: 0.55; }
 
 /* Draw mode: a finger draws instead of scrolling or moving a piece, and the board says so. */
