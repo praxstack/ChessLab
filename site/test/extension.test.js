@@ -41,6 +41,19 @@ test('side to move: page words first, then the side the board faces', () => {
   assert.equal(R.sideToMove('', false), 'w');
 });
 
+test('castling: kings and rooks on their home squares keep the right', () => {
+  const p = { e1: 'K', h1: 'R', a1: 'R', e8: 'k', h8: 'r', a8: 'r' };
+  assert.equal(R.toFen(p, 'w').fen, 'r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1');
+  assert.equal(R.toFen({ e1: 'K', h1: 'R', g8: 'k', a8: 'r' }, 'b').fen, 'r5k1/8/8/8/8/8/8/4K2R b K - 0 1');
+});
+
+test('the copy box holds only the bookmark, markers outside it', async () => {
+  const html = await readFile(new URL('../pages/puzzleanalyzr.html', import.meta.url), 'utf8');
+  const box = /<textarea id="bm-send"[^>]*>([^<]*)<\/textarea>/.exec(html);
+  assert.ok(box, 'copy box found');
+  assert.match(box[1], /^javascript:\(function\(\)\{/);
+});
+
 test('refuses a board without one king a side', () => {
   assert.match(R.toFen({ e1: 'K' }, 'w').error, /Couldn’t read the board/);
   assert.match(R.toFen({}, 'w').error, /Couldn’t read the board/);

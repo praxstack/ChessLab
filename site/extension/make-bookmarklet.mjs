@@ -21,7 +21,9 @@ export const bookmarklet = `javascript:(function(){${body}${run}})()`;
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const page = new URL('../pages/puzzleanalyzr.html', here);
 const html = await readFile(page, 'utf8');
-const next = html.replace(/(<!-- BOOKMARKLET -->)[\s\S]*?(<!-- \/BOOKMARKLET -->)/, `$1${esc(bookmarklet)}$2`);
+// The markers sit outside the textarea: inside it they'd be text, and Copy would copy them too.
+const box = `<textarea id="bm-send" class="paste__box pz-setup__bm" rows="3" readonly spellcheck="false">${esc(bookmarklet)}</textarea>`;
+const next = html.replace(/(<!-- BOOKMARKLET -->)[\s\S]*?(<!-- \/BOOKMARKLET -->)/, `$1${box}$2`);
 const txt = new URL('bookmarklet.txt', here);
 let old = '';
 try {

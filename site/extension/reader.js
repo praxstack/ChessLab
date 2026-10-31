@@ -28,6 +28,22 @@
     return flipped ? 'b' : 'w';
   }
 
+  /**
+   * Castling rights as a printed diagram reads them: a king and rook still on
+   * their home squares may castle. The page doesn't say whether they moved
+   * earlier, so this is the usual guess. (En passant can't be read from a
+   * still board; Daily Puzzles start after the opponent's move, and that
+   * capture is very rare, so it stays "-".)
+   */
+  function castling(p) {
+    let out = '';
+    if (p.e1 === 'K' && p.h1 === 'R') out += 'K';
+    if (p.e1 === 'K' && p.a1 === 'R') out += 'Q';
+    if (p.e8 === 'k' && p.h8 === 'r') out += 'k';
+    if (p.e8 === 'k' && p.a8 === 'r') out += 'q';
+    return out || '-';
+  }
+
   /** The pieces as a FEN, or { error } when it isn't a real position. */
   function toFen(pieces, side) {
     const all = Object.values(pieces);
@@ -48,7 +64,7 @@
       }
       rows.push(row + (gap || ''));
     }
-    return { fen: `${rows.join('/')} ${side} - - 0 1` };
+    return { fen: `${rows.join('/')} ${side} ${castling(pieces)} - 0 1` };
   }
 
   /**
