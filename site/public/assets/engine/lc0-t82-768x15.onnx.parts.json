@@ -1,0 +1,47 @@
+{
+  "file": "lc0-t82-768x15.onnx",
+  "bytes": 189659755,
+  "sha256": "f7d418f4039815d6dd38aeb66ee3d82cda271cd7dd0e8a9ad4b8287ad51969bc",
+  "parts": [
+    {
+      "file": "lc0-t82-768x15.onnx.part0",
+      "bytes": 23707470,
+      "sha256": "c591d91eaba42dbaf80791aa154d6cd67b4e26eaff57128b24835f521df21542"
+    },
+    {
+      "file": "lc0-t82-768x15.onnx.part1",
+      "bytes": 23707470,
+      "sha256": "042b6309657be131678405412cb972dc2bafc9446c120b217c5a320364297f16"
+    },
+    {
+      "file": "lc0-t82-768x15.onnx.part2",
+      "bytes": 23707470,
+      "sha256": "c48d8a3e780720d91a77831b66c800ee50dcde6aef692a0c1e2bf6763b915705"
+    },
+    {
+      "file": "lc0-t82-768x15.onnx.part3",
+      "bytes": 23707469,
+      "sha256": "e26a8dcfc1c9e506466b7c4ba33e35b8df9e4ca6af8b372250ea7c1bb91fec06"
+    },
+    {
+      "file": "lc0-t82-768x15.onnx.part4",
+      "bytes": 23707469,
+      "sha256": "e32444aadfb95ba7adf5b628ee0768a18be71a25d545619846a95b0077ae67e3"
+    },
+    {
+      "file": "lc0-t82-768x15.onnx.part5",
+      "bytes": 23707469,
+      "sha256": "5cecc2bd55a7b1a5c34948a449902fe40c0dd6ba7ab310c43bf53baebe6682ca"
+    },
+    {
+      "file": "lc0-t82-768x15.onnx.part6",
+      "bytes": 23707469,
+      "sha256": "566ddbc4ae0087a1ae0ee285ebb1a2eeb2f3d2244ded9d2be1518fa476ccbddd"
+    },
+    {
+      "file": "lc0-t82-768x15.onnx.part7",
+      "bytes": 23707469,
+      "sha256": "5286359bdd9141fc4385cd5aee5661ba5bdf3c93308e2db3faf377175de5fc1d"
+    }
+  ]
+}

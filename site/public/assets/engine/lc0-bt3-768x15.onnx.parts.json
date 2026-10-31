@@ -1,0 +1,52 @@
+{
+  "file": "lc0-bt3-768x15.onnx",
+  "bytes": 205507072,
+  "sha256": "48a570874eab0c3d2eaff110f4ab04dde51cf6aee9a10b73cbe094b2f9494b11",
+  "parts": [
+    {
+      "file": "lc0-bt3-768x15.onnx.part0",
+      "bytes": 22834120,
+      "sha256": "3eb45c9589612ef5ab16f962c1705da7ef7ec910c486b8d6038318589953bbb6"
+    },
+    {
+      "file": "lc0-bt3-768x15.onnx.part1",
+      "bytes": 22834119,
+      "sha256": "3cde12e52f06de97a0e20e02c3bbae70b52d477f450980e7d9f9b0d6b8050b58"
+    },
+    {
+      "file": "lc0-bt3-768x15.onnx.part2",
+      "bytes": 22834119,
+      "sha256": "5468ec50a849848a42079a9f290527b85fea6b11512a29b25e6cdb940d4dcbdb"
+    },
+    {
+      "file": "lc0-bt3-768x15.onnx.part3",
+      "bytes": 22834119,
+      "sha256": "2f33e14443badc3f72752fa96bfb027a2bf827518cbeab09aeb8c712b5b9bdfc"
+    },
+    {
+      "file": "lc0-bt3-768x15.onnx.part4",
+      "bytes": 22834119,
+      "sha256": "80b344dbc34d2512289d530f7faaedd04da27f7d797b32a84012774548616257"
+    },
+    {
+      "file": "lc0-bt3-768x15.onnx.part5",
+      "bytes": 22834119,
+      "sha256": "7f5c36807499ca26e5d5c1db4c0f2ede170bd3615506813afe34041559cef3f7"
+    },
+    {
+      "file": "lc0-bt3-768x15.onnx.part6",
+      "bytes": 22834119,
+      "sha256": "6ecb5d2efea1523e5a24746beb789c004de1da1840e4b7d6d342041e7ebf9791"
+    },
+    {
+      "file": "lc0-bt3-768x15.onnx.part7",
+      "bytes": 22834119,
+      "sha256": "bec8410466503dd7d7b0de7306fc57cb2ecdf0e1669a769666238d73fcf877af"
+    },
+    {
+      "file": "lc0-bt3-768x15.onnx.part8",
+      "bytes": 22834119,
+      "sha256": "4a1b6c9a56c2f908ba8351567c3f7bdae7534b8b6d0623586550994467e37c85"
+    }
+  ]
+}
