@@ -1,8 +1,9 @@
-// When Chess.com's next daily puzzle comes out.
-// Chess.com dates its daily puzzle by US Pacific time and changes it at
-// midnight there: 12:30 PM in India while the US is on summer time
-// (March to November), 1:30 PM in winter. Before that, a morning in India
-// still shows the puzzle dated yesterday.
+// When Chess.com's next daily puzzle reaches this page.
+// There are two clocks. The Chess.com app changes the puzzle at midnight on
+// the player's own phone. Chess.com's public feed, the only thing this page
+// can read, changes at midnight US Pacific time: 12:30 PM in India while the
+// US is on summer time (March to November), 1:30 PM in winter. So between
+// midnight and then, the app already has a newer puzzle than this page.
 
 const PACIFIC = 'America/Los_Angeles';
 const DAY = 24 * 60 * 60 * 1000;
@@ -53,4 +54,19 @@ export function whenText(at, { now = Date.now(), timeZone } = {}) {
   if (days === 1) return `tomorrow ${time}`;
   const day = new Date(at).toLocaleDateString('en-GB', { weekday: 'short', timeZone });
   return `${day} ${time}`;
+}
+
+/** The device's own date (YYYY-MM-DD) at `now`. `timeZone` is only for tests. */
+export function localIso(now = Date.now(), timeZone) {
+  const p = partsIn(now, timeZone);
+  return `${p.y}-${String(p.m).padStart(2, '0')}-${String(p.d).padStart(2, '0')}`;
+}
+
+/**
+ * True when the Chess.com app (which goes by the phone's date) already has a
+ * newer puzzle than the one this page loaded, dated `iso`. It goes by the
+ * loaded date only, so a late or failed feed refresh keeps the note up.
+ */
+export function appAhead(iso, { now = Date.now(), timeZone } = {}) {
+  return Boolean(iso) && localIso(now, timeZone) > iso;
 }
