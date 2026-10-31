@@ -332,6 +332,66 @@ async function run(browserType, base) {
   await browser.close();
 }
 
+/** Book page: the board, the drawings and the margin notes, on screen and in print. */
+async function runBook(browserType, base) {
+  let browser;
+  try {
+    browser = await browserType.launch();
+  } catch {
+    return;
+  }
+  console.log(`- ${browserType.name()}: book page`);
+  const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
+  await page.waitForSelector('#desk-board img.pc');
+  const box = await page.locator('#desk-board').boundingBox();
+  const at = (sq) => [box.x + ('abcdefgh'.indexOf(sq[0]) + 0.5) * (box.width / 8), box.y + (8 - Number(sq[1]) + 0.5) * (box.height / 8)];
+  const rightDrag = async (a, b) => {
+    await page.mouse.move(...at(a));
+    await page.mouse.down({ button: 'right' });
+    await page.mouse.move(...at(b), { steps: 6 });
+    await page.mouse.up({ button: 'right' });
+  };
+  await page.click('#draw-modes [data-mode="draw"]');
+  await page.click('#pens [data-color="green"]');
+  await rightDrag('f3', 'g5');
+  await page.click('#pens [data-color="red"]');
+  await rightDrag('d8', 'h4');
+  await page.click('#pens [data-tool="sticker"]');
+  await page.click('#pens [data-sticker="OUTPOST"]');
+  await page.mouse.click(...at('d5'));
+  await page.click('#draw-book');
+  await page.waitForSelector('#book-pop[open]');
+  check('Book page opens', await page.locator('#book-pop').isVisible());
+  check('its diagram has every piece', (await page.locator('#book-diagram .book__squares image').count()) === 32);
+  check('its diagram carries the drawings', (await page.locator('#book-diagram .book__ink .dr--arrow').count()) === 2 && (await page.locator('#book-diagram .book__ink .dr-word').count()) === 1);
+  const margin = await page.textContent('#book-margin');
+  check('the margin lists Mine, Theirs and the taped square', /Mine\s+f3–g5/.test(margin) && /Theirs\s+d8–h4/.test(margin) && /d5 OUTPOST/.test(margin), margin);
+  check('the caption says whose move it is', (await page.textContent('#book-caption')) === 'White to play');
+  const inkBox = await page.locator('#book-diagram .book__ink').boundingBox();
+  const sqBox = await page.locator('#book-diagram .book__squares').boundingBox();
+  check('the drawings line up with the diagram squares', Math.abs(inkBox.width - (sqBox.width * 80) / 86) < 1.5 && Math.abs(inkBox.x - (sqBox.x + (sqBox.width * 5) / 86)) < 1.5, JSON.stringify({ inkBox, sqBox }));
+  await page.fill('#book-note', 'Missed Ng5 hitting f7.');
+  check('your note goes on the page', (await page.textContent('#book-own-print')) === 'Missed Ng5 hitting f7.' && (await page.locator('#book-own-print').isVisible()));
+  if (process.env.BOOK_SHOT) await page.locator('#book-pop').screenshot({ path: process.env.BOOK_SHOT });
+  await page.evaluate(() => document.documentElement.classList.add('is-printing-book'));
+  await page.emulateMedia({ media: 'print' });
+  const printed = await page.evaluate(() => ({
+    board: getComputedStyle(document.querySelector('#desk-board').closest('main > *')).display,
+    page: getComputedStyle(document.querySelector('.book__page')).display,
+    tools: getComputedStyle(document.querySelector('.book__tools')).display,
+  }));
+  check('printing shows only the book page', printed.board === 'none' && printed.page !== 'none' && printed.tools === 'none', JSON.stringify(printed));
+  await page.emulateMedia({ media: 'screen' });
+  await page.click('#book-close');
+  check('Close puts it away and leaves print mode', !(await page.locator('#book-pop').isVisible()) && !(await page.evaluate(() => document.documentElement.classList.contains('is-printing-book'))));
+  check('no page errors', errors.length === 0, errors.join(' | '));
+  await browser.close();
+}
+
 /** Coach check with the real Stockfish Lite: a reply that fails, a line that ends in mate, and a slip of the learner's. */
 async function runCoach(browserType, base) {
   let browser;
@@ -700,6 +760,7 @@ const base = process.env.CHECK_BASE ? process.env.CHECK_BASE.replace(/\/$/, '') 
 try {
   for (const type of [playwright.chromium, playwright.firefox, playwright.webkit]) {
     await run(type, base);
+    await runBook(type, base);
     await runCoach(type, base);
     await runCores(type, base);
     await runMaia2(type, base);
