@@ -1,0 +1,36 @@
+#atm-send {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 2147483000;
+  padding: 10px 16px;
+  border: 2px solid #1f2a44;
+  border-radius: 999px;
+  background: #fffdf6;
+  color: #1f2a44;
+  font: 700 15px/1.1 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+
+#atm-send:hover {
+  background: #f3efe2;
+}
+
+#atm-send:focus-visible {
+  outline: 3px solid #2d55b5;
+  outline-offset: 2px;
+}
+
+#atm-say {
+  position: fixed;
+  right: 18px;
+  bottom: 70px;
+  z-index: 2147483000;
+  max-width: 300px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #1f2a44;
+  color: #fff;
+  font: 14px/1.35 system-ui, -apple-system, 'Segoe UI', sans-serif;
+}

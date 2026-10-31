@@ -1365,16 +1365,22 @@ function renderMoreGames() {
 /* ------------------------------------------------------------ Setup bits */
 
 $('copy-bm').addEventListener('click', () => copy($('bm').value, 'bm-status', 'Copied. Now follow the steps below.'));
+$('copy-bm-send').addEventListener('click', () => copy($('bm-send').value, 'bm-send-status', 'Copied. Now follow the steps below.'));
 
 /* ----------------------------------------------------------------- Start */
 
 $('desk-coords').innerHTML = coordsHTML('white');
 updateCheckButton();
 renderCalendar();
-const linkFen = new URLSearchParams(window.location.search).get('fen');
+// A position can come after ? (links) or after # (the extension and bookmark, so it never reaches a server).
+const linkParams = new URLSearchParams(window.location.hash.replace(/^#/, '').includes('fen=') ? window.location.hash.slice(1) : window.location.search);
+const linkFen = linkParams.get('fen');
 const linked = linkFen && cleanFen(linkFen);
 if (linked) {
-  showOnDesk({ kind: 'paste', fen: linked.fen, title: 'Your position', source: 'link' });
+  // Sent from a Chess.com puzzle page by the extension or the bookmark.
+  const from = linkParams.get('from');
+  const sent = from === 'chesscom' || from === 'bookmark';
+  showOnDesk({ kind: 'paste', fen: linked.fen, title: sent ? 'From your Chess.com puzzle' : 'Your position', source: sent ? 'Chess.com puzzle page' : 'link' });
   loadToday({ toDesk: false });
 } else {
   loadToday({ toDesk: true });
