@@ -36,6 +36,26 @@ export function ending(fen) {
   return null;
 }
 
+/** How the game stands after each step, replayed from the start so repetitions count: 'mate', 'draw' or null. */
+export function endings(start, steps) {
+  let g;
+  try {
+    g = new Chess(start);
+  } catch {
+    return steps.map(() => null);
+  }
+  return steps.map((s) => {
+    try {
+      g.move({ from: s.from, to: s.to, promotion: s.promotion || 'q' });
+    } catch {
+      return null;
+    }
+    if (g.isCheckmate()) return 'mate';
+    if (g.isDraw()) return 'draw';
+    return null;
+  });
+}
+
 /** SAN for an engine move in a position, or the raw move if it can't be read. */
 function sanOf(fen, move) {
   try {
@@ -103,11 +123,12 @@ export async function checkLine({ start, steps, fens, look, alive = () => true }
   const learner = start.split(/\s+/)[1] === 'b' ? 'b' : 'w';
   const moves = steps.map(uci);
   const verdicts = [];
+  const ends = endings(start, steps);
   let before = await look(start, []);
   for (let i = 0; i < steps.length; i += 1) {
     if (!alive()) return null;
     const fen = i === 0 ? start : fens[i - 1];
-    const ended = ending(fens[i]);
+    const ended = ends[i];
     const best = before.move === moves[i];
     const after = ended || best ? null : await look(start, moves.slice(0, i + 1));
     if (!alive()) return null;

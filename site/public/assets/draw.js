@@ -1034,6 +1034,13 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
       aid = mark ? { kind: 'coach', to: mark.to, ok: Boolean(mark.ok) } : null;
       render();
     },
+    /** Take Coach check's mark off the board, if it's showing (no redraw of the drawings needed). */
+    clearCoach() {
+      if (aid && aid.kind === 'coach') {
+        aid = null;
+        aidLayer.innerHTML = '';
+      }
+    },
     /** Take the numbered line off the board, as one undo step. */
     clearLine() {
       if (sketch.keep((s) => s.kind !== 'step')) render();

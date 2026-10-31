@@ -357,6 +357,7 @@ function coachSay(text, tone = '') {
   note.textContent = text;
   note.className = `pens__coach${tone ? ` is-${tone}` : ''}`;
   if (!text) {
+    pens.clearCoach(); // the verdict's mark on the board goes with it
     coachLine = '';
     coachSeq += 1; // a check still running is about a line that's gone
     $('draw-line-check').disabled = false;

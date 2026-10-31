@@ -336,8 +336,12 @@ async function runCoach(browserType, base) {
   let say = await verdict();
   check('Coach check: the weak reply the learner expected is marked, with the reply that holds', /^✗ 3… Nf6\? Black has a better reply: 3… \S+! holds\.$/.test(say), say);
   check('Coach check: a red cross on the board', (await mark('.aid-coach:not(.is-ok)')) === 1);
+  await page.click('#draw-line-clear');
+  check('Coach check: Clear line takes the verdict and its cross away', !(await page.locator('#draw-line-note').isVisible()) && (await mark('.aid-coach')) === 0);
+  await page.click('#draw-undo'); // the line comes back
+  await verdict();
   await drag('h5', 'f7'); // taking the last step back changes the line
-  check('Coach check: editing the line clears the verdict', !(await page.locator('#draw-line-note').isVisible()));
+  check('Coach check: editing the line clears the verdict and its cross', !(await page.locator('#draw-line-note').isVisible()) && (await mark('.aid-coach')) === 0);
 
   // A back-rank mate in one, played right.
   await open('6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 30');

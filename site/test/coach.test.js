@@ -2,7 +2,7 @@
 // stops at the first move that fails. A fake engine stands in for Stockfish.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { checkLine, ending, failNote, judgeStep, passNote, stepLabel, uci } from '../public/assets/coach.js';
+import { checkLine, ending, endings, failNote, judgeStep, passNote, stepLabel, uci } from '../public/assets/coach.js';
 import { nextStep, replay } from '../public/assets/line.js';
 
 /** Build a line the way the drawing layer does: legal steps with SAN. */
@@ -145,4 +145,19 @@ test('failNote and passNote word draws and single moves', () => {
   assert.equal(passNote({ start, steps, endedWith: 'draw' }), '✓ Your line holds, and it ends in a draw after 3. Bb5.');
   const note = failNote({ start, i: 1, step: { san: 'Nf6' }, fen: start.replace(' w ', ' b '), learner: 'w', verdict: 'miss', before: { move: null } });
   assert.equal(note, '✗ 3… Nf6? Black has a better reply here.');
+});
+
+test('a line that repeats the position three times ends in a draw, and the check stops there', async () => {
+  const start = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+  const shuffle = ['g1f3', 'g8f6', 'f3g1', 'f6g8'];
+  const l = line(start, [...shuffle, ...shuffle, 'e2e4']);
+  assert.deepEqual(endings(l.start, l.steps), [null, null, null, null, null, null, null, 'draw', null], 'the 8th move repeats the start a third time');
+  const table = {};
+  const moves = l.steps.map((s) => s.from + s.to);
+  for (let i = 0; i <= 7; i += 1) table[moves.slice(0, i).join(' ')] = { move: moves[i], score: { cp: i % 2 ? -10 : 10 } };
+  const eng = fakeEngine(table);
+  const r = await checkLine({ ...l, look: eng.look });
+  assert.equal(r.fail, -1);
+  assert.equal(r.verdicts.length, 8, 'the move after the draw isn’t graded');
+  assert.equal(r.note, '✓ Your line holds, and it ends in a draw after 4… Ng8.');
 });
