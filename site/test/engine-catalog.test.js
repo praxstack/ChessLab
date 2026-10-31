@@ -369,3 +369,12 @@ test('several cores: only on a cross-origin isolated page, 2 to 4 threads, and a
     assert.match(js, /em-pthread/);
   }
 });
+
+test('engine workers start from a versioned URL, so a script cached before COEP is fetched again', async () => {
+  const { WORKER_VERSION, workerUrl } = await import('../public/assets/engine.js');
+  assert.equal(workerUrl('/assets/engine/stockfish-19-lite-single.js', '#blob%3Ax'), `/assets/engine/stockfish-19-lite-single.js?v=${WORKER_VERSION}#blob%3Ax`);
+  assert.equal(workerUrl('/assets/engine/x.js'), `/assets/engine/x.js?v=${WORKER_VERSION}`);
+  const src = readFileSync(pub('/assets/engine.js'), 'utf8');
+  assert.match(src, /new Worker\(workerUrl\(script\.path, hash\)/, 'the one place a worker starts uses it');
+  assert.equal((src.match(/new Worker\(/g) || []).length, 1);
+});

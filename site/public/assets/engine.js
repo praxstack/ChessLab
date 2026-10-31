@@ -18,6 +18,17 @@ const STORE = 'pz-engine-v1';
 const KEEP_MS = 30 * 24 * 60 * 60 * 1000;
 const SAVED_AT = 'x-pz-saved-at';
 
+/**
+ * Engine scripts are kept by the browser for 30 days, with the headers they
+ * came with. When those headers change (as when the puzzle page became
+ * cross-origin isolated and a worker needs Cross-Origin-Embedder-Policy to
+ * start), bump this, so every browser fetches the script again.
+ */
+export const WORKER_VERSION = 'coep1';
+
+/** The URL a worker starts from: the script, its version, then the part after # it reads its .wasm or model from. */
+export const workerUrl = (path, hash = '') => `${path}?v=${WORKER_VERSION}${hash}`;
+
 /** From a UCI score to centipawns for the side to move; a mate is worth far more than any material. */
 export function toCp(score) {
   if (!score) return 0;
@@ -325,7 +336,7 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
         url = URL.createObjectURL(saved.blob);
         hash = `#${spec.hash === 'raw' ? url : encodeURIComponent(url)}`;
       }
-      worker = new Worker(`${script.path}${hash}`, spec.module ? { type: 'module' } : undefined);
+      worker = new Worker(workerUrl(script.path, hash), spec.module ? { type: 'module' } : undefined);
       worker.addEventListener('message', (e) => {
         const line = typeof e.data === 'string' ? e.data : '';
         if (listener) listener(line);
