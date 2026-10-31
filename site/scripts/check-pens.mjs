@@ -4,6 +4,7 @@
 // wiring, the CSS, and what a learner actually sees.
 //
 //   npm run check:pens            (needs Playwright: `npm i -g playwright`)
+//   CHECK_BASE=https://askthemove.online npm run check:pens   (the live site)
 //
 // The page is served from public/ on a local port, every outside request is
 // blocked, and the position comes from ?fen=, so the result never depends on
@@ -113,7 +114,7 @@ async function run(browserType, base) {
   // A fresh page is in Move: pieces only. Nothing draws, whatever presses the board.
   const mode = (m) => page.click(`#draw-modes [data-mode="${m}"]`);
   const modeIs = async (m) => (await page.getAttribute(`#draw-modes [data-mode="${m}"]`, 'aria-checked')) === 'true';
-  const shapes = () => page.locator('#desk-draw .desk__drawn > *').count();
+  const shapes = () => page.locator('#desk-draw .desk__drawn > g > *').count(); // drawings sit in two layers: shapes, then a line's steps
   check('a fresh page opens in Move, with the drawing kit put away', (await modeIs('move')) && !(await shown('#draw-kit')) && !(await shown('#pens [data-tool="pen"]')));
   check('the helpers are there in Move', await shown('#pens [data-help="reach"]'));
   const penDrag = (a, b) =>
@@ -147,8 +148,26 @@ async function run(browserType, base) {
   check('pencil and marker look different from the pen', (await count('.dr--pencil')) === 1 && (await count('.dr--marker')) === 1);
   const pencilBox = await page.locator('#desk-draw .desk__drawn .dr--pencil path').boundingBox();
   check('a straight pencil line is visible', Boolean(pencilBox && pencilBox.width > 20));
+  // Speed: while a stroke is drawn, the drawings already on the board are left
+  // alone (the stroke has its own layer), and lifting the pen adds just that one.
+  await tool('pen');
+  const pts = ['a3', 'c4', 'e3', 'g4', 'h2', 'f1', 'b2'];
+  await page.evaluate(() => {
+    window.__seen = { done: 0, live: 0 };
+    const watch = (sel, key) => new MutationObserver((ms) => (window.__seen[key] += ms.length)).observe(document.querySelector(sel), { subtree: true, childList: true, attributes: true });
+    watch('#desk-draw .desk__drawn', 'done');
+    watch('.desk__draw--live', 'live');
+  });
+  await page.mouse.move(...at(pts[0]));
+  await page.mouse.down();
+  for (const sq of pts.slice(1)) await page.mouse.move(...at(sq), { steps: 8 });
+  const mid = await page.evaluate(() => ({ ...window.__seen }));
+  await page.mouse.up();
+  const after = await page.evaluate(() => ({ ...window.__seen }));
+  check('speed: a stroke being drawn never touches the drawings already there', mid.done === 0 && mid.live > 0, JSON.stringify(mid));
+  check('speed: lifting the pen adds one drawing and rebuilds nothing', after.done === 1 && (await count('.dr--free')) === 4, JSON.stringify(after));
   await page.click('#draw-clear');
-  check('Clear rubs everything out', (await count('g')) === 0);
+  check('Clear rubs everything out', (await shapes()) === 0);
 
   // Ghost move: the real position never changes.
   await tool('ghost');
@@ -489,8 +508,9 @@ async function runMaia2(browserType, base) {
   await browser.close();
 }
 
-const server = await serve();
-const base = `http://127.0.0.1:${server.address().port}`;
+// CHECK_BASE=https://askthemove.online runs the same checks on the live site.
+const server = process.env.CHECK_BASE ? null : await serve();
+const base = process.env.CHECK_BASE ? process.env.CHECK_BASE.replace(/\/$/, '') : `http://127.0.0.1:${server.address().port}`;
 try {
   for (const type of [playwright.chromium, playwright.firefox, playwright.webkit]) {
     await run(type, base);
@@ -499,7 +519,7 @@ try {
     await runMaia2(type, base);
   }
 } finally {
-  server.close();
+  server?.close();
 }
 if (failures.length) {
   console.error(`\n${failures.length} pen check(s) failed.`);

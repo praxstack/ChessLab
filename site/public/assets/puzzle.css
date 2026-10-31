@@ -343,6 +343,9 @@
   height: 100%;
   overflow: visible;
   pointer-events: none;
+  /* Each drawing layer gets its own place on the GPU: the stroke being drawn
+     (.desk__draw--live, on top) repaints alone, the finished drawings stay put. */
+  will-change: transform;
 }
 
 .desk__draw.is-hidden {
