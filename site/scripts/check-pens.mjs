@@ -508,6 +508,72 @@ async function runMaia2(browserType, base) {
   await browser.close();
 }
 
+/** Maia-3: every size's move in the browser matches Python's on the reference cases, and one size works on the page. */
+async function runMaia3(browserType, base) {
+  let browser;
+  try {
+    browser = await browserType.launch();
+  } catch {
+    return;
+  }
+  console.log(`- ${browserType.name()}: Maia-3 (real models, all four sizes)`);
+  const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
+  const ref = JSON.parse(await readFile(join(ROOT, '../test/fixtures/maia3-reference.json'), 'utf8')).cases;
+  for (const [size, parts] of [['3m', 0], ['5m', 0], ['23m', 2], ['79m', 7]]) {
+    const got = await page.evaluate(
+      async ({ cases, size, parts }) => {
+        const files = parts ? [...Array(parts).keys()].map((i) => `/assets/engine/maia3-${size}.onnx.part${i}`) : [`/assets/engine/maia3-${size}.onnx`];
+        const blobs = await Promise.all(files.map((f) => fetch(f).then((r) => r.blob())));
+        const url = URL.createObjectURL(new Blob(blobs));
+        const w = new Worker(`/assets/engine/maia3-worker.js#${encodeURIComponent(url)}`, { type: 'module' });
+        let wait = null;
+        w.onmessage = (e) => wait && wait(e.data);
+        const ask = (cmd, word) =>
+          new Promise((ok) => {
+            wait = (line) => line.startsWith(word) && ok(line);
+            w.postMessage(cmd);
+          });
+        await ask('uci', 'uciok');
+        const out = [];
+        for (const c of cases) {
+          w.postMessage(`setoption name Elo value ${c.elo}`);
+          w.postMessage(`position fen ${c.fen}`);
+          out.push((await ask('go depth 1', 'bestmove')).split(' ')[1]);
+        }
+        w.terminate();
+        URL.revokeObjectURL(url);
+        return out;
+      },
+      { cases: ref, size, parts },
+    );
+    const wrong = ref.flatMap((c, i) => (got[i] === c.best[size] ? [] : [`${c.elo} ${c.fen}: ${got[i]} not ${c.best[size]}`]));
+    check(`Maia-3 ${size.toUpperCase()}: the browser’s move matches Python’s in all ${ref.length} reference cases`, wrong.length === 0, wrong.join(' | '));
+  }
+  await page.evaluate(() => localStorage.setItem('pz-engine', 'maia3-5m-1500'));
+  await page.reload({ waitUntil: 'load' });
+  await page.waitForSelector('#desk-board img.pc');
+  check('Maia-3 5M 1500 is the engine in use', (await page.textContent('#engine-name')) === 'Maia-3 5M 1500');
+  const box = await page.locator('#desk-board').boundingBox();
+  const at = (sq) => [box.x + ('abcdefgh'.indexOf(sq[0]) + 0.5) * (box.width / 8), box.y + (8 - Number(sq[1]) + 0.5) * (box.height / 8)];
+  await page.mouse.move(...at('f1'));
+  await page.mouse.down();
+  await page.mouse.move(...at('c4'), { steps: 6 });
+  await page.mouse.up();
+  await page.click('#engine-check');
+  await page.waitForFunction(() => {
+    const t = document.querySelector('#engine-say').textContent;
+    return t && !/looking|ready, then/.test(t);
+  }, null, { timeout: 120000 });
+  const say = await page.textContent('#engine-say');
+  check('Maia-3: Check my move gets a verdict on the page', /That’s the move|Good move|Playable|lets something go/.test(say), say);
+  check('Maia-3: no page errors', errors.length === 0, errors.join(' | '));
+  await browser.close();
+}
+
 // CHECK_BASE=https://askthemove.online runs the same checks on the live site.
 const server = process.env.CHECK_BASE ? null : await serve();
 const base = process.env.CHECK_BASE ? process.env.CHECK_BASE.replace(/\/$/, '') : `http://127.0.0.1:${server.address().port}`;
@@ -517,6 +583,7 @@ try {
     await runCoach(type, base);
     await runCores(type, base);
     await runMaia2(type, base);
+    await runMaia3(type, base);
   }
 } finally {
   server?.close();
