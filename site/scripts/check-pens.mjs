@@ -15,7 +15,7 @@ import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('../public/', import.meta.url));
-const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.json': 'application/json', '.woff2': 'font/woff2', '.wasm': 'application/wasm' };
+const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.json': 'application/json', '.woff2': 'font/woff2', '.wasm': 'application/wasm' };
 // Italian Game, White to move: Nf3 and Bf1 to play with, Black's g8 knight to answer.
 const FEN = 'r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3';
 
@@ -27,15 +27,39 @@ try {
   process.exit(2);
 }
 
+/** The headers Cloudflare Pages would send for a path, from public/_headers (splats and "! Name" detaches). */
+async function headersFor(urlPath) {
+  const rules = [];
+  let rule = null;
+  for (const line of (await readFile(join(ROOT, '_headers'), 'utf8')).split('\n')) {
+    if (!line.trim() || line.startsWith('#')) continue;
+    if (!line.startsWith(' ')) rules.push((rule = { re: new RegExp(`^${line.trim().replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*')}$`), lines: [] }));
+    else if (rule) rule.lines.push(line.trim());
+  }
+  const out = {};
+  for (const r of rules.filter((x) => x.re.test(urlPath))) {
+    for (const l of r.lines) {
+      if (l.startsWith('!')) delete out[l.slice(1).trim().toLowerCase()];
+      else {
+        const i = l.indexOf(':');
+        out[l.slice(0, i).trim().toLowerCase()] = l.slice(i + 1).trim();
+      }
+    }
+  }
+  delete out['content-security-policy']; // upgrade-insecure-requests would send the local http check to https
+  return out;
+}
+
 function serve() {
   const server = createServer(async (req, res) => {
-    let path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+    const urlPath = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+    let path = urlPath;
     path = normalize(join(ROOT, path));
     if (!path.startsWith(ROOT)) return res.writeHead(403).end();
     try {
       if ((await stat(path)).isDirectory()) path = join(path, 'index.html');
       const body = await readFile(path);
-      res.writeHead(200, { 'content-type': TYPES[extname(path)] || 'application/octet-stream' }).end(body);
+      res.writeHead(200, { ...(await headersFor(urlPath)), 'content-type': TYPES[extname(path)] || 'application/octet-stream' }).end(body);
     } catch {
       res.writeHead(404).end();
     }
@@ -370,12 +394,49 @@ async function runCoach(browserType, base) {
   await browser.close();
 }
 
+/** Several-cores Stockfish: the page is cross-origin isolated, the engine starts its threads and checks a move. */
+async function runCores(browserType, base) {
+  let browser;
+  try {
+    browser = await browserType.launch();
+  } catch {
+    return;
+  }
+  console.log(`- ${browserType.name()}: several-cores Stockfish (real engine)`);
+  const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.addInitScript(() => localStorage.setItem('pz-engine', 'sf19-lite-mt'));
+  await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
+  await page.waitForSelector('#desk-board img.pc');
+  check('the puzzle page is cross-origin isolated', await page.evaluate(() => crossOriginIsolated === true));
+  check('the several-cores engine is the one in use', (await page.textContent('#engine-name')) === 'Stockfish 19 Lite, several cores');
+  await page.waitForFunction(() => /is ready on this device/.test(document.querySelector('#engine-state').textContent), null, { timeout: 60000 });
+  const box = await page.locator('#desk-board').boundingBox();
+  const at = (sq) => [box.x + ('abcdefgh'.indexOf(sq[0]) + 0.5) * (box.width / 8), box.y + (8 - Number(sq[1]) + 0.5) * (box.height / 8)];
+  await page.mouse.move(...at('f1'));
+  await page.mouse.down();
+  await page.mouse.move(...at('b5'), { steps: 6 });
+  await page.mouse.up();
+  await page.click('#engine-check');
+  await page.waitForFunction(() => {
+    const t = document.querySelector('#engine-say').textContent;
+    return t && !/looking|ready, then/.test(t);
+  }, null, { timeout: 60000 });
+  const say = await page.textContent('#engine-say');
+  check('several cores: Check my move gets a verdict', /That’s the move|Good move|Playable|lets something go/.test(say), say);
+  check('several cores: no page errors', errors.length === 0, errors.join(' | '));
+  await browser.close();
+}
+
 const server = await serve();
 const base = `http://127.0.0.1:${server.address().port}`;
 try {
   for (const type of [playwright.chromium, playwright.firefox, playwright.webkit]) {
     await run(type, base);
     await runCoach(type, base);
+    await runCores(type, base);
   }
 } finally {
   server.close();

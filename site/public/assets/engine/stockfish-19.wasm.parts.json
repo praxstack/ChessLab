@@ -1,0 +1,27 @@
+{
+  "file": "stockfish-19.wasm",
+  "bytes": 99076105,
+  "sha256": "a599d78d72e0722d8895be84aca8b492d12e8bba3cdfcbcbc4a64017888c6667",
+  "parts": [
+    {
+      "file": "stockfish-19.wasm.part0",
+      "bytes": 24769027,
+      "sha256": "5d1481373652fffaf692cf737d9cd3921d172b0c17131b2d5eb273c2eadac95d"
+    },
+    {
+      "file": "stockfish-19.wasm.part1",
+      "bytes": 24769026,
+      "sha256": "3e96c6675297fc6391ff4abe95e72882a0eee7950db29cef4281247cdc1d7fdd"
+    },
+    {
+      "file": "stockfish-19.wasm.part2",
+      "bytes": 24769026,
+      "sha256": "1652b799cb78d4cfd1b9f54939e1f2c306a5c432fc2c19a00dcc8805bdb6cd5c"
+    },
+    {
+      "file": "stockfish-19.wasm.part3",
+      "bytes": 24769026,
+      "sha256": "7f68dd27127fbf1f4301b05ce8d6780a00c2d02d27d2b2e867cfbf0a18cfc8a4"
+    }
+  ]
+}
