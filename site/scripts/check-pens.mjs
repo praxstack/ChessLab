@@ -4,6 +4,7 @@
 // wiring, the CSS, and what a learner actually sees.
 //
 //   npm run check:pens            (needs Playwright: `npm i -g playwright`)
+//   CHECK_BASE=https://askthemove.online npm run check:pens   (the live site)
 //
 // The page is served from public/ on a local port, every outside request is
 // blocked, and the position comes from ?fen=, so the result never depends on
@@ -113,7 +114,7 @@ async function run(browserType, base) {
   // A fresh page is in Move: pieces only. Nothing draws, whatever presses the board.
   const mode = (m) => page.click(`#draw-modes [data-mode="${m}"]`);
   const modeIs = async (m) => (await page.getAttribute(`#draw-modes [data-mode="${m}"]`, 'aria-checked')) === 'true';
-  const shapes = () => page.locator('#desk-draw .desk__drawn > *').count();
+  const shapes = () => page.locator('#desk-draw .desk__drawn > g > *').count(); // drawings sit in two layers: shapes, then a line's steps
   check('a fresh page opens in Move, with the drawing kit put away', (await modeIs('move')) && !(await shown('#draw-kit')) && !(await shown('#pens [data-tool="pen"]')));
   check('the helpers are there in Move', await shown('#pens [data-help="reach"]'));
   const penDrag = (a, b) =>
@@ -147,8 +148,26 @@ async function run(browserType, base) {
   check('pencil and marker look different from the pen', (await count('.dr--pencil')) === 1 && (await count('.dr--marker')) === 1);
   const pencilBox = await page.locator('#desk-draw .desk__drawn .dr--pencil path').boundingBox();
   check('a straight pencil line is visible', Boolean(pencilBox && pencilBox.width > 20));
+  // Speed: while a stroke is drawn, the drawings already on the board are left
+  // alone (the stroke has its own layer), and lifting the pen adds just that one.
+  await tool('pen');
+  const pts = ['a3', 'c4', 'e3', 'g4', 'h2', 'f1', 'b2'];
+  await page.evaluate(() => {
+    window.__seen = { done: 0, live: 0 };
+    const watch = (sel, key) => new MutationObserver((ms) => (window.__seen[key] += ms.length)).observe(document.querySelector(sel), { subtree: true, childList: true, attributes: true });
+    watch('#desk-draw .desk__drawn', 'done');
+    watch('.desk__draw--live', 'live');
+  });
+  await page.mouse.move(...at(pts[0]));
+  await page.mouse.down();
+  for (const sq of pts.slice(1)) await page.mouse.move(...at(sq), { steps: 8 });
+  const mid = await page.evaluate(() => ({ ...window.__seen }));
+  await page.mouse.up();
+  const after = await page.evaluate(() => ({ ...window.__seen }));
+  check('speed: a stroke being drawn never touches the drawings already there', mid.done === 0 && mid.live > 0, JSON.stringify(mid));
+  check('speed: lifting the pen adds one drawing and rebuilds nothing', after.done === 1 && (await count('.dr--free')) === 4, JSON.stringify(after));
   await page.click('#draw-clear');
-  check('Clear rubs everything out', (await count('g')) === 0);
+  check('Clear rubs everything out', (await shapes()) === 0);
 
   // Ghost move: the real position never changes.
   await tool('ghost');
@@ -489,17 +508,207 @@ async function runMaia2(browserType, base) {
   await browser.close();
 }
 
-const server = await serve();
-const base = `http://127.0.0.1:${server.address().port}`;
+/** Maia-3: every size's move in the browser matches Python's on the reference cases, and one size works on the page. */
+async function runMaia3(browserType, base) {
+  let browser;
+  try {
+    browser = await browserType.launch();
+  } catch {
+    return;
+  }
+  console.log(`- ${browserType.name()}: Maia-3 (real models, all four sizes)`);
+  const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
+  const ref = JSON.parse(await readFile(join(ROOT, '../test/fixtures/maia3-reference.json'), 'utf8')).cases;
+  for (const [size, parts] of [['3m', 0], ['5m', 0], ['23m', 2], ['79m', 7]]) {
+    const got = await page.evaluate(
+      async ({ cases, size, parts }) => {
+        const files = parts ? [...Array(parts).keys()].map((i) => `/assets/engine/maia3-${size}.onnx.part${i}`) : [`/assets/engine/maia3-${size}.onnx`];
+        const blobs = await Promise.all(files.map((f) => fetch(f).then((r) => r.blob())));
+        const url = URL.createObjectURL(new Blob(blobs));
+        const w = new Worker(`/assets/engine/maia3-worker.js#${encodeURIComponent(url)}`, { type: 'module' });
+        let wait = null;
+        w.onmessage = (e) => wait && wait(e.data);
+        const ask = (cmd, word) =>
+          new Promise((ok) => {
+            wait = (line) => line.startsWith(word) && ok(line);
+            w.postMessage(cmd);
+          });
+        await ask('uci', 'uciok');
+        const out = [];
+        for (const c of cases) {
+          w.postMessage(`setoption name Elo value ${c.elo}`);
+          w.postMessage(`position fen ${c.fen}`);
+          out.push((await ask('go depth 1', 'bestmove')).split(' ')[1]);
+        }
+        w.terminate();
+        URL.revokeObjectURL(url);
+        return out;
+      },
+      { cases: ref, size, parts },
+    );
+    const wrong = ref.flatMap((c, i) => (got[i] === c.best[size] ? [] : [`${c.elo} ${c.fen}: ${got[i]} not ${c.best[size]}`]));
+    check(`Maia-3 ${size.toUpperCase()}: the browser’s move matches Python’s in all ${ref.length} reference cases`, wrong.length === 0, wrong.join(' | '));
+  }
+  await page.evaluate(() => localStorage.setItem('pz-engine', 'maia3-5m-1500'));
+  await page.reload({ waitUntil: 'load' });
+  await page.waitForSelector('#desk-board img.pc');
+  check('Maia-3 5M 1500 is the engine in use', (await page.textContent('#engine-name')) === 'Maia-3 5M 1500');
+  const box = await page.locator('#desk-board').boundingBox();
+  const at = (sq) => [box.x + ('abcdefgh'.indexOf(sq[0]) + 0.5) * (box.width / 8), box.y + (8 - Number(sq[1]) + 0.5) * (box.height / 8)];
+  await page.mouse.move(...at('f1'));
+  await page.mouse.down();
+  await page.mouse.move(...at('c4'), { steps: 6 });
+  await page.mouse.up();
+  await page.click('#engine-check');
+  await page.waitForFunction(() => {
+    const t = document.querySelector('#engine-say').textContent;
+    return t && !/looking|ready, then/.test(t);
+  }, null, { timeout: 120000 });
+  const say = await page.textContent('#engine-say');
+  check('Maia-3: Check my move gets a verdict on the page', /That’s the move|Good move|Playable|lets something go/.test(say), say);
+  check('Maia-3: no page errors', errors.length === 0, errors.join(' | '));
+  await browser.close();
+}
+
+/** Leela (Lc0): each net loads in the browser and its search finds a mate; T1 256x10 works on the page. */
+async function runLc0(browserType, base) {
+  let browser;
+  try {
+    browser = await browserType.launch();
+  } catch {
+    return;
+  }
+  console.log(`- ${browserType.name()}: Leela / Lc0 (real nets, real search)`);
+  const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
+  const cases = [
+    ['6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 30', 'a1a8'], // back-rank mate
+    ['r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4', 'h5f7'], // Scholar's mate
+    ['2r3k1/5ppp/8/8/8/8/5PPP/2R3K1 b - - 0 1', 'c8c1'], // Black takes the rook with mate
+  ];
+  for (const [net, parts] of [['t1-256x10', 2], ['t1-512x15', 7], ['t82-768x15', 8], ['bt3-768x15', 9]]) {
+    const got = await page.evaluate(
+      async ({ cases, net, parts }) => {
+        const blobs = await Promise.all([...Array(parts).keys()].map((i) => fetch(`/assets/engine/lc0-${net}.onnx.part${i}`).then((r) => r.blob())));
+        const url = URL.createObjectURL(new Blob(blobs));
+        const w = new Worker(`/assets/engine/lc0-worker.js#${encodeURIComponent(url)}`, { type: 'module' });
+        let wait = null;
+        w.onmessage = (e) => wait && wait(e.data);
+        w.onerror = (e) => wait && wait(`error ${e.message}`);
+        const ask = (cmd, word) =>
+          new Promise((ok) => {
+            wait = (line) => (line.startsWith(word) || line.startsWith('error')) && ok(line);
+            w.postMessage(cmd);
+          });
+        await ask('uci', 'uciok');
+        const out = [];
+        for (const [fen] of cases) {
+          w.postMessage(`position fen ${fen}`);
+          let info = '';
+          const best = await new Promise((ok) => {
+            wait = (line) => {
+              if (line.startsWith('info')) info = line;
+              if (line.startsWith('bestmove') || line.startsWith('error')) ok(line);
+            };
+            w.postMessage('go depth 99 movetime 1500');
+          });
+          out.push([best.split(' ')[1], info]);
+        }
+        w.terminate();
+        URL.revokeObjectURL(url);
+        return out;
+      },
+      { cases, net, parts },
+    );
+    const wrong = cases.flatMap(([fen, want], i) => (got[i][0] === want && /score mate 1/.test(got[i][1]) ? [] : [`${fen}: ${got[i][0]} (${got[i][1]})`]));
+    check(`Lc0 ${net}: loads, searches, and finds all ${cases.length} mates in one`, wrong.length === 0, wrong.join(' | '));
+  }
+  await page.evaluate(() => localStorage.setItem('pz-engine', 'lc0-t1-256x10'));
+  await page.reload({ waitUntil: 'load' });
+  await page.waitForSelector('#desk-board img.pc');
+  check('Lc0 T1 256x10 is the engine in use', (await page.textContent('#engine-name')) === 'Lc0 (Leela) T1 256x10');
+  const box = await page.locator('#desk-board').boundingBox();
+  const at = (sq) => [box.x + ('abcdefgh'.indexOf(sq[0]) + 0.5) * (box.width / 8), box.y + (8 - Number(sq[1]) + 0.5) * (box.height / 8)];
+  await page.mouse.move(...at('f1'));
+  await page.mouse.down();
+  await page.mouse.move(...at('c4'), { steps: 6 });
+  await page.mouse.up();
+  await page.click('#engine-check');
+  await page.waitForFunction(() => {
+    const t = document.querySelector('#engine-say').textContent;
+    return t && !/looking|ready, then/.test(t);
+  }, null, { timeout: 120000 });
+  const say = await page.textContent('#engine-say');
+  check('Lc0: Check my move gets a verdict on the page', /That’s the move|Good move|Playable|lets something go/.test(say), say);
+  check('Lc0: no page errors', errors.length === 0, errors.join(' | '));
+  await browser.close();
+}
+
+/** DeepMind's bigger searchless models load in the browser and find a mate in one. */
+async function runDeepMindBig(browserType, base) {
+  let browser;
+  try {
+    browser = await browserType.launch();
+  } catch {
+    return;
+  }
+  console.log(`- ${browserType.name()}: DeepMind searchless 136M and 270M (real models)`);
+  const page = await browser.newPage();
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
+  for (const [size, parts] of [['136m', 11], ['270m', 22]]) {
+    const got = await page.evaluate(
+      async ({ size, parts }) => {
+        const blobs = await Promise.all([...Array(parts).keys()].map((i) => fetch(`/assets/engine/searchless-${size}.onnx.part${i}`).then((r) => r.blob())));
+        const url = URL.createObjectURL(new Blob(blobs));
+        const w = new Worker(`/assets/engine/searchless-worker.js#${encodeURIComponent(url)}`, { type: 'module' });
+        let wait = null;
+        w.onmessage = (e) => wait && wait(e.data);
+        w.onerror = (e) => wait && wait(`error ${e.message}`);
+        const ask = (cmd, word) =>
+          new Promise((ok) => {
+            wait = (line) => (line.startsWith(word) || line.startsWith('error')) && ok(line);
+            w.postMessage(cmd);
+          });
+        await ask('uci', 'uciok');
+        w.postMessage('position fen 6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 30');
+        const best = await ask('go depth 1 movetime 1000', 'bestmove');
+        w.terminate();
+        URL.revokeObjectURL(url);
+        return best;
+      },
+      { size, parts },
+    );
+    check(`DeepMind ${size.toUpperCase()}: loads and finds the back-rank mate`, got === 'bestmove a1a8', got);
+  }
+  check('DeepMind big models: no page errors', errors.length === 0, errors.join(' | '));
+  await browser.close();
+}
+
+// CHECK_BASE=https://askthemove.online runs the same checks on the live site.
+const server = process.env.CHECK_BASE ? null : await serve();
+const base = process.env.CHECK_BASE ? process.env.CHECK_BASE.replace(/\/$/, '') : `http://127.0.0.1:${server.address().port}`;
 try {
   for (const type of [playwright.chromium, playwright.firefox, playwright.webkit]) {
     await run(type, base);
     await runCoach(type, base);
     await runCores(type, base);
     await runMaia2(type, base);
+    await runMaia3(type, base);
+    await runLc0(type, base);
+    await runDeepMindBig(type, base);
   }
 } finally {
-  server.close();
+  server?.close();
 }
 if (failures.length) {
   console.error(`\n${failures.length} pen check(s) failed.`);

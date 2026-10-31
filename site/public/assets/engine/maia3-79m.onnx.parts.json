@@ -1,0 +1,42 @@
+{
+  "file": "maia3-79m.onnx",
+  "bytes": 155850482,
+  "sha256": "dc0c820f6a953f5a9c41cc2150dfd77e968ca8d33ca5b55028b367b9ea0f3092",
+  "parts": [
+    {
+      "file": "maia3-79m.onnx.part0",
+      "bytes": 22264355,
+      "sha256": "895eeda82161bea00a5dc53da4cd3b5f77e50c75e331201f7ad34a68f8ce67e6"
+    },
+    {
+      "file": "maia3-79m.onnx.part1",
+      "bytes": 22264355,
+      "sha256": "7514b867ab59561099f7c6f90f78d309c8441b6c62b8333f8bcb80102d7ad7be"
+    },
+    {
+      "file": "maia3-79m.onnx.part2",
+      "bytes": 22264355,
+      "sha256": "8f2c2a5f6b8a24a2406569cb43e7324b7b649c6ce83bc5daf5a6209151417bb9"
+    },
+    {
+      "file": "maia3-79m.onnx.part3",
+      "bytes": 22264355,
+      "sha256": "cf43f13cfeb5b0085ff31d2c492c691c176d60411e3345ac3d6c1fbbd8d6a09f"
+    },
+    {
+      "file": "maia3-79m.onnx.part4",
+      "bytes": 22264354,
+      "sha256": "d2e98b764444497a065bcbe792bfd6bc2381ca26b46f0561c62de0d54f17d790"
+    },
+    {
+      "file": "maia3-79m.onnx.part5",
+      "bytes": 22264354,
+      "sha256": "5e5b7684a6832788203582aead7f33116f872d6710591a48b820fba22dd73b02"
+    },
+    {
+      "file": "maia3-79m.onnx.part6",
+      "bytes": 22264354,
+      "sha256": "0efdf565916214dc9024bd4249ab93ee684700879139b949bc50e019c05def66"
+    }
+  ]
+}

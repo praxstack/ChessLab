@@ -318,6 +318,14 @@ test('draw: destroy() removes every listener the layer added and the groups it d
           this.children.push(n);
         }
       },
+      after(node) {
+        // the live-stroke <svg> sits next to the board svg, not inside it
+        node.parentNode = { children: [node] };
+        node.remove = () => {
+          node.parentNode = null;
+        };
+        this.sibling = node;
+      },
       insertAdjacentHTML() {
         const defs = target(`${name}-defs`);
         defs.parentNode = this;
@@ -361,13 +369,32 @@ test('draw: destroy() removes every listener the layer added and the groups it d
       sizes: [btn('size', { size: 'thin' })],
     });
     for (const key of ['board:pointerdown:true', 'document:contextmenu:false', 'window:blur:false', 'media:change:false', 'mode-draw:click:false']) assert.ok(live.has(key), `${key} is listened to`);
-    assert.equal(svg.children.length, 4, 'the grain, the drawings, the live stroke and the helpers');
+    assert.equal(svg.children.length, 3, 'the grain, the drawings and the helpers');
+    assert.ok(svg.sibling?.parentNode, 'the live-stroke svg is placed beside the board svg');
     layer.destroy();
+    assert.equal(svg.sibling.parentNode, null, 'the live-stroke svg is taken out too');
     assert.deepEqual([...live.keys()], [], 'no listener is left behind');
     assert.equal(svg.children.length, 0, 'the layer takes its groups out of the SVG');
     layer.destroy(); // a second call is harmless
   } finally {
     globalThis.document = saved.document;
     globalThis.window = saved.window;
+  }
+});
+
+test('ink: a stroke built segment by segment, as it is drawn, ends up the same curve', async () => {
+  const { pathStart, smoothPath, smoothSegment } = await import('../public/assets/ink.js');
+  const pts = [];
+  let kept = null;
+  let live = '';
+  for (let i = 0; i < 40; i += 1) {
+    pts.push([10 + i * 1.3, 40 + Math.sin(i / 3) * 12]);
+    if (pts.length < 2) continue;
+    // The same steps the page takes each frame: keep finished segments, redo the last two.
+    if (!kept) kept = { d: pathStart(pts), n: 0 };
+    while (kept.n < pts.length - 3) kept.d += smoothSegment(pts, kept.n++);
+    live = kept.d;
+    for (let j = kept.n; j < pts.length - 1; j += 1) live += smoothSegment(pts, j);
+    assert.equal(live, smoothPath(pts), `after ${pts.length} points`);
   }
 });

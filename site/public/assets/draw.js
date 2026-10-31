@@ -18,7 +18,7 @@
 // The top half is pure geometry and bookkeeping (tested with node --test);
 // createDrawLayer below it is the only part that touches the page.
 import { arrowPoints } from './board.js';
-import { arrow, arrowHead, loop, rng, seedFrom, smoothPath } from './ink.js';
+import { arrow, arrowHead, loop, rng, seedFrom, pathStart, smoothPath, smoothSegment } from './ink.js';
 import { lineText, nextStep } from './line.js';
 import { guard, loose, reach } from './helpers.js';
 
@@ -581,26 +581,60 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
 
   const done = document.createElementNS(SVGNS, 'g');
   done.setAttribute('class', 'desk__drawn');
+  // The stroke being drawn lives in its own <svg> on top, its own layer on
+  // screen: redrawing it every frame then never makes the browser repaint
+  // (and re-filter) the drawings already on the board.
+  const liveSvg = document.createElementNS(SVGNS, 'svg');
+  liveSvg.setAttribute('class', 'desk__draw desk__draw--live');
+  liveSvg.setAttribute('viewBox', els.svg.getAttribute('viewBox') || '0 0 80 80');
+  liveSvg.setAttribute('aria-hidden', 'true');
+  liveSvg.setAttribute('focusable', 'false');
   const preview = document.createElementNS(SVGNS, 'g');
   preview.setAttribute('class', 'desk__live');
+  liveSvg.append(preview);
+  els.svg.after(liveSvg);
   els.svg.insertAdjacentHTML('afterbegin', GRAIN);
   const grain = els.svg.firstElementChild;
   const aidLayer = document.createElementNS(SVGNS, 'g');
   aidLayer.setAttribute('class', 'desk__aid');
-  els.svg.append(done, preview, aidLayer);
+  els.svg.append(done, aidLayer);
 
   const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
 
+  // What's on the board now, so a new drawing is added on its own instead of
+  // rebuilding (and restyling) every drawing already there.
+  const drawn = { o: '', shapes: [], steps: null };
+  const shapesLayer = document.createElementNS(SVGNS, 'g');
+  shapesLayer.setAttribute('class', 'desk__shapes');
+  const stepsLayer = document.createElementNS(SVGNS, 'g'); // a line's arrows sit over the other drawings
+  stepsLayer.setAttribute('class', 'desk__steps');
+  done.append(shapesLayer, stepsLayer);
+  const sameList = (a, b, n = b.length) => a.length >= n && b.slice(0, n).every((s, i) => a[i] === s);
+
   function render() {
     const o = orientation();
-    const badges = []; // a line's numbers, placed in order so they don't cover each other
-    const ordered = [...sketch.shapes.filter((s) => s.kind !== 'step'), ...lineSteps(sketch.shapes)];
-    done.innerHTML = ordered.map((s) => shapeSVG(s, o, '', badges)).join('');
+    const shapes = sketch.shapes.filter((s) => s.kind !== 'step');
+    const steps = lineSteps(sketch.shapes);
+    const turned = drawn.o !== o;
+    if (!turned && shapes.length > drawn.shapes.length && sameList(shapes, drawn.shapes)) {
+      shapesLayer.insertAdjacentHTML('beforeend', shapes.slice(drawn.shapes.length).map((s) => shapeSVG(s, o)).join(''));
+    } else if (turned || shapes.length !== drawn.shapes.length || !sameList(shapes, drawn.shapes)) {
+      shapesLayer.innerHTML = shapes.map((s) => shapeSVG(s, o)).join('');
+    }
+    const stepsChanged = turned || !drawn.steps || steps.length !== drawn.steps.length || !sameList(steps, drawn.steps);
+    if (stepsChanged) {
+      const badges = []; // a line's numbers, placed in order so they don't cover each other
+      stepsLayer.innerHTML = steps.map((s) => shapeSVG(s, o, '', badges)).join('');
+    }
+    drawn.o = o;
+    drawn.shapes = shapes;
+    drawn.steps = steps;
     aidLayer.innerHTML = aidSVG(aid, o);
     syncButtons();
-    const steps = lineSteps(sketch.shapes);
-    const start = steps.length ? steps[0].start : '';
-    onLine(steps.length ? { fen: start, steps, text: lineText(start, steps) } : null);
+    if (stepsChanged) {
+      const start = steps.length ? steps[0].start : '';
+      onLine(steps.length ? { fen: start, steps, text: lineText(start, steps) } : null);
+    }
   }
 
   function ask(kind, sq) {
@@ -744,9 +778,24 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
       const pts = live.pts;
       let d;
       if (pts.length === 1) d = outlinePath(pts, [live.width]);
-      else d = smoothPath(pts);
+      else {
+        // The finished part of the curve is kept; only the last two segments are redone.
+        if (!live.done) live.done = { d: pathStart(pts), n: 0 };
+        while (live.done.n < pts.length - 3) live.done.d += smoothSegment(pts, live.done.n++);
+        d = live.done.d;
+        for (let i = live.done.n; i < pts.length - 1; i += 1) d += smoothSegment(pts, i);
+      }
       const nib = live.nib !== 'pen' ? ` dr--${live.nib}` : '';
-      preview.innerHTML = `<g class="dr dr--free${nib} tone--${color}${pts.length === 1 ? ' dr--fill' : ''}" stroke-width="${live.width}"><path d="${d}"/></g>`;
+      // One <g><path> per stroke, made once; each frame only its d and width change.
+      if (!live.el) {
+        preview.innerHTML = '<g><path/></g>';
+        live.el = preview.firstChild;
+        live.path = live.el.firstChild;
+      }
+      const cls = `dr dr--free${nib} tone--${color}${pts.length === 1 ? ' dr--fill' : ''}`;
+      if (live.cls !== cls) live.el.setAttribute('class', (live.cls = cls));
+      if (live.w !== live.width) live.el.setAttribute('stroke-width', String((live.w = live.width)));
+      live.path.setAttribute('d', d);
       return;
     }
     const at = squareAtPoint(live.pts[live.pts.length - 1], o);
@@ -1084,7 +1133,7 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
       if (frame) cancelAnimationFrame(frame);
       frame = 0;
       for (const off of offs.splice(0)) off();
-      for (const n of [grain, done, preview, aidLayer]) n?.remove?.();
+      for (const n of [grain, done, liveSvg, aidLayer]) n?.remove?.();
     },
   };
 }
