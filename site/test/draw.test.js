@@ -279,3 +279,20 @@ test('draw: inks mean Mine, Theirs and Idea, and Theirs differs by shape too', a
   assert.equal(paths('red'), 5, 'a threat chevron: a second head');
   assert.equal((shapeSVG({ kind: 'ghost', from: 'g1', to: 'f3', piece: 'wN', color: 'red', seed: 3 }, 'white').match(/<path /g) || []).length, 3, 'ghosts keep one head');
 });
+
+test('ink: a stroke built segment by segment, as it is drawn, ends up the same curve', async () => {
+  const { pathStart, smoothPath, smoothSegment } = await import('../public/assets/ink.js');
+  const pts = [];
+  let kept = null;
+  let live = '';
+  for (let i = 0; i < 40; i += 1) {
+    pts.push([10 + i * 1.3, 40 + Math.sin(i / 3) * 12]);
+    if (pts.length < 2) continue;
+    // The same steps the page takes each frame: keep finished segments, redo the last two.
+    if (!kept) kept = { d: pathStart(pts), n: 0 };
+    while (kept.n < pts.length - 3) kept.d += smoothSegment(pts, kept.n++);
+    live = kept.d;
+    for (let j = kept.n; j < pts.length - 1; j += 1) live += smoothSegment(pts, j);
+    assert.equal(live, smoothPath(pts), `after ${pts.length} points`);
+  }
+});
