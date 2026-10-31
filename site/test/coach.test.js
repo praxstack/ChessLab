@@ -158,6 +158,6 @@ test('a line that repeats the position three times ends in a draw, and the check
   const eng = fakeEngine(table);
   const r = await checkLine({ ...l, look: eng.look });
   assert.equal(r.fail, -1);
-  assert.equal(r.verdicts.length, 8, 'the move after the draw isn’t graded');
+  assert.equal(r.verdicts.length, 8, 'the move after the draw isn’t graded, so the page marks the 8th move');
   assert.equal(r.note, '✓ Your line holds, and it ends in a draw after 4… Ng8.');
 });

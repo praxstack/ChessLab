@@ -889,7 +889,7 @@ $('draw-line-check').addEventListener('click', async () => {
       },
     });
     if (!r || !alive()) return;
-    const at = r.fail >= 0 ? steps[r.fail] : steps[steps.length - 1];
+    const at = steps[r.verdicts.length - 1]; // the failing move, or the last one checked (a line can end in mate or a draw early)
     pens.showCoach({ to: at.to, ok: r.fail < 0 });
     coachSay(r.note, r.fail < 0 ? 'ok' : '');
     sound.play(r.fail < 0 ? 'good' : 'hmm');

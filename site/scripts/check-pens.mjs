@@ -348,6 +348,19 @@ async function runCoach(browserType, base) {
   await drag('a1', 'a8');
   say = await verdict();
   check('Coach check: a line that mates holds, with a blue tick', say === '✓ Your line holds all the way, and 30. Ra8# is mate.' && (await mark('.aid-coach.is-ok')) === 1, say);
+  // A line that runs on past a draw: bare kings are a draw at once, so the tick goes on move 1, not the extra move.
+  await open('k7/8/8/8/8/8/8/K7 w - - 0 1');
+  await drag('a1', 'b1');
+  await drag('a8', 'b7');
+  say = await verdict();
+  const tickAt = await page.evaluate(() => {
+    const d = document.querySelector('#desk-draw .desk__aid .aid-coach.is-ok')?.getAttribute('d') || '';
+    return d.match(/-?[\d.]+/g)?.slice(0, 2).map(Number);
+  });
+  // b1's centre is at x 15, y 75 (board units, White at the bottom); the tick starts 3 left of it.
+  check('Coach check: a line past a draw is ticked on the drawing move', /ends in a draw after 1\. Kb1\./.test(say) && tickAt && tickAt[0] === 12 && Math.abs(tickAt[1] - 75.2) < 0.01, `${say} / ${tickAt}`);
+  await open('6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 30');
+  await drag('a1', 'a8');
   // The same position, the learner slips: the engine's move stays hidden.
   await page.click('#draw-line-clear');
   await drag('a1', 'a7');
