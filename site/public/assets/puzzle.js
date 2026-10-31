@@ -10,6 +10,7 @@ import { markSVG, seedFrom } from './ink.js';
 import { createDesk, coordsHTML } from './desk.js';
 import { createDrawLayer } from './draw.js';
 import { replay as replayLine } from './line.js';
+import { checkLine } from './coach.js';
 import { createEngine, grade, isCancel, isSaved, toCp } from './engine.js';
 import { DEFAULT_ENGINE, createChoice, engineById, formatBytes, needsWarning } from './engine-catalog.js';
 import { createPicker } from './engine-picker.js';
@@ -340,11 +341,27 @@ let shownLine = null;
 let playing = null;
 let playingLine = ''; // the line Play it is showing, so an edit to it stops the show
 const lineKey = (line) => (line ? `${line.fen}|${line.steps.map((s) => s.from + s.to).join(' ')}` : '');
+let coachSeq = 0; // a Coach check that's running is about this check only
+let coachLine = ''; // the line Coach check's note is about
 function showLine(line) {
   shownLine = line;
   $('draw-line').hidden = !line;
   $('draw-line-text').textContent = line ? line.text : '';
   if (playing && lineKey(line) !== playingLine) stopLine();
+  if (coachLine && lineKey(line) !== coachLine) coachSay(''); // the line changed, so the old verdict no longer fits
+}
+/** Coach check's note under the line. tone: '' (red: a move fails), 'ok' (blue) or 'busy'. */
+function coachSay(text, tone = '') {
+  const note = $('draw-line-note');
+  note.hidden = !text;
+  note.textContent = text;
+  note.className = `pens__coach${tone ? ` is-${tone}` : ''}`;
+  if (!text) {
+    pens.clearCoach(); // the verdict's mark on the board goes with it
+    coachLine = '';
+    coachSeq += 1; // a check still running is about a line that's gone
+    $('draw-line-check').disabled = false;
+  }
 }
 function stopLine() {
   if (!playing) return;
@@ -706,6 +723,7 @@ function showEngine(s) {
 // Swap the engine in use: the old one is stopped (its download too), the new one waits to be loaded.
 function useEngine(spec) {
   checkSeq += 1; // a check the old engine was running is thrown away
+  if (coachLine) coachSay(''); // so is a Coach check
   if (engine) engine.stop();
   active = spec;
   engine = createEngine({ spec, onState: showEngine });
@@ -835,6 +853,53 @@ $('engine-show').addEventListener('click', () => {
   engineSay(`${engineWho()}’s move is drawn in blue. Your move is taken back, so you can try it.`, 'blue');
   $('engine-show').hidden = true;
   lastBest = null;
+});
+
+// Coach check: the engine judges the learner's numbered line and marks the
+// first move that fails in red pen. It never draws a line of its own.
+$('draw-line-check').addEventListener('click', async () => {
+  if (!shownLine) return;
+  sound.wake();
+  stopLine();
+  pens.showCoach(null);
+  const { fen: start, steps } = shownLine;
+  const fens = replayLine(start, steps).fens;
+  if (fens.length !== steps.length) return coachSay('This line no longer fits its position. Clear it and draw it again.');
+  const key = lineKey(shownLine);
+  const eng = engine;
+  const seq = ++coachSeq;
+  coachLine = key;
+  const btn = $('draw-line-check');
+  btn.disabled = true;
+  let looked = 0;
+  const busy = () => coachSay(`${engineWho()} is checking your line, move ${Math.min(looked + 1, steps.length)} of ${steps.length}…`, 'busy');
+  coachSay(eng.phase === 'ready' ? `${engineWho()} is checking your line…` : `Getting ${engineWho()} ready, then it checks your line…`, 'busy');
+  const alive = () => seq === coachSeq && eng === engine && lineKey(shownLine) === key;
+  try {
+    const r = await checkLine({
+      start,
+      steps,
+      fens,
+      alive,
+      look: async (fen, moves) => {
+        const answer = await eng.look({ fen, moves });
+        looked = moves.length;
+        if (alive()) busy();
+        return answer;
+      },
+    });
+    if (!r || !alive()) return;
+    const at = steps[r.verdicts.length - 1]; // the failing move, or the last one checked (a line can end in mate or a draw early)
+    pens.showCoach({ to: at.to, ok: r.fail < 0 });
+    coachSay(r.note, r.fail < 0 ? 'ok' : '');
+    sound.play(r.fail < 0 ? 'good' : 'hmm');
+  } catch (err) {
+    if (!alive()) return;
+    if (isCancel(err)) coachSay('Download stopped. Tap Check line to start it again, or pick another engine.');
+    else coachSay(`${engineWho()} couldn’t check that line. Try again.`);
+  } finally {
+    if (seq === coachSeq) btn.disabled = false;
+  }
 });
 
 /* -------------------------------------------------------------- Calendar */

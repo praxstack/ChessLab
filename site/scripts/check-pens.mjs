@@ -289,10 +289,94 @@ async function run(browserType, base) {
   await browser.close();
 }
 
+/** Coach check with the real Stockfish Lite: a reply that fails, a line that ends in mate, and a slip of the learner's. */
+async function runCoach(browserType, base) {
+  let browser;
+  try {
+    browser = await browserType.launch();
+  } catch {
+    return;
+  }
+  console.log(`- ${browserType.name()}: Coach check (real engine)`);
+  const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  const open = async (fen) => {
+    await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(fen)}`, { waitUntil: 'load' });
+    await page.waitForSelector('#desk-board img.pc');
+    await page.click('#draw-modes [data-mode="draw"]');
+    await page.click('#pens [data-tool="line"]');
+  };
+  const drag = async (a, b) => {
+    const box = await page.locator('#desk-board').boundingBox();
+    const at = (sq) => [box.x + ('abcdefgh'.indexOf(sq[0]) + 0.5) * (box.width / 8), box.y + (8 - Number(sq[1]) + 0.5) * (box.height / 8)];
+    await page.mouse.move(...at(a));
+    await page.mouse.down();
+    await page.mouse.move(...at(b), { steps: 6 });
+    await page.mouse.up();
+  };
+  const verdict = async () => {
+    await page.click('#draw-line-check');
+    await page.waitForFunction(() => {
+      const n = document.querySelector('#draw-line-note');
+      return n && !n.hidden && !n.classList.contains('is-busy');
+    }, null, { timeout: 60000 });
+    return page.textContent('#draw-line-note');
+  };
+  const mark = (sel) => page.locator(`#desk-draw .desk__aid ${sel}`).count();
+
+  // 1. e4 e5 2. Qh5 Nc6: the learner draws 3. Bc4 Nf6?? 4. Qxf7#. Black has a better reply.
+  await open('r1bqkbnr/pppp1ppp/2n5/4p2Q/4P3/8/PPPP1PPP/RNB1KBNR w KQkq - 2 3');
+  await drag('f1', 'c4');
+  await drag('g8', 'f6');
+  await drag('h5', 'f7');
+  const button = await page.locator('#draw-line-check').isVisible();
+  check('Coach check: the Check line button sits with the line', button);
+  let say = await verdict();
+  check('Coach check: the weak reply the learner expected is marked, with the reply that holds', /^✗ 3… Nf6\? Black has a better reply: 3… \S+! holds\.$/.test(say), say);
+  check('Coach check: a red cross on the board', (await mark('.aid-coach:not(.is-ok)')) === 1);
+  await page.click('#draw-line-clear');
+  check('Coach check: Clear line takes the verdict and its cross away', !(await page.locator('#draw-line-note').isVisible()) && (await mark('.aid-coach')) === 0);
+  await page.click('#draw-undo'); // the line comes back
+  await verdict();
+  await drag('h5', 'f7'); // taking the last step back changes the line
+  check('Coach check: editing the line clears the verdict and its cross', !(await page.locator('#draw-line-note').isVisible()) && (await mark('.aid-coach')) === 0);
+
+  // A back-rank mate in one, played right.
+  await open('6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 30');
+  await drag('a1', 'a8');
+  say = await verdict();
+  check('Coach check: a line that mates holds, with a blue tick', say === '✓ Your line holds all the way, and 30. Ra8# is mate.' && (await mark('.aid-coach.is-ok')) === 1, say);
+  // A line that runs on past a draw: bare kings are a draw at once, so the tick goes on move 1, not the extra move.
+  await open('k7/8/8/8/8/8/8/K7 w - - 0 1');
+  await drag('a1', 'b1');
+  await drag('a8', 'b7');
+  say = await verdict();
+  const tickAt = await page.evaluate(() => {
+    const d = document.querySelector('#desk-draw .desk__aid .aid-coach.is-ok')?.getAttribute('d') || '';
+    return d.match(/-?[\d.]+/g)?.slice(0, 2).map(Number);
+  });
+  // b1's centre is at x 15, y 75 (board units, White at the bottom); the tick starts 3 left of it.
+  check('Coach check: a line past a draw is ticked on the drawing move', /ends in a draw after 1\. Kb1\./.test(say) && tickAt && tickAt[0] === 12 && Math.abs(tickAt[1] - 75.2) < 0.01, `${say} / ${tickAt}`);
+  await open('6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 30');
+  await drag('a1', 'a8');
+  // The same position, the learner slips: the engine's move stays hidden.
+  await page.click('#draw-line-clear');
+  await drag('a1', 'a7');
+  say = await verdict();
+  check('Coach check: the learner’s slip is marked and no move is given away', /^✗ 30\. Ra7\? This lets it slip/.test(say) && !/Ra8/.test(say), say);
+  check('Coach check: no page errors', errors.length === 0, errors.join(' | '));
+  await browser.close();
+}
+
 const server = await serve();
 const base = `http://127.0.0.1:${server.address().port}`;
 try {
-  for (const type of [playwright.chromium, playwright.firefox, playwright.webkit]) await run(type, base);
+  for (const type of [playwright.chromium, playwright.firefox, playwright.webkit]) {
+    await run(type, base);
+    await runCoach(type, base);
+  }
 } finally {
   server.close();
 }

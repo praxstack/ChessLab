@@ -293,6 +293,12 @@ export function aidSVG(aid, o) {
       })
       .join('');
   }
+  if (aid.kind === 'coach') {
+    // Coach check: a red pen cross on the square the failing move goes to, or a blue tick on the last one.
+    const [x, y] = squareCentre(aid.to, o);
+    if (aid.ok) return `<path class="aid-coach is-ok" d="M${r2(x - 3)} ${r2(y + 0.2)} L${r2(x - 0.8)} ${r2(y + 2.6)} L${r2(x + 3.4)} ${r2(y - 2.8)}"/>`;
+    return `<g class="aid-coach"><path d="M${r2(x - 3.2)} ${r2(y - 3.2)} L${r2(x + 3.2)} ${r2(y + 3.2)}"/><path d="M${r2(x + 3.2)} ${r2(y - 3.4)} L${r2(x - 3)} ${r2(y + 3.1)}"/></g>`;
+  }
   if (aid.kind === 'guard' && aid.g) {
     const [x, y] = squareCentre(aid.sq, o);
     const g = aid.g;
@@ -1019,6 +1025,20 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
       if (aid || asking) {
         asking = null;
         dropAid();
+      }
+    },
+    /** Coach check's mark on the board: { to, ok } (a red cross, or a blue tick), or null to take it off. */
+    showCoach(mark) {
+      asking = null;
+      looseSide = 0;
+      aid = mark ? { kind: 'coach', to: mark.to, ok: Boolean(mark.ok) } : null;
+      render();
+    },
+    /** Take Coach check's mark off the board, if it's showing (no redraw of the drawings needed). */
+    clearCoach() {
+      if (aid && aid.kind === 'coach') {
+        aid = null;
+        aidLayer.innerHTML = '';
       }
     },
     /** Take the numbered line off the board, as one undo step. */
