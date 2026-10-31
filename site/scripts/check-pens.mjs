@@ -651,6 +651,49 @@ async function runLc0(browserType, base) {
   await browser.close();
 }
 
+/** DeepMind's bigger searchless models load in the browser and find a mate in one. */
+async function runDeepMindBig(browserType, base) {
+  let browser;
+  try {
+    browser = await browserType.launch();
+  } catch {
+    return;
+  }
+  console.log(`- ${browserType.name()}: DeepMind searchless 136M and 270M (real models)`);
+  const page = await browser.newPage();
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
+  for (const [size, parts] of [['136m', 11], ['270m', 22]]) {
+    const got = await page.evaluate(
+      async ({ size, parts }) => {
+        const blobs = await Promise.all([...Array(parts).keys()].map((i) => fetch(`/assets/engine/searchless-${size}.onnx.part${i}`).then((r) => r.blob())));
+        const url = URL.createObjectURL(new Blob(blobs));
+        const w = new Worker(`/assets/engine/searchless-worker.js#${encodeURIComponent(url)}`, { type: 'module' });
+        let wait = null;
+        w.onmessage = (e) => wait && wait(e.data);
+        w.onerror = (e) => wait && wait(`error ${e.message}`);
+        const ask = (cmd, word) =>
+          new Promise((ok) => {
+            wait = (line) => (line.startsWith(word) || line.startsWith('error')) && ok(line);
+            w.postMessage(cmd);
+          });
+        await ask('uci', 'uciok');
+        w.postMessage('position fen 6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 30');
+        const best = await ask('go depth 1 movetime 1000', 'bestmove');
+        w.terminate();
+        URL.revokeObjectURL(url);
+        return best;
+      },
+      { size, parts },
+    );
+    check(`DeepMind ${size.toUpperCase()}: loads and finds the back-rank mate`, got === 'bestmove a1a8', got);
+  }
+  check('DeepMind big models: no page errors', errors.length === 0, errors.join(' | '));
+  await browser.close();
+}
+
 // CHECK_BASE=https://askthemove.online runs the same checks on the live site.
 const server = process.env.CHECK_BASE ? null : await serve();
 const base = process.env.CHECK_BASE ? process.env.CHECK_BASE.replace(/\/$/, '') : `http://127.0.0.1:${server.address().port}`;
@@ -662,6 +705,7 @@ try {
     await runMaia2(type, base);
     await runMaia3(type, base);
     await runLc0(type, base);
+    await runDeepMindBig(type, base);
   }
 } finally {
   server?.close();
