@@ -430,6 +430,65 @@ async function runCores(browserType, base) {
   await browser.close();
 }
 
+/** Maia-2 in the browser: the worker's move matches Python's for every reference case, and the page checks a move with it. */
+async function runMaia2(browserType, base) {
+  let browser;
+  try {
+    browser = await browserType.launch();
+  } catch {
+    return;
+  }
+  console.log(`- ${browserType.name()}: Maia-2 (real model)`);
+  const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
+  const ref = JSON.parse(await readFile(join(ROOT, '../test/fixtures/maia2-reference.json'), 'utf8')).cases;
+  const got = await page.evaluate(async (cases) => {
+    const parts = await Promise.all([0, 1, 2, 3].map((i) => fetch(`/assets/engine/maia2-rapid.onnx.part${i}`).then((r) => r.blob())));
+    const url = URL.createObjectURL(new Blob(parts));
+    const w = new Worker(`/assets/engine/maia2-worker.js#${encodeURIComponent(url)}`, { type: 'module' });
+    let wait = null;
+    w.onmessage = (e) => wait && wait(e.data);
+    const ask = (cmd, word) => new Promise((ok) => {
+      wait = (line) => line.startsWith(word) && ok(line);
+      w.postMessage(cmd);
+    });
+    await ask('uci', 'uciok');
+    const out = [];
+    for (const c of cases) {
+      w.postMessage(`setoption name Elo value ${c.elo}`);
+      w.postMessage(`position fen ${c.fen}`);
+      out.push((await ask('go depth 1', 'bestmove')).split(' ')[1]);
+    }
+    w.terminate();
+    return out;
+  }, ref);
+  const wrong = ref.filter((c, i) => got[i] !== c.move).map((c, i) => `${c.elo} ${c.fen}: ${got[ref.indexOf(c)]} not ${c.move}`);
+  check(`Maia-2: the browser’s move matches Python’s in all ${ref.length} reference cases`, wrong.length === 0, wrong.join(' | '));
+  // On the page: pick Maia-2 1900, play a move, Check my move.
+  await page.evaluate(() => localStorage.setItem('pz-engine', 'maia2-1900'));
+  await page.reload({ waitUntil: 'load' });
+  await page.waitForSelector('#desk-board img.pc');
+  check('Maia-2 1900 is the engine in use', (await page.textContent('#engine-name')) === 'Maia-2 1900');
+  const box = await page.locator('#desk-board').boundingBox();
+  const at = (sq) => [box.x + ('abcdefgh'.indexOf(sq[0]) + 0.5) * (box.width / 8), box.y + (8 - Number(sq[1]) + 0.5) * (box.height / 8)];
+  await page.mouse.move(...at('f1'));
+  await page.mouse.down();
+  await page.mouse.move(...at('c4'), { steps: 6 });
+  await page.mouse.up();
+  await page.click('#engine-check');
+  await page.waitForFunction(() => {
+    const t = document.querySelector('#engine-say').textContent;
+    return t && !/looking|ready, then/.test(t);
+  }, null, { timeout: 120000 });
+  const say = await page.textContent('#engine-say');
+  check('Maia-2: Check my move gets a verdict on the page', /That’s the move|Good move|Playable|lets something go/.test(say), say);
+  check('Maia-2: no page errors', errors.length === 0, errors.join(' | '));
+  await browser.close();
+}
+
 const server = await serve();
 const base = `http://127.0.0.1:${server.address().port}`;
 try {
@@ -437,6 +496,7 @@ try {
     await run(type, base);
     await runCoach(type, base);
     await runCores(type, base);
+    await runMaia2(type, base);
   }
 } finally {
   server.close();
