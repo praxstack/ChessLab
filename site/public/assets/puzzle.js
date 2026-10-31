@@ -9,6 +9,7 @@ import { parsePlacement, pieceHTML } from './board.js';
 import { markSVG, seedFrom } from './ink.js';
 import { createDesk, coordsHTML } from './desk.js';
 import { createDrawLayer } from './draw.js';
+import { createBookPage } from './bookpage.js';
 import { replay as replayLine } from './line.js';
 import { checkLine } from './coach.js';
 import { createEngine, grade, isCancel, isSaved, toCp } from './engine.js';
@@ -335,6 +336,32 @@ const pens = createDrawLayer(
     onLine: showLine,
   },
 );
+
+// Book page: the board, the drawings and the learner's notes, laid out to print.
+const book = createBookPage(
+  {
+    pop: $('book-pop'),
+    diagram: $('book-diagram'),
+    margin: $('book-margin'),
+    caption: $('book-caption'),
+    title: $('book-title'),
+    note: $('book-note'),
+    notePrint: $('book-own-print'),
+    print: $('book-print'),
+    copy: $('book-copy'),
+    close: $('book-close'),
+    say: $('book-say'),
+  },
+  () => ({
+    fen: play.fen,
+    orientation: play.orientation,
+    shapes: pens.shapes,
+    // The line is drawn from the position it started in; show it only while that's still the board.
+    line: shownLine && shownLine.fen === play.fen ? shownLine.text : '',
+    title: [desk.title || 'Your position', desk.iso ? $('card-date').textContent : ''].filter(Boolean).join(', '),
+  }),
+);
+$('draw-book').addEventListener('click', () => book.open());
 
 // The numbered line under the pens: its moves as text, Play it, Clear line.
 let shownLine = null;

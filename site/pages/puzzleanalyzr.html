@@ -84,6 +84,7 @@
         <div class="pens__keep">
           <button class="btn btn--plain btn--small pens__act" id="draw-undo" type="button" aria-label="Undo the last drawing" disabled>Undo</button>
           <button class="btn btn--plain btn--small pens__act" id="draw-clear" type="button" aria-label="Clear all drawings" disabled>Clear</button>
+          <button class="btn btn--plain btn--small pens__act" id="draw-book" type="button" title="Book page: the board, your drawings and your notes, laid out like a chess book to print or save">Book page</button>
         </div>
         </div>
         <div class="pens__set pens__helps" role="group" aria-label="Helpers: answer one question when you tap">
@@ -185,6 +186,36 @@
     <div class="cal-pop__key" id="cal-key-lichess" hidden>
       <p><span class="ink ink--circle cal__sample" data-mark="circle">12</span> Circled: Lichess’s puzzle of that day. It goes on the board here.</p>
       <p><span class="cal__sample cal__sample--plain">12</span> Plain: not saved. Lichess only shares today’s puzzle, so its days fill in from 28 October 2026 onwards, one a day.</p>
+    </div>
+  </dialog>
+
+  <dialog class="howto book" id="book-pop" aria-labelledby="book-title">
+    <div class="howto__top book__top">
+      <p class="howto__kicker">book page</p>
+      <button class="btn btn--plain btn--small howto__close" id="book-close" type="button" aria-label="Close">×</button>
+    </div>
+    <article class="book__page">
+      <h2 class="book__title" id="book-title">Puzzle</h2>
+      <div class="book__spread">
+        <figure class="book__fig">
+          <div class="book__board" id="book-diagram"></div>
+          <figcaption class="book__caption" id="book-caption">White to play</figcaption>
+        </figure>
+        <div class="book__margin">
+          <div id="book-margin"></div>
+          <p class="book__own" id="book-own-print" hidden></p>
+        </div>
+      </div>
+      <p class="book__foot">askthemove.online/puzzleanalyzr</p>
+    </article>
+    <div class="book__tools">
+      <label class="book__write" for="book-note">Your note <span>(goes on the page)</span></label>
+      <textarea class="book__textarea" id="book-note" rows="3" placeholder="What did you see? What did you miss?"></textarea>
+      <div class="book__go">
+        <button class="btn btn--pen" id="book-print" type="button">Print or save as PDF</button>
+        <button class="btn btn--plain" id="book-copy" type="button">Copy notes</button>
+      </div>
+      <p class="note-hand book__say" id="book-say" aria-live="polite"></p>
     </div>
   </dialog>
 

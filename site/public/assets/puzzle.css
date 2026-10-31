@@ -2230,3 +2230,225 @@ button.cal__day {
     display: none;
   }
 }
+
+/* Book page: the board and the learner's notes, set like a page of a chess book. */
+.book {
+  width: min(94vw, 46rem);
+}
+
+.book__page {
+  margin: 0 var(--s-5) var(--s-4);
+  padding: var(--s-5) var(--s-5) var(--s-3);
+  background: var(--paper);
+  border: 1px solid var(--rule-soft);
+  box-shadow: 0 1px 0 var(--rule-soft), 0 10px 24px -18px var(--shadow);
+  color: var(--ink);
+}
+
+.book__title {
+  margin: 0 0 var(--s-4);
+  padding-bottom: var(--s-2);
+  border-bottom: 1px solid var(--ink);
+  font-family: var(--font-book);
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-variant-numeric: oldstyle-nums;
+}
+
+.book__spread {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: var(--s-5);
+  align-items: start;
+}
+
+@media (max-width: 34rem) {
+  .book__spread {
+    grid-template-columns: 1fr;
+  }
+}
+
+.book__fig {
+  margin: 0;
+}
+
+.book__board {
+  position: relative;
+  aspect-ratio: 86 / 87;
+}
+
+.book__squares {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.book__board .book__ink {
+  /* Drawings sit on the 80 by 80 board inside the diagram's margin for the coordinates. */
+  inset: calc(100% / 87) auto auto calc(500% / 86);
+  width: calc(8000% / 86);
+  height: calc(8000% / 87);
+  will-change: auto;
+}
+
+.book__light {
+  fill: oklch(99.5% 0.003 95);
+}
+
+.book__dark-bg {
+  fill: oklch(99.5% 0.003 95);
+}
+
+.book__hatch {
+  stroke: var(--ink);
+  stroke-width: 0.42;
+}
+
+.book__frame {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1;
+}
+
+.book__coord {
+  fill: var(--ink-2);
+  font: 600 2.9px var(--font-book);
+  text-anchor: middle;
+}
+
+.book__caption {
+  margin-top: var(--s-2);
+  font-family: var(--font-book);
+  font-style: italic;
+  text-align: center;
+}
+
+.book__caption::before {
+  content: '';
+  display: inline-block;
+  width: 0.6em;
+  height: 0.6em;
+  margin-right: 0.45em;
+  border: 1.5px solid var(--ink);
+  vertical-align: 0.05em;
+}
+
+.book__margin {
+  display: grid;
+  gap: var(--s-2);
+  padding-left: var(--s-4);
+  border-left: 1px solid var(--rule);
+  font-family: var(--font-book);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.book__note {
+  margin: 0;
+}
+
+.book__note--line {
+  font-weight: 700;
+}
+
+.book__note--empty {
+  color: var(--ink-2);
+  font-style: italic;
+}
+
+.book__label {
+  font-family: var(--font-print);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.book__own {
+  margin: var(--s-2) 0 0;
+  font-family: var(--font-hand);
+  font-size: 1.05rem;
+  line-height: 1.35;
+  color: var(--blue);
+  white-space: pre-wrap;
+}
+
+.book__foot {
+  margin: var(--s-5) 0 0;
+  font-family: var(--font-print);
+  font-size: 0.7rem;
+  color: var(--ink-2);
+  text-align: right;
+}
+
+.book__tools {
+  display: grid;
+  gap: var(--s-2);
+  padding: 0 var(--s-5) var(--s-5);
+}
+
+.book__write {
+  font-weight: 600;
+}
+
+.book__write span {
+  font-weight: 400;
+  color: var(--ink-2);
+}
+
+.book__textarea {
+  width: 100%;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 1.05rem/1.35 var(--font-hand);
+  resize: vertical;
+}
+
+.book__go {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.book__say:empty {
+  display: none;
+}
+
+@media print {
+  html.is-printing-book body > *:not(main),
+  html.is-printing-book main > *:not(#book-pop),
+  html.is-printing-book .book__top,
+  html.is-printing-book .book__tools {
+    display: none !important;
+  }
+
+  html.is-printing-book main {
+    padding: 0;
+    margin: 0;
+  }
+
+  html.is-printing-book .book {
+    position: static;
+    inset: auto;
+    margin: 0;
+    width: auto;
+    max-height: none;
+    overflow: visible;
+    box-shadow: none;
+    animation: none;
+  }
+
+  html.is-printing-book .book::backdrop {
+    display: none;
+  }
+
+  html.is-printing-book .book__page {
+    margin: 0;
+    border: 0;
+    box-shadow: none;
+    background: none;
+  }
+}

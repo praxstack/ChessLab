@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script type="importmap">{"imports":{"/assets/app.js":"/assets/app.js?v=90fa02be76","/assets/board.js":"/assets/board.js?v=1f62d4f452","/assets/coach.js":"/assets/coach.js?v=d14550ff4d","/assets/daily-clock.js":"/assets/daily-clock.js?v=a54f71532e","/assets/demo-data.js":"/assets/demo-data.js?v=3eb10a8ec8","/assets/desk.js":"/assets/desk.js?v=12d1a870ed","/assets/draw.js":"/assets/draw.js?v=41a2377171","/assets/engine-catalog.js":"/assets/engine-catalog.js?v=b91368eaef","/assets/engine-parts.js":"/assets/engine-parts.js?v=a069783ea3","/assets/engine-picker.js":"/assets/engine-picker.js?v=bfa20b7b10","/assets/engine.js":"/assets/engine.js?v=7c5e11fe13","/assets/helpers.js":"/assets/helpers.js?v=28055a8597","/assets/ink.js":"/assets/ink.js?v=be5a18e099","/assets/lc0-search.js":"/assets/lc0-search.js?v=b7848d3b7c","/assets/lc0.js":"/assets/lc0.js?v=7a4ebf132a","/assets/line.js":"/assets/line.js?v=ef28aaa10c","/assets/maia2.js":"/assets/maia2.js?v=93c13c9c93","/assets/maia3.js":"/assets/maia3.js?v=48c5f2bda0","/assets/puzzle.js":"/assets/puzzle.js?v=0a5ba70228","/assets/rules.js":"/assets/rules.js?v=01cddd3ef6","/assets/searchless.js":"/assets/searchless.js?v=5602d641ee","/assets/sound.js":"/assets/sound.js?v=8759e04c61","/assets/vendor/chess.js":"/assets/vendor/chess.js?v=0fd3d85b71"}}</script>
+<script type="importmap">{"imports":{"/assets/app.js":"/assets/app.js?v=90fa02be76","/assets/board.js":"/assets/board.js?v=1f62d4f452","/assets/bookpage.js":"/assets/bookpage.js?v=317b20dc69","/assets/coach.js":"/assets/coach.js?v=d14550ff4d","/assets/daily-clock.js":"/assets/daily-clock.js?v=a54f71532e","/assets/demo-data.js":"/assets/demo-data.js?v=3eb10a8ec8","/assets/desk.js":"/assets/desk.js?v=12d1a870ed","/assets/draw.js":"/assets/draw.js?v=41a2377171","/assets/engine-catalog.js":"/assets/engine-catalog.js?v=b91368eaef","/assets/engine-parts.js":"/assets/engine-parts.js?v=a069783ea3","/assets/engine-picker.js":"/assets/engine-picker.js?v=bfa20b7b10","/assets/engine.js":"/assets/engine.js?v=7c5e11fe13","/assets/helpers.js":"/assets/helpers.js?v=28055a8597","/assets/ink.js":"/assets/ink.js?v=be5a18e099","/assets/lc0-search.js":"/assets/lc0-search.js?v=b7848d3b7c","/assets/lc0.js":"/assets/lc0.js?v=7a4ebf132a","/assets/line.js":"/assets/line.js?v=ef28aaa10c","/assets/maia2.js":"/assets/maia2.js?v=93c13c9c93","/assets/maia3.js":"/assets/maia3.js?v=48c5f2bda0","/assets/puzzle.js":"/assets/puzzle.js?v=2bd06e8391","/assets/rules.js":"/assets/rules.js?v=01cddd3ef6","/assets/searchless.js":"/assets/searchless.js?v=5602d641ee","/assets/sound.js":"/assets/sound.js?v=8759e04c61","/assets/vendor/chess.js":"/assets/vendor/chess.js?v=0fd3d85b71"}}</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Puzzle analyzr · AskTheMove</title>
@@ -37,7 +37,7 @@
   https://cloudflareinsights.com to connect-src in scripts/build.mjs (CSP), and rebuild.
   No other trackers, no cookies.
 -->
-<link rel="stylesheet" href="/assets/puzzle.css?v=bce7b2edd1">
+<link rel="stylesheet" href="/assets/puzzle.css?v=254a64b29a">
 </head>
 <body class="page-puzzles">
 <a class="skip" href="#main">Skip to content</a>
@@ -128,6 +128,7 @@
         <div class="pens__keep">
           <button class="btn btn--plain btn--small pens__act" id="draw-undo" type="button" aria-label="Undo the last drawing" disabled>Undo</button>
           <button class="btn btn--plain btn--small pens__act" id="draw-clear" type="button" aria-label="Clear all drawings" disabled>Clear</button>
+          <button class="btn btn--plain btn--small pens__act" id="draw-book" type="button" title="Book page: the board, your drawings and your notes, laid out like a chess book to print or save">Book page</button>
         </div>
         </div>
         <div class="pens__set pens__helps" role="group" aria-label="Helpers: answer one question when you tap">
@@ -229,6 +230,36 @@
     <div class="cal-pop__key" id="cal-key-lichess" hidden>
       <p><span class="ink ink--circle cal__sample" data-draw>12<svg class="ink__svg" viewBox="0 0 101 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M17.74 10.44 C19.47 9.42 24.45 5.86 28.09 4.3 C31.73 2.74 35.71 1.69 39.58 1.05 C43.46 0.42 47.53 0.05 51.36 0.46 C55.2 0.88 59 2.23 62.58 3.52 C66.15 4.81 69.48 6.49 72.81 8.22 C76.13 9.95 79.74 11.49 82.52 13.9 C85.31 16.31 87.29 19.66 89.51 22.68 C91.72 25.69 94.24 28.64 95.81 32.01 C97.37 35.39 98.12 39.19 98.9 42.91 C99.69 46.63 100.64 50.55 100.51 54.35 C100.38 58.16 99.32 62.08 98.11 65.75 C96.91 69.42 95.34 73.12 93.25 76.37 C91.17 79.61 88.4 82.51 85.62 85.22 C82.83 87.93 79.94 90.84 76.56 92.63 C73.18 94.42 69.09 95.19 65.34 95.96 C61.6 96.74 57.8 97.31 54.08 97.29 C50.37 97.28 46.61 96.66 43.04 95.87 C39.46 95.07 35.95 93.96 32.63 92.53 C29.31 91.1 25.93 89.48 23.11 87.3 C20.3 85.12 18.04 82.18 15.75 79.44 C13.46 76.7 11.12 73.95 9.36 70.87 C7.59 67.78 6.35 64.38 5.17 60.93 C4 57.49 2.62 53.86 2.3 50.21 C1.98 46.56 2.54 42.71 3.28 39.04 C4.01 35.38 5.03 31.6 6.69 28.24 C8.34 24.89 10.72 21.75 13.21 18.93 C15.7 16.11 18.5 13.35 21.62 11.3 C24.73 9.26 28.37 7.75 31.9 6.65 C35.43 5.54 39.17 4.98 42.78 4.67 C46.4 4.36 51.79 4.75 53.59 4.76"/></svg></span> Circled: Lichess’s puzzle of that day. It goes on the board here.</p>
       <p><span class="cal__sample cal__sample--plain">12</span> Plain: not saved. Lichess only shares today’s puzzle, so its days fill in from 28 October 2026 onwards, one a day.</p>
+    </div>
+  </dialog>
+
+  <dialog class="howto book" id="book-pop" aria-labelledby="book-title">
+    <div class="howto__top book__top">
+      <p class="howto__kicker">book page</p>
+      <button class="btn btn--plain btn--small howto__close" id="book-close" type="button" aria-label="Close">×</button>
+    </div>
+    <article class="book__page">
+      <h2 class="book__title" id="book-title">Puzzle</h2>
+      <div class="book__spread">
+        <figure class="book__fig">
+          <div class="book__board" id="book-diagram"></div>
+          <figcaption class="book__caption" id="book-caption">White to play</figcaption>
+        </figure>
+        <div class="book__margin">
+          <div id="book-margin"></div>
+          <p class="book__own" id="book-own-print" hidden></p>
+        </div>
+      </div>
+      <p class="book__foot">askthemove.online/puzzleanalyzr</p>
+    </article>
+    <div class="book__tools">
+      <label class="book__write" for="book-note">Your note <span>(goes on the page)</span></label>
+      <textarea class="book__textarea" id="book-note" rows="3" placeholder="What did you see? What did you miss?"></textarea>
+      <div class="book__go">
+        <button class="btn btn--pen" id="book-print" type="button">Print or save as PDF</button>
+        <button class="btn btn--plain" id="book-copy" type="button">Copy notes</button>
+      </div>
+      <p class="note-hand book__say" id="book-say" aria-live="polite"></p>
     </div>
   </dialog>
 
@@ -448,6 +479,6 @@
   </div>
 </footer>
 <script type="module" src="/assets/app.js?v=90fa02be76"></script>
-<script type="module" src="/assets/puzzle.js?v=0a5ba70228"></script>
+<script type="module" src="/assets/puzzle.js?v=2bd06e8391"></script>
 </body>
 </html>
