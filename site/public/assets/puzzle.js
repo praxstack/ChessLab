@@ -1365,6 +1365,7 @@ function renderMoreGames() {
 /* ------------------------------------------------------------ Setup bits */
 
 $('copy-bm').addEventListener('click', () => copy($('bm').value, 'bm-status', 'Copied. Now follow the steps below.'));
+$('copy-bm-send').addEventListener('click', () => copy($('bm-send').value, 'bm-send-status', 'Copied. Now follow the steps below.'));
 
 /* ----------------------------------------------------------------- Start */
 
@@ -1374,7 +1375,10 @@ renderCalendar();
 const linkFen = new URLSearchParams(window.location.search).get('fen');
 const linked = linkFen && cleanFen(linkFen);
 if (linked) {
-  showOnDesk({ kind: 'paste', fen: linked.fen, title: 'Your position', source: 'link' });
+  // Sent from a Chess.com puzzle page by the extension or the bookmark.
+  const from = new URLSearchParams(window.location.search).get('from');
+  const sent = from === 'chesscom' || from === 'bookmark';
+  showOnDesk({ kind: 'paste', fen: linked.fen, title: sent ? 'From your Chess.com puzzle' : 'Your position', source: sent ? 'Chess.com puzzle page' : 'link' });
   loadToday({ toDesk: false });
 } else {
   loadToday({ toDesk: true });
