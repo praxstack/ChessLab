@@ -78,6 +78,55 @@ const ORT_FILES = [
   file('/assets/engine/ort/ort-wasm-simd-threaded.wasm', 14848852, { role: 'runtime' }),
 ];
 
+/** DeepMind's bigger models, as cstr published them (weights already 16-bit, cast to 32-bit inside). */
+const DM_MODELS = {
+  '136m': file('/assets/engine/searchless-136m.onnx', 273016527, {
+    role: 'model',
+    sha256: '755c951db3e1d9789bb40e74fe3a34ddf8ee645f671ce7778656794514310495',
+    parts: [
+      file('/assets/engine/searchless-136m.onnx.part0', 24819685, { sha256: '3e2623969ee362497308fb4ba5cfc067eceb8aa45b26804089d695d222c4456f' }),
+      file('/assets/engine/searchless-136m.onnx.part1', 24819685, { sha256: 'fbb91859ff116cf080c0e9bfc898a0aad7367b820771f3b27966131def4ed1c4' }),
+      file('/assets/engine/searchless-136m.onnx.part2', 24819685, { sha256: 'bde060d9d6dfeab8fb88b75c7ac9d37e517a0469e6f29369094712fe89731594' }),
+      file('/assets/engine/searchless-136m.onnx.part3', 24819684, { sha256: '9d6a4835e80c0d66694854058884a2a33ade60c374886d25e332e607231fad07' }),
+      file('/assets/engine/searchless-136m.onnx.part4', 24819684, { sha256: '2a06cc3e75874e0cc35f28b8a2aed946e8e53c1258c2b41f60a83bde57efe853' }),
+      file('/assets/engine/searchless-136m.onnx.part5', 24819684, { sha256: '6355238e339477945e02a19a4c5252fdeed64ebc9e416f7306f278e3c6aec7bc' }),
+      file('/assets/engine/searchless-136m.onnx.part6', 24819684, { sha256: '849a30c9da28c1e747066a8ec1259d2d12171ba353d5ae7e9af2563edbd81158' }),
+      file('/assets/engine/searchless-136m.onnx.part7', 24819684, { sha256: '17c3d520ba686b292753060c65a0fae669acb54a49f6532502f2b308b35de23a' }),
+      file('/assets/engine/searchless-136m.onnx.part8', 24819684, { sha256: '09bd658719b65ec53c61dd479930e57bfbd4dff2327c9a468f951ff2e5a859a5' }),
+      file('/assets/engine/searchless-136m.onnx.part9', 24819684, { sha256: '8401d4cf71624bd9064bfd66a18141d4fd062362bcd259838be2d0f8b381bf28' }),
+      file('/assets/engine/searchless-136m.onnx.part10', 24819684, { sha256: '86e12d70689d1d4c8c26d724937e19d3bc97cd307008926d6f6bd362da02dd60' }),
+    ],
+        }),
+  '270m': file('/assets/engine/searchless-270m.onnx', 541571344, {
+    role: 'model',
+    sha256: 'f121286445c20e721f8a428c0e746e078d0b7686b0b034f83eaefe603f2855dc',
+    parts: [
+      file('/assets/engine/searchless-270m.onnx.part0', 24616880, { sha256: '83b48239e7927f6782e82e6a28a2241fc617e438df347e44ce8ba7ef54ea6586' }),
+      file('/assets/engine/searchless-270m.onnx.part1', 24616880, { sha256: '354184731d4ea0f432c197a06dc664650f01525e4197c83d46a55f8ce0352706' }),
+      file('/assets/engine/searchless-270m.onnx.part2', 24616880, { sha256: '4fadeb69fdd3d2d1fb4ed64903209ad2c10aa3851a5310b20aaba285d4b1a07e' }),
+      file('/assets/engine/searchless-270m.onnx.part3', 24616880, { sha256: 'ff4cdd5591d743f9b36d5dfbb65962bde7e86c56d8716734a5b7b93d5d201435' }),
+      file('/assets/engine/searchless-270m.onnx.part4', 24616880, { sha256: '687ffd3224a478cd9756f98cf67c6b8eb43a7b28805837ad6c85c373da27c660' }),
+      file('/assets/engine/searchless-270m.onnx.part5', 24616880, { sha256: '069dde0605f801a111aac116005bab85dd8f832f34c7c35cc51569f65acd8dd9' }),
+      file('/assets/engine/searchless-270m.onnx.part6', 24616879, { sha256: '9828269d9caaa8d5c3f09d9b6a1154cc22d972088cab84cba0ece0ca0aaf7f05' }),
+      file('/assets/engine/searchless-270m.onnx.part7', 24616879, { sha256: 'eb0ae385ec61dac5bbdb218cf4d7cbffc6bbbdcdb5fbc2ed2880ae1b7b7b0334' }),
+      file('/assets/engine/searchless-270m.onnx.part8', 24616879, { sha256: 'dab384c46121fe3e5686b9647d2cb268d1c237e320dc6ebe52559a7ad4aefca3' }),
+      file('/assets/engine/searchless-270m.onnx.part9', 24616879, { sha256: 'de2975ac798fbbf6fdcb32f46714e9504c6358137dcdd78e7cf19a1ce86f3bd1' }),
+      file('/assets/engine/searchless-270m.onnx.part10', 24616879, { sha256: 'dfeb3552dcff76dcbc9f63942cc6bd3d22c2498eb1b9c27467ccbb5a17c76461' }),
+      file('/assets/engine/searchless-270m.onnx.part11', 24616879, { sha256: '99a01b3103ad48472b9ea23bd298328271b5f0d4ca61e8779d550d0c4ec73fb7' }),
+      file('/assets/engine/searchless-270m.onnx.part12', 24616879, { sha256: 'dfeec0301f8b439b2aa414ad62bfb7d7040684179e104fdb9512d8fb791cb555' }),
+      file('/assets/engine/searchless-270m.onnx.part13', 24616879, { sha256: '6cb85140c1c538e04670deb409e38d584e571f21edde0ff7462e3a4933a72266' }),
+      file('/assets/engine/searchless-270m.onnx.part14', 24616879, { sha256: 'dc34a3b174dfd968a3ae08eb312f2be2ecba5251e39c988ec7b82891b8738174' }),
+      file('/assets/engine/searchless-270m.onnx.part15', 24616879, { sha256: '70f67eabc9152f31f9271ddef3c9451dbbd418f8a48470ed15ac0ef36ea0fa8a' }),
+      file('/assets/engine/searchless-270m.onnx.part16', 24616879, { sha256: 'd01940a05ab7ca8536ffe4b143393881432404c00f690000579e1d6116f6cb93' }),
+      file('/assets/engine/searchless-270m.onnx.part17', 24616879, { sha256: '292e688f1d3da22a8a57f53c49422bb4923def2c54326a5c5fdadb8d91d444f3' }),
+      file('/assets/engine/searchless-270m.onnx.part18', 24616879, { sha256: '293e64d30fed18e38a55a26fe80c273db01d682dbbc772369761d670fa1b170b' }),
+      file('/assets/engine/searchless-270m.onnx.part19', 24616879, { sha256: '421e1813e994a5fab02d87f40caab4d9a2282513946758e7516130f99912220d' }),
+      file('/assets/engine/searchless-270m.onnx.part20', 24616879, { sha256: 'd3729a8f6dc029b2d633d3dc52db705783e82b802641ccc3d6949fb49a0ca03a' }),
+      file('/assets/engine/searchless-270m.onnx.part21', 24616879, { sha256: 'b7f49b656c61de15864b4be123c492b9e6e16a5f3b3a0c68c3f03f4d1b93110d' }),
+    ],
+        }),
+};
+
 /** The four Maia-3 sizes; the ratings of a size share its file. */
 const MAIA3_MODELS = {
   '3m': file('/assets/engine/maia3-3m.onnx', 6406545, { role: 'model', sha256: '8143e3b5742c59c6d4a5f86e1961bcc1cd2ae4e2be904b3383d09dff578bbe3e' }),
@@ -361,7 +410,13 @@ export const ENGINES = [
 
   ...[
     ['1100', 'a club beginner', '67922d80f645d8153b29df1dcf516c1a13a1ec4f474c06649f4b82d58258ec60'],
+    ['1200', 'a club beginner', '99266202e4d49ac732d22b24066bf67b4dd4922811637859e34d5b20b9967e72'],
+    ['1300', 'a newer club player', 'b49dbbc4ee4ea025e9e04257aa74f96d56a8fbbfd49422e9bc151f41182329ed'],
+    ['1400', 'a newer club player', '71222bdc58a768653950faa8019c5bcbc44db576141bfc0794789969e17d8b49'],
     ['1500', 'a club player', '2c39eae560305e4d3158259346c33bfefb4b6c4dbb0e0e9856f5749a52737498'],
+    ['1600', 'a club player', 'ee4357086a1d07e1e991d6b41092201e8ac7612aa372d15018cab840c8ab9e63'],
+    ['1700', 'a good club player', 'c4888e7a2f1230229303bd1cc57159ce0ef465790c8ca4dcd98e4b391cd18de6'],
+    ['1800', 'a good club player', 'ffdcf7a9a5677c6d83263fb4719e6f31ef52211f9088f0253f7d2ef94821e7db'],
     ['1900', 'a strong club player', '29bef50a33fbfd4b879cae91d3359cb15f9d168fc423b53e5dda71cc8cf11cca'],
   ].map(([elo, who, sha256]) =>
     entry({
@@ -500,22 +555,27 @@ export const ENGINES = [
     }),
   ),
   ...[
-    ['136m', '136M', 'model_fp16.onnx', 273016527],
-    ['270m', '270M', 'model_fp16.onnx', 541571344],
-  ].map(([id, size, name, bytes]) =>
+    ['136m', '136M', 'Much stronger than 9M and much slower: each look scores every legal move with a 136-million-weight model, which can take 10 to 30 seconds on a laptop.'],
+    ['270m', '270M', 'The biggest, about 2900 Elo against people on Lichess blitz in DeepMind’s paper. Each look can take a minute on a laptop; a desktop helps.'],
+  ].map(([id, size, about]) =>
     entry({
       id: `dm-${id}`,
       name: `DeepMind searchless chess ${size}`,
       family: 'DeepMind searchless',
-      about: `A transformer that plays grandmaster-level chess by looking at the board once, with no search. ${ORT}`,
+      about: `A transformer from Google DeepMind that picks a move by looking at the board once, with no search. ${about} Its score is only its guess at the winning chances.`,
       license: 'CC-BY-4.0',
       licenseUrl: CC_BY,
       source: DM_SOURCE,
+      credit: DM_CREDIT,
       device: 'heavy',
-      status: 'soon',
-      memory: bytes > HEAVY_BYTES ? 'over 1 GB' : 'a few hundred MB',
-      webgpu: bytes > HEAVY_BYTES ? 'needs' : 'better',
-      files: [file(`${size}/${name}`, bytes)],
+      status: 'ready',
+      module: true,
+      memory: id === '270m' ? 'about 2 GB' : 'about 1 GB',
+      files: [
+        file('/assets/engine/searchless-worker.js', SEARCHLESS_WORKER_BYTES, { role: 'worker' }),
+        ...ORT_FILES,
+        DM_MODELS[id],
+      ],
     }),
   ),
   entry({
