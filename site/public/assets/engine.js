@@ -358,6 +358,7 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
         send('setoption name Use NNUE value true');
         if (!/:\s*1\s*$/.test(await loaded)) throw new Error('The engine couldn’t read its net');
       }
+      for (const line of spec.options || []) send(line);
       // Several cores: Stockfish starts its extra threads when told how many (they share its memory).
       if (spec.threads) send(`setoption name Threads value ${threadCount(globalThis.navigator && navigator.hardwareConcurrency)}`);
       const ready = waitFor('readyok', startMs);

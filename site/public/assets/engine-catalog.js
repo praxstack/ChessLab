@@ -10,7 +10,8 @@
 // 'wasm' (handed to the script after #, as a blob URL), 'model' (the same,
 // for a neural model), 'net' (a separate Stockfish net, loaded with
 // setoption EvalFile) and 'runtime' (files the worker fetches by itself,
-// listed for their size). `threads: true` runs on several cores and needs a
+// listed for their size). `options` are UCI lines sent once it has said uciok
+// (Maia-2's rating). `threads: true` runs on several cores and needs a
 // cross-origin isolated page (see canRun). A plain-JavaScript engine is `scriptOnly`; one
 // whose script is an ES module is `module`; `hash: 'raw'` passes the blob
 // URL unencoded, for Stockfish 11. A file too big
@@ -47,6 +48,10 @@ export const DM_CREDIT =
 /** The sizes of the neural workers; the catalog test checks them against the files. */
 const SEARCHLESS_WORKER_BYTES = 3786;
 const MAIA_WORKER_BYTES = 3904;
+const MAIA2_WORKER_BYTES = 3953;
+/** MIT asks that the copyright notice be kept; the picker and the page footer show this. */
+export const MAIA2_CREDIT =
+  'Maia-2 by Zhenwei Tang, Difan Jiao, Reid McIlroy-Young, Jon Kleinberg, Siddhartha Sen and Ashton Anderson (CSSLab, University of Toronto, 2024), MIT licence, source github.com/CSSLab/maia2. The rapid model, exported to ONNX for this page with no change to its weights; run here with onnxruntime-web (MIT).';
 /** GPL-3.0 asks that the authors and the source be named; the picker and the page footer show this. */
 export const MAIA_CREDIT =
   'Maia by Reid McIlroy-Young, Siddhartha Sen, Jon Kleinberg and Ashton Anderson (CSSLab, University of Toronto, 2020), GPL-3.0, source github.com/CSSLab/maia-chess. Converted to ONNX by shermansiu; run here with onnxruntime-web (MIT).';
@@ -414,20 +419,41 @@ export const ENGINES = [
       files: [file(`maia3-${size}.pt`, bytes)],
     }),
   ),
-  entry({
-    id: 'maia2',
-    name: 'Maia-2',
-    family: 'Maia-2',
-    about: `One human-like model for every rating. Its authors now point to Maia-3. ${ORT}`,
-    license: 'MIT',
-    licenseUrl: MIT_URL,
-    source: 'https://github.com/CSSLab/maia2',
-    device: 'heavy',
-    status: 'soon',
-    memory: 'several hundred MB',
-    webgpu: 'better',
-    files: [file('model.safetensors', 93223920)],
-  }),
+  ...[
+    ['1100', 'a club beginner'],
+    ['1500', 'a club player'],
+    ['1900', 'a strong club player'],
+  ].map(([elo, who]) =>
+    entry({
+      id: `maia2-${elo}`,
+      name: `Maia-2 ${elo}`,
+      family: 'Maia-2',
+      about: `Plays the move a human rated about ${elo} (${who}) would most likely play, from one model that knows every rating. Newer and closer to real players than Maia-1, but it learned from middlegames: its first few moves can look odd. It doesn’t search, so its score is only its guess at the result. The three ratings share one download.`,
+      license: 'MIT',
+      licenseUrl: MIT_URL,
+      source: 'https://github.com/CSSLab/maia2',
+      credit: MAIA2_CREDIT,
+      device: 'heavy',
+      status: 'ready',
+      module: true,
+      memory: 'a few hundred MB',
+      options: [`setoption name Elo value ${elo}`],
+      files: [
+        file('/assets/engine/maia2-worker.js', MAIA2_WORKER_BYTES, { role: 'worker' }),
+        ...ORT_FILES,
+        file('/assets/engine/maia2-rapid.onnx', 84934218, {
+          role: 'model',
+          sha256: 'e02c24370e11074b10db93c0d1401e5142495448fd22851a2357b7bc0ea944d4',
+          parts: [
+            file('/assets/engine/maia2-rapid.onnx.part0', 21233555, { sha256: 'e122c1b3835b14f9f5e5762bea76ce916a44e85e46409ece08bb71e65b000762' }),
+            file('/assets/engine/maia2-rapid.onnx.part1', 21233555, { sha256: '1d287390f9c11be00b45994b6e3f99f46f3f52887202a1d19e0e809af61095f3' }),
+            file('/assets/engine/maia2-rapid.onnx.part2', 21233554, { sha256: 'c666e54400f54bbb3b98fcaeec81b08efdd7bc644bf47a4fbb8a43549c5dc977' }),
+            file('/assets/engine/maia2-rapid.onnx.part3', 21233554, { sha256: '7f5653090240222e7939dfadebce5c80e896c99b415a25f9f3f2fb8094675bbc' }),
+          ],
+        }),
+      ],
+    }),
+  ),
   ...[
     ['136m', '136M', 'model_fp16.onnx', 273016527],
     ['270m', '270M', 'model_fp16.onnx', 541571344],

@@ -56,7 +56,7 @@ test('catalog: every entry is complete, ids are unique, and Lite is the ready de
   assert.equal(needsWarning(lite), false);
   assert.deepEqual(
     ENGINES.filter((e) => e.status === 'ready').map((e) => e.id),
-    ['sf19-lite', 'sf19-full', 'sf19-lite-mt', 'sf19-full-mt', 'sf18-lite', 'sf17-lite', 'sf19-asm', 'sf11', 'sf17-full', 'sf18-full', 'sf16', 'dm-9m', 'maia1-1100', 'maia1-1500', 'maia1-1900'],
+    ['sf19-lite', 'sf19-full', 'sf19-lite-mt', 'sf19-full-mt', 'sf18-lite', 'sf17-lite', 'sf19-asm', 'sf11', 'sf17-full', 'sf18-full', 'sf16', 'dm-9m', 'maia1-1100', 'maia1-1500', 'maia1-1900', 'maia2-1100', 'maia2-1500', 'maia2-1900'],
   );
 });
 
@@ -114,7 +114,7 @@ test('catalog: every split file matches its manifest, each part’s hash and the
   const split = ENGINES.filter((e) => e.status === 'ready').flatMap((e) => e.files.filter((f) => f.parts));
   assert.deepEqual(
     split.map((f) => f.path.replace('/assets/engine/', '')),
-    ['stockfish-19-single.wasm', 'stockfish-19.wasm', 'stockfish-17.1-single.wasm', 'stockfish-18-single.wasm', 'nn-5af11540bbfe.nnue', 'searchless-9m.onnx'],
+    ['stockfish-19-single.wasm', 'stockfish-19.wasm', 'stockfish-17.1-single.wasm', 'stockfish-18-single.wasm', 'nn-5af11540bbfe.nnue', 'searchless-9m.onnx', 'maia2-rapid.onnx', 'maia2-rapid.onnx', 'maia2-rapid.onnx'],
   );
   for (const f of split) {
     const manifest = JSON.parse(readFileSync(pub(`${f.path}.parts.json`), 'utf8'));
@@ -377,4 +377,19 @@ test('engine workers start from a versioned URL, so a script cached before COEP 
   const src = readFileSync(pub('/assets/engine.js'), 'utf8');
   assert.match(src, /new Worker\(workerUrl\(script\.path, hash\)/, 'the one place a worker starts uses it');
   assert.equal((src.match(/new Worker\(/g) || []).length, 1);
+});
+
+test('Maia-2: three ratings share one model and one worker; each tells the worker its rating', () => {
+  const m2 = ENGINES.filter((e) => e.family === 'Maia-2');
+  assert.deepEqual(m2.map((e) => [e.id, e.status, e.options]), [
+    ['maia2-1100', 'ready', ['setoption name Elo value 1100']],
+    ['maia2-1500', 'ready', ['setoption name Elo value 1500']],
+    ['maia2-1900', 'ready', ['setoption name Elo value 1900']],
+  ]);
+  const paths = m2.map((e) => e.files.map((f) => f.path).join());
+  assert.equal(new Set(paths).size, 1, 'the same files, so one download serves all three');
+  for (const e of m2) assert.ok(needsWarning(e), 'an 85 MB model gets the warning first');
+  const worker = engineFiles(m2[0]).worker;
+  assert.equal(statSync(pub(worker.path)).size, worker.bytes);
+  assert.match(readFileSync(pub(worker.path), 'utf8'), /setoption name Elo value/);
 });
