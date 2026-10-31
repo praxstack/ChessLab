@@ -395,6 +395,7 @@ function outputs() {
     'sitemap.xml',
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
   );
+  const COEP = 'require-corp';
   files.set(
     '_headers',
     [
@@ -407,6 +408,10 @@ function outputs() {
         path,
         '  ! Content-Security-Policy',
         `  Content-Security-Policy: ${csp({ turnstileHost: turnstileKey ? TURNSTILE_HOST : '', connect: PUZZLE_CONNECT, wasm: true, hashes: [IMPORT_MAP_HASH] })}`,
+        // With COOP (sent for every page) this makes the page cross-origin isolated, so the
+        // several-cores Stockfish gets SharedArrayBuffer. Every cross-origin read it makes is a
+        // CORS fetch (the chess APIs send Access-Control-Allow-Origin: *), which require-corp allows.
+        `  Cross-Origin-Embedder-Policy: ${COEP}`,
         '',
       ]),
       // Stockfish's worker gets its own small policy, and its files are kept for 30 days.
@@ -414,6 +419,7 @@ function outputs() {
       '  ! Content-Security-Policy',
       `  Content-Security-Policy: ${ENGINE_CSP}`,
       '  Cache-Control: public, max-age=2592000',
+      `  Cross-Origin-Embedder-Policy: ${COEP}`, // an engine worker (and its own extra threads) under the isolated page
       '',
       '/assets/fonts/*',
       '  Cache-Control: public, max-age=31536000, immutable',

@@ -12,6 +12,7 @@ import {
   HEAVY_FAMILIES,
   PICK_KEY,
   TRYING_KEY,
+  cantRun,
   createChoice,
   engineById,
   engineFiles,
@@ -22,6 +23,7 @@ import {
   isHandheld,
   needsWarning,
   roughTimes,
+  threadCount,
   visibleEngines,
 } from '../public/assets/engine-catalog.js';
 import { MAX_PART_BYTES, checkJoined, checkPart, createJoiner, joinParts, manifestFor, planParts, sha256Hex, splitBytes } from '../public/assets/engine-parts.js';
@@ -54,7 +56,7 @@ test('catalog: every entry is complete, ids are unique, and Lite is the ready de
   assert.equal(needsWarning(lite), false);
   assert.deepEqual(
     ENGINES.filter((e) => e.status === 'ready').map((e) => e.id),
-    ['sf19-lite', 'sf19-full', 'sf18-lite', 'sf17-lite', 'sf19-asm', 'sf11', 'sf17-full', 'sf18-full', 'sf16', 'dm-9m', 'maia1-1100', 'maia1-1500', 'maia1-1900'],
+    ['sf19-lite', 'sf19-full', 'sf19-lite-mt', 'sf19-full-mt', 'sf18-lite', 'sf17-lite', 'sf19-asm', 'sf11', 'sf17-full', 'sf18-full', 'sf16', 'dm-9m', 'maia1-1100', 'maia1-1500', 'maia1-1900'],
   );
 });
 
@@ -112,7 +114,7 @@ test('catalog: every split file matches its manifest, each part’s hash and the
   const split = ENGINES.filter((e) => e.status === 'ready').flatMap((e) => e.files.filter((f) => f.parts));
   assert.deepEqual(
     split.map((f) => f.path.replace('/assets/engine/', '')),
-    ['stockfish-19-single.wasm', 'stockfish-17.1-single.wasm', 'stockfish-18-single.wasm', 'nn-5af11540bbfe.nnue', 'searchless-9m.onnx'],
+    ['stockfish-19-single.wasm', 'stockfish-19.wasm', 'stockfish-17.1-single.wasm', 'stockfish-18-single.wasm', 'nn-5af11540bbfe.nnue', 'searchless-9m.onnx'],
   );
   for (const f of split) {
     const manifest = JSON.parse(readFileSync(pub(`${f.path}.parts.json`), 'utf8'));
@@ -348,4 +350,22 @@ test('choice: a stored id that is unknown or not runnable, or storage that throw
   assert.equal(c.failed(engineById('sf19-full'), 'x').engine.id, DEFAULT_ENGINE);
   assert.equal(createChoice(null).start().engine.id, DEFAULT_ENGINE);
   assert.match(failureReason('took too long'), /too slow/);
+});
+
+test('several cores: only on a cross-origin isolated page, 2 to 4 threads, and a plain reason when it can’t', () => {
+  const mt = ENGINES.filter((e) => e.threads);
+  assert.deepEqual(mt.map((e) => e.id), ['sf19-lite-mt', 'sf19-full-mt']);
+  for (const e of mt) {
+    assert.equal(e.status, 'ready');
+    assert.match(cantRun(e, { isolated: false }), /several cores/);
+    assert.equal(cantRun(e, { isolated: true }), '');
+  }
+  assert.equal(cantRun(engineById('sf19-lite'), { isolated: false }), '', 'single-core engines run anywhere');
+  assert.equal(failureReason(cantRun(mt[0])), 'this browser didn’t switch on several cores for this page');
+  assert.deepEqual([undefined, 1, 2, 3, 4, 8, 16].map(threadCount), [2, 2, 2, 2, 3, 4, 4]);
+  // The multi-thread scripts are the npm package's, unchanged: they start pthreads, the single ones don't.
+  for (const e of mt) {
+    const js = readFileSync(pub(engineFiles(e).worker.path), 'utf8');
+    assert.match(js, /em-pthread/);
+  }
 });

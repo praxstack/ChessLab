@@ -8,7 +8,7 @@
 //
 // Stockfish is free software under the GNU GPL v3; see /assets/engine/COPYING.txt.
 
-import { DEFAULT_ENGINE, engineById, engineFiles } from './engine-catalog.js';
+import { DEFAULT_ENGINE, cantRun, engineById, engineFiles, threadCount } from './engine-catalog.js';
 import { checkJoined, checkPart, createJoiner } from './engine-parts.js';
 
 const LITE = engineById(DEFAULT_ENGINE);
@@ -309,6 +309,9 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
     aborter = typeof AbortController === 'function' ? new AbortController() : null;
     const signal = aborter ? aborter.signal : undefined;
     try {
+      // A several-cores engine needs a cross-origin isolated page: say so before any download.
+      const why = cantRun(spec, { isolated: globalThis.crossOriginIsolated === true });
+      if (why) throw new Error(why);
       const saved = wasm ? await loadFile(wasm, 0, signal) : { blob: null, fromDevice: false };
       const savedNet = net ? await loadFile(net, wasm ? wasm.bytes : 0, signal) : null;
       if (quit || (signal && signal.aborted)) throw cancelError();
@@ -344,6 +347,8 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
         send('setoption name Use NNUE value true');
         if (!/:\s*1\s*$/.test(await loaded)) throw new Error('The engine couldn’t read its net');
       }
+      // Several cores: Stockfish starts its extra threads when told how many (they share its memory).
+      if (spec.threads) send(`setoption name Threads value ${threadCount(globalThis.navigator && navigator.hardwareConcurrency)}`);
       const ready = waitFor('readyok', startMs);
       send('isready');
       await ready;

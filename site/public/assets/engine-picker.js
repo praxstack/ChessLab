@@ -6,7 +6,7 @@
 //
 // Phones and tablets see the light engines first, with "Show all engines".
 
-import { ENGINES, formatBytes, isHandheld, needsWarning, roughTimes, visibleEngines } from './engine-catalog.js';
+import { ENGINES, cantRun, formatBytes, isHandheld, needsWarning, roughTimes, visibleEngines } from './engine-catalog.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -80,7 +80,12 @@ export function createPicker({ getActive, isSaved = async () => false, onChoose 
     li.append(meta);
 
     let btn = null;
-    if (e.status === 'ready') {
+    const why = e.status === 'ready' ? cantRun(e, { isolated: globalThis.crossOriginIsolated === true }) : '';
+    if (why) {
+      li.append(el('p', 'engines__credit', why));
+      btn = el('button', 'btn btn--plain btn--small engines__use', 'Can’t run here');
+      btn.disabled = true;
+    } else if (e.status === 'ready') {
       if (e.id === active.id) {
         btn = el('button', 'btn btn--plain btn--small engines__use', 'In use');
         btn.disabled = true;

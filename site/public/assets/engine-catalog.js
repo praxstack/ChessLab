@@ -10,7 +10,8 @@
 // 'wasm' (handed to the script after #, as a blob URL), 'model' (the same,
 // for a neural model), 'net' (a separate Stockfish net, loaded with
 // setoption EvalFile) and 'runtime' (files the worker fetches by itself,
-// listed for their size). A plain-JavaScript engine is `scriptOnly`; one
+// listed for their size). `threads: true` runs on several cores and needs a
+// cross-origin isolated page (see canRun). A plain-JavaScript engine is `scriptOnly`; one
 // whose script is an ES module is `module`; `hash: 'raw'` passes the blob
 // URL unencoded, for Stockfish 11. A file too big
 // for Cloudflare Pages (25 MiB a file) lists its parts in joining order, each
@@ -68,7 +69,9 @@ export const ENGINES = [
   // Stockfish files come unchanged (but for one line of 17.1's script, below) from the npm package `stockfish` (stockfish.js by Nathan Rugg and
   // Chess.com): 19 and 19 Lite from 19.0.1, 18 and 18 Lite from 18.0.8, 17.1 and 17.1 Lite from 17.1.0,
   // 16 from 16.0.0 (stockfish-nnue-16-single.*, net src/nn-5af11540bbfe.nnue), 11 from 11.0.0
-  // (src/stockfish.js and .wasm). Single-threaded builds only: the page has no COOP/COEP headers.
+  // (src/stockfish.js and .wasm). The "several cores" builds (`threads: true`) are 19.0.1's
+  // stockfish-19-lite.* and stockfish-19.*; they need the page to be cross-origin isolated
+  // (COOP + COEP headers, sent for /puzzleanalyzr by scripts/build.mjs) for SharedArrayBuffer.
   entry({
     id: 'sf19-lite',
     name: 'Stockfish 19 Lite',
@@ -105,6 +108,48 @@ export const ENGINES = [
           file('/assets/engine/stockfish-19-single.wasm.part1', 24792264, { sha256: '6c39a4e8f77db1ce16c29a421cc35cf53b2382f4683a76f170af67ab0d76b059' }),
           file('/assets/engine/stockfish-19-single.wasm.part2', 24792263, { sha256: '314e6b9fbe936999ed238949886c8e0f18ba5075aa71211073498e2d18b34e09' }),
           file('/assets/engine/stockfish-19-single.wasm.part3', 24792263, { sha256: 'f1e17ca7f29cff9c0ccdcb972e9880682f0ded324e188f0b85ec4f499bca8f32' }),
+        ],
+      }),
+    ],
+  }),
+  entry({
+    id: 'sf19-lite-mt',
+    name: 'Stockfish 19 Lite, several cores',
+    family: 'Stockfish',
+    about: 'Lite on several CPU cores at once, so it looks deeper in the same time. Same small download as Lite.',
+    license: GPL,
+    licenseUrl: COPYING,
+    source: SFJS,
+    device: 'light',
+    status: 'ready',
+    threads: true,
+    files: [
+      file('/assets/engine/stockfish-19-lite.js', 33426, { role: 'worker' }),
+      file('/assets/engine/stockfish-19-lite.wasm', 1697617, { role: 'wasm' }),
+    ],
+  }),
+  entry({
+    id: 'sf19-full-mt',
+    name: 'Stockfish 19, several cores',
+    family: 'Stockfish',
+    about: 'The full Stockfish 19 on several CPU cores: the strongest setup on this page. A big download, and slower to start.',
+    license: GPL,
+    licenseUrl: COPYING,
+    source: SFJS,
+    device: 'heavy',
+    status: 'ready',
+    threads: true,
+    memory: 'about 200 to 300 MB while it runs (an estimate)',
+    files: [
+      file('/assets/engine/stockfish-19.js', 33326, { role: 'worker' }),
+      file('/assets/engine/stockfish-19.wasm', 99076105, {
+        role: 'wasm',
+        sha256: 'a599d78d72e0722d8895be84aca8b492d12e8bba3cdfcbcbc4a64017888c6667',
+        parts: [
+          file('/assets/engine/stockfish-19.wasm.part0', 24769027, { sha256: '5d1481373652fffaf692cf737d9cd3921d172b0c17131b2d5eb273c2eadac95d' }),
+          file('/assets/engine/stockfish-19.wasm.part1', 24769026, { sha256: '3e96c6675297fc6391ff4abe95e72882a0eee7950db29cef4281247cdc1d7fdd' }),
+          file('/assets/engine/stockfish-19.wasm.part2', 24769026, { sha256: '1652b799cb78d4cfd1b9f54939e1f2c306a5c432fc2c19a00dcc8805bdb6cd5c' }),
+          file('/assets/engine/stockfish-19.wasm.part3', 24769026, { sha256: '7f68dd27127fbf1f4301b05ce8d6780a00c2d02d27d2b2e867cfbf0a18cfc8a4' }),
         ],
       }),
     ],
@@ -300,31 +345,6 @@ export const ENGINES = [
 
   /* ---------------------------------------------------- listed, not yet */
   entry({
-    id: 'sf19-lite-mt',
-    name: 'Stockfish 19 Lite, several cores',
-    family: 'Stockfish',
-    about: 'Lite on several CPU cores, so it looks deeper in the same time. Needs extra page headers that are still being tested.',
-    license: GPL,
-    licenseUrl: GPL_URL,
-    source: SFJS,
-    device: 'light',
-    status: 'soon',
-    files: [file('stockfish-19-lite.js', 33426), file('stockfish-19-lite.wasm', 1697617)],
-  }),
-  entry({
-    id: 'sf19-full-mt',
-    name: 'Stockfish 19, several cores',
-    family: 'Stockfish',
-    about: 'The full Stockfish 19 on several CPU cores. The strongest setup of all, once the page headers allow it.',
-    license: GPL,
-    licenseUrl: GPL_URL,
-    source: SFJS,
-    device: 'heavy',
-    status: 'soon',
-    memory: 'about 200 to 300 MB while it runs (an estimate)',
-    files: [file('stockfish-19.js', 33326), file('stockfish-19.wasm', 99076105)],
-  }),
-  entry({
     id: 'sf19-lichess-big',
     name: 'Stockfish 19 (Lichess build)',
     family: 'Stockfish',
@@ -500,6 +520,18 @@ export function engineFor(id) {
   return e && e.status === 'ready' ? e : BY_ID.get(DEFAULT_ENGINE);
 }
 
+/** How many threads a several-cores engine uses: one core left for the page, at least 2, at most 4 (more gains little and costs memory). */
+export function threadCount(cores) {
+  const n = Number(cores) || 2;
+  return Math.max(2, Math.min(4, n - 1));
+}
+
+/** Why this browser can't run this engine here, or '' when it can. isolated: the page's crossOriginIsolated. */
+export function cantRun(e, { isolated = false } = {}) {
+  if (e.threads && !isolated) return 'This browser didn’t switch on several cores for this page, so it can’t run here.';
+  return '';
+}
+
 /** True when this engine gets the big warning and the second "Yes, download it" before it downloads. */
 export function needsWarning(e) {
   return e.device === 'heavy' || e.bytes > HEAVY_BYTES || HEAVY_FAMILIES.includes(e.family);
@@ -576,6 +608,7 @@ export function failureReason(error = '') {
   if (/SHA-256|wrong size|bigger than expected|add up to|bytes, not/i.test(text)) return 'its download arrived damaged';
   if (/HTTP|fetch|network|load failed/i.test(text)) return 'its download failed';
   if (/took too long/i.test(text)) return 'it was too slow on this device';
+  if (/several cores/i.test(text)) return 'this browser didn’t switch on several cores for this page';
   return 'it couldn’t start on this device (it may need more memory than the tab has)';
 }
 

@@ -195,6 +195,13 @@ test('puzzleanalyzr: its own policy lets it read the chess APIs and run Stockfis
   assert.ok(engine, 'no header block for /assets/engine/*');
   assert.equal(engine[1], ENGINE_CSP);
   assert.match(engine[2], /max-age=2592000/);
+  // Several-cores Stockfish: the puzzle page and the engine workers are cross-origin isolated (COOP is on every page).
+  for (const path of ['/puzzleanalyzr', '/puzzleanalyzr/*', '/assets/engine/*']) {
+    const block = new RegExp(`^${path.replace(/[*]/g, '\\*')}\n((?:  .+\n)+)`, 'm').exec(headers);
+    assert.match(block[1], /^  Cross-Origin-Embedder-Policy: require-corp$/m, `COEP for ${path}`);
+  }
+  assert.match(headers, /^\/\*\n(?:  .+\n)*  Cross-Origin-Opener-Policy: same-origin$/m);
+  assert.doesNotMatch(headers.split('\n/puzzleanalyzr\n')[0], /Embedder/, 'other pages stay as they were');
   const html = read('puzzleanalyzr/index.html');
   assert.match(html, /<link rel="manifest" href="\/puzzleanalyzr\/manifest\.webmanifest">/);
   assert.match(read('index.html'), /<link rel="manifest" href="\/site\.webmanifest">/);
