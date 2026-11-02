@@ -69,6 +69,29 @@ function serve() {
 }
 
 const failures = [];
+/** The browsers that started; a run where none did tested nothing and must not pass. */
+const ran = [];
+/** Browsers open right now; the group loop closes any a failed group left behind. */
+const open = new Set();
+
+/** Every group starts its browser here, so each one that starts is counted and can be closed. */
+async function launch(browserType) {
+  const browser = await browserType.launch({ timeout: 60000 });
+  open.add(browser);
+  if (!ran.includes(browserType.name())) ran.push(browserType.name());
+  return browser;
+}
+
+/** The longest one group may take (the biggest models download first); after that it fails and its browser is closed. */
+const GROUP_MS = 30 * 60 * 1000;
+/**
+ * Requests the checks let through: the site itself, and the page's own blob: and data: URLs
+ * (WebKit routes those too, and the engine's worker starts from a blob). Anything else is aborted.
+ */
+function onSite(url, base) {
+  return url.startsWith(base) || url.startsWith('blob:') || url.startsWith('data:');
+}
+
 function check(name, cond, detail = '') {
   if (cond) console.log(`  ✓ ${name}`);
   else {
@@ -80,16 +103,17 @@ function check(name, cond, detail = '') {
 async function run(browserType, base) {
   let browser;
   try {
-    browser = await browserType.launch();
-  } catch {
-    console.log(`- ${browserType.name()}: not installed here, skipped`);
+    browser = await launch(browserType);
+  } catch (err) {
+    const why = String((err && err.message) || err).split('\n')[0];
+    console.log(`- ${browserType.name()}: couldn’t start (${why}), skipped`);
     return;
   }
   console.log(`- ${browserType.name()}`);
   const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
   await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
   await page.waitForSelector('#desk-board img.pc');
 
@@ -336,7 +360,7 @@ async function run(browserType, base) {
 async function runBook(browserType, base) {
   let browser;
   try {
-    browser = await browserType.launch();
+    browser = await launch(browserType);
   } catch {
     return;
   }
@@ -344,7 +368,7 @@ async function runBook(browserType, base) {
   const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
   await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
   await page.waitForSelector('#desk-board img.pc');
   const box = await page.locator('#desk-board').boundingBox();
@@ -396,7 +420,7 @@ async function runBook(browserType, base) {
 async function runCoach(browserType, base) {
   let browser;
   try {
-    browser = await browserType.launch();
+    browser = await launch(browserType);
   } catch {
     return;
   }
@@ -404,7 +428,7 @@ async function runCoach(browserType, base) {
   const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
   const open = async (fen) => {
     await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(fen)}`, { waitUntil: 'load' });
     await page.waitForSelector('#desk-board img.pc');
@@ -477,7 +501,7 @@ async function runCoach(browserType, base) {
 async function runCores(browserType, base) {
   let browser;
   try {
-    browser = await browserType.launch();
+    browser = await launch(browserType);
   } catch {
     return;
   }
@@ -485,7 +509,7 @@ async function runCores(browserType, base) {
   const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
   await page.addInitScript(() => localStorage.setItem('pz-engine', 'sf19-lite-mt'));
   await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
   await page.waitForSelector('#desk-board img.pc');
@@ -513,7 +537,7 @@ async function runCores(browserType, base) {
 async function runMaia2(browserType, base) {
   let browser;
   try {
-    browser = await browserType.launch();
+    browser = await launch(browserType);
   } catch {
     return;
   }
@@ -521,7 +545,7 @@ async function runMaia2(browserType, base) {
   const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
   await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
   const ref = JSON.parse(await readFile(join(ROOT, '../test/fixtures/maia2-reference.json'), 'utf8')).cases;
   const got = await page.evaluate(async (cases) => {
@@ -529,21 +553,51 @@ async function runMaia2(browserType, base) {
     const url = URL.createObjectURL(new Blob(parts));
     const w = new Worker(`/assets/engine/maia2-worker.js#${encodeURIComponent(url)}`, { type: 'module' });
     let wait = null;
-    w.onmessage = (e) => wait && wait(e.data);
-    const ask = (cmd, word) => new Promise((ok) => {
-      wait = (line) => line.startsWith(word) && ok(line);
-      w.postMessage(cmd);
+    let fail = null;
+    let timer = null;
+    // Fails after 5 minutes without any message from the worker; each message restarts the clock.
+    const arm = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => fail(new Error('no reply from the worker in 5 minutes')), 5 * 60 * 1000);
+    };
+    w.onmessage = (e) => {
+      arm();
+      if (wait) wait(e.data);
+    };
+    // A worker that dies or goes quiet fails this check with its reason instead of hanging the run.
+    const died = new Promise((_, no) => {
+      fail = no;
+      w.onerror = (e) => no(new Error(`worker error: ${e.message || 'no message'}`));
     });
-    await ask('uci', 'uciok');
-    const out = [];
-    for (const c of cases) {
-      w.postMessage(`setoption name Elo value ${c.elo}`);
-      w.postMessage(`position fen ${c.fen}`);
-      out.push((await ask('go depth 1', 'bestmove')).split(' ')[1]);
+    const ask = (cmd, word) => Promise.race([
+      died,
+      new Promise((ok) => {
+        wait = (line) => line.startsWith(word) && ok(line);
+        w.postMessage(cmd);
+      }),
+    ]);
+    arm();
+    try {
+      await ask('uci', 'uciok');
+      const out = [];
+      for (const c of cases) {
+        w.postMessage(`setoption name Elo value ${c.elo}`);
+        w.postMessage(`position fen ${c.fen}`);
+        out.push((await ask('go depth 1', 'bestmove')).split(' ')[1]);
+      }
+      return out;
+    } catch (err) {
+      return { error: String(err.message || err) };
+    } finally {
+      clearTimeout(timer);
+      w.terminate();
     }
-    w.terminate();
-    return out;
   }, ref);
+  if (got.error) {
+    check(`Maia-2: the browser’s move matches Python’s in all ${ref.length} reference cases`, false, got.error);
+    await browser.close();
+    return;
+  }
   const wrong = ref.filter((c, i) => got[i] !== c.move).map((c, i) => `${c.elo} ${c.fen}: ${got[ref.indexOf(c)]} not ${c.move}`);
   check(`Maia-2: the browser’s move matches Python’s in all ${ref.length} reference cases`, wrong.length === 0, wrong.join(' | '));
   // On the page: pick Maia-2 1900, play a move, Check my move.
@@ -572,7 +626,7 @@ async function runMaia2(browserType, base) {
 async function runMaia3(browserType, base) {
   let browser;
   try {
-    browser = await browserType.launch();
+    browser = await launch(browserType);
   } catch {
     return;
   }
@@ -580,7 +634,7 @@ async function runMaia3(browserType, base) {
   const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
   await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
   const ref = JSON.parse(await readFile(join(ROOT, '../test/fixtures/maia3-reference.json'), 'utf8')).cases;
   for (const [size, parts] of [['3m', 0], ['5m', 0], ['23m', 2], ['79m', 7]]) {
@@ -591,25 +645,54 @@ async function runMaia3(browserType, base) {
         const url = URL.createObjectURL(new Blob(blobs));
         const w = new Worker(`/assets/engine/maia3-worker.js#${encodeURIComponent(url)}`, { type: 'module' });
         let wait = null;
-        w.onmessage = (e) => wait && wait(e.data);
+        let fail = null;
+        let timer = null;
+        // Fails after 5 minutes without any message from the worker; each message restarts the clock.
+        const arm = () => {
+          clearTimeout(timer);
+          timer = setTimeout(() => fail(new Error('no reply from the worker in 5 minutes')), 5 * 60 * 1000);
+        };
+        w.onmessage = (e) => {
+          arm();
+          if (wait) wait(e.data);
+        };
+        // A worker that dies or goes quiet fails this check with its reason instead of hanging the run.
+        const died = new Promise((_, no) => {
+          fail = no;
+          w.onerror = (e) => no(new Error(`worker error: ${e.message || 'no message'}`));
+        });
         const ask = (cmd, word) =>
-          new Promise((ok) => {
-            wait = (line) => line.startsWith(word) && ok(line);
-            w.postMessage(cmd);
-          });
-        await ask('uci', 'uciok');
-        const out = [];
-        for (const c of cases) {
-          w.postMessage(`setoption name Elo value ${c.elo}`);
-          w.postMessage(`position fen ${c.fen}`);
-          out.push((await ask('go depth 1', 'bestmove')).split(' ')[1]);
+          Promise.race([
+            died,
+            new Promise((ok) => {
+              wait = (line) => line.startsWith(word) && ok(line);
+              w.postMessage(cmd);
+            }),
+          ]);
+        arm();
+        try {
+          await ask('uci', 'uciok');
+          const out = [];
+          for (const c of cases) {
+            w.postMessage(`setoption name Elo value ${c.elo}`);
+            w.postMessage(`position fen ${c.fen}`);
+            out.push((await ask('go depth 1', 'bestmove')).split(' ')[1]);
+          }
+          return out;
+        } catch (err) {
+          return { error: String(err.message || err) };
+        } finally {
+          clearTimeout(timer);
+          w.terminate();
+          URL.revokeObjectURL(url);
         }
-        w.terminate();
-        URL.revokeObjectURL(url);
-        return out;
       },
       { cases: ref, size, parts },
     );
+    if (got.error) {
+      check(`Maia-3 ${size.toUpperCase()}: the browser’s move matches Python’s in all ${ref.length} reference cases`, false, got.error);
+      continue;
+    }
     const wrong = ref.flatMap((c, i) => (got[i] === c.best[size] ? [] : [`${c.elo} ${c.fen}: ${got[i]} not ${c.best[size]}`]));
     check(`Maia-3 ${size.toUpperCase()}: the browser’s move matches Python’s in all ${ref.length} reference cases`, wrong.length === 0, wrong.join(' | '));
   }
@@ -638,7 +721,7 @@ async function runMaia3(browserType, base) {
 async function runLc0(browserType, base) {
   let browser;
   try {
-    browser = await browserType.launch();
+    browser = await launch(browserType);
   } catch {
     return;
   }
@@ -646,7 +729,7 @@ async function runLc0(browserType, base) {
   const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
   await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
   const cases = [
     ['6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 30', 'a1a8'], // back-rank mate
@@ -715,7 +798,7 @@ async function runLc0(browserType, base) {
 async function runDeepMindBig(browserType, base) {
   let browser;
   try {
-    browser = await browserType.launch();
+    browser = await launch(browserType);
   } catch {
     return;
   }
@@ -723,7 +806,7 @@ async function runDeepMindBig(browserType, base) {
   const page = await browser.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
   await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
   for (const [size, parts] of [['136m', 11], ['270m', 22]]) {
     const got = await page.evaluate(
@@ -758,7 +841,7 @@ async function runDeepMindBig(browserType, base) {
 async function runLichess(browserType, base) {
   let browser;
   try {
-    browser = await browserType.launch();
+    browser = await launch(browserType);
   } catch {
     return;
   }
@@ -771,7 +854,7 @@ async function runLichess(browserType, base) {
     const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
-    await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+    await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
     await page.addInitScript((pick) => localStorage.setItem('pz-engine', pick), id);
     await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
     await page.waitForSelector('#desk-board img.pc');
@@ -802,19 +885,36 @@ const server = process.env.CHECK_BASE ? null : await serve();
 const base = process.env.CHECK_BASE ? process.env.CHECK_BASE.replace(/\/$/, '') : `http://127.0.0.1:${server.address().port}`;
 try {
   for (const type of [playwright.chromium, playwright.firefox, playwright.webkit]) {
-    await run(type, base);
-    await runBook(type, base);
-    await runCoach(type, base);
-    await runCores(type, base);
-    await runMaia2(type, base);
-    await runMaia3(type, base);
-    await runLc0(type, base);
-    await runDeepMindBig(type, base);
-    await runLichess(type, base);
+    // One group timing out (say, an engine that never starts in this browser) fails that group, not the whole run.
+    for (const group of [run, runBook, runCoach, runCores, runMaia2, runMaia3, runLc0, runDeepMindBig, runLichess]) {
+      let timer;
+      const work = group(type, base);
+      work.catch(() => {}); // if the deadline wins, closing the browser rejects it later; that's expected
+      try {
+        await Promise.race([
+          work,
+          new Promise((_, reject) => {
+            timer = setTimeout(() => reject(new Error(`no result in ${GROUP_MS / 60000} minutes`)), GROUP_MS);
+          }),
+        ]);
+      } catch (err) {
+        check(`${type.name()}: ${group.name} finished`, false, String((err && err.message) || err).split('\n')[0]);
+      } finally {
+        clearTimeout(timer);
+        // A group that threw or ran out of time never reached its own browser.close().
+        for (const b of open) await b.close().catch(() => {});
+        open.clear();
+      }
+    }
   }
 } finally {
   server?.close();
 }
+if (!ran.length) {
+  console.error('\nNo browser started, so nothing was checked.');
+  process.exit(1);
+}
+console.log(`\nBrowsers checked: ${ran.join(', ')}.`);
 if (failures.length) {
   console.error(`\n${failures.length} pen check(s) failed.`);
   process.exit(1);
