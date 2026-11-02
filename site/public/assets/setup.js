@@ -161,10 +161,12 @@ export function createSetup({ dialog, onDone, getCurrent = () => '' }) {
   });
   q('[data-setup-clear]').addEventListener('click', () => {
     pieces = {};
+    copied = null;
     draw();
   });
   q('[data-setup-start]').addEventListener('click', () => {
     pieces = startPieces();
+    copied = null; // a fresh game, not the copied one: castling all round, move 1
     side = 'w';
     flipped = false;
     draw();
