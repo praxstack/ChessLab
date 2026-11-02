@@ -38,6 +38,12 @@ const AGPL_URL = 'https://www.gnu.org/licenses/agpl-3.0.html';
 const MIT_URL = 'https://opensource.org/license/mit';
 const SFJS = 'https://github.com/nmrugg/stockfish.js';
 const LICHESS_SF = 'https://github.com/lichess-org/stockfish-web';
+const LICHESS_LICENSE = '/assets/engine/lichess/LICENSE.txt';
+/** The licences ask that the authors and the source be named; the picker shows this. */
+export const LICHESS_CREDIT =
+  'Browser build by the Lichess team (github.com/lichess-org/stockfish-web, package licence AGPL-3.0-or-later), of Stockfish (GPL-3.0, stockfishchess.org) and Fairy-Stockfish (GPL-3.0, github.com/fairy-stockfish/Fairy-Stockfish). Files unchanged; nets from tests.stockfishchess.org.';
+/** The sizes of the small scripts that start the Lichess builds; the catalog test checks them against the files. */
+const LICHESS_WORKER_BYTES = { sf19: 134, small: 149, fairy: 156 };
 const SF_NETS = 'https://tests.stockfishchess.org/nns';
 const ORT = 'It would run with onnxruntime-web (MIT), which the page already loads for DeepMind 9M and Maia-1, but it isn’t wired up yet.';
 const CC_BY = 'https://creativecommons.org/licenses/by/4.0/';
@@ -66,6 +72,7 @@ export const MAIA_CREDIT =
   'Maia by Reid McIlroy-Young, Siddhartha Sen, Jon Kleinberg and Ashton Anderson (CSSLab, University of Toronto, 2020), GPL-3.0, source github.com/CSSLab/maia-chess. Converted to ONNX by shermansiu; run here with onnxruntime-web (MIT).';
 
 const file = (path, bytes, more = {}) => ({ path, bytes, ...more });
+const LICHESS_RUN = [file('/assets/engine/lichess/run.js', 1622, { role: 'runtime' })];
 const sum = (files) => files.reduce((n, f) => n + f.bytes, 0);
 
 function entry(e) {
@@ -381,6 +388,85 @@ export const ENGINES = [
       }),
     ],
   }),
+  // Lichess's own browser builds (npm @lichess-org/stockfish-web 0.5.0, files unchanged, in
+  // /assets/engine/lichess/). They always start extra threads, so they need the cross-origin isolated page.
+  // The nets are the ones the builds name (getRecommendedNnue), from tests.stockfishchess.org.
+  entry({
+    id: 'sf19-lichess-big',
+    name: 'Stockfish 19 (Lichess build)',
+    family: 'Stockfish',
+    about: 'The build Lichess itself runs in your browser, with the full net, on several cores. As strong as Stockfish 19 above; a second opinion from a different build.',
+    license: 'AGPL-3.0 + GPL-3.0',
+    licenseUrl: LICHESS_LICENSE,
+    source: LICHESS_SF,
+    credit: LICHESS_CREDIT,
+    device: 'heavy',
+    status: 'ready',
+    module: true,
+    threads: true,
+    memory: 'about 200 to 300 MB while it runs (an estimate)',
+    files: [
+      file('/assets/engine/lichess/worker-sf19.js', LICHESS_WORKER_BYTES.sf19, { role: 'worker' }),
+      ...LICHESS_RUN,
+      file('/assets/engine/lichess/sf_19.js', 28580, { role: 'runtime' }),
+      file('/assets/engine/lichess/sf_19.wasm', 587157, { role: 'runtime' }),
+      file('/assets/engine/lichess/nn-1a298aa575a0.nnue', 98511183, {
+        role: 'model',
+        sha256: '1a298aa575a085434d29027978dc36867fe9c5bcea9376654b7a8eba1e52dfc2',
+        parts: [
+          file('/assets/engine/lichess/nn-1a298aa575a0.nnue.part0', 24627796, { sha256: '455c8f8f1ccb87cfe129ce49462a622be28356c027f38b999cd52c013710d183' }),
+          file('/assets/engine/lichess/nn-1a298aa575a0.nnue.part1', 24627796, { sha256: '2a8172474b7bf54ff2533c80962d492f0d0b8c4494011712a97fba2e170bb7ab' }),
+          file('/assets/engine/lichess/nn-1a298aa575a0.nnue.part2', 24627796, { sha256: '194f507cc62c776ee41c5773259979977458d3097070edf0aa3e42018deeb4e7' }),
+          file('/assets/engine/lichess/nn-1a298aa575a0.nnue.part3', 24627795, { sha256: 'edfd422a0b78282f615520aa778f93d9864d490960584a75c145a23e5d772ecd' }),
+        ],
+      }),
+    ],
+  }),
+  entry({
+    id: 'sf19-lichess-small',
+    name: 'Stockfish 19 Lite (Lichess build)',
+    family: 'Stockfish',
+    about: 'Lichess’s tiny build with the small net, on several cores. Much like Lite, and the smallest download on this page.',
+    license: 'AGPL-3.0 + GPL-3.0',
+    licenseUrl: LICHESS_LICENSE,
+    source: LICHESS_SF,
+    credit: LICHESS_CREDIT,
+    device: 'light',
+    status: 'ready',
+    module: true,
+    threads: true,
+    files: [
+      file('/assets/engine/lichess/worker-sf19-small.js', LICHESS_WORKER_BYTES.small, { role: 'worker' }),
+      ...LICHESS_RUN,
+      file('/assets/engine/lichess/sf_19_smallnet.js', 28643, { role: 'runtime' }),
+      file('/assets/engine/lichess/sf_19_smallnet.wasm', 516671, { role: 'runtime' }),
+      file('/assets/engine/lichess/nn-61e7af4bb97d.nnue', 1166381, {
+        role: 'model',
+        sha256: '61e7af4bb97d51eeeb25d322916f86513b5cd3a827ce189c98c6e31946f99e5b',
+      }),
+    ],
+  }),
+  entry({
+    id: 'fairy-sf14',
+    name: 'Fairy-Stockfish 14',
+    family: 'Fairy-Stockfish',
+    about: 'Stockfish for chess variants (crazyhouse, three-check, Chess960 and more), in Lichess’s build. On this board it plays plain chess with its hand-written evaluation, so it is weaker than Stockfish 19: a different opinion, not a better one.',
+    license: 'AGPL-3.0 + GPL-3.0',
+    licenseUrl: LICHESS_LICENSE,
+    source: 'https://github.com/fairy-stockfish/Fairy-Stockfish',
+    credit: LICHESS_CREDIT,
+    device: 'light',
+    status: 'ready',
+    module: true,
+    threads: true,
+    scriptOnly: true,
+    files: [
+      file('/assets/engine/lichess/worker-fairy.js', LICHESS_WORKER_BYTES.fairy, { role: 'worker' }),
+      ...LICHESS_RUN,
+      file('/assets/engine/lichess/fsf_14.js', 28508, { role: 'runtime' }),
+      file('/assets/engine/lichess/fsf_14.wasm', 731190, { role: 'runtime' }),
+    ],
+  }),
   entry({
     id: 'dm-9m',
     name: 'DeepMind searchless chess 9M',
@@ -441,31 +527,6 @@ export const ENGINES = [
 
   /* ---------------------------------------------------- listed, not yet */
   entry({
-    id: 'sf19-lichess-big',
-    name: 'Stockfish 19 (Lichess build)',
-    family: 'Stockfish',
-    about: 'Lichess’s own browser build with the full net, as two files. As strong as Stockfish 19 above. It always starts extra threads, which need page headers this site doesn’t send yet.',
-    license: 'AGPL-3.0 + GPL-3.0',
-    licenseUrl: AGPL_URL,
-    source: LICHESS_SF,
-    device: 'heavy',
-    status: 'soon',
-    memory: 'about 200 to 300 MB while it runs (an estimate)',
-    files: [file('engine', 0.6e6, { approx: true }), file('big net', 98.5e6, { approx: true })],
-  }),
-  entry({
-    id: 'sf19-lichess-small',
-    name: 'Stockfish 19 Lite (Lichess build)',
-    family: 'Stockfish',
-    about: 'Lichess’s tiny build with the small net. Much like Lite. It always starts extra threads, which need page headers this site doesn’t send yet.',
-    license: 'AGPL-3.0 + GPL-3.0',
-    licenseUrl: AGPL_URL,
-    source: LICHESS_SF,
-    device: 'light',
-    status: 'soon',
-    files: [file('engine', 0.5e6, { approx: true }), file('small net', 1.2e6, { approx: true })],
-  }),
-  entry({
     id: 'sf15',
     name: 'Stockfish 15 / 14.1',
     family: 'Stockfish',
@@ -476,18 +537,6 @@ export const ENGINES = [
     device: 'heavy',
     status: 'soon',
     files: [file('engine', 0.7e6, { approx: true }), file('net', 47e6, { approx: true })],
-  }),
-  entry({
-    id: 'fairy-sf14',
-    name: 'Fairy-Stockfish 14',
-    family: 'Fairy-Stockfish',
-    about: 'Stockfish for chess variants: crazyhouse, three-check, Chess960 and more. Only useful once the board plays variants.',
-    license: GPL,
-    licenseUrl: GPL_URL,
-    source: 'https://github.com/fairy-stockfish/fairy-stockfish.wasm',
-    device: 'light',
-    status: 'soon',
-    files: [file('fairy-stockfish-nnue.wasm', 1.7e6, { approx: true })],
   }),
   ...[
     ['3m', 'Maia3-ablate-3M', '3M', 'light', 'the smallest and quickest'],

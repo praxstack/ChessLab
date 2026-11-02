@@ -754,6 +754,49 @@ async function runDeepMindBig(browserType, base) {
   await browser.close();
 }
 
+/** Lichess's own builds (Stockfish 19, 19 Lite, Fairy-Stockfish 14): each starts on several cores and checks a move on the page. */
+async function runLichess(browserType, base) {
+  let browser;
+  try {
+    browser = await browserType.launch();
+  } catch {
+    return;
+  }
+  console.log(`- ${browserType.name()}: Lichess builds (real engines)`);
+  for (const [id, name] of [
+    ['sf19-lichess-small', 'Stockfish 19 Lite (Lichess build)'],
+    ['fairy-sf14', 'Fairy-Stockfish 14'],
+    ['sf19-lichess-big', 'Stockfish 19 (Lichess build)'],
+  ]) {
+    const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
+    const errors = [];
+    page.on('pageerror', (e) => errors.push(e.message));
+    await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+    await page.addInitScript((pick) => localStorage.setItem('pz-engine', pick), id);
+    await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
+    await page.waitForSelector('#desk-board img.pc');
+    check(`${name}: is the engine in use`, (await page.textContent('#engine-name')) === name, await page.textContent('#engine-name'));
+    // A light engine starts by itself; the 99 MB one waits for Check my move (it never downloads unasked).
+    await page.waitForFunction(() => /is ready on this device|when you tap Check my move/.test(document.querySelector('#engine-state').textContent), null, { timeout: 180000 });
+    const box = await page.locator('#desk-board').boundingBox();
+    const at = (sq) => [box.x + ('abcdefgh'.indexOf(sq[0]) + 0.5) * (box.width / 8), box.y + (8 - Number(sq[1]) + 0.5) * (box.height / 8)];
+    await page.mouse.move(...at('f1'));
+    await page.mouse.down();
+    await page.mouse.move(...at('b5'), { steps: 6 });
+    await page.mouse.up();
+    await page.click('#engine-check');
+    await page.waitForFunction(() => {
+      const t = document.querySelector('#engine-say').textContent;
+      return t && !/looking|ready, then|download/i.test(t);
+    }, null, { timeout: 240000 });
+    const say = await page.textContent('#engine-say');
+    check(`${name}: Check my move gets a verdict`, /That’s the move|Good move|Playable|lets something go/.test(say), say);
+    check(`${name}: no page errors`, errors.length === 0, errors.join(' | '));
+    await page.close();
+  }
+  await browser.close();
+}
+
 // CHECK_BASE=https://askthemove.online runs the same checks on the live site.
 const server = process.env.CHECK_BASE ? null : await serve();
 const base = process.env.CHECK_BASE ? process.env.CHECK_BASE.replace(/\/$/, '') : `http://127.0.0.1:${server.address().port}`;
@@ -767,6 +810,7 @@ try {
     await runMaia3(type, base);
     await runLc0(type, base);
     await runDeepMindBig(type, base);
+    await runLichess(type, base);
   }
 } finally {
   server?.close();

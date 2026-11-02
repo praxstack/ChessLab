@@ -1,0 +1,27 @@
+{
+  "file": "nn-1a298aa575a0.nnue",
+  "bytes": 98511183,
+  "sha256": "1a298aa575a085434d29027978dc36867fe9c5bcea9376654b7a8eba1e52dfc2",
+  "parts": [
+    {
+      "file": "nn-1a298aa575a0.nnue.part0",
+      "bytes": 24627796,
+      "sha256": "455c8f8f1ccb87cfe129ce49462a622be28356c027f38b999cd52c013710d183"
+    },
+    {
+      "file": "nn-1a298aa575a0.nnue.part1",
+      "bytes": 24627796,
+      "sha256": "2a8172474b7bf54ff2533c80962d492f0d0b8c4494011712a97fba2e170bb7ab"
+    },
+    {
+      "file": "nn-1a298aa575a0.nnue.part2",
+      "bytes": 24627796,
+      "sha256": "194f507cc62c776ee41c5773259979977458d3097070edf0aa3e42018deeb4e7"
+    },
+    {
+      "file": "nn-1a298aa575a0.nnue.part3",
+      "bytes": 24627795,
+      "sha256": "edfd422a0b78282f615520aa778f93d9864d490960584a75c145a23e5d772ecd"
+    }
+  ]
+}
