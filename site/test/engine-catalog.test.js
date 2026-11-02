@@ -101,7 +101,11 @@ test('catalog: ready engines are on disk at the listed sizes, under the Cloudfla
     assert.ok(e.threads && e.module, `${id}: Lichess builds start their own threads from an ES module`);
     assert.match(e.credit, /Lichess team/, id);
   }
-  assert.match(readFileSync(pub('assets/engine/lichess/LICENSE.txt'), 'utf8'), /GNU GENERAL PUBLIC LICENSE/);
+  {
+    const text = readFileSync(pub('assets/engine/lichess/LICENSE.txt'), 'utf8');
+    assert.match(text, /GNU AFFERO GENERAL PUBLIC LICENSE/, 'the package licence (AGPL)');
+    assert.match(text, /^ +GNU GENERAL PUBLIC LICENSE/m, 'the Stockfish licence (GPL)');
+  }
   const dm = engineById('dm-9m');
   assert.equal(dm.licenseUrl, 'https://creativecommons.org/licenses/by/4.0/');
   assert.match(dm.credit, /DeepMind Technologies Limited/);

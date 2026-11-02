@@ -38,6 +38,7 @@ const AGPL_URL = 'https://www.gnu.org/licenses/agpl-3.0.html';
 const MIT_URL = 'https://opensource.org/license/mit';
 const SFJS = 'https://github.com/nmrugg/stockfish.js';
 const LICHESS_SF = 'https://github.com/lichess-org/stockfish-web';
+/** One file with both licences: the package's AGPL-3.0-or-later, then Stockfish's GPL-3.0. */
 const LICHESS_LICENSE = '/assets/engine/lichess/LICENSE.txt';
 /** The licences ask that the authors and the source be named; the picker shows this. */
 export const LICHESS_CREDIT =
@@ -396,7 +397,7 @@ export const ENGINES = [
     name: 'Stockfish 19 (Lichess build)',
     family: 'Stockfish',
     about: 'The build Lichess itself runs in your browser, with the full net, on several cores. As strong as Stockfish 19 above; a second opinion from a different build.',
-    license: 'AGPL-3.0 + GPL-3.0',
+    license: 'AGPL-3.0-or-later + GPL-3.0',
     licenseUrl: LICHESS_LICENSE,
     source: LICHESS_SF,
     credit: LICHESS_CREDIT,
@@ -427,7 +428,7 @@ export const ENGINES = [
     name: 'Stockfish 19 Lite (Lichess build)',
     family: 'Stockfish',
     about: 'Lichess’s tiny build with the small net, on several cores. Much like Lite, and the smallest download on this page.',
-    license: 'AGPL-3.0 + GPL-3.0',
+    license: 'AGPL-3.0-or-later + GPL-3.0',
     licenseUrl: LICHESS_LICENSE,
     source: LICHESS_SF,
     credit: LICHESS_CREDIT,
@@ -451,7 +452,7 @@ export const ENGINES = [
     name: 'Fairy-Stockfish 14',
     family: 'Fairy-Stockfish',
     about: 'Stockfish for chess variants (crazyhouse, three-check, Chess960 and more), in Lichess’s build. On this board it plays plain chess with its hand-written evaluation, so it is weaker than Stockfish 19: a different opinion, not a better one.',
-    license: 'AGPL-3.0 + GPL-3.0',
+    license: 'AGPL-3.0-or-later + GPL-3.0',
     licenseUrl: LICHESS_LICENSE,
     source: 'https://github.com/fairy-stockfish/Fairy-Stockfish',
     credit: LICHESS_CREDIT,
