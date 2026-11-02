@@ -22,9 +22,11 @@ const SAVED_AT = 'x-pz-saved-at';
  * Engine scripts are kept by the browser for 30 days, with the headers they
  * came with. When those headers change (as when the puzzle page became
  * cross-origin isolated and a worker needs Cross-Origin-Embedder-Policy to
- * start), bump this, so every browser fetches the script again.
+ * start), or a worker's own code changes (as when the workers began importing
+ * wasm-memory-fit.js for iPhone and iPad), bump this, so every browser fetches
+ * the script again.
  */
-export const WORKER_VERSION = 'coep1';
+export const WORKER_VERSION = 'mem1';
 
 /** The URL a worker starts from: the script, its version, then the part after # it reads its .wasm or model from. */
 export const workerUrl = (path, hash = '') => `${path}?v=${WORKER_VERSION}${hash}`;
