@@ -13,6 +13,7 @@
 // The maia3-*.onnx files are the published checkpoints, exported to ONNX here
 // with their weights stored as 16-bit floats (cast back to 32-bit when loaded).
 
+import './wasm-memory-fit.js'; // first, so iPhone and iPad Safari can give the engine its memory
 import * as ort from './ort/ort.wasm.bundle.min.mjs';
 import { Chess } from '../vendor/chess.js';
 import { TOKEN, bestPolicyMove, encodeBoard, winChance } from '../maia3.js';

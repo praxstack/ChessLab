@@ -17,6 +17,7 @@ import { DEFAULT_ENGINE, createChoice, engineById, formatBytes, needsWarning } f
 import { createPicker } from './engine-picker.js';
 import * as sound from './sound.js';
 import { appAhead, nextPuzzleAt, whenText } from './daily-clock.js';
+import { createSetup } from './setup.js';
 
 const API = 'https://api.chess.com/pub';
 const ARCHIVE = 'https://raw.githubusercontent.com/praxstack/ChessLab/puzzle-archive/puzzles.json';
@@ -591,7 +592,7 @@ function showNext() {
   // Past midnight on this device, the Chess.com app has moved on but the public feed hasn't.
   const ahead = $('card-ahead');
   ahead.hidden = row.hidden || !appAhead(todayIso);
-  ahead.textContent = ahead.hidden ? '' : `The Chess.com app already has the next puzzle. This page gets it ${when}. Want it now? Paste its position in Bring your own position below.`;
+  ahead.textContent = ahead.hidden ? '' : `The Chess.com app already has the next puzzle. This page gets it ${when}. Want it now? Tap Set one up below and copy it from the app.`;
 }
 
 function planNext() {
@@ -660,6 +661,17 @@ $('load-lichess').addEventListener('click', async () => {
     say('desk-status', 'Couldn’t reach Lichess. Try again in a moment.', 'red');
   }
 });
+
+// Set one up: copy a position you can see (the app's puzzle before this page has it) by tapping.
+const setup = createSetup({
+  dialog: $('setup-pop'),
+  getCurrent: () => (desk.fen ? play.fen : ''),
+  onDone: (fen) => {
+    showOnDesk({ kind: 'paste', fen, title: 'Your position', source: 'set up by you' });
+    bringDeskIntoView();
+  },
+});
+for (const id of ['setup-open', 'paste-setup']) $(id).addEventListener('click', () => setup.open());
 
 $('copy-fen').addEventListener('click', () => {
   if (desk.fen) copy(play.fen, 'desk-status', !play.moved ? 'FEN copied.' : 'FEN of the board as it is now copied.');

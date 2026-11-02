@@ -11,6 +11,7 @@
 // Maia-2 (c) CSSLab, University of Toronto, MIT; https://github.com/CSSLab/maia2.
 // maia2-rapid.onnx is the published rapid model, exported to ONNX here. See maia2.js.
 
+import './wasm-memory-fit.js'; // first, so iPhone and iPad Safari can give the engine its memory
 import * as ort from './ort/ort.wasm.bundle.min.mjs';
 import { Chess } from '../vendor/chess.js';
 import { CHANNELS, bestPolicyMove, encodeBoard, eloBucket, winChance } from '../maia2.js';

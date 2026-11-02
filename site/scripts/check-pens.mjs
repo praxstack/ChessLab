@@ -837,6 +837,94 @@ async function runDeepMindBig(browserType, base) {
   await browser.close();
 }
 
+/**
+ * iPhone and iPad: Safari there refuses a shared WebAssembly memory of 2-4 GB. A worker that fakes that
+ * limit still starts Maia-1 and answers, because the engine retries with a smaller ceiling. And "Set one
+ * up" puts a position tapped in square by square on the board.
+ */
+async function runSmallDevice(browserType, base) {
+  let browser;
+  try {
+    browser = await launch(browserType);
+  } catch {
+    return;
+  }
+  console.log(`- ${browserType.name()}: iPad memory limit, Set one up`);
+  const page = await browser.newPage({ viewport: { width: 1024, height: 1366 } });
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
+  // A pretend iPad: anything over 1 GB is "Out of memory", then the real Maia-1 worker loads. Served at a
+  // same-origin path (never deployed) so the live page's CSP allows it, unlike a blob: worker.
+  const fakeIpad = `${base}/__check/ipad-worker.js`;
+  await page.route(fakeIpad, (route) =>
+    route.fulfill({
+      contentType: 'text/javascript',
+      // Same headers as the site's own engine files, so the page's cross-origin isolation accepts it.
+      headers: { 'Cross-Origin-Embedder-Policy': 'require-corp', 'Cross-Origin-Resource-Policy': 'same-origin' },
+      body: `const Real = WebAssembly.Memory;
+        WebAssembly.Memory = function (d) { if (d && d.maximum > 16384) throw new RangeError('Out of memory'); return new Real(d); };
+        WebAssembly.Memory.prototype = Real.prototype;
+        await import('/assets/engine/maia-worker.js');
+        postMessage('loaded');`,
+    }),
+  );
+  await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
+  const got = await page.evaluate(async (workerUrl) => {
+    const model = URL.createObjectURL(await (await fetch('/assets/engine/maia-1100.onnx')).blob());
+    const w = new Worker(`${workerUrl}#${encodeURIComponent(model)}`, { type: 'module' });
+    const lines = [];
+    return new Promise((done) => {
+      const timer = setTimeout(() => done({ lines, error: 'no reply in 2 minutes' }), 120000);
+      w.onerror = (e) => {
+        clearTimeout(timer);
+        done({ lines, error: e.message || 'worker error' });
+      };
+      // The page's own worker listens from its first line; this wrapper only once the import is done.
+      w.onmessage = (e) => {
+        if (e.data === 'loaded') {
+          w.postMessage('uci');
+          return;
+        }
+        lines.push(String(e.data));
+        if (String(e.data) === 'uciok') {
+          w.postMessage('position startpos');
+          w.postMessage('go depth 1');
+        }
+        if (String(e.data).startsWith('bestmove')) {
+          clearTimeout(timer);
+          w.terminate();
+          done({ lines });
+        }
+      };
+    });
+  }, fakeIpad);
+  const best = got.lines.find((l) => l.startsWith('bestmove')) || '';
+  check('iPad memory limit: Maia-1 still starts and plays a move', /^bestmove [a-h][1-8][a-h][1-8]/.test(best), got.error || got.lines.slice(-3).join(' | '));
+
+  // Set one up: the Chess.com app's puzzle of 3 Nov 2026, tapped in square by square.
+  await page.click('#setup-open');
+  const put = async (code, squares) => {
+    await page.click(`#setup-pop [data-pick="${code}"]`);
+    for (const sq of squares) await page.click(`#setup-pop [data-sq="${sq}"]`);
+  };
+  await put('bK', ['a8']);
+  await put('bQ', ['a2']);
+  await put('bP', ['g6', 'd2', 'h2']);
+  await put('wK', ['c6']);
+  await put('wN', ['c5']);
+  await put('wR', ['c4']);
+  await put('wB', ['f3']);
+  await put('wP', ['g5']);
+  check('Set one up: a legal position can go on the board', !(await page.isDisabled('#setup-pop [data-setup-done]')));
+  await page.click('#setup-pop [data-setup-done]');
+  await page.waitForFunction(() => document.querySelectorAll('#desk-board img.pc').length === 10, null, { timeout: 10000 }).catch(() => {});
+  const placed = await page.$$eval('#desk-board img.pc', (els) => els.map((e) => `${e.dataset.piece}${e.dataset.sq}`).sort().join(' '));
+  check('Set one up: the board shows exactly the pieces tapped in', placed === 'bKa8 bPd2 bPg6 bPh2 bQa2 wBf3 wKc6 wNc5 wPg5 wRc4', placed);
+  check('Set one up: no page errors', errors.length === 0, errors.join(' | '));
+  await browser.close();
+}
+
 /** Lichess's own builds (Stockfish 19, 19 Lite, Fairy-Stockfish 14): each starts on several cores and checks a move on the page. */
 async function runLichess(browserType, base) {
   let browser;
@@ -886,7 +974,7 @@ const base = process.env.CHECK_BASE ? process.env.CHECK_BASE.replace(/\/$/, '') 
 try {
   for (const type of [playwright.chromium, playwright.firefox, playwright.webkit]) {
     // One group timing out (say, an engine that never starts in this browser) fails that group, not the whole run.
-    for (const group of [run, runBook, runCoach, runCores, runMaia2, runMaia3, runLc0, runDeepMindBig, runLichess]) {
+    for (const group of [run, runBook, runCoach, runCores, runMaia2, runMaia3, runLc0, runDeepMindBig, runLichess, runSmallDevice]) {
       let timer;
       const work = group(type, base);
       work.catch(() => {}); // if the deadline wins, closing the browser rejects it later; that's expected

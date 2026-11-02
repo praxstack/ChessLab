@@ -22,9 +22,11 @@ const SAVED_AT = 'x-pz-saved-at';
  * Engine scripts are kept by the browser for 30 days, with the headers they
  * came with. When those headers change (as when the puzzle page became
  * cross-origin isolated and a worker needs Cross-Origin-Embedder-Policy to
- * start), bump this, so every browser fetches the script again.
+ * start), or a worker's own code changes (as when the workers began importing
+ * wasm-memory-fit.js for iPhone and iPad), bump this, so every browser fetches
+ * the script again.
  */
-export const WORKER_VERSION = 'coep1';
+export const WORKER_VERSION = 'mem1';
 
 /** The URL a worker starts from: the script, its version, then the part after # it reads its .wasm or model from. */
 export const workerUrl = (path, hash = '') => `${path}?v=${WORKER_VERSION}${hash}`;
@@ -267,6 +269,8 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
   let queue = Promise.resolve();
   let aborter = null;
   let quit = false;
+  let crash = ''; // what the browser said when the worker died, so the failure note can say it
+  const stopped = () => new Error(crash ? `The engine stopped: ${crash}` : 'The engine stopped');
 
   const set = (s) => {
     phase = s.phase;
@@ -300,7 +304,7 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
         } else if (line === 'error') {
           clearTimeout(timer);
           listener = null;
-          reject(new Error('The engine stopped'));
+          reject(stopped());
         }
       };
     });
@@ -315,6 +319,7 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
   }
 
   async function start() {
+    crash = '';
     let url = null;
     let netUrl = null;
     aborter = typeof AbortController === 'function' ? new AbortController() : null;
@@ -341,9 +346,10 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
         const line = typeof e.data === 'string' ? e.data : '';
         if (listener) listener(line);
       });
-      worker.addEventListener('error', () => {
+      worker.addEventListener('error', (e) => {
+        crash = String((e && e.message) || '').trim();
         if (listener) listener('error');
-        if (phase === 'ready') reset('The engine stopped');
+        if (phase === 'ready') reset(stopped().message);
       });
       const ok = waitFor('uciok', startMs);
       send('uci');
@@ -429,7 +435,7 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
           } else if (line === 'error') {
             clearTimeout(timer);
             listener = null;
-            reject(new Error('The engine stopped')); // the worker's error handler resets it
+            reject(stopped()); // the worker's error handler resets it
           }
         };
       });
