@@ -854,17 +854,25 @@ async function runSmallDevice(browserType, base) {
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
+  // A pretend iPad: anything over 1 GB is "Out of memory", then the real Maia-1 worker loads. Served at a
+  // same-origin path (never deployed) so the live page's CSP allows it, unlike a blob: worker.
+  const fakeIpad = `${base}/__check/ipad-worker.js`;
+  await page.route(fakeIpad, (route) =>
+    route.fulfill({
+      contentType: 'text/javascript',
+      // Same headers as the site's own engine files, so the page's cross-origin isolation accepts it.
+      headers: { 'Cross-Origin-Embedder-Policy': 'require-corp', 'Cross-Origin-Resource-Policy': 'same-origin' },
+      body: `const Real = WebAssembly.Memory;
+        WebAssembly.Memory = function (d) { if (d && d.maximum > 16384) throw new RangeError('Out of memory'); return new Real(d); };
+        WebAssembly.Memory.prototype = Real.prototype;
+        await import('/assets/engine/maia-worker.js');
+        postMessage('loaded');`,
+    }),
+  );
   await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
-  const got = await page.evaluate(async () => {
+  const got = await page.evaluate(async (workerUrl) => {
     const model = URL.createObjectURL(await (await fetch('/assets/engine/maia-1100.onnx')).blob());
-    // A pretend iPad: anything over 1 GB is "Out of memory", then the real Maia-1 worker loads.
-    const src = `const Real = WebAssembly.Memory;
-      WebAssembly.Memory = function (d) { if (d && d.maximum > 16384) throw new RangeError('Out of memory'); return new Real(d); };
-      WebAssembly.Memory.prototype = Real.prototype;
-      await import('${location.origin}/assets/engine/maia-worker.js');
-      postMessage('loaded');`;
-    const url = URL.createObjectURL(new Blob([src], { type: 'text/javascript' }));
-    const w = new Worker(`${url}#${encodeURIComponent(model)}`, { type: 'module' });
+    const w = new Worker(`${workerUrl}#${encodeURIComponent(model)}`, { type: 'module' });
     const lines = [];
     return new Promise((done) => {
       const timer = setTimeout(() => done({ lines, error: 'no reply in 2 minutes' }), 120000);
@@ -890,7 +898,7 @@ async function runSmallDevice(browserType, base) {
         }
       };
     });
-  });
+  }, fakeIpad);
   const best = got.lines.find((l) => l.startsWith('bestmove')) || '';
   check('iPad memory limit: Maia-1 still starts and plays a move', /^bestmove [a-h][1-8][a-h][1-8]/.test(best), got.error || got.lines.slice(-3).join(' | '));
 

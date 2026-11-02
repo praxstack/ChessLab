@@ -98,6 +98,9 @@ export function createSetup({ dialog, onDone, getCurrent = () => '' }) {
   let side = 'w';
   let flipped = false;
   let hand = 'wP';
+  // The FEN copied with "Copy the board": kept whole (castling, en passant, move counts) while the
+  // pieces and side to move still match it, since a tapped-in position can't know those.
+  let copied = null;
 
   tray.innerHTML =
     PIECES.map((code) => `<button class="setup__pick" type="button" role="radio" aria-checked="false" data-pick="${code}" aria-label="${pieceName(code)}"><img src="${PIECE_BASE}${code}.svg" alt="" width="40" height="40" draggable="false"></button>`).join('') +
@@ -171,12 +174,14 @@ export function createSetup({ dialog, onDone, getCurrent = () => '' }) {
     if (!fen) return;
     pieces = fromPlacement(fen);
     side = fen.split(' ')[1] === 'b' ? 'b' : 'w';
+    copied = { fen, placement: placement(pieces), side };
     flipped = side === 'b';
     draw();
   });
   q('[data-setup-done]').addEventListener('click', () => {
     if (setupProblem(pieces, side)) return;
-    const fen = setupFen(pieces, side);
+    const same = copied && copied.placement === placement(pieces) && copied.side === side;
+    const fen = same ? copied.fen : setupFen(pieces, side);
     close();
     onDone(fen);
   });
