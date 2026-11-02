@@ -69,6 +69,16 @@ function serve() {
 }
 
 const failures = [];
+/** The browsers that started; a run where none did tested nothing and must not pass. */
+const ran = [];
+/**
+ * Requests the checks let through: the site itself, and the page's own blob: and data: URLs
+ * (WebKit routes those too, and the engine's worker starts from a blob). Anything else is aborted.
+ */
+function onSite(url, base) {
+  return url.startsWith(base) || url.startsWith('blob:') || url.startsWith('data:');
+}
+
 function check(name, cond, detail = '') {
   if (cond) console.log(`  ✓ ${name}`);
   else {
@@ -80,16 +90,18 @@ function check(name, cond, detail = '') {
 async function run(browserType, base) {
   let browser;
   try {
-    browser = await browserType.launch();
-  } catch {
-    console.log(`- ${browserType.name()}: not installed here, skipped`);
+    browser = await browserType.launch({ timeout: 60000 });
+  } catch (err) {
+    const why = String((err && err.message) || err).split('\n')[0];
+    console.log(`- ${browserType.name()}: couldn’t start (${why}), skipped`);
     return;
   }
+  ran.push(browserType.name());
   console.log(`- ${browserType.name()}`);
   const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
   await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
   await page.waitForSelector('#desk-board img.pc');
 
@@ -344,7 +356,7 @@ async function runBook(browserType, base) {
   const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
   await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
   await page.waitForSelector('#desk-board img.pc');
   const box = await page.locator('#desk-board').boundingBox();
@@ -404,7 +416,7 @@ async function runCoach(browserType, base) {
   const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
   const open = async (fen) => {
     await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(fen)}`, { waitUntil: 'load' });
     await page.waitForSelector('#desk-board img.pc');
@@ -485,7 +497,7 @@ async function runCores(browserType, base) {
   const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
   await page.addInitScript(() => localStorage.setItem('pz-engine', 'sf19-lite-mt'));
   await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
   await page.waitForSelector('#desk-board img.pc');
@@ -521,7 +533,7 @@ async function runMaia2(browserType, base) {
   const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
   await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
   const ref = JSON.parse(await readFile(join(ROOT, '../test/fixtures/maia2-reference.json'), 'utf8')).cases;
   const got = await page.evaluate(async (cases) => {
@@ -580,7 +592,7 @@ async function runMaia3(browserType, base) {
   const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
   await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
   const ref = JSON.parse(await readFile(join(ROOT, '../test/fixtures/maia3-reference.json'), 'utf8')).cases;
   for (const [size, parts] of [['3m', 0], ['5m', 0], ['23m', 2], ['79m', 7]]) {
@@ -646,7 +658,7 @@ async function runLc0(browserType, base) {
   const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
   await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
   const cases = [
     ['6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 30', 'a1a8'], // back-rank mate
@@ -723,7 +735,7 @@ async function runDeepMindBig(browserType, base) {
   const page = await browser.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+  await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
   await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
   for (const [size, parts] of [['136m', 11], ['270m', 22]]) {
     const got = await page.evaluate(
@@ -771,7 +783,7 @@ async function runLichess(browserType, base) {
     const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
-    await page.route('**/*', (route) => (route.request().url().startsWith(base) ? route.continue() : route.abort()));
+    await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
     await page.addInitScript((pick) => localStorage.setItem('pz-engine', pick), id);
     await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
     await page.waitForSelector('#desk-board img.pc');
@@ -802,19 +814,23 @@ const server = process.env.CHECK_BASE ? null : await serve();
 const base = process.env.CHECK_BASE ? process.env.CHECK_BASE.replace(/\/$/, '') : `http://127.0.0.1:${server.address().port}`;
 try {
   for (const type of [playwright.chromium, playwright.firefox, playwright.webkit]) {
-    await run(type, base);
-    await runBook(type, base);
-    await runCoach(type, base);
-    await runCores(type, base);
-    await runMaia2(type, base);
-    await runMaia3(type, base);
-    await runLc0(type, base);
-    await runDeepMindBig(type, base);
-    await runLichess(type, base);
+    // One group timing out (say, an engine that never starts in this browser) fails that group, not the whole run.
+    for (const group of [run, runBook, runCoach, runCores, runMaia2, runMaia3, runLc0, runDeepMindBig, runLichess]) {
+      try {
+        await group(type, base);
+      } catch (err) {
+        check(`${type.name()}: ${group.name} finished`, false, String((err && err.message) || err).split('\n')[0]);
+      }
+    }
   }
 } finally {
   server?.close();
 }
+if (!ran.length) {
+  console.error('\nNo browser started, so nothing was checked.');
+  process.exit(1);
+}
+console.log(`\nBrowsers checked: ${ran.join(', ')}.`);
 if (failures.length) {
   console.error(`\n${failures.length} pen check(s) failed.`);
   process.exit(1);
