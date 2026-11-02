@@ -71,6 +71,19 @@ function serve() {
 const failures = [];
 /** The browsers that started; a run where none did tested nothing and must not pass. */
 const ran = [];
+/** Browsers open right now; the group loop closes any a failed group left behind. */
+const open = new Set();
+
+/** Every group starts its browser here, so each one that starts is counted and can be closed. */
+async function launch(browserType) {
+  const browser = await browserType.launch({ timeout: 60000 });
+  open.add(browser);
+  if (!ran.includes(browserType.name())) ran.push(browserType.name());
+  return browser;
+}
+
+/** The longest one group may take (the biggest models download first); after that it fails and its browser is closed. */
+const GROUP_MS = 30 * 60 * 1000;
 /**
  * Requests the checks let through: the site itself, and the page's own blob: and data: URLs
  * (WebKit routes those too, and the engine's worker starts from a blob). Anything else is aborted.
@@ -90,13 +103,12 @@ function check(name, cond, detail = '') {
 async function run(browserType, base) {
   let browser;
   try {
-    browser = await browserType.launch({ timeout: 60000 });
+    browser = await launch(browserType);
   } catch (err) {
     const why = String((err && err.message) || err).split('\n')[0];
     console.log(`- ${browserType.name()}: couldn’t start (${why}), skipped`);
     return;
   }
-  ran.push(browserType.name());
   console.log(`- ${browserType.name()}`);
   const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
   const errors = [];
@@ -348,7 +360,7 @@ async function run(browserType, base) {
 async function runBook(browserType, base) {
   let browser;
   try {
-    browser = await browserType.launch();
+    browser = await launch(browserType);
   } catch {
     return;
   }
@@ -408,7 +420,7 @@ async function runBook(browserType, base) {
 async function runCoach(browserType, base) {
   let browser;
   try {
-    browser = await browserType.launch();
+    browser = await launch(browserType);
   } catch {
     return;
   }
@@ -489,7 +501,7 @@ async function runCoach(browserType, base) {
 async function runCores(browserType, base) {
   let browser;
   try {
-    browser = await browserType.launch();
+    browser = await launch(browserType);
   } catch {
     return;
   }
@@ -525,7 +537,7 @@ async function runCores(browserType, base) {
 async function runMaia2(browserType, base) {
   let browser;
   try {
-    browser = await browserType.launch();
+    browser = await launch(browserType);
   } catch {
     return;
   }
@@ -584,7 +596,7 @@ async function runMaia2(browserType, base) {
 async function runMaia3(browserType, base) {
   let browser;
   try {
-    browser = await browserType.launch();
+    browser = await launch(browserType);
   } catch {
     return;
   }
@@ -650,7 +662,7 @@ async function runMaia3(browserType, base) {
 async function runLc0(browserType, base) {
   let browser;
   try {
-    browser = await browserType.launch();
+    browser = await launch(browserType);
   } catch {
     return;
   }
@@ -727,7 +739,7 @@ async function runLc0(browserType, base) {
 async function runDeepMindBig(browserType, base) {
   let browser;
   try {
-    browser = await browserType.launch();
+    browser = await launch(browserType);
   } catch {
     return;
   }
@@ -770,7 +782,7 @@ async function runDeepMindBig(browserType, base) {
 async function runLichess(browserType, base) {
   let browser;
   try {
-    browser = await browserType.launch();
+    browser = await launch(browserType);
   } catch {
     return;
   }
@@ -816,10 +828,23 @@ try {
   for (const type of [playwright.chromium, playwright.firefox, playwright.webkit]) {
     // One group timing out (say, an engine that never starts in this browser) fails that group, not the whole run.
     for (const group of [run, runBook, runCoach, runCores, runMaia2, runMaia3, runLc0, runDeepMindBig, runLichess]) {
+      let timer;
+      const work = group(type, base);
+      work.catch(() => {}); // if the deadline wins, closing the browser rejects it later; that's expected
       try {
-        await group(type, base);
+        await Promise.race([
+          work,
+          new Promise((_, reject) => {
+            timer = setTimeout(() => reject(new Error(`no result in ${GROUP_MS / 60000} minutes`)), GROUP_MS);
+          }),
+        ]);
       } catch (err) {
         check(`${type.name()}: ${group.name} finished`, false, String((err && err.message) || err).split('\n')[0]);
+      } finally {
+        clearTimeout(timer);
+        // A group that threw or ran out of time never reached its own browser.close().
+        for (const b of open) await b.close().catch(() => {});
+        open.clear();
       }
     }
   }
