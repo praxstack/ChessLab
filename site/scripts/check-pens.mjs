@@ -554,7 +554,16 @@ async function runMaia2(browserType, base) {
     const w = new Worker(`/assets/engine/maia2-worker.js#${encodeURIComponent(url)}`, { type: 'module' });
     let wait = null;
     let fail = null;
-    w.onmessage = (e) => wait && wait(e.data);
+    let timer = null;
+    // Fails after 5 minutes without any message from the worker; each message restarts the clock.
+    const arm = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => fail(new Error('no reply from the worker in 5 minutes')), 5 * 60 * 1000);
+    };
+    w.onmessage = (e) => {
+      arm();
+      if (wait) wait(e.data);
+    };
     // A worker that dies or goes quiet fails this check with its reason instead of hanging the run.
     const died = new Promise((_, no) => {
       fail = no;
@@ -567,7 +576,7 @@ async function runMaia2(browserType, base) {
         w.postMessage(cmd);
       }),
     ]);
-    const timer = setTimeout(() => fail(new Error('no reply from the worker in 5 minutes')), 5 * 60 * 1000);
+    arm();
     try {
       await ask('uci', 'uciok');
       const out = [];
@@ -637,7 +646,16 @@ async function runMaia3(browserType, base) {
         const w = new Worker(`/assets/engine/maia3-worker.js#${encodeURIComponent(url)}`, { type: 'module' });
         let wait = null;
         let fail = null;
-        w.onmessage = (e) => wait && wait(e.data);
+        let timer = null;
+        // Fails after 5 minutes without any message from the worker; each message restarts the clock.
+        const arm = () => {
+          clearTimeout(timer);
+          timer = setTimeout(() => fail(new Error('no reply from the worker in 5 minutes')), 5 * 60 * 1000);
+        };
+        w.onmessage = (e) => {
+          arm();
+          if (wait) wait(e.data);
+        };
         // A worker that dies or goes quiet fails this check with its reason instead of hanging the run.
         const died = new Promise((_, no) => {
           fail = no;
@@ -651,7 +669,7 @@ async function runMaia3(browserType, base) {
               w.postMessage(cmd);
             }),
           ]);
-        const timer = setTimeout(() => fail(new Error('no reply from the worker in 5 minutes')), 5 * 60 * 1000);
+        arm();
         try {
           await ask('uci', 'uciok');
           const out = [];
