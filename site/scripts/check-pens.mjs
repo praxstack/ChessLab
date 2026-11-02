@@ -553,21 +553,42 @@ async function runMaia2(browserType, base) {
     const url = URL.createObjectURL(new Blob(parts));
     const w = new Worker(`/assets/engine/maia2-worker.js#${encodeURIComponent(url)}`, { type: 'module' });
     let wait = null;
+    let fail = null;
     w.onmessage = (e) => wait && wait(e.data);
-    const ask = (cmd, word) => new Promise((ok) => {
-      wait = (line) => line.startsWith(word) && ok(line);
-      w.postMessage(cmd);
+    // A worker that dies or goes quiet fails this check with its reason instead of hanging the run.
+    const died = new Promise((_, no) => {
+      fail = no;
+      w.onerror = (e) => no(new Error(`worker error: ${e.message || 'no message'}`));
     });
-    await ask('uci', 'uciok');
-    const out = [];
-    for (const c of cases) {
-      w.postMessage(`setoption name Elo value ${c.elo}`);
-      w.postMessage(`position fen ${c.fen}`);
-      out.push((await ask('go depth 1', 'bestmove')).split(' ')[1]);
+    const ask = (cmd, word) => Promise.race([
+      died,
+      new Promise((ok) => {
+        wait = (line) => line.startsWith(word) && ok(line);
+        w.postMessage(cmd);
+      }),
+    ]);
+    const timer = setTimeout(() => fail(new Error('no reply from the worker in 5 minutes')), 5 * 60 * 1000);
+    try {
+      await ask('uci', 'uciok');
+      const out = [];
+      for (const c of cases) {
+        w.postMessage(`setoption name Elo value ${c.elo}`);
+        w.postMessage(`position fen ${c.fen}`);
+        out.push((await ask('go depth 1', 'bestmove')).split(' ')[1]);
+      }
+      return out;
+    } catch (err) {
+      return { error: String(err.message || err) };
+    } finally {
+      clearTimeout(timer);
+      w.terminate();
     }
-    w.terminate();
-    return out;
   }, ref);
+  if (got.error) {
+    check(`Maia-2: the browser’s move matches Python’s in all ${ref.length} reference cases`, false, got.error);
+    await browser.close();
+    return;
+  }
   const wrong = ref.filter((c, i) => got[i] !== c.move).map((c, i) => `${c.elo} ${c.fen}: ${got[ref.indexOf(c)]} not ${c.move}`);
   check(`Maia-2: the browser’s move matches Python’s in all ${ref.length} reference cases`, wrong.length === 0, wrong.join(' | '));
   // On the page: pick Maia-2 1900, play a move, Check my move.
@@ -615,25 +636,45 @@ async function runMaia3(browserType, base) {
         const url = URL.createObjectURL(new Blob(blobs));
         const w = new Worker(`/assets/engine/maia3-worker.js#${encodeURIComponent(url)}`, { type: 'module' });
         let wait = null;
+        let fail = null;
         w.onmessage = (e) => wait && wait(e.data);
+        // A worker that dies or goes quiet fails this check with its reason instead of hanging the run.
+        const died = new Promise((_, no) => {
+          fail = no;
+          w.onerror = (e) => no(new Error(`worker error: ${e.message || 'no message'}`));
+        });
         const ask = (cmd, word) =>
-          new Promise((ok) => {
-            wait = (line) => line.startsWith(word) && ok(line);
-            w.postMessage(cmd);
-          });
-        await ask('uci', 'uciok');
-        const out = [];
-        for (const c of cases) {
-          w.postMessage(`setoption name Elo value ${c.elo}`);
-          w.postMessage(`position fen ${c.fen}`);
-          out.push((await ask('go depth 1', 'bestmove')).split(' ')[1]);
+          Promise.race([
+            died,
+            new Promise((ok) => {
+              wait = (line) => line.startsWith(word) && ok(line);
+              w.postMessage(cmd);
+            }),
+          ]);
+        const timer = setTimeout(() => fail(new Error('no reply from the worker in 5 minutes')), 5 * 60 * 1000);
+        try {
+          await ask('uci', 'uciok');
+          const out = [];
+          for (const c of cases) {
+            w.postMessage(`setoption name Elo value ${c.elo}`);
+            w.postMessage(`position fen ${c.fen}`);
+            out.push((await ask('go depth 1', 'bestmove')).split(' ')[1]);
+          }
+          return out;
+        } catch (err) {
+          return { error: String(err.message || err) };
+        } finally {
+          clearTimeout(timer);
+          w.terminate();
+          URL.revokeObjectURL(url);
         }
-        w.terminate();
-        URL.revokeObjectURL(url);
-        return out;
       },
       { cases: ref, size, parts },
     );
+    if (got.error) {
+      check(`Maia-3 ${size.toUpperCase()}: the browser’s move matches Python’s in all ${ref.length} reference cases`, false, got.error);
+      continue;
+    }
     const wrong = ref.flatMap((c, i) => (got[i] === c.best[size] ? [] : [`${c.elo} ${c.fen}: ${got[i]} not ${c.best[size]}`]));
     check(`Maia-3 ${size.toUpperCase()}: the browser’s move matches Python’s in all ${ref.length} reference cases`, wrong.length === 0, wrong.join(' | '));
   }
