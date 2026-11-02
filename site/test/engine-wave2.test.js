@@ -109,7 +109,7 @@ test('searchless: the catalog entry runs as a module worker, hands it the model,
   assert.equal(net, undefined);
   assert.deepEqual(
     e.files.filter((f) => f.role === 'runtime').map((f) => f.path),
-    ['/assets/engine/ort/ort.wasm.bundle.min.mjs', '/assets/engine/ort/ort-wasm-simd-threaded.wasm'],
+    ['/assets/engine/wasm-memory-fit.js', '/assets/engine/ort/ort.wasm.bundle.min.mjs', '/assets/engine/ort/ort-wasm-simd-threaded.wasm'],
   );
   assert.ok(e.bytes > wasm.bytes, 'the size shown counts onnxruntime too');
 });

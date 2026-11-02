@@ -156,6 +156,7 @@
           <button class="btn btn--plain btn--small" id="load-today" type="button">Today’s</button>
           <button class="btn btn--plain btn--small" id="load-random" type="button">A random one</button>
           <button class="btn btn--plain btn--small" id="load-lichess" type="button">Lichess daily</button>
+          <button class="btn btn--plain btn--small" id="setup-open" type="button" aria-haspopup="dialog" aria-controls="setup-pop">Set one up</button>
         </div>
       </div>
     </div>
@@ -188,6 +189,30 @@
     <div class="cal-pop__key" id="cal-key-lichess" hidden>
       <p><span class="ink ink--circle cal__sample" data-mark="circle">12</span> Circled: Lichess’s puzzle of that day. It goes on the board here.</p>
       <p><span class="cal__sample cal__sample--plain">12</span> Plain: not saved. Lichess only shares today’s puzzle, so its days fill in from 28 October 2026 onwards, one a day.</p>
+    </div>
+  </dialog>
+
+  <dialog class="cal-pop setup" id="setup-pop" aria-labelledby="setup-title">
+    <div class="cal-pop__top">
+      <h2 id="setup-title" class="cal-pop__title">Set up a position</h2>
+      <button class="btn btn--plain btn--small cal-pop__close" type="button" aria-label="Close" data-setup-close>×</button>
+    </div>
+    <div class="setup__body">
+      <p class="setup__lede">Copy a position you can see, like the Chess.com app’s puzzle. Pick a piece, then tap its squares. Tap a square again to take it off.</p>
+      <div class="cal-src setup__side" role="radiogroup" aria-label="Who is to move">
+        <button class="cal-src__opt" type="button" role="radio" aria-checked="true" data-side="w">White to move</button>
+        <button class="cal-src__opt" type="button" role="radio" aria-checked="false" data-side="b">Black to move</button>
+      </div>
+      <div class="setup__board" data-setup-board></div>
+      <div class="setup__tray" role="radiogroup" aria-label="Piece to place" data-setup-tray></div>
+      <p class="note-hand setup__note" aria-live="polite" data-setup-note></p>
+      <div class="setup__tools">
+        <button class="btn btn--plain btn--small" type="button" data-setup-clear>Clear</button>
+        <button class="btn btn--plain btn--small" type="button" data-setup-start>Start position</button>
+        <button class="btn btn--plain btn--small" type="button" data-setup-here>Copy the board</button>
+        <button class="btn btn--plain btn--small" type="button" data-setup-flip>Flip</button>
+      </div>
+      <button class="btn btn--pen setup__done" type="button" data-setup-done disabled>Put it on the board</button>
     </div>
   </dialog>
 
@@ -265,6 +290,7 @@
         <button class="btn btn--pen" id="paste-open" type="button" disabled>Open on Chess.com</button>
         <button class="btn btn--plain" id="paste-board" type="button" hidden>Put it on the board</button>
         <button class="btn btn--plain" id="paste-clip" type="button">Paste from clipboard</button>
+        <button class="btn btn--plain" id="paste-setup" type="button" aria-haspopup="dialog" aria-controls="setup-pop">Set it up by tapping</button>
       </div>
       <p class="desk__status" id="paste-status" role="status" aria-live="polite"></p>
     </div>

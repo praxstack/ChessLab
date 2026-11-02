@@ -11,6 +11,7 @@
 // Model: "Grandmaster-Level Chess Without Search", (c) 2024 DeepMind
 // Technologies Limited, CC BY 4.0; ONNX conversion by cstr. See searchless.js.
 
+import './wasm-memory-fit.js'; // first, so iPhone and iPad Safari can give the engine its memory
 import * as ort from './ort/ort.wasm.bundle.min.mjs';
 import { Chess } from '../vendor/chess.js';
 import { ROW_LENGTH, cleanFen, encodeRows, pickMove, winToCp } from '../searchless.js';

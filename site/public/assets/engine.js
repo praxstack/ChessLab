@@ -267,6 +267,8 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
   let queue = Promise.resolve();
   let aborter = null;
   let quit = false;
+  let crash = ''; // what the browser said when the worker died, so the failure note can say it
+  const stopped = () => new Error(crash ? `The engine stopped: ${crash}` : 'The engine stopped');
 
   const set = (s) => {
     phase = s.phase;
@@ -300,7 +302,7 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
         } else if (line === 'error') {
           clearTimeout(timer);
           listener = null;
-          reject(new Error('The engine stopped'));
+          reject(stopped());
         }
       };
     });
@@ -315,6 +317,7 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
   }
 
   async function start() {
+    crash = '';
     let url = null;
     let netUrl = null;
     aborter = typeof AbortController === 'function' ? new AbortController() : null;
@@ -341,9 +344,10 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
         const line = typeof e.data === 'string' ? e.data : '';
         if (listener) listener(line);
       });
-      worker.addEventListener('error', () => {
+      worker.addEventListener('error', (e) => {
+        crash = String((e && e.message) || '').trim();
         if (listener) listener('error');
-        if (phase === 'ready') reset('The engine stopped');
+        if (phase === 'ready') reset(stopped().message);
       });
       const ok = waitFor('uciok', startMs);
       send('uci');
@@ -429,7 +433,7 @@ export function createEngine({ spec = LITE, onState = () => {} } = {}) {
           } else if (line === 'error') {
             clearTimeout(timer);
             listener = null;
-            reject(new Error('The engine stopped')); // the worker's error handler resets it
+            reject(stopped()); // the worker's error handler resets it
           }
         };
       });

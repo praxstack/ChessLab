@@ -44,7 +44,7 @@ const LICHESS_LICENSE = '/assets/engine/lichess/LICENSE.txt';
 export const LICHESS_CREDIT =
   'Browser build by the Lichess team (github.com/lichess-org/stockfish-web, package licence AGPL-3.0-or-later), of Stockfish (GPL-3.0, stockfishchess.org) and Fairy-Stockfish (GPL-3.0, github.com/fairy-stockfish/Fairy-Stockfish). Files unchanged; nets from tests.stockfishchess.org.';
 /** The sizes of the small scripts that start the Lichess builds; the catalog test checks them against the files. */
-const LICHESS_WORKER_BYTES = { sf19: 134, small: 149, fairy: 156 };
+const LICHESS_WORKER_BYTES = { sf19: 233, small: 248, fairy: 255 };
 const SF_NETS = 'https://tests.stockfishchess.org/nns';
 const ORT = 'It would run with onnxruntime-web (MIT), which the page already loads for DeepMind 9M and Maia-1, but it isn’t wired up yet.';
 const CC_BY = 'https://creativecommons.org/licenses/by/4.0/';
@@ -53,15 +53,15 @@ const DM_SOURCE = 'https://huggingface.co/cstr/searchless-chess-onnx';
 export const DM_CREDIT =
   'Model from “Grandmaster-Level Chess Without Search” (Ruoss et al., 2024), © 2024 DeepMind Technologies Limited, CC BY 4.0. Converted to ONNX by cstr, with no change to the weights; run here with onnxruntime-web (MIT).';
 /** The sizes of the neural workers; the catalog test checks them against the files. */
-const SEARCHLESS_WORKER_BYTES = 3786;
-const MAIA_WORKER_BYTES = 3904;
-const MAIA2_WORKER_BYTES = 3953;
-const LC0_WORKER_BYTES = 3880;
+const SEARCHLESS_WORKER_BYTES = 3884;
+const MAIA_WORKER_BYTES = 4002;
+const MAIA2_WORKER_BYTES = 4051;
+const LC0_WORKER_BYTES = 3978;
 /** GPL-3.0 asks that the authors and the source be named; the picker and the page footer show this. */
 export const LC0_CREDIT =
   'Lc0 (Leela Chess Zero) networks by the LeelaChessZero authors and contributors, GPL-3.0, lczero.org, source github.com/LeelaChessZero/lc0. ONNX conversions by lczerolens (Hugging Face), weights stored here as 16-bit floats; run with onnxruntime-web (MIT) and a small Lc0-style search written for this page.';
 
-const MAIA3_WORKER_BYTES = 3912;
+const MAIA3_WORKER_BYTES = 4010;
 /** AGPL-3.0 asks for the notice and the source; the picker and the page footer show this. */
 export const MAIA3_CREDIT =
   'Maia-3 (Chessformer) by Daniel Monroe, George Eilender, Philip Chalmers, Zhenwei Tang and Ashton Anderson (CSSLab, University of Toronto, 2026), AGPL-3.0, source github.com/CSSLab/maia3. The published checkpoints, exported to ONNX for this page with their weights stored as 16-bit floats (how: site/tools/maia3-export in github.com/praxstack/ChessLab); run here with onnxruntime-web (MIT).';
@@ -73,7 +73,9 @@ export const MAIA_CREDIT =
   'Maia by Reid McIlroy-Young, Siddhartha Sen, Jon Kleinberg and Ashton Anderson (CSSLab, University of Toronto, 2020), GPL-3.0, source github.com/CSSLab/maia-chess. Converted to ONNX by shermansiu; run here with onnxruntime-web (MIT).';
 
 const file = (path, bytes, more = {}) => ({ path, bytes, ...more });
-const LICHESS_RUN = [file('/assets/engine/lichess/run.js', 1622, { role: 'runtime' })];
+/** Imported first by every module engine worker: lets iPhone and iPad Safari give the engine its memory. */
+const MEMORY_FIT = file('/assets/engine/wasm-memory-fit.js', 1353, { role: 'runtime' });
+const LICHESS_RUN = [file('/assets/engine/lichess/run.js', 1622, { role: 'runtime' }), MEMORY_FIT];
 const sum = (files) => files.reduce((n, f) => n + f.bytes, 0);
 
 function entry(e) {
@@ -82,6 +84,7 @@ function entry(e) {
 
 /** onnxruntime-web 1.31.1 (MIT), fetched by the neural workers themselves. */
 const ORT_FILES = [
+  MEMORY_FIT,
   file('/assets/engine/ort/ort.wasm.bundle.min.mjs', 77024, { role: 'runtime' }),
   file('/assets/engine/ort/ort-wasm-simd-threaded.wasm', 14848852, { role: 'runtime' }),
 ];
@@ -894,6 +897,12 @@ export function roughTimes(bytes, downlinkMbps) {
 export const PICK_KEY = 'pz-engine';
 export const TRYING_KEY = 'pz-engine-trying';
 
+/** The browser's own words when an engine's worker died ("The engine stopped: <what it said>"), or ''. */
+export function browserSaid(error = '') {
+  const m = /^The engine stopped: (.+)$/s.exec(String(error));
+  return m ? m[1].trim().slice(0, 200) : '';
+}
+
 /** Why an engine failed, in plain words, from its error text. */
 export function failureReason(error = '') {
   const text = String(error);
@@ -901,6 +910,7 @@ export function failureReason(error = '') {
   if (/HTTP|fetch|network|load failed/i.test(text)) return 'its download failed';
   if (/took too long/i.test(text)) return 'it was too slow on this device';
   if (/several cores/i.test(text)) return 'this browser didn’t switch on several cores for this page';
+  if (/out of memory|memory/i.test(text)) return 'this device didn’t give the browser tab enough memory for it';
   return 'it couldn’t start on this device (it may need more memory than the tab has)';
 }
 
@@ -962,7 +972,11 @@ export function createChoice(storage) {
       put(TRYING_KEY, null);
       if (e.id === DEFAULT_ENGINE) return null;
       put(PICK_KEY, DEFAULT_ENGINE);
-      return { engine: lite, message: `${e.name} stopped: ${failureReason(error)}. The page is back on ${lite.name}.` };
+      const said = browserSaid(error);
+      return {
+        engine: lite,
+        message: `${e.name} stopped: ${failureReason(error)}. The page is back on ${lite.name}.${said ? ` (The browser said: “${said}”.)` : ''}`,
+      };
     },
     get saved() {
       return get(PICK_KEY);
