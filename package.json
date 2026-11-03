@@ -16,7 +16,7 @@
     "preview:app": "vite preview --outDir dist-app",
     "smoke:app": "npm run build:app && node scripts/smoke-browser-app.mjs",
     "deploy:app": "npm run build:app && npx --yes wrangler@4.136.3 pages deploy web/dist-app --project-name askthemove-app --branch main",
-    "test": "node --test --test-concurrency=1 server/*.test.mjs web/src/*.test.js web/src/local/*.test.js web/src/local/*/*.test.js deploy/coach-worker/*.test.mjs scripts/*.test.mjs",
+    "test": "node --test --test-concurrency=1 server/*.test.mjs web/src/*.test.js web/src/sensory/*.test.js web/src/local/*.test.js web/src/local/*/*.test.js deploy/coach-worker/*.test.mjs scripts/*.test.mjs",
     "build:sites": "npm run build && node scripts/build_sites.mjs"
   },
   "dependencies": {

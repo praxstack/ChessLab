@@ -556,6 +556,13 @@ const GRAIN = `<defs><filter id="dr-grain" x="-8" y="-8" width="96" height="96" 
  */
 export function createDrawLayer(els, { orientation = () => 'white', pieceAt = () => null, boardFen = () => '', onLine = () => {} } = {}) {
   const sketch = createSketch();
+  // Every listener goes through on(), so destroy() can take them all off again.
+  const offs = [];
+  function on(target, type, fn, options) {
+    if (!target || typeof target.addEventListener !== 'function') return; // e.g. an old Safari media query
+    target.addEventListener(type, fn, options);
+    offs.push(() => target.removeEventListener(type, fn, options));
+  }
   // A page opens in Move or Faint, never Draw, so the first touch can't leave a mark.
   let mode = remembered('mode', ['move', 'faint'], 'move');
   let fade = Number(remembered('fade', FADES.map(String), '50'));
@@ -587,6 +594,7 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
   liveSvg.append(preview);
   els.svg.after(liveSvg);
   els.svg.insertAdjacentHTML('afterbegin', GRAIN);
+  const grain = els.svg.firstElementChild;
   const aidLayer = document.createElementNS(SVGNS, 'g');
   aidLayer.setAttribute('class', 'desk__aid');
   els.svg.append(done, aidLayer);
@@ -950,11 +958,12 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
   }
 
   const opts = { capture: true };
-  els.board.addEventListener('pointerdown', onDown, opts);
-  els.board.addEventListener('pointermove', onMove, opts);
-  els.board.addEventListener('pointerup', (e) => onUp(e, false), opts);
-  els.board.addEventListener('pointercancel', (e) => onUp(e, true), opts);
-  els.board.addEventListener(
+  on(els.board, 'pointerdown', onDown, opts);
+  on(els.board, 'pointermove', onMove, opts);
+  on(els.board, 'pointerup', (e) => onUp(e, false), opts);
+  on(els.board, 'pointercancel', (e) => onUp(e, true), opts);
+  on(
+    els.board,
     'lostpointercapture',
     (e) => {
       if (live && e.pointerId === live.id) onUp(e, false);
@@ -963,12 +972,12 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
   );
   // The right button draws here, so the browser's menu stays shut over the board,
   // and also just after a right-drag that ended off the board (Windows opens it on mouseup).
-  els.board.addEventListener('contextmenu', (e) => e.preventDefault());
-  document.addEventListener('contextmenu', (e) => {
+  on(els.board, 'contextmenu', (e) => e.preventDefault());
+  on(document, 'contextmenu', (e) => {
     if (live || performance.now() < menuShutUntil) e.preventDefault();
   });
   // Switching windows mid-stroke may swallow the pointerup.
-  window.addEventListener('blur', () => {
+  on(window, 'blur', () => {
     if (live) onUp({ pointerId: live.id, stopImmediatePropagation() {}, cancelable: false }, true);
   });
 
@@ -982,9 +991,9 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
   }
   const modeButtons = els.modes || [];
   modeButtons.forEach((b, i) => {
-    b.addEventListener('click', () => setMode(b.dataset.mode));
+    on(b, 'click', () => setMode(b.dataset.mode));
     // A radio group: arrow keys move between the modes.
-    b.addEventListener('keydown', (e) => {
+    on(b, 'keydown', (e) => {
       const step = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
       if (!step) return;
       e.preventDefault();
@@ -993,21 +1002,21 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
       next.focus();
     });
   });
-  els.fade?.addEventListener('input', () => {
+  on(els.fade, 'input', () => {
     const v = Math.round(Number(els.fade.value) / 10) * 10;
     if (!FADES.includes(v)) return;
     fade = v;
     remember('fade', String(v));
     syncButtons();
   });
-  els.undo.addEventListener('click', () => {
+  on(els.undo, 'click', () => {
     if (sketch.undo()) render();
   });
-  els.clear.addEventListener('click', () => {
+  on(els.clear, 'click', () => {
     if (sketch.clear()) render();
   });
   for (const b of els.tools) {
-    b.addEventListener('click', () => {
+    on(b, 'click', () => {
       tool = b.dataset.tool;
       note = '';
       remember('tool', tool);
@@ -1015,14 +1024,14 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
     });
   }
   for (const b of els.colors) {
-    b.addEventListener('click', () => {
+    on(b, 'click', () => {
       color = b.dataset.color;
       remember('color', color);
       syncButtons();
     });
   }
   for (const b of els.helps || []) {
-    b.addEventListener('click', () => {
+    on(b, 'click', () => {
       const h = b.dataset.help;
       if (h === 'loose') {
         asking = null;
@@ -1045,20 +1054,20 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
     });
   }
   for (const b of els.stickers || []) {
-    b.addEventListener('click', () => {
+    on(b, 'click', () => {
       stickerPick = b.dataset.sticker;
       remember('sticker', stickerPick);
       syncButtons();
     });
   }
   for (const b of els.sizes || []) {
-    b.addEventListener('click', () => {
+    on(b, 'click', () => {
       size = b.dataset.size;
       remember('size', size);
       syncButtons();
     });
   }
-  fine.addEventListener?.('change', syncButtons);
+  on(fine, 'change', syncButtons);
   syncButtons();
 
   return {
@@ -1112,6 +1121,19 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
     },
     get mode() {
       return mode;
+    },
+    /**
+     * Take the layer off the board for good (e.g. a page that unmounts its board): ends a stroke,
+     * stops the frame timer, removes every listener it added (board, buttons, document, window,
+     * media query) and the drawing groups it put in the SVG. Safe to call twice.
+     */
+    destroy() {
+      if (!offs.length && !done.parentNode) return;
+      if (live) onUp({ pointerId: live.id, stopImmediatePropagation() {}, cancelable: false }, true);
+      if (frame) cancelAnimationFrame(frame);
+      frame = 0;
+      for (const off of offs.splice(0)) off();
+      for (const n of [grain, done, liveSvg, aidLayer]) n?.remove?.();
     },
   };
 }

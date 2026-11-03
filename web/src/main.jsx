@@ -20,6 +20,8 @@ import CoachExplain from './CoachExplain.jsx';
 import {toggleMark} from '../../shared/board-marks.js';
 import {localApi, localExportFile} from './local/index.js';
 import BackupRestore from './local/BackupRestore.jsx';
+import {usePens, PenToolbar} from './sensory/Pens.jsx';
+import {cue, followSetting, wakeOnFirstGesture} from './sensory/sounds.js';
 import './styles.css';
 import {publicUrl} from './public-url.js';
 
@@ -63,7 +65,7 @@ function App() {
   const [help,setHelp]=useState(null),[helpError,setHelpError]=useState(''),[hint,setHint]=useState(null),[clockNow,setClockNow]=useState(Date.now);
   const exerciseSequence=useRef(0),userRef=useRef(user);
   const studyRef=useRef(study),studyBaselineRevision=useRef(0),savingRef=useRef(false),viewSequence=useRef(0),reviewingRef=useRef(false);
-  const gameRef=useRef(null),busyRef=useRef(false),analysisSequence=useRef(0),analysisController=useRef(null),soundRef=useRef(null);
+  const gameRef=useRef(null),busyRef=useRef(false),analysisSequence=useRef(0),analysisController=useRef(null);
   const branch=study.branches.find(item=>item.id===branchId);
   const history=branch?.moves || game?.moves || [];
   const historyKey=history.join(' ');
@@ -86,11 +88,14 @@ function App() {
   const cachedAnalysis=gameReport&&game&&!branchId&&analysisScope==='review'&&gameReport.gameId===game.id?gameReport.entries[ply-1]?.analysis:null;
   // The AI coach explains the same node as the evidence panel: the position before the selected move.
   const coachNode=game?{gameId:game.id,moves:ply?history.slice(0,ply-1):[],initialFen:game.initialFen??null,...(game.variant?{variant:game.variant}:{}),...(ply?{playedMove:history[ply-1]}:{}),...(analysis?.evidenceId?{evidenceId:analysis.evidenceId}:{})}:null;
+  // The learner's own pens over the board: drawings belong to the game, puzzle or lesson on it and
+  // stay while its moves are played (so Faint can show them), as on the puzzle page.
+  const pens=usePens({positionKey:`${page}|${game?.id||""}|${branchId||""}|${puzzle?.id||""}|${lesson?.id||""}`,orientation,studyMarks:canDraw});
   const coachNodeKey=coachKey({gameId:game?.id,branchId,ply,historyKey,scope:analysisScope,analysis});
 
   function startBusy(){if(busyRef.current||savingRef.current)return false;busyRef.current=true;setBusy(true);setError('');return true;}
   function endBusy(){busyRef.current=false;setBusy(false);}
-  function sound(){if(!settings.sound)return;try{const Context=window.AudioContext||window.webkitAudioContext;const audio=soundRef.current ||= new Context();audio.resume();const tone=audio.createOscillator(),gain=audio.createGain();tone.type='sine';tone.frequency.value=last?.captured?240:420;gain.gain.setValueAtTime(.055,audio.currentTime);gain.gain.exponentialRampToValueAtTime(.001,audio.currentTime+.1);tone.connect(gain);gain.connect(audio.destination);tone.start();tone.stop(audio.currentTime+.1);}catch{}}
+  // Move sounds come from the board itself (Board.jsx and sensory/sounds.js); these are the other cues.
   function adopt(next,{restore=false}={}) {
     viewSequence.current++;setGameReport(undefined);gameRef.current=next;studyBaselineRevision.current=next.studyRevision??0;setGame(next);setStudy(next.study||emptyStudy());setDirty(false);setSelected(null);setAnalysis(null);setHelp(null);setHint(null);setHelpError('');setShowBefore(false);setAutoplay(false);
     const stored=restore&&next.study?.branches?.find(b=>b.id===next.study.selectedBranchId);
@@ -116,6 +121,11 @@ function App() {
     return()=>{alive=false;};
   },[]);
   useEffect(()=>{localStorage.setItem('chesslab-settings',JSON.stringify(settings));},[settings]);
+  useEffect(()=>followSetting(settings.sound!==false),[settings.sound]);
+  useEffect(()=>wakeOnFirstGesture(),[]);
+  // The end of a game (mate, resignation, time, a draw) gets its chime once, as it happens.
+  const endedRef=useRef(null);
+  useEffect(()=>{const key=game?`${game.id}:${game.result||''}`:null,before=endedRef.current;endedRef.current=key;if(game?.result&&before===`${game.id}:`)setTimeout(()=>cue('end'),260);},[game?.id,game?.result]);
   useEffect(()=>{studyRef.current=study;},[study]);
   useEffect(()=>{if(!dirty)return;const warn=e=>{e.preventDefault();e.returnValue='';};window.addEventListener('beforeunload',warn);return()=>window.removeEventListener('beforeunload',warn);},[dirty]);
   useEffect(()=>{reviewingRef.current=mode==='review'||!!branchId||page!=='play';},[mode,branchId,page]);
@@ -156,7 +166,7 @@ function App() {
   },[game?.id,game?.revision,isLive,busy,engineTurn]);
   useEffect(()=>{if(!game?.result||!user)return;let alive=true;const accountId=user.id;api('/api/me').then(data=>{if(!alive||userRef.current?.id!==accountId)return;setProgress(data.progress||{lessons:[],puzzles:[]});if(data.user?.id===accountId&&data.user.coachAi!==userRef.current.coachAi){const next={...userRef.current,coachAi:data.user.coachAi};userRef.current=next;setUser(next);}}).catch(()=>{});return()=>{alive=false;};},[game?.id,game?.result,user?.id]);
   useEffect(()=>{if(!autoplay)return;const timer=setInterval(()=>setPly(current=>{if(current>=history.length){setAutoplay(false);return current;}return current+1;}),Number(settings.pace));return()=>clearInterval(timer);},[autoplay,history.length,settings.pace]);
-  useEffect(()=>{const key=e=>{if(page!=='play'||modal||['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;if(e.key==='ArrowLeft'){e.preventDefault();jump(ply-1);}if(e.key==='ArrowRight'){e.preventDefault();jump(ply+1);}if(e.key==='Home'){e.preventDefault();jump(0);}if(e.key==='End'){e.preventDefault();jump(history.length);}};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key);},[page,modal,ply,history.length]);
+  useEffect(()=>{const key=e=>{if(e.defaultPrevented||page!=='play'||modal||['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;if(e.key==='ArrowLeft'){e.preventDefault();jump(ply-1);}if(e.key==='ArrowRight'){e.preventDefault();jump(ply+1);}if(e.key==='Home'){e.preventDefault();jump(0);}if(e.key==='End'){e.preventDefault();jump(history.length);}};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key);},[page,modal,ply,history.length]);
 
   async function persistStudy(){
     if(!game||!dirty)return true;
@@ -169,7 +179,7 @@ function App() {
     if(current.result||current.source!=='bot'||replay(current.moves,current.initialFen,current.variant).turn()===current.color)return current;
     const viewSeq=viewSequence.current;
     const data=await api(`/api/games/${current.id}/bot`,{revision:current.revision});
-    if(gameRef.current?.id===current.id){gameRef.current=data.game;setGame(data.game);if(viewSequence.current===viewSeq&&!reviewingRef.current){setPly(data.game.moves.length);if(data.game.result)setMode('review');}sound();}
+    if(gameRef.current?.id===current.id){gameRef.current=data.game;setGame(data.game);if(viewSequence.current===viewSeq&&!reviewingRef.current){setPly(data.game.moves.length);if(data.game.result)setMode('review');}}
     return data.game;
   }
   async function startGame(){
@@ -228,7 +238,7 @@ function App() {
   async function logout(){if(!await persistStudy())return;if(!startBusy())return;try{await api('/api/logout',{});installUser(null);pendingAction.current=null;setGame(null);gameRef.current=null;setStudy(emptyStudy());setBranchId(null);setGames([]);setProgress({lessons:[],puzzles:[]});setPly(0);setMode('play');setModal(null);localStorage.removeItem('chesslab-game');setPage('play');}catch(err){setError(err.message);}finally{endBusy();}}
   async function submitMove(value){
     if(!boardEnabled)return;
-    let move;try{move=parseMove(chess,value);}catch{setError('That move is not legal here. Try SAN (Nf3) or coordinates (g1f3).');return;}
+    let move;try{move=parseMove(chess,value);}catch{cue('nope');setError('That move is not legal here. Try SAN (Nf3) or coordinates (g1f3).');return;}
     setSelected(null);setTyped('');setError('');
     if(page==='puzzles'){
       const action={type:'puzzle',id:puzzle.id,moves:[...puzzleMoves,move]};
@@ -237,14 +247,14 @@ function App() {
     if(branchId){
       const next={...study,branches:study.branches.map(item=>item.id===branchId?{...item,moves:[...item.moves,move]}:item)};
       const limitError=studyLimitError(next.branches);if(limitError){setError(limitError);return;}
-      setStudy(next);setDirty(true);setPly(history.length+1);sound();return;
+      setStudy(next);setDirty(true);setPly(history.length+1);return;
     }
     if(!startBusy())return;const id=game.id,viewSeq=viewSequence.current;
-    try{const data=await api(`/api/games/${id}/move`,{move,revision:game.revision});if(gameRef.current?.id!==id)return;gameRef.current=data.game;setGame(data.game);if(viewSequence.current===viewSeq&&!reviewingRef.current)setPly(data.game.moves.length);sound();if(data.game.result){if(viewSequence.current===viewSeq&&!reviewingRef.current)setMode('review');}else await botReply(data.game);refreshGames().catch(()=>{});}catch(err){setError(err.message);try{const fresh=await api(`/api/games/${id}`);if(gameRef.current?.id===id){gameRef.current=fresh.game;setGame(fresh.game);if(viewSequence.current===viewSeq&&!reviewingRef.current){setPly(fresh.game.moves.length);if(fresh.game.result)setMode('review');}}}catch{}}finally{endBusy();}
+    try{const data=await api(`/api/games/${id}/move`,{move,revision:game.revision});if(gameRef.current?.id!==id)return;gameRef.current=data.game;setGame(data.game);if(viewSequence.current===viewSeq&&!reviewingRef.current)setPly(data.game.moves.length);if(data.game.result){if(viewSequence.current===viewSeq&&!reviewingRef.current)setMode('review');}else await botReply(data.game);refreshGames().catch(()=>{});}catch(err){setError(err.message);try{const fresh=await api(`/api/games/${id}`);if(gameRef.current?.id===id){gameRef.current=fresh.game;setGame(fresh.game);if(viewSequence.current===viewSeq&&!reviewingRef.current){setPly(fresh.game.moves.length);if(fresh.game.result)setMode('review');}}}catch{}}finally{endBusy();}
   }
   async function submitPuzzle({id,moves}){
     if(!startBusy())return;const sequence=exerciseSequence.current,accountId=userRef.current.id;
-    try{const data=await api(`/api/puzzles/${id}/answer`,{moves});if(userRef.current?.id===accountId){if(data.progress)setProgress(data.progress);if(sequence===exerciseSequence.current){setFeedback(data);if(data.correct){setPuzzleMoves([...moves,...(data.reply?[data.reply]:[])]);setPuzzleComplete(data.complete);sound();}}}}
+    try{const data=await api(`/api/puzzles/${id}/answer`,{moves});if(userRef.current?.id===accountId){if(data.progress)setProgress(data.progress);if(sequence===exerciseSequence.current){setFeedback(data);if(data.correct){setPuzzleMoves([...moves,...(data.reply?[data.reply]:[])]);setPuzzleComplete(data.complete);if(data.complete)setTimeout(()=>cue('good'),data.reply?700:450);}else cue('hmm');}}}
     catch(err){if(sequence===exerciseSequence.current&&userRef.current?.id===accountId)setError(err.message);}finally{endBusy();}
   }
   function boardMove(from,to){
@@ -309,7 +319,7 @@ function App() {
   }
   async function submitLesson({id,choice}){
     if(!startBusy())return;const sequence=exerciseSequence.current,accountId=userRef.current.id;
-    try{const data=await api(`/api/lessons/${id}/answer`,{choice});if(userRef.current?.id===accountId){if(data.progress)setProgress(data.progress);if(sequence===exerciseSequence.current)setFeedback(data);}}
+    try{const data=await api(`/api/lessons/${id}/answer`,{choice});if(userRef.current?.id===accountId){if(data.progress)setProgress(data.progress);if(sequence===exerciseSequence.current){setFeedback(data);cue(data.correct?'good':'hmm');}}}
     catch(err){if(sequence===exerciseSequence.current&&userRef.current?.id===accountId)setError(err.message);}finally{endBusy();}
   }
   function selectLesson(item){exerciseSequence.current++;setLesson(item);setFeedback(null);}
@@ -341,9 +351,10 @@ function App() {
       {notice&&<div className="toast" role="status"><Icon name="check"/>{notice}</div>}
       {page==='endgames'?<EndgamePractice engines={catalog.engines} key={user?.id||'guest'} request={api} user={user} settings={settings} busy={busy||saving} initialId={endgameSelection} onOpen={openEndgame} onGame={openGame}/>:page==='vision'?<VisionTraining request={api} user={user} settings={settings} onSignIn={()=>requireAccount({type:'vision'})}/>:page==='learn'&&!lesson?<LearningPath request={api} user={user} settings={settings} starterLessons={learn.lessons} completed={progress.lessons} onSignIn={()=>requireAccount({type:'course'})} onStarter={selectLesson} onProgress={lessons=>setProgress(p=>({...p,lessons}))}/>:page==='training'?<PuzzleTraining request={api} user={user} settings={settings} onSignIn={()=>requireAccount({type:'training'})} onStarter={()=>changePage('puzzles')} onStudy={openTrainingStudy}/>:page==='openings'?<OpeningLibrary request={api} settings={settings} initialId={openingSelection} user={user} onStudy={async text=>{if(requireAccount({type:'import',pgn:text,format:'pgn'}))await performImport(text);}} onOpen={openOpening} busy={busy}/>:page==='library'?<GameLibrary key={user?.id||'guest'} api={api} user={user} games={games} busy={busy||saving} onOpen={openGame} onNew={()=>setModal('new')} onImport={()=>setModal('import')} onPosition={openPositionEditor} onAuth={()=>{pendingAction.current=null;setModal('auth');}} Modal={Modal}/>:<div className="workspace"><section className="board-column">
         <div className="player-row"><span className="player-avatar coach-avatar">{page==='play'?<BotAvatar bot={selectedBot}/>:<Piece type={page==='learn'?'b':'q'} color="b"/>}</span><div className="player-copy"><strong>{page==='learn'?'Learn by looking':page==='puzzles'?'Calculation practice':game?.source==='import'?(game.headers?.[orientation==='w'?'Black':'White']||'Imported game'):game?.botName||selectedBot?.name||selectedEngine?.name||'Choose your opponent'}</strong><span>{page==='play'?(game?.positionSetup?'Custom position':game?.source==='import'?'Imported game':`${game?.currentRating||game?.rating||setup.rating} · ${game?.adaptive?'Adaptive opponent':'Computer opponent'}`):page==='learn'?'Original introductory lessons':puzzle?.theme||'Original introductory puzzles'}</span></div>{page==='play'&&game?.source==='bot'?<span className={`game-clock ${engineTurn?'active':''}`} aria-label="Opponent clock">{clockText(game,game.color==='w'?'b':'w',clockNow)}</span>:<span className="player-tag">{page==='play'?(game?.positionSetup?'FEN':game?.source==='import'?'PGN':'BOT'):page==='learn'?'LEARN':'SOLVE'}</span>}<button className="icon-button board-settings" aria-label="Board settings" onClick={()=>setModal('settings')}><Icon name="settings"/></button></div>
-        <div className="board-wrap"><div className={`evaluation-rail ${page==='play'&&mode==='play'&&!game?.assistance?.evaluation?'evaluation-hidden':''}`} title="Evaluation from White’s perspective"><div className="evaluation-white" style={{height:chess.isCheckmate()?(chess.turn()==='w'?'5%':'95%'):displayedScore?`${Math.max(5,Math.min(95,50+(displayedScore.type==='mate'?Math.sign(displayedScore.value)*45:displayedScore.value/20)))}%`:'50%'}}/><span>{chess.isCheckmate()?'#':scoreText(displayedScore)}</span></div><Board marks={canDraw?currentAnnotation?.marks||[]:[]} onMark={canDraw&&!busy&&!saving?drawMark:undefined} markTool={markTool} markColor={markColor} positionKey={drawingKey} chess={chess} orientation={orientation} selected={selected} onSquare={onSquare} onMove={boardMove} enabled={boardEnabled} settings={settings} arrows={arrowMoves} lastMove={lastSquares} lastMoveDetails={last} classification={settings.classification&&mode==='review'&&!showBefore?analysis?.played?.classification:null} label={`${page==='puzzles'?'Puzzle':'Game'} board. ${chess.turn()==='w'?'White':'Black'} to move`}/></div>
+        <div className="board-wrap"><div className={`evaluation-rail ${page==='play'&&mode==='play'&&!game?.assistance?.evaluation?'evaluation-hidden':''}`} title="Evaluation from White’s perspective"><div className="evaluation-white" style={{height:chess.isCheckmate()?(chess.turn()==='w'?'5%':'95%'):displayedScore?`${Math.max(5,Math.min(95,50+(displayedScore.type==='mate'?Math.sign(displayedScore.value)*45:displayedScore.value/20)))}%`:'50%'}}/><span>{chess.isCheckmate()?'#':scoreText(displayedScore)}</span></div><Board boardRef={pens.boardRef} overlay={pens.overlay} drawMode={pens.drawMode} moveSound={page==='play'&&mode==='review'&&!branchId?'quiet':'full'} marks={canDraw?currentAnnotation?.marks||[]:[]} onMark={canDraw&&!busy&&!saving?drawMark:undefined} markTool={markTool} markColor={markColor} positionKey={drawingKey} chess={chess} orientation={orientation} selected={selected} onSquare={onSquare} onMove={boardMove} enabled={boardEnabled} settings={settings} arrows={arrowMoves} lastMove={lastSquares} lastMoveDetails={last} classification={settings.classification&&mode==='review'&&!showBefore?analysis?.played?.classification:null} label={`${page==='puzzles'?'Puzzle':'Game'} board. ${chess.turn()==='w'?'White':'Black'} to move`}/></div>
         <div className="player-row own-player"><span className="player-avatar own-avatar">{user?.username?.slice(0,1).toUpperCase()||<Icon name="user"/>}</span><div className="player-copy"><strong>{page==='play'&&game?.source==='import'?(game.headers?.[orientation==='w'?'White':'Black']||'Imported player'):user?.username||'You'}<span className="color-label">{orientation==='w'?'White side':'Black side'}</span></strong><span>{page==='play'?(branchId?'Exploring a variation':showBefore?'Position before the selected move':game?liveLabel:'Ready when you are'):page==='learn'?'Read the position, then choose an answer':puzzleComplete?'Puzzle complete':puzzle?`${puzzle.side==='w'?'White':'Black'} to move`:'Choose a puzzle to begin'}</span></div>{page==='play'&&game?.source==='bot'&&<span className={`game-clock ${isLive&&!engineTurn?'active':''}`} aria-label="Your clock">{clockText(game,game.color,clockNow)}</span>}<button className="icon-button" title="Flip board" aria-label="Flip board" onClick={()=>setPreference('orientation',orientation==='w'?'b':'w')}><Icon name="flip"/></button></div>
         <div className="board-bottom"><form className="move-entry" onSubmit={e=>{e.preventDefault();submitMove(typed);}}><label className="sr-only" htmlFor="move-entry">Enter a move in SAN or UCI</label><span className="move-prompt">›</span><input id="move-entry" autoComplete="off" value={typed} onChange={e=>setTyped(e.target.value)} placeholder={boardEnabled?'Enter a move, e.g. e4 or Nf3':'Select a playable position to enter a move'} disabled={!boardEnabled}/><button aria-label="Play entered move" disabled={!boardEnabled||!typed.trim()}><Icon name="arrow"/></button></form><span className="keyboard-hint">{boardEnabled?'Click, drag, or type a move':'← → to review moves'}</span></div>
+        <PenToolbar pens={pens}/>
         {canDraw&&<BoardDrawingTools tool={markTool} color={markColor} marks={currentAnnotation?.marks||[]} disabled={busy||saving} onTool={value=>{setMarkTool(value);setSelected(null);setMarkColor(value==='square'?'R':'Y');}} onColor={setMarkColor} onClear={clearMarks}/>}
         {page==='play'&&game?.variant==='chess960'&&<p className="variant-note">Chess960{Number.isInteger(game.positionNumber)?` · Position ${game.positionNumber}`:''} · To castle, move your king onto its rook, or type O-O / O-O-O.</p>}{page==='play'&&game&&<div className="board-actions"><button className="text-button" onClick={()=>setModal('new')}><Icon name="plus"/>New game</button>{game.source==='bot'&&<button className="text-button" disabled={busy} onClick={rematch}>{game.practice?'Restart position':'Rematch'}</button>}<button className="text-button" onClick={()=>setModal('import')}><Icon name="upload"/>Import</button><button className="text-button" disabled={busy||saving} onClick={openPositionEditor}>Set up position</button><button className="text-button" disabled={busy||saving} onClick={()=>exportFile('pgn')}><Icon name="download"/>Export PGN</button><button className="text-button" disabled={busy||saving} onClick={()=>exportFile('study')}>Export study</button>{game.source==='bot'&&!game.result&&<button className="text-button resign" disabled={busy} onClick={()=>setModal('resign')}><Icon name="flag"/>Resign</button>}</div>}
       </section>
