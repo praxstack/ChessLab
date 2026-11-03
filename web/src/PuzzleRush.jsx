@@ -2,6 +2,7 @@ import React,{useEffect,useRef,useState} from 'react';
 import {Chess} from 'chess.js';
 import Board,{Piece} from './Board.jsx';
 import {replay,parseMove,moveRows} from './chess-state.js';
+import {isStaleRun} from './rush-stale.js';
 
 const modes={'3min':'3 minutes','5min':'5 minutes',survival:'Survival'};
 const reasons={time:'Time’s up.',mistakes:'Three strikes. A fresh start awaits.',ended:'Run saved.',catalogue:'You reached the end of this difficulty range.'};
@@ -9,7 +10,7 @@ export default function PuzzleRush({request,user,settings,onSignIn,onBack,onPrac
  const [run,setRun]=useState(null),[variant,setVariant]=useState('3min'),[history,setHistory]=useState([]),[bests,setBests]=useState({'3min':0,'5min':0,survival:0});
  const [busy,setBusy]=useState(false),[loading,setLoading]=useState(Boolean(user)),[error,setError]=useState(''),[feedback,setFeedback]=useState(null),[typed,setTyped]=useState(''),[selected,setSelected]=useState(null),[promotion,setPromotion]=useState(null),[flipped,setFlipped]=useState(false),[clock,setClock]=useState(0);
  const owner=useRef(user?.id),latest=useRef(null),timing=useRef({serverNow:0,local:0});owner.current=user?.id;
- function accept(data){if(data.run?.id===latest.current?.id&&data.run.revision<latest.current.revision)return;latest.current=data.run;setRun(data.run);setHistory(data.history);setBests(data.bests);if(data.run)setVariant(data.run.variant);timing.current={serverNow:data.serverNow,local:performance.now()};setClock(data.serverNow);}
+ function accept(data){if(isStaleRun(data.run,latest.current))return;latest.current=data.run;setRun(data.run);setHistory(data.history);setBests(data.bests);if(data.run)setVariant(data.run.variant);timing.current={serverNow:data.serverNow,local:performance.now()};setClock(data.serverNow);}
  useEffect(()=>{const c=new AbortController();latest.current=null;setRun(null);setHistory([]);setBests({'3min':0,'5min':0,survival:0});setBusy(false);setFeedback(null);setError('');setLoading(Boolean(user));if(user)request('/api/rush',undefined,c.signal).then(accept).catch(e=>{if(e.name!=='AbortError')setError(e.message);}).finally(()=>{if(!c.signal.aborted)setLoading(false);});return()=>c.abort();},[user?.id]);
  const active=run?.state==='active',current=run?.current,moves=current?.moves||[],board=current?replay(moves,current.puzzle.fen):new Chess();
  const remaining=run?.deadline===null?null:Math.max(0,(run?.deadline||0)-clock),enabled=active&&!busy&&!loading&&(remaining===null||remaining>0);
@@ -29,7 +30,7 @@ export default function PuzzleRush({request,user,settings,onSignIn,onBack,onPrac
  async function openRun(id){const data=await perform(()=>request('/api/rush/'+id));if(data){accept(data);setFeedback(null);}}
  async function retry(index){const data=await perform(()=>request(`/api/rush/${run.id}/retry`,{index}));if(data)onPractice(data.attempt);}
  const seconds=Math.ceil((remaining||0)/1000),timeLabel=remaining===null?'∞':`${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
- return <section className={`training-page rush-page ${active?'is-active':''}`}><div className="training-heading"><div><p className="eyebrow">PUZZLE RUSH · ON THIS MAC</p><h2>Find your rhythm.<br/>Beat your best.</h2><p>Harder puzzles. Three lives. One more idea.</p></div><button className="button secondary" onClick={onBack} disabled={active||busy}>Back to puzzles</button></div>
+ return <section className={`training-page rush-page ${active?'is-active':''}`}><div className="training-heading"><div><p className="eyebrow">PUZZLE RUSH · ON THIS DEVICE</p><h2>Find your rhythm.<br/>Beat your best.</h2><p>Harder puzzles. Three lives. One more idea.</p></div><button className="button secondary" onClick={onBack} disabled={active||busy}>Back to puzzles</button></div>
   {error&&<div className="inline-error" role="alert">{error}</div>}
   <div className="training-layout"><div className="training-board-column">{active&&<div className="rush-mobile-status" aria-label="Mobile Rush progress"><span><small>SOLVED</small><strong>{run.score}</strong></span><span><small>{run.deadline===null?'SURVIVAL':'TIME LEFT'}</small><strong role="timer" aria-label="Rush mobile time remaining">{timeLabel}</strong></span><span aria-label={`${3-run.mistakes} lives left`}><small>LIVES</small><strong className="rush-mobile-lives">{'♥'.repeat(3-run.mistakes)}{'×'.repeat(run.mistakes)}</strong></span></div>}<div className="training-position-title"><span className="training-side">{current?<><Piece type="k" color={current.puzzle.side}/>{current.puzzle.side==='w'?'White':'Black'} to solve</>:'Your first challenge awaits'}</span><span>{current?`#${current.puzzle.id} · source rating ${current.puzzle.rating}`:'Start easy. Build momentum.'}</span></div>
    <Board chess={board} orientation={flipped?(current?.puzzle.side==='b'?'w':'b'):(current?.puzzle.side||'w')} settings={settings} selected={selected} onSquare={square} onMove={boardMove} enabled={!!enabled} lastMove={(moves.at(-1)||current?.puzzle.trigger)?.match(/.{1,2}/g)} label="Rush puzzle board"/>
