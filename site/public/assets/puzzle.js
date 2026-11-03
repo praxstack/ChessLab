@@ -16,7 +16,8 @@ import { createEngine, grade, isCancel, isSaved, toCp } from './engine.js';
 import { DEFAULT_ENGINE, createChoice, engineById, formatBytes, needsWarning } from './engine-catalog.js';
 import { createPicker } from './engine-picker.js';
 import * as sound from './sound.js';
-import { nextPuzzleAt, whenText } from './daily-clock.js';
+import { appAhead, nextPuzzleAt, whenText } from './daily-clock.js';
+import { createSetup } from './setup.js';
 
 const API = 'https://api.chess.com/pub';
 const ARCHIVE = 'https://raw.githubusercontent.com/praxstack/ChessLab/puzzle-archive/puzzles.json';
@@ -585,7 +586,13 @@ function showSolve() {
 function showNext() {
   const row = $('card-next-row');
   row.hidden = desk.kind !== 'today' || !todayIso;
-  if (!row.hidden) $('card-next').textContent = whenText(nextPuzzleAt(todayIso));
+  $('card-app-row').hidden = row.hidden;
+  const when = todayIso ? whenText(nextPuzzleAt(todayIso)) : '';
+  if (!row.hidden) $('card-next').textContent = when;
+  // Past midnight on this device, the Chess.com app has moved on but the public feed hasn't.
+  const ahead = $('card-ahead');
+  ahead.hidden = row.hidden || !appAhead(todayIso);
+  ahead.textContent = ahead.hidden ? '' : `The Chess.com app already has the next puzzle. This page gets it ${when}. Want it now? Tap Set one up below and copy it from the app.`;
 }
 
 function planNext() {
@@ -654,6 +661,17 @@ $('load-lichess').addEventListener('click', async () => {
     say('desk-status', 'Couldn’t reach Lichess. Try again in a moment.', 'red');
   }
 });
+
+// Set one up: copy a position you can see (the app's puzzle before this page has it) by tapping.
+const setup = createSetup({
+  dialog: $('setup-pop'),
+  getCurrent: () => (desk.fen ? play.fen : ''),
+  onDone: (fen) => {
+    showOnDesk({ kind: 'paste', fen, title: 'Your position', source: 'set up by you' });
+    bringDeskIntoView();
+  },
+});
+for (const id of ['setup-open', 'paste-setup']) $(id).addEventListener('click', () => setup.open());
 
 $('copy-fen').addEventListener('click', () => {
   if (desk.fen) copy(play.fen, 'desk-status', !play.moved ? 'FEN copied.' : 'FEN of the board as it is now copied.');
@@ -1359,16 +1377,22 @@ function renderMoreGames() {
 /* ------------------------------------------------------------ Setup bits */
 
 $('copy-bm').addEventListener('click', () => copy($('bm').value, 'bm-status', 'Copied. Now follow the steps below.'));
+$('copy-bm-send').addEventListener('click', () => copy($('bm-send').value, 'bm-send-status', 'Copied. Now follow the steps below.'));
 
 /* ----------------------------------------------------------------- Start */
 
 $('desk-coords').innerHTML = coordsHTML('white');
 updateCheckButton();
 renderCalendar();
-const linkFen = new URLSearchParams(window.location.search).get('fen');
+// A position can come after ? (links) or after # (the extension and bookmark, so it never reaches a server).
+const linkParams = new URLSearchParams(window.location.hash.replace(/^#/, '').includes('fen=') ? window.location.hash.slice(1) : window.location.search);
+const linkFen = linkParams.get('fen');
 const linked = linkFen && cleanFen(linkFen);
 if (linked) {
-  showOnDesk({ kind: 'paste', fen: linked.fen, title: 'Your position', source: 'link' });
+  // Sent from a Chess.com puzzle page by the extension or the bookmark.
+  const from = linkParams.get('from');
+  const sent = from === 'chesscom' || from === 'bookmark';
+  showOnDesk({ kind: 'paste', fen: linked.fen, title: sent ? 'From your Chess.com puzzle' : 'Your position', source: sent ? 'Chess.com puzzle page' : 'link' });
   loadToday({ toDesk: false });
 } else {
   loadToday({ toDesk: true });

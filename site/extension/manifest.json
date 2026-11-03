@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "AskTheMove: Analyse this puzzle",
+  "short_name": "AskTheMove",
+  "version": "0.1.0",
+  "description": "One tap sends Chess.com's Daily Puzzle on your screen to your own AskTheMove board: draw on it, test your line, check it. Not affiliated with Chess.com.",
+  "homepage_url": "https://askthemove.online/puzzleanalyzr/",
+  "icons": {
+    "16": "icons/16.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.chess.com/daily-chess-puzzle*"
+      ],
+      "js": [
+        "reader.js",
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "extension@askthemove.online",
+      "strict_min_version": "128.0"
+    }
+  }
+}

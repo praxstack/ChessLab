@@ -26,3 +26,21 @@ test('the time reads in the learner’s own clock', () => {
   assert.equal(whenText(at, { now: Date.parse('2026-10-27T20:00:00Z'), timeZone: 'America/New_York' }), 'tomorrow 3:00 am');
   assert.equal(whenText(at, { now: at + 1000, timeZone: IST }), 'any minute now');
 });
+
+test('the app is ahead in India between local midnight and 12:30 pm', async () => {
+  const { appAhead, localIso } = await import('../public/assets/daily-clock.js');
+  const IST = 'Asia/Kolkata';
+  // 1 Nov 2026, 04:40 IST: the app shows 1 Nov, the feed still 31 Oct.
+  const early = Date.UTC(2026, 9, 31, 23, 10);
+  assert.equal(localIso(early, IST), '2026-11-01');
+  assert.equal(appAhead('2026-10-31', { now: early, timeZone: IST }), true);
+  // 31 Oct, 18:00 IST: same date as the feed, nothing ahead.
+  assert.equal(appAhead('2026-10-31', { now: Date.UTC(2026, 9, 31, 12, 30), timeZone: IST }), false);
+  // Past the feed's change time but the page still holds 31 Oct (late or failed refresh): still ahead.
+  assert.equal(appAhead('2026-10-31', { now: Date.UTC(2026, 10, 1, 7, 1), timeZone: IST }), true);
+  // Once the page has loaded the 1 Nov puzzle it has caught up.
+  assert.equal(appAhead('2026-11-01', { now: Date.UTC(2026, 10, 1, 7, 1), timeZone: IST }), false);
+  // In Los Angeles itself the two clocks agree.
+  assert.equal(appAhead('2026-10-31', { now: Date.UTC(2026, 10, 1, 6, 30), timeZone: 'America/Los_Angeles' }), false);
+  assert.equal(appAhead('', { now: early, timeZone: IST }), false);
+});

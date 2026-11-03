@@ -10,6 +10,7 @@
 // Maia (c) CSSLab, University of Toronto, GPL-3.0; https://github.com/CSSLab/maia-chess.
 // The ONNX files are shermansiu's conversions (huggingface.co/shermansiu/maia-NNNN) of the published maia-NNNN.pb.gz. See lc0.js.
 
+import './wasm-memory-fit.js'; // first, so iPhone and iPad Safari can give the engine its memory
 import * as ort from './ort/ort.wasm.bundle.min.mjs';
 import { Chess } from '../vendor/chess.js';
 import { PLANES, bestPolicyMove, castlingKey, encodePlanes, wdlProbabilities } from '../lc0.js';

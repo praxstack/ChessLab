@@ -142,10 +142,12 @@
         <p class="printout__line desk__row" id="card-date-row"><span>date</span><span class="desk__dots" aria-hidden="true"></span><span id="card-date">today</span></p>
         <p class="printout__line desk__row" id="card-name-row" hidden><span>name</span><span class="desk__dots" aria-hidden="true"></span><button class="desk__reveal" id="card-name" type="button">tap to show</button></p>
         <p class="printout__line desk__row"><span>to move</span><span class="desk__dots" aria-hidden="true"></span><span id="card-side">…</span></p>
-        <p class="printout__line desk__row" id="card-next-row" hidden title="Your own time. Chess.com changes the daily puzzle at midnight US Pacific time."><span>next one</span><span class="desk__dots" aria-hidden="true"></span><span id="card-next">…</span></p>
+        <p class="printout__line desk__row" id="card-app-row" hidden title="The Chess.com app changes its puzzle at midnight on your own phone."><span>new in the app</span><span class="desk__dots" aria-hidden="true"></span><span>midnight, your time</span></p>
+        <p class="printout__line desk__row" id="card-next-row" hidden title="Your own time. This page reads Chess.com’s public feed, which changes at midnight US Pacific time."><span>new on this page</span><span class="desk__dots" aria-hidden="true"></span><span id="card-next">…</span></p>
         <p class="printout__line desk__row"><span>from</span><span class="desk__dots" aria-hidden="true"></span><span id="card-src">Chess.com daily puzzle</span></p>
         <p class="printout__line desk__row"><span>answer</span><span class="desk__dots" aria-hidden="true"></span><span class="printout__flag">hidden</span></p>
       </div>
+      <p class="note-hand note-hand--red desk__ahead" id="card-ahead" hidden></p>
 
       <div class="desk__swap">
         <p class="note-hand desk__swap-note">Or put another one on the board:</p>
@@ -154,6 +156,7 @@
           <button class="btn btn--plain btn--small" id="load-today" type="button">Today’s</button>
           <button class="btn btn--plain btn--small" id="load-random" type="button">A random one</button>
           <button class="btn btn--plain btn--small" id="load-lichess" type="button">Lichess daily</button>
+          <button class="btn btn--plain btn--small" id="setup-open" type="button" aria-haspopup="dialog" aria-controls="setup-pop">Set one up</button>
         </div>
       </div>
     </div>
@@ -186,6 +189,30 @@
     <div class="cal-pop__key" id="cal-key-lichess" hidden>
       <p><span class="ink ink--circle cal__sample" data-mark="circle">12</span> Circled: Lichess’s puzzle of that day. It goes on the board here.</p>
       <p><span class="cal__sample cal__sample--plain">12</span> Plain: not saved. Lichess only shares today’s puzzle, so its days fill in from 28 October 2026 onwards, one a day.</p>
+    </div>
+  </dialog>
+
+  <dialog class="cal-pop setup" id="setup-pop" aria-labelledby="setup-pop-title">
+    <div class="cal-pop__top">
+      <h2 id="setup-pop-title" class="cal-pop__title">Set up a position</h2>
+      <button class="btn btn--plain btn--small cal-pop__close" type="button" aria-label="Close" data-setup-close>×</button>
+    </div>
+    <div class="setup__body">
+      <p class="setup__lede">Copy a position you can see, like the Chess.com app’s puzzle. Pick a piece, then tap its squares. Tap a square again to take it off.</p>
+      <div class="cal-src setup__side" role="radiogroup" aria-label="Who is to move">
+        <button class="cal-src__opt" type="button" role="radio" aria-checked="true" data-side="w">White to move</button>
+        <button class="cal-src__opt" type="button" role="radio" aria-checked="false" data-side="b">Black to move</button>
+      </div>
+      <div class="setup__board" data-setup-board></div>
+      <div class="setup__tray" role="radiogroup" aria-label="Piece to place" data-setup-tray></div>
+      <p class="note-hand setup__note" aria-live="polite" data-setup-note></p>
+      <div class="setup__tools">
+        <button class="btn btn--plain btn--small" type="button" data-setup-clear>Clear</button>
+        <button class="btn btn--plain btn--small" type="button" data-setup-start>Start position</button>
+        <button class="btn btn--plain btn--small" type="button" data-setup-here>Copy the board</button>
+        <button class="btn btn--plain btn--small" type="button" data-setup-flip>Flip</button>
+      </div>
+      <button class="btn btn--pen setup__done" type="button" data-setup-done disabled>Put it on the board</button>
     </div>
   </dialog>
 
@@ -263,6 +290,7 @@
         <button class="btn btn--pen" id="paste-open" type="button" disabled>Open on Chess.com</button>
         <button class="btn btn--plain" id="paste-board" type="button" hidden>Put it on the board</button>
         <button class="btn btn--plain" id="paste-clip" type="button">Paste from clipboard</button>
+        <button class="btn btn--plain" id="paste-setup" type="button" aria-haspopup="dialog" aria-controls="setup-pop">Set it up by tapping</button>
       </div>
       <p class="desk__status" id="paste-status" role="status" aria-live="polite"></p>
     </div>
@@ -373,9 +401,9 @@
       <details>
         <summary><span>When the daily puzzle changes</span><i class="glyph glyph--plus" data-mark="plus"></i></summary>
         <div class="pz-setup__how">
-          <p>Chess.com changes its daily puzzle at midnight US Pacific time. In India that’s <b>12:30 PM</b> from March to early November, and <b>1:30 PM</b> from early November to March, when the US clocks go back.</p>
-          <p>So in the morning you still see the puzzle dated yesterday. That’s Chess.com’s today, not a stale page.</p>
-          <p>The puzzle card shows when the next one comes out, in your own time. Leave this page open and it switches to the new puzzle by itself.</p>
+          <p>There are two clocks. The <b>Chess.com app</b> changes its puzzle at <b>midnight on your own phone</b>.</p>
+          <p>This page can only read Chess.com’s <b>public feed</b>, which changes at midnight US Pacific time. In India that’s <b>12:30 PM</b> from March to early November, and <b>1:30 PM</b> from early November to March, when the US clocks go back.</p>
+          <p>So from midnight until then, the app already has the new puzzle and this page still shows the one before. The puzzle card says when this page gets it, in your own time. To work on the app’s new puzzle sooner, paste its position into <b>Bring your own position</b>. Leave this page open and it switches to the new puzzle by itself.</p>
         </div>
       </details>
       <details>
@@ -397,6 +425,19 @@
         </div>
       </details>
       <details>
+        <summary><span>Send a Chess.com puzzle here in one tap</span><i class="glyph glyph--plus" data-mark="plus"></i></summary>
+        <div class="pz-setup__how">
+          <p>Handy when the Chess.com app already has a newer puzzle than this page. It reads the board that’s on your screen, on your own device: no login and nothing sent to anyone. It only works on Chess.com’s <b>Daily Puzzle</b> page, which is unrated. Chess.com doesn’t allow engines on rated puzzles, Puzzle Rush or games, so it never runs there.</p>
+          <p><b>On a computer:</b> the AskTheMove extension for Chrome, Edge and Firefox adds an <b>Analyse on AskTheMove</b> button to the Daily Puzzle page. It’s on its way to the extension stores.</p>
+          <p><b>On a phone or tablet</b> (in the browser, not the Chess.com app), use this bookmark:</p>
+          <label class="paste__label" for="bm-send">The bookmark’s address</label>
+          <!-- BOOKMARKLET --><textarea id="bm-send" class="paste__box pz-setup__bm" rows="3" readonly spellcheck="false">javascript:(function(){(function (root) { const FILES = 'abcdefgh'; const BOARD = 'https://askthemove.online/puzzleanalyzr/'; function piecesFromClasses(list) { const out = {}; for (const cls of list) { const names = String(cls).split(/\s+/); if (!names.includes('piece')) continue; const kind = names.find((n) =&gt; /^[wb][kqrbnp]$/.test(n)); const at = names.find((n) =&gt; /^square-[1-8][1-8]$/.test(n)); if (!kind || !at) continue; const sq = FILES[Number(at[7]) - 1] + at[8]; out[sq] = kind[0] === 'w' ? kind[1].toUpperCase() : kind[1]; } return out; } function sideToMove(text, flipped) { const m = /\b(white|black)\s+to\s+move\b/i.exec(text || ''); if (m) return m[1].toLowerCase() === 'black' ? 'b' : 'w'; return flipped ? 'b' : 'w'; } function castling(p) { let out = ''; if (p.e1 === 'K' &amp;&amp; p.h1 === 'R') out += 'K'; if (p.e1 === 'K' &amp;&amp; p.a1 === 'R') out += 'Q'; if (p.e8 === 'k' &amp;&amp; p.h8 === 'r') out += 'k'; if (p.e8 === 'k' &amp;&amp; p.a8 === 'r') out += 'q'; return out || '-'; } function toFen(pieces, side) { const all = Object.values(pieces); if (all.filter((p) =&gt; p === 'K').length !== 1 || all.filter((p) =&gt; p === 'k').length !== 1) { return { error: 'Couldn’t read the board. Open a puzzle so its pieces are on screen, then try again.' }; } const rows = []; for (let r = 8; r &gt;= 1; r -= 1) { let row = ''; let gap = 0; for (const f of FILES) { const p = pieces[f + r]; if (p) { if (gap) row += gap; gap = 0; row += p; } else gap += 1; } rows.push(row + (gap || '')); } return { fen: `${rows.join('/')} ${side} ${castling(pieces)} - 0 1` }; } function allowed(path) { return /^\/daily-chess-puzzle(\/|$)/.test(path || ''); } function readPage(doc) { const path = doc.location ? doc.location.pathname : ''; if (!allowed(path)) return { error: 'This only works on Chess.com’s Daily Puzzle page (it’s unrated). Rated puzzles, Puzzle Rush and games are off limits.' }; const board = doc.querySelector('wc-chess-board, chess-board, .board'); if (!board) return { error: 'No board on this page. Open a Chess.com puzzle first.' }; const classes = [...board.querySelectorAll('.piece')].map((el) =&gt; el.getAttribute('class') || ''); const flipped = /\bflipped\b/.test(board.getAttribute('class') || ''); return toFen(piecesFromClasses(classes), sideToMove(doc.body ? doc.body.innerText : '', flipped)); } function boardUrl(fen, from = 'chesscom') { return `${BOARD}#fen=${encodeURIComponent(fen)}&amp;from=${from}`; } root.AskTheMoveReader = { allowed, piecesFromClasses, sideToMove, toFen, readPage, boardUrl }; })(typeof globalThis !== 'undefined' ? globalThis : this);var R=globalThis.AskTheMoveReader,g=R.readPage(document);if(g.error){alert(g.error)}else{location.href=R.boardUrl(g.fen,'bookmark')}})()</textarea><!-- /BOOKMARKLET -->
+          <p><button class="btn btn--plain btn--small" id="copy-bm-send" type="button">Copy it</button> <span class="desk__status" id="bm-send-status" role="status" aria-live="polite"></span></p>
+          <p><b>iPad / iPhone:</b> bookmark any page and name it To my board. In Bookmarks tap Edit, tap it, replace its address with the code and tap Done. To use it, open the Daily Puzzle on chess.com and tap To my board in your bookmarks.</p>
+          <p><b>Android:</b> bookmark any page with the ☆, tap Edit, name it To my board and replace its URL with the code. To use it, open the Daily Puzzle on chess.com, type To my board in the address bar and tap the bookmark that shows up.</p>
+        </div>
+      </details>
+      <details>
         <summary><span>A bookmark that opens today’s puzzle</span><i class="glyph glyph--plus" data-mark="plus"></i></summary>
         <div class="pz-setup__how">
           <p>A backup for when this page isn’t handy. Run it while you’re on any Chess.com page.</p>
@@ -408,7 +449,7 @@
         </div>
       </details>
     </div>
-    <p class="pz-setup__credit">Positions and games come from the <a href="https://www.chess.com/news/view/published-data-api" rel="noopener">Chess.com public API</a> and the <a href="https://lichess.org/api" rel="noopener">Lichess API</a>. This page never shows a puzzle’s answer or its name unless you ask Stockfish for it. It isn’t made by Chess.com or Lichess. Moves are checked by <a href="https://github.com/jhlywa/chess.js" rel="noopener">chess.js</a> (BSD licence). The engines are <a href="https://stockfishchess.org" rel="noopener">Stockfish</a> 19, 18, 17.1, 16 and 11, free software under the <a href="/assets/engine/COPYING.txt">GNU GPL v3</a>, in the <a href="https://github.com/nmrugg/stockfish.js" rel="noopener">stockfish.js</a> browser build, whose source is linked there (17.1’s script has one line changed so it reads its engine from this page; the change is noted beside it). The DeepMind searchless chess models (9M, 136M and 270M) are from “Grandmaster-Level Chess Without Search” (Ruoss et al., 2024), © 2024 DeepMind Technologies Limited, <a href="https://github.com/google-deepmind/searchless_chess" rel="noopener">source</a>, under <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>; it was converted to ONNX, with no change to its weights, by <a href="https://huggingface.co/cstr/searchless-chess-onnx" rel="noopener">cstr</a>, and runs here with <a href="https://github.com/microsoft/onnxruntime" rel="noopener">onnxruntime-web</a> (<a href="/assets/engine/ort/LICENSE.txt">MIT</a>). <a href="https://github.com/CSSLab/maia-chess" rel="noopener">Maia</a> (1100 to 1900) is by Reid McIlroy-Young, Siddhartha Sen, Jon Kleinberg and Ashton Anderson (CSSLab, University of Toronto), under the <a href="https://www.gnu.org/licenses/gpl-3.0.html" rel="noopener">GNU GPL v3</a>, converted to ONNX by <a href="https://huggingface.co/shermansiu/maia-1500" rel="noopener">shermansiu</a>, and runs with onnxruntime-web too. <a href="https://github.com/CSSLab/maia2" rel="noopener">Maia-2</a> (its rapid model) is by Zhenwei Tang, Difan Jiao, Reid McIlroy-Young, Jon Kleinberg, Siddhartha Sen and Ashton Anderson (CSSLab, University of Toronto), under the <a href="/assets/engine/MAIA2-LICENSE.txt">MIT licence</a>; it was exported to ONNX for this page with no change to its weights. <a href="https://github.com/CSSLab/maia3" rel="noopener">Maia-3</a> (3M, 5M, 23M and 79M) is by Daniel Monroe, George Eilender, Philip Chalmers, Zhenwei Tang and Ashton Anderson (CSSLab, University of Toronto), under the <a href="/assets/engine/MAIA3-LICENSE.txt">GNU AGPL v3</a>; its published checkpoints were exported to ONNX for this page with their weights stored as 16-bit floats, and the code that does it, and the code that runs them here, is in <a href="https://github.com/praxstack/ChessLab/tree/main/site/tools/maia3-export" rel="noopener">this site’s source</a> under the same licence. The <a href="https://lczero.org" rel="noopener">Leela Chess Zero (Lc0)</a> nets (T1 256x10, T1 512x15, T82 768x15 and BT3 768x15) are by the LeelaChessZero authors and contributors, under the <a href="https://www.gnu.org/licenses/gpl-3.0.html" rel="noopener">GNU GPL v3</a>, <a href="https://github.com/LeelaChessZero/lc0" rel="noopener">source</a>; they were converted to ONNX by <a href="https://huggingface.co/lczerolens" rel="noopener">lczerolens</a>, are stored here with 16-bit weights, and search with a small Lc0-style search written for this page.</p>
+    <p class="pz-setup__credit">Positions and games come from the <a href="https://www.chess.com/news/view/published-data-api" rel="noopener">Chess.com public API</a> and the <a href="https://lichess.org/api" rel="noopener">Lichess API</a>. This page never shows a puzzle’s answer or its name unless you ask Stockfish for it. It isn’t made by Chess.com or Lichess. Moves are checked by <a href="https://github.com/jhlywa/chess.js" rel="noopener">chess.js</a> (BSD licence). The engines are <a href="https://stockfishchess.org" rel="noopener">Stockfish</a> 19, 18, 17.1, 16 and 11, free software under the <a href="/assets/engine/COPYING.txt">GNU GPL v3</a>, in the <a href="https://github.com/nmrugg/stockfish.js" rel="noopener">stockfish.js</a> browser build, whose source is linked there (17.1’s script has one line changed so it reads its engine from this page; the change is noted beside it). The DeepMind searchless chess models (9M, 136M and 270M) are from “Grandmaster-Level Chess Without Search” (Ruoss et al., 2024), © 2024 DeepMind Technologies Limited, <a href="https://github.com/google-deepmind/searchless_chess" rel="noopener">source</a>, under <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>; it was converted to ONNX, with no change to its weights, by <a href="https://huggingface.co/cstr/searchless-chess-onnx" rel="noopener">cstr</a>, and runs here with <a href="https://github.com/microsoft/onnxruntime" rel="noopener">onnxruntime-web</a> (<a href="/assets/engine/ort/LICENSE.txt">MIT</a>). <a href="https://github.com/CSSLab/maia-chess" rel="noopener">Maia</a> (1100 to 1900) is by Reid McIlroy-Young, Siddhartha Sen, Jon Kleinberg and Ashton Anderson (CSSLab, University of Toronto), under the <a href="https://www.gnu.org/licenses/gpl-3.0.html" rel="noopener">GNU GPL v3</a>, converted to ONNX by <a href="https://huggingface.co/shermansiu/maia-1500" rel="noopener">shermansiu</a>, and runs with onnxruntime-web too. <a href="https://github.com/CSSLab/maia2" rel="noopener">Maia-2</a> (its rapid model) is by Zhenwei Tang, Difan Jiao, Reid McIlroy-Young, Jon Kleinberg, Siddhartha Sen and Ashton Anderson (CSSLab, University of Toronto), under the <a href="/assets/engine/MAIA2-LICENSE.txt">MIT licence</a>; it was exported to ONNX for this page with no change to its weights. <a href="https://github.com/CSSLab/maia3" rel="noopener">Maia-3</a> (3M, 5M, 23M and 79M) is by Daniel Monroe, George Eilender, Philip Chalmers, Zhenwei Tang and Ashton Anderson (CSSLab, University of Toronto), under the <a href="/assets/engine/MAIA3-LICENSE.txt">GNU AGPL v3</a>; its published checkpoints were exported to ONNX for this page with their weights stored as 16-bit floats, and the code that does it, and the code that runs them here, is in <a href="https://github.com/praxstack/ChessLab/tree/main/site/tools/maia3-export" rel="noopener">this site’s source</a> under the same licence. The <a href="https://lczero.org" rel="noopener">Leela Chess Zero (Lc0)</a> nets (T1 256x10, T1 512x15, T82 768x15 and BT3 768x15) are by the LeelaChessZero authors and contributors, under the <a href="https://www.gnu.org/licenses/gpl-3.0.html" rel="noopener">GNU GPL v3</a>, <a href="https://github.com/LeelaChessZero/lc0" rel="noopener">source</a>; they were converted to ONNX by <a href="https://huggingface.co/lczerolens" rel="noopener">lczerolens</a>, are stored here with 16-bit weights, and search with a small Lc0-style search written for this page. Stockfish 19 and 19 Lite (Lichess build) and <a href="https://github.com/fairy-stockfish/Fairy-Stockfish" rel="noopener">Fairy-Stockfish</a> 14 are the Lichess team’s own browser builds (<a href="https://github.com/lichess-org/stockfish-web" rel="noopener">stockfish-web</a>, its package under the <a href="https://www.gnu.org/licenses/agpl-3.0.html" rel="noopener">GNU AGPL v3</a>; Stockfish and Fairy-Stockfish under the <a href="/assets/engine/lichess/LICENSE.txt">GNU GPL v3</a>), unchanged, with nets from <a href="https://tests.stockfishchess.org/nns" rel="noopener">tests.stockfishchess.org</a>.</p>
   </section>
 
 </main>

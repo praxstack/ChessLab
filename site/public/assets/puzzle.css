@@ -2452,3 +2452,132 @@ button.cal__day {
     background: none;
   }
 }
+
+/* The Chess.com app is ahead of the public feed between local midnight and Pacific midnight. */
+.desk__ahead {
+  margin: var(--s-2) 0 0;
+}
+
+/* Set up a position: a board to tap pieces onto, and a tray of pieces under it. */
+.setup {
+  width: min(94vw, 30rem);
+}
+
+.setup__body {
+  display: grid;
+  gap: var(--s-3);
+  padding: 0 var(--s-5) var(--s-5);
+}
+
+.setup__lede {
+  margin: 0;
+  color: var(--ink-2);
+}
+
+.setup .setup__side {
+  justify-self: start;
+  margin: 0;
+}
+
+.setup__board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  width: 100%;
+  aspect-ratio: 1;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+.setup__sq {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  overflow: hidden;
+  background: var(--cc-light);
+  cursor: pointer;
+}
+
+.setup__sq--dark {
+  background: var(--cc-dark);
+}
+
+.setup__sq img {
+  width: 92%;
+  height: auto;
+  max-height: 92%;
+  pointer-events: none;
+}
+
+.setup__sq:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: -3px;
+}
+
+.setup__tray {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.setup__pick {
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  padding: 2px;
+  border: 1.5px solid transparent;
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.setup__pick img {
+  width: 100%;
+  max-width: 40px;
+  height: auto;
+  pointer-events: none;
+}
+
+.setup__pick span {
+  font-size: 0.7rem;
+}
+
+.setup__pick[aria-checked='true'] {
+  border-color: var(--ink);
+  background: var(--highlight);
+}
+
+.setup__pick--rub {
+  grid-row: 1 / span 2;
+  grid-column: 7;
+}
+
+.setup__note {
+  min-height: 1.5em;
+  margin: 0;
+}
+
+.setup__tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.setup__done {
+  justify-self: start;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup[open] {
+    animation: none;
+  }
+}
