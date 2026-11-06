@@ -16,9 +16,24 @@ const slug = text => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+
 export const MAX_PGN_BYTES = 2_000_000;
 export const MAX_LINES = 600;
 
-// Splits a multi-game PGN on the blank line before the next tag section.
+// Splits a multi-game PGN at a blank line followed by a tag section. Text inside {...} comments
+// and after ; to the end of a line is skipped, so a note with a blank line never splits a game.
 export function splitGames(pgn) {
-  return pgn.replace(/\r\n?/g, '\n').split(/\n\s*\n(?=\s*\[)/).map(game => game.trim()).filter(Boolean);
+  const text = pgn.replace(/\r\n?/g, '\n'), games = [];
+  let start = 0, inBrace = false, inLine = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inBrace) { if (c === '}') inBrace = false; continue; }
+    if (inLine) { if (c === '\n') inLine = false; else continue; }
+    if (c === '{') { inBrace = true; continue; }
+    if (c === ';') { inLine = true; continue; }
+    if (c === '\n') {
+      const rest = text.slice(i + 1).match(/^[ \t]*\n\s*\[/);
+      if (rest) { games.push(text.slice(start, i)); start = i + 1; }
+    }
+  }
+  games.push(text.slice(start));
+  return games.map(game => game.trim()).filter(Boolean);
 }
 
 // Walks one parsed game and returns its leaf lines. The main line of every node comes first, so
@@ -70,7 +85,9 @@ export function courseFromPgn(pgn, options = {}, {now} = {}) {
     if (chapters.length >= 60 && !(parsed.headers.ChapterName && chapters.some(c => c.title === title))) fail('Import at most 60 chapters per course.');
     if (total > MAX_LINES) fail(`Import at most ${MAX_LINES} lines per course.`);
     const first = replay([], initialFen).turn();
-    const side = options.side === 'w' || options.side === 'b' ? options.side : first;
+    // An explicit choice wins, then the Side header our own export writes, then the first mover.
+    const headerSide = {White: 'w', Black: 'b'}[parsed.headers.Side];
+    const side = options.side === 'w' || options.side === 'b' ? options.side : headerSide || first;
     // Games that name the same chapter (our own export writes one game per line) join one chapter.
     let chapter = parsed.headers.ChapterName ? chapters.find(c => c.title === title) : null;
     if (!chapter) {

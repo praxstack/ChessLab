@@ -155,6 +155,13 @@ test('a PGN with variations becomes a course with one line per leaf, and exports
   const fenPgn = courseToPgn(fenCourse);
   assert.match(fenPgn, /\[FEN "8\/8\/8\/8\/8\/4k3\/8\/R3K3 b - - 0 9"\]\n\n9\.\.\. Kd3 10\. Kf2 \*/);
   const back = courseFromPgn(fenPgn, {title: 'back', source: {kind: 'own'}});
+  assert.equal(back.chapters[0].lines[0].side, 'b', 'the exported Side header comes back');
+  const mixed = courseFromPgn(courseToPgn(validateCourse(vienna())), {source: {kind: 'own'}});
+  assert.deepEqual(mixed.chapters[0].lines.map(l => l.side), ['w', 'b'], 'a mixed-side course keeps each side');
+  // A blank line inside a comment does not start a new game.
+  assert.equal(splitGames('1. e4 {An idea.\n\n[%cal Ge2e4]} e5 *').length, 1);
+  assert.deepEqual(courseFromPgn('1. e4 {An idea.\n\n[%cal Ge2e4]} e5 *', {}).chapters[0].lines[0].marks[1], [{color: 'G', from: 'e2', to: 'e4'}]);
+  assert.equal(splitGames('[Event "a"]\n\n1. e4 *\n\n[Event "b"]\n\n1. d4 *').length, 2);
   assert.equal(back.chapters.length, 1); assert.equal(back.chapters[0].lines.length, 65); assert.equal(back.chapters[0].title, 'Rook endings');
 });
 
