@@ -114,6 +114,9 @@ function fakeBrowser() {
     addEventListener(type, fn) {
       this.handlers[type].push(fn);
     }
+    removeEventListener(type, fn) {
+      this.handlers[type] = this.handlers[type].filter((f) => f !== fn);
+    }
     emit(type, data) {
       for (const fn of this.handlers[type]) fn(type === 'message' ? { data } : {});
     }

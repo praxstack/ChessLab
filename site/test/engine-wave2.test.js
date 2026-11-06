@@ -129,6 +129,9 @@ function fakeBrowser(files, { netOk = true } = {}) {
     addEventListener(type, fn) {
       this.handlers[type].push(fn);
     }
+    removeEventListener(type, fn) {
+      this.handlers[type] = this.handlers[type].filter((f) => f !== fn);
+    }
     emit(type, data) {
       for (const fn of this.handlers[type]) fn(type === 'message' ? { data } : {});
     }
@@ -370,4 +373,77 @@ test('loader: a whole file with a SHA-256 is checked, and a damaged one never re
   const bad = fakeBrowser({ '/m.onnx': bytes('a small modeL') });
   await assert.rejects(createEngine({ spec }).load(), /damaged/);
   assert.equal(bad.workers.length, 0);
+});
+
+/* ------------------------------------------- startWorker, the shared start */
+
+// A worker that never answers "uci", so a start hangs in its handshake.
+function neverAnswers() {
+  const Base = globalThis.Worker;
+  globalThis.Worker = class extends Base {
+    postMessage(cmd) {
+      if (cmd === 'uci') this.sent.push(cmd);
+      else super.postMessage(cmd);
+    }
+  };
+}
+
+test('startWorker: downloads, starts and hands over a worker with the handshake done and no listener left on it', async () => {
+  const wasm = bytes('wasm');
+  const { workers, fetched } = fakeBrowser({ '/w.wasm': wasm });
+  const { startWorker } = await import('../public/assets/engine.js');
+  const spec = { id: 'x', name: 'X', options: ['setoption name Hash value 16'], files: [{ path: '/w.js', bytes: 9, role: 'worker' }, { path: '/w.wasm', bytes: wasm.length, role: 'wasm' }] };
+  const states = [];
+  const got = await startWorker(spec, { onState: (s) => states.push(s) });
+  assert.equal(got.worker, workers[0]);
+  assert.equal(got.fromDevice, false);
+  assert.equal(got.total, wasm.length);
+  assert.equal(got.startMs, 20000);
+  assert.deepEqual(fetched, ['/w.wasm']);
+  assert.deepEqual(workers[0].sent, ['uci', 'setoption name Hash value 16', 'isready']);
+  assert.deepEqual(workers[0].handlers, { message: [], error: [] }, 'the caller owns the worker now');
+  assert.equal(states[0].phase, 'download');
+  assert.deepEqual(states.at(-1), { phase: 'start', fromDevice: false, spec }, 'the caller says "ready", not the start');
+  assert.ok(states.every((s) => s.phase !== 'ready'));
+  assert.equal(workers[0].terminated, undefined);
+});
+
+test('startWorker: a stop during the handshake ends the worker and is a cancel', async () => {
+  const { workers } = fakeBrowser({});
+  neverAnswers();
+  const { startWorker, isCancel } = await import('../public/assets/engine.js');
+  const aborter = new AbortController();
+  const started = startWorker(engineById('sf19-asm'), { signal: aborter.signal });
+  await new Promise((r) => setTimeout(r, 5));
+  assert.equal(workers.length, 1);
+  aborter.abort();
+  await assert.rejects(started, (err) => isCancel(err));
+  assert.equal(workers[0].terminated, true);
+  assert.deepEqual(workers[0].handlers, { message: [], error: [] });
+});
+
+test('startWorker: a worker that dies in its handshake is ended, and the error says what the browser said', async () => {
+  const { workers } = fakeBrowser({});
+  neverAnswers();
+  const { startWorker } = await import('../public/assets/engine.js');
+  const started = startWorker(engineById('sf19-asm'));
+  await new Promise((r) => setTimeout(r, 5));
+  workers[0].handlers.error.forEach((fn) => fn({ message: 'out of memory' }));
+  await assert.rejects(started, /The engine stopped: out of memory/);
+  assert.equal(workers[0].terminated, true);
+});
+
+test('loader: stop() while the engine is still starting ends its worker, and load() is a cancel', async () => {
+  const { workers } = fakeBrowser({});
+  neverAnswers();
+  const { createEngine, isCancel } = await import('../public/assets/engine.js');
+  const states = [];
+  const engine = createEngine({ spec: engineById('sf19-asm'), onState: (s) => states.push(s.phase) });
+  const loading = engine.load();
+  await new Promise((r) => setTimeout(r, 5));
+  assert.equal(engine.phase, 'start');
+  engine.stop();
+  await assert.rejects(loading, (err) => isCancel(err));
+  assert.equal(workers[0].terminated, true);
+  assert.deepEqual(states, ['start'], 'nothing is reported after stop()');
 });
