@@ -71,6 +71,8 @@ export default function courseRoutes(ctx) {
       const saved = await course(params.id);
       for (const card of await cards(saved.id)) await store.delete('course_cards', card.id);
       for (const drill of await store.list('drill_sessions', {index: 'courseId', value: saved.id})) await store.delete('drill_sessions', drill.id);
+      // Quiz and line progress belong to this course; a new course with the same ids starts clean.
+      for (const kind of ['quiz', 'line']) for (const row of await store.list('progress', {index: 'kind', value: kind})) if (row.itemId.startsWith(saved.id + ':')) await store.delete('progress', row.key);
       await store.delete('courses', saved.id);
       return {deleted: saved.id};
     })],

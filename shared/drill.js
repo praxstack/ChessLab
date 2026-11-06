@@ -5,7 +5,9 @@ import {createChess} from './chess.js';
 // reply. Same shape as Chessly's Drills and Chessable's MoveTrainer. Pure functions over a plain
 // session; the caller stores it and passes the line back in each time.
 //
-//   session {id, courseId, lineId, ply, misses, hints, state:'active'|'done', result:null|'pass'|'hinted'|'miss', tries:[{ply, move, correct}], revision}
+//   session {id, courseId, lineId, ply, misses, hints, here:{misses, hints}, state:'active'|'done', result:null|'pass'|'hinted'|'miss', tries:[{ply, move, correct}], revision}
+//   misses and hints count the whole drill and grade it; here counts only the current position, so a
+//   hint or the shown move never carries over to the learner's next move.
 //
 // The hint ladder is the one Review Practice and the tutor loop use: 1 shows the piece's square,
 // 2 shows the move. After MAX_MISSES wrong tries the app shows the move and the learner plays it
@@ -26,7 +28,7 @@ function advance(line, ply) {
 
 export function createDrill({id, course, line, now}) {
   if (typeof id !== 'string' || !id) throw new TypeError('A drill needs an id.');
-  return {id, courseId: course.id, lineId: line.id, ply: advance(line, 0), misses: 0, hints: 0, state: 'active', result: null, tries: [], revision: 0, startedAt: now, updatedAt: now};
+  return {id, courseId: course.id, lineId: line.id, ply: advance(line, 0), misses: 0, hints: 0, here: {misses: 0, hints: 0}, state: 'active', result: null, tries: [], revision: 0, startedAt: now, updatedAt: now};
 }
 
 // Everything the board needs: the moves played so far, whose turn it is, the hint if asked, and
@@ -37,20 +39,22 @@ export function drillView(session, line) {
   const expected = session.ply < line.moves.length ? line.moves[session.ply] : null;
   const notes = Object.fromEntries(Object.entries(line.notes || {}).filter(([ply]) => Number(ply) <= session.ply));
   const marks = Object.fromEntries(Object.entries(line.marks || {}).filter(([ply]) => Number(ply) <= session.ply));
-  const required = session.state === 'active' && session.misses >= MAX_MISSES ? expected : null;
+  const here = session.here || {misses: session.misses, hints: session.hints};
+  const required = session.state === 'active' && here.misses >= MAX_MISSES ? expected : null;
   return {
     id: session.id, courseId: session.courseId, lineId: line.id, title: line.title, side: line.side, startFen: line.startFen,
     moves: played, fen: board.fen(), toMove: board.turn(), ply: session.ply, total: line.moves.length,
     state: session.state, result: session.result, misses: session.misses, hints: session.hints, revision: session.revision,
-    hint: session.hints === 0 || !expected ? null : session.hints === 1 ? {from: expected.slice(0, 2)} : {from: expected.slice(0, 2), to: expected.slice(2, 4), move: expected},
+    hint: here.hints === 0 || !expected || session.state !== 'active' ? null : here.hints === 1 ? {from: expected.slice(0, 2)} : {from: expected.slice(0, 2), to: expected.slice(2, 4), move: expected},
     required, notes, marks, lastMove: played.at(-1) || null,
   };
 }
 
 export function askHint(session) {
   if (session.state !== 'active') fail('This drill is finished.', 409);
-  if (session.hints >= HINT_LEVELS) return session;
-  return {...session, hints: session.hints + 1, revision: session.revision + 1};
+  const here = session.here || {misses: 0, hints: 0};
+  if (here.hints >= HINT_LEVELS) return session;
+  return {...session, hints: session.hints + 1, here: {...here, hints: here.hints + 1}, revision: session.revision + 1};
 }
 
 function finish(session, now) {
@@ -68,12 +72,16 @@ export function playDrillMove(session, line, move, now) {
   catch { fail('That move is not legal in this position.'); }
   const expected = line.moves[session.ply];
   const next = {...session, tries: [...session.tries, {ply: session.ply, move, correct: move === expected}], revision: session.revision + 1, updatedAt: now};
+  const here = session.here || {misses: 0, hints: 0};
   if (move !== expected) {
     next.misses += 1;
-    // A miss moves one rung up the hint ladder, so the learner always gets something new.
-    if (next.misses < MAX_MISSES) next.hints = Math.min(HINT_LEVELS, next.hints + 1); else next.hints = HINT_LEVELS;
-    return {session: next, correct: false, done: false, reply: null, expectedShown: next.misses >= MAX_MISSES};
+    // A miss moves one rung up this position's hint ladder, so the learner always gets something new.
+    const misses = here.misses + 1, hints = misses < MAX_MISSES ? Math.min(HINT_LEVELS, here.hints + 1) : HINT_LEVELS;
+    next.hints += hints - here.hints;
+    next.here = {misses, hints};
+    return {session: next, correct: false, done: false, reply: null, expectedShown: misses >= MAX_MISSES};
   }
+  next.here = {misses: 0, hints: 0};
   const after = advance(line, session.ply + 1);
   const reply = after > session.ply + 1 ? line.moves.slice(session.ply + 1, after) : [];
   next.ply = after;

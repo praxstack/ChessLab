@@ -87,8 +87,11 @@ test('a drill plays the learner side, answers with the book and ends with a sche
   assert.throws(() => playDrillMove(session, line, 'e2e5', t), /not legal/);
   step = playDrillMove(session, line, 'e2e4', t); session = step.session;
   assert.equal(step.correct, true); assert.deepEqual(step.reply, ['e7e5']); assert.equal(session.ply, 2);
+  session = askHint(session); assert.deepEqual(drillView(session, line).hint, {from: 'b1'}, 'the earlier miss does not carry its hint here');
   session = askHint(session); assert.deepEqual(drillView(session, line).hint, {from: 'b1', to: 'c3', move: 'b1c3'});
   step = playDrillMove(session, line, 'b1c3', t); session = step.session; assert.deepEqual(step.reply, ['g8f6']);
+  assert.equal(drillView(session, line).hint, null, 'hints reset at the next position');
+  assert.equal(session.hints, 3, 'the drill still counts every hint it used');
   assert.deepEqual(Object.keys(drillView(session, line).marks), ['3'], 'marks up to the current ply show');
   step = playDrillMove(session, line, 'f2f4', t + 5); session = step.session;
   assert.equal(step.done, true); assert.equal(session.state, 'done'); assert.equal(session.result, 'miss', 'any miss makes the drill a miss');
@@ -106,6 +109,8 @@ test('a drill plays the learner side, answers with the book and ends with a sche
   for (let i = 0; i < MAX_MISSES; i++) session = playDrillMove(session, line, 'a2a3', t).session;
   assert.equal(drillView(session, line).required, 'e2e4');
   step = playDrillMove(session, line, 'e2e4', t); assert.equal(step.correct, true);
+  assert.equal(drillView(step.session, line).required, null, 'the shown move is not shown again at the next position');
+  assert.equal(drillView(step.session, line).hint, null);
   const hinted = createDrill({id: 'd4', course, line: black, now: t});
   step = playDrillMove(askHint(hinted), black, 'e7e5', t); step = playDrillMove(step.session, black, 'g8f6', t);
   assert.equal(step.session.result, 'hinted');

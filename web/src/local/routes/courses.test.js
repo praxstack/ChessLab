@@ -63,6 +63,9 @@ test('courses are saved with one card per line, listed, drilled, scheduled and d
   assert.equal((await f.post('/api/courses/london/delete')).body.deleted, 'london');
   assert.equal((await f.get('/api/courses/london')).status, 404);
   assert.deepEqual(await f.store.list('course_cards'), []); assert.deepEqual(await f.store.list('drill_sessions'), []);
+  assert.deepEqual((await f.store.list('progress')).filter(row => row.itemId.startsWith('london:')), [], 'quiz and line progress go with the course');
+  await f.post('/api/courses', {course: course()});
+  assert.deepEqual((await f.get('/api/courses/london')).body.quizzes, [], 'a recreated course starts clean');
 });
 
 test('PGN and Lichess study imports become courses, and the backup carries them', async () => {
