@@ -2,7 +2,11 @@
 
 The beta app runs on the founder's Mac through a Cloudflare Tunnel (`scripts/host_on_mac.sh`). When the Mac sleeps or is off, visitors used to get Cloudflare's "Error 1033" page.
 
-This small Cloudflare Worker sits in front of `app.askthemove.online`:
+This small Cloudflare Worker sits in front of `app.askthemove.online`.
+
+**Until launch (`ALWAYS_REST = "true"` in `wrangler.toml`, the default now):** every visit gets the page, saying the beta is being rebuilt, even when the Mac is running the app. Nothing reaches the Mac. At launch, set it to `"false"` and deploy again to get the behaviour below.
+
+With `ALWAYS_REST = "false"`:
 
 - When the Mac is up, every request goes straight through to the app, unchanged.
 - When the tunnel is down (status 530, error 1033) or the app isn't answering (502), page visits get "The board is resting" in the main site's notebook style, with a button to the Puzzle Launcher at `askthemove.online/puzzleanalyzr`. The page reloads every minute, so it turns back into the app by itself.

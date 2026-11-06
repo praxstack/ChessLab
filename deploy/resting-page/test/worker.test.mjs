@@ -62,3 +62,20 @@ test('borrows only the listed fonts and piece from the main site', async () => {
   await handle(html('/__resting/../../etc'), env, fetchOrigin);
   assert.equal(seen[0], 'https://app.askthemove.online/etc');
 });
+
+test('ALWAYS_REST keeps the app closed even when the Mac is up', async () => {
+  let called = false;
+  const up = async () => { called = true; return new Response('app', { status: 200 }); };
+  const res = await handle(html('/play'), { ...env, ALWAYS_REST: 'true' }, up);
+  assert.equal(called, false);
+  assert.equal(res.status, 503);
+  const body = await res.text();
+  assert.match(body, /rebuilding/);
+  assert.doesNotMatch(body, /http-equiv="refresh"/);
+  const json = await handle(api(), { ...env, ALWAYS_REST: 'true' }, up);
+  assert.match((await json.json()).error, /closed until launch/);
+  assert.equal(called, false);
+  // Fonts still load.
+  const font = await handle(html('/__resting/fonts/kalam-700.woff2'), { ...env, ALWAYS_REST: 'true' }, up);
+  assert.equal(font.status, 200);
+});

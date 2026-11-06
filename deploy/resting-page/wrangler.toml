@@ -7,4 +7,7 @@ workers_dev = false
 routes = [{ pattern = "app.askthemove.online/*", zone_name = "askthemove.online" }]
 
 [vars]
+# true = always show the page and never reach the Mac (the app is closed until launch).
+# Set to "false" at launch so the page only shows when the Mac is down.
+ALWAYS_REST = "true"
 LAUNCHER_URL = "https://askthemove.online/puzzleanalyzr"
