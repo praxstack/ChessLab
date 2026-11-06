@@ -8,7 +8,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "node scripts/build.mjs",
+    "build": "node extension/make-bookmarklet.mjs && node scripts/build.mjs",
     "build:check": "node scripts/build.mjs --check",
     "dev": "wrangler pages dev",
     "test": "node --test --no-warnings=ExperimentalWarning \"test/*.test.js\"",

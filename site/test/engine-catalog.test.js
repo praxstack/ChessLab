@@ -12,6 +12,7 @@ import {
   HEAVY_FAMILIES,
   PICK_KEY,
   TRYING_KEY,
+  cantRun,
   createChoice,
   engineById,
   engineFiles,
@@ -22,6 +23,7 @@ import {
   isHandheld,
   needsWarning,
   roughTimes,
+  threadCount,
   visibleEngines,
 } from '../public/assets/engine-catalog.js';
 import { MAX_PART_BYTES, checkJoined, checkPart, createJoiner, joinParts, manifestFor, planParts, sha256Hex, splitBytes } from '../public/assets/engine-parts.js';
@@ -54,7 +56,7 @@ test('catalog: every entry is complete, ids are unique, and Lite is the ready de
   assert.equal(needsWarning(lite), false);
   assert.deepEqual(
     ENGINES.filter((e) => e.status === 'ready').map((e) => e.id),
-    ['sf19-lite', 'sf19-full', 'sf18-lite', 'sf17-lite', 'sf19-asm', 'sf11', 'sf17-full', 'sf18-full', 'sf16', 'dm-9m', 'maia1-1100', 'maia1-1500', 'maia1-1900'],
+    ['sf19-lite', 'sf19-full', 'sf19-lite-mt', 'sf19-full-mt', 'sf18-lite', 'sf17-lite', 'sf19-asm', 'sf11', 'sf17-full', 'sf18-full', 'sf16', 'sf19-lichess-big', 'sf19-lichess-small', 'fairy-sf14', 'dm-9m', 'maia1-1100', 'maia1-1200', 'maia1-1300', 'maia1-1400', 'maia1-1500', 'maia1-1600', 'maia1-1700', 'maia1-1800', 'maia1-1900', 'maia3-3m-1100', 'maia3-3m-1500', 'maia3-3m-1900', 'maia3-5m-1100', 'maia3-5m-1500', 'maia3-5m-1900', 'maia3-23m-1100', 'maia3-23m-1500', 'maia3-23m-1900', 'maia3-79m-1100', 'maia3-79m-1500', 'maia3-79m-1900', 'maia2-1100', 'maia2-1500', 'maia2-1900', 'dm-136m', 'dm-270m', 'lc0-t1-256x10', 'lc0-t1-512x15', 'lc0-t82', 'lc0-bt3'],
   );
 });
 
@@ -74,7 +76,7 @@ test('catalog: ready engines are on disk at the listed sizes, under the Cloudfla
   assert.match(readFileSync(pub('assets/engine/COPYING.txt'), 'utf8'), /GNU GENERAL PUBLIC LICENSE/);
   for (const e of ENGINES.filter((x) => x.status === 'ready')) {
     const { worker, wasm } = engineFiles(e);
-    if (e.family === 'Stockfish') assert.equal(e.licenseUrl, '/assets/engine/COPYING.txt', e.id);
+    if (e.family === 'Stockfish' && !e.id.includes('lichess')) assert.equal(e.licenseUrl, '/assets/engine/COPYING.txt', e.id);
     assert.ok(worker.path.startsWith('/assets/engine/'), `${e.id}: its worker gets the engine policy`);
     assert.equal(Boolean(wasm), !e.scriptOnly, `${e.id}: a .wasm or model unless the script is the whole engine`);
     for (const f of e.files) {
@@ -92,6 +94,17 @@ test('catalog: ready engines are on disk at the listed sizes, under the Cloudfla
         assert.ok(!existsSync(pub(f.path)), `${f.path}: the joined file is not deployed, only its parts`);
       }
     }
+  }
+  for (const id of ['sf19-lichess-big', 'sf19-lichess-small', 'fairy-sf14']) {
+    const e = engineById(id);
+    assert.equal(e.licenseUrl, '/assets/engine/lichess/LICENSE.txt', id);
+    assert.ok(e.threads && e.module, `${id}: Lichess builds start their own threads from an ES module`);
+    assert.match(e.credit, /Lichess team/, id);
+  }
+  {
+    const text = readFileSync(pub('assets/engine/lichess/LICENSE.txt'), 'utf8');
+    assert.match(text, /GNU AFFERO GENERAL PUBLIC LICENSE/, 'the package licence (AGPL)');
+    assert.match(text, /^ +GNU GENERAL PUBLIC LICENSE/m, 'the Stockfish licence (GPL)');
   }
   const dm = engineById('dm-9m');
   assert.equal(dm.licenseUrl, 'https://creativecommons.org/licenses/by/4.0/');
@@ -112,15 +125,16 @@ test('catalog: every split file matches its manifest, each part’s hash and the
   const split = ENGINES.filter((e) => e.status === 'ready').flatMap((e) => e.files.filter((f) => f.parts));
   assert.deepEqual(
     split.map((f) => f.path.replace('/assets/engine/', '')),
-    ['stockfish-19-single.wasm', 'stockfish-17.1-single.wasm', 'stockfish-18-single.wasm', 'nn-5af11540bbfe.nnue', 'searchless-9m.onnx'],
+    ['stockfish-19-single.wasm', 'stockfish-19.wasm', 'stockfish-17.1-single.wasm', 'stockfish-18-single.wasm', 'nn-5af11540bbfe.nnue', 'lichess/nn-1a298aa575a0.nnue', 'searchless-9m.onnx', ...['23m', '79m'].flatMap((z) => Array(3).fill(`maia3-${z}.onnx`)), 'maia2-rapid.onnx', 'maia2-rapid.onnx', 'maia2-rapid.onnx', 'searchless-136m.onnx', 'searchless-270m.onnx', 'lc0-t1-256x10.onnx', 'lc0-t1-512x15.onnx', 'lc0-t82-768x15.onnx', 'lc0-bt3-768x15.onnx'],
   );
   for (const f of split) {
     const manifest = JSON.parse(readFileSync(pub(`${f.path}.parts.json`), 'utf8'));
-    assert.equal(`/assets/engine/${manifest.file}`, f.path);
+    const dir = f.path.slice(0, f.path.lastIndexOf('/') + 1);
+    assert.equal(`${dir}${manifest.file}`, f.path);
     assert.equal(manifest.bytes, f.bytes, f.path);
     assert.equal(manifest.sha256, f.sha256, f.path);
     assert.deepEqual(
-      manifest.parts.map((p) => [`/assets/engine/${p.file}`, p.bytes, p.sha256]),
+      manifest.parts.map((p) => [`${dir}${p.file}`, p.bytes, p.sha256]),
       f.parts.map((p) => [p.path, p.bytes, p.sha256]),
       `${f.path}: catalog and manifest list the same parts, in the same order`,
     );
@@ -329,7 +343,7 @@ test('choice: a start that never finished (the tab froze or crashed) means Lite 
 });
 
 test('choice: a stored id that is unknown or not runnable, or storage that throws, means Lite', () => {
-  assert.equal(createChoice(memoryStorage({ [PICK_KEY]: 'lc0-bt3' })).start().engine.id, DEFAULT_ENGINE);
+  assert.equal(createChoice(memoryStorage({ [PICK_KEY]: 'lc0-bt4' })).start().engine.id, DEFAULT_ENGINE);
   assert.equal(createChoice(memoryStorage({ [PICK_KEY]: '???' })).start().engine.id, DEFAULT_ENGINE);
   const throwing = {
     getItem() {
@@ -348,4 +362,48 @@ test('choice: a stored id that is unknown or not runnable, or storage that throw
   assert.equal(c.failed(engineById('sf19-full'), 'x').engine.id, DEFAULT_ENGINE);
   assert.equal(createChoice(null).start().engine.id, DEFAULT_ENGINE);
   assert.match(failureReason('took too long'), /too slow/);
+});
+
+test('several cores: only on a cross-origin isolated page, 2 to 4 threads, and a plain reason when it can’t', () => {
+  const mt = ENGINES.filter((e) => e.threads);
+  assert.deepEqual(mt.map((e) => e.id), ['sf19-lite-mt', 'sf19-full-mt', 'sf19-lichess-big', 'sf19-lichess-small', 'fairy-sf14']);
+  for (const e of mt) {
+    assert.equal(e.status, 'ready');
+    assert.match(cantRun(e, { isolated: false }), /several cores/);
+    assert.equal(cantRun(e, { isolated: true }), '');
+  }
+  assert.equal(cantRun(engineById('sf19-lite'), { isolated: false }), '', 'single-core engines run anywhere');
+  assert.equal(failureReason(cantRun(mt[0])), 'this browser didn’t switch on several cores for this page');
+  assert.deepEqual([undefined, 1, 2, 3, 4, 8, 16].map(threadCount), [2, 2, 2, 2, 3, 4, 4]);
+  // The multi-thread scripts are the npm package's, unchanged: they start pthreads, the single ones don't.
+  // Lichess's builds start from a small module that imports the package's script; that script starts the pthreads.
+  for (const e of mt) {
+    const script = e.id.includes('lichess') || e.family === 'Fairy-Stockfish' ? e.files.find((f) => f.role === 'runtime' && /\/(sf|fsf)_[^/]+\.js$/.test(f.path)) : engineFiles(e).worker;
+    const js = readFileSync(pub(script.path), 'utf8');
+    assert.match(js, /em-pthread/, e.id);
+  }
+});
+
+test('engine workers start from a versioned URL, so a script cached before COEP is fetched again', async () => {
+  const { WORKER_VERSION, workerUrl } = await import('../public/assets/engine.js');
+  assert.equal(workerUrl('/assets/engine/stockfish-19-lite-single.js', '#blob%3Ax'), `/assets/engine/stockfish-19-lite-single.js?v=${WORKER_VERSION}#blob%3Ax`);
+  assert.equal(workerUrl('/assets/engine/x.js'), `/assets/engine/x.js?v=${WORKER_VERSION}`);
+  const src = readFileSync(pub('/assets/engine.js'), 'utf8');
+  assert.match(src, /new Worker\(workerUrl\(script\.path, hash\)/, 'the one place a worker starts uses it');
+  assert.equal((src.match(/new Worker\(/g) || []).length, 1);
+});
+
+test('Maia-2: three ratings share one model and one worker; each tells the worker its rating', () => {
+  const m2 = ENGINES.filter((e) => e.family === 'Maia-2');
+  assert.deepEqual(m2.map((e) => [e.id, e.status, e.options]), [
+    ['maia2-1100', 'ready', ['setoption name Elo value 1100']],
+    ['maia2-1500', 'ready', ['setoption name Elo value 1500']],
+    ['maia2-1900', 'ready', ['setoption name Elo value 1900']],
+  ]);
+  const paths = m2.map((e) => e.files.map((f) => f.path).join());
+  assert.equal(new Set(paths).size, 1, 'the same files, so one download serves all three');
+  for (const e of m2) assert.ok(needsWarning(e), 'an 85 MB model gets the warning first');
+  const worker = engineFiles(m2[0]).worker;
+  assert.equal(statSync(pub(worker.path)).size, worker.bytes);
+  assert.match(readFileSync(pub(worker.path), 'utf8'), /setoption name Elo value/);
 });

@@ -1,0 +1,27 @@
+{
+  "file": "maia2-rapid.onnx",
+  "bytes": 84934218,
+  "sha256": "e02c24370e11074b10db93c0d1401e5142495448fd22851a2357b7bc0ea944d4",
+  "parts": [
+    {
+      "file": "maia2-rapid.onnx.part0",
+      "bytes": 21233555,
+      "sha256": "e122c1b3835b14f9f5e5762bea76ce916a44e85e46409ece08bb71e65b000762"
+    },
+    {
+      "file": "maia2-rapid.onnx.part1",
+      "bytes": 21233555,
+      "sha256": "1d287390f9c11be00b45994b6e3f99f46f3f52887202a1d19e0e809af61095f3"
+    },
+    {
+      "file": "maia2-rapid.onnx.part2",
+      "bytes": 21233554,
+      "sha256": "c666e54400f54bbb3b98fcaeec81b08efdd7bc644bf47a4fbb8a43549c5dc977"
+    },
+    {
+      "file": "maia2-rapid.onnx.part3",
+      "bytes": 21233554,
+      "sha256": "7f5653090240222e7939dfadebce5c80e896c99b415a25f9f3f2fb8094675bbc"
+    }
+  ]
+}

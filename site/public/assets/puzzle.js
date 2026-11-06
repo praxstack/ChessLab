@@ -9,12 +9,15 @@ import { parsePlacement, pieceHTML } from './board.js';
 import { markSVG, seedFrom } from './ink.js';
 import { createDesk, coordsHTML } from './desk.js';
 import { createDrawLayer } from './draw.js';
+import { createBookPage } from './bookpage.js';
 import { replay as replayLine } from './line.js';
+import { checkLine } from './coach.js';
 import { createEngine, grade, isCancel, isSaved, toCp } from './engine.js';
 import { DEFAULT_ENGINE, createChoice, engineById, formatBytes, needsWarning } from './engine-catalog.js';
 import { createPicker } from './engine-picker.js';
 import * as sound from './sound.js';
-import { nextPuzzleAt, whenText } from './daily-clock.js';
+import { appAhead, nextPuzzleAt, whenText } from './daily-clock.js';
+import { createSetup } from './setup.js';
 
 const API = 'https://api.chess.com/pub';
 const ARCHIVE = 'https://raw.githubusercontent.com/praxstack/ChessLab/puzzle-archive/puzzles.json';
@@ -312,8 +315,11 @@ const pens = createDrawLayer(
   {
     board: $('desk-board'),
     svg: $('desk-draw'),
-    mode: $('draw-mode'),
-    show: $('draw-show'),
+    modes: [...document.querySelectorAll('#draw-modes [data-mode]')],
+    kit: $('draw-kit'),
+    fadeBox: $('draw-fade-box'),
+    fade: $('draw-fade'),
+    fadeOut: $('draw-fade-out'),
     undo: $('draw-undo'),
     clear: $('draw-clear'),
     hint: $('draw-hint'),
@@ -332,16 +338,58 @@ const pens = createDrawLayer(
   },
 );
 
+// Book page: the board, the drawings and the learner's notes, laid out to print.
+const book = createBookPage(
+  {
+    pop: $('book-pop'),
+    diagram: $('book-diagram'),
+    margin: $('book-margin'),
+    caption: $('book-caption'),
+    title: $('book-title'),
+    note: $('book-note'),
+    notePrint: $('book-own-print'),
+    print: $('book-print'),
+    copy: $('book-copy'),
+    close: $('book-close'),
+    say: $('book-say'),
+  },
+  () => ({
+    fen: play.fen,
+    orientation: play.orientation,
+    shapes: pens.shapes,
+    // The line is drawn from the position it started in; show it only while that's still the board.
+    line: shownLine && shownLine.fen === play.fen ? shownLine.text : '',
+    title: [desk.title || 'Your position', desk.iso ? $('card-date').textContent : ''].filter(Boolean).join(', '),
+  }),
+);
+$('draw-book').addEventListener('click', () => book.open());
+
 // The numbered line under the pens: its moves as text, Play it, Clear line.
 let shownLine = null;
 let playing = null;
 let playingLine = ''; // the line Play it is showing, so an edit to it stops the show
 const lineKey = (line) => (line ? `${line.fen}|${line.steps.map((s) => s.from + s.to).join(' ')}` : '');
+let coachSeq = 0; // a Coach check that's running is about this check only
+let coachLine = ''; // the line Coach check's note is about
 function showLine(line) {
   shownLine = line;
   $('draw-line').hidden = !line;
   $('draw-line-text').textContent = line ? line.text : '';
   if (playing && lineKey(line) !== playingLine) stopLine();
+  if (coachLine && lineKey(line) !== coachLine) coachSay(''); // the line changed, so the old verdict no longer fits
+}
+/** Coach check's note under the line. tone: '' (red: a move fails), 'ok' (blue) or 'busy'. */
+function coachSay(text, tone = '') {
+  const note = $('draw-line-note');
+  note.hidden = !text;
+  note.textContent = text;
+  note.className = `pens__coach${tone ? ` is-${tone}` : ''}`;
+  if (!text) {
+    pens.clearCoach(); // the verdict's mark on the board goes with it
+    coachLine = '';
+    coachSeq += 1; // a check still running is about a line that's gone
+    $('draw-line-check').disabled = false;
+  }
 }
 function stopLine() {
   if (!playing) return;
@@ -538,7 +586,13 @@ function showSolve() {
 function showNext() {
   const row = $('card-next-row');
   row.hidden = desk.kind !== 'today' || !todayIso;
-  if (!row.hidden) $('card-next').textContent = whenText(nextPuzzleAt(todayIso));
+  $('card-app-row').hidden = row.hidden;
+  const when = todayIso ? whenText(nextPuzzleAt(todayIso)) : '';
+  if (!row.hidden) $('card-next').textContent = when;
+  // Past midnight on this device, the Chess.com app has moved on but the public feed hasn't.
+  const ahead = $('card-ahead');
+  ahead.hidden = row.hidden || !appAhead(todayIso);
+  ahead.textContent = ahead.hidden ? '' : `The Chess.com app already has the next puzzle. This page gets it ${when}. Want it now? Tap Set one up below and copy it from the app.`;
 }
 
 function planNext() {
@@ -607,6 +661,17 @@ $('load-lichess').addEventListener('click', async () => {
     say('desk-status', 'Couldn’t reach Lichess. Try again in a moment.', 'red');
   }
 });
+
+// Set one up: copy a position you can see (the app's puzzle before this page has it) by tapping.
+const setup = createSetup({
+  dialog: $('setup-pop'),
+  getCurrent: () => (desk.fen ? play.fen : ''),
+  onDone: (fen) => {
+    showOnDesk({ kind: 'paste', fen, title: 'Your position', source: 'set up by you' });
+    bringDeskIntoView();
+  },
+});
+for (const id of ['setup-open', 'paste-setup']) $(id).addEventListener('click', () => setup.open());
 
 $('copy-fen').addEventListener('click', () => {
   if (desk.fen) copy(play.fen, 'desk-status', !play.moved ? 'FEN copied.' : 'FEN of the board as it is now copied.');
@@ -703,6 +768,7 @@ function showEngine(s) {
 // Swap the engine in use: the old one is stopped (its download too), the new one waits to be loaded.
 function useEngine(spec) {
   checkSeq += 1; // a check the old engine was running is thrown away
+  if (coachLine) coachSay(''); // so is a Coach check
   if (engine) engine.stop();
   active = spec;
   engine = createEngine({ spec, onState: showEngine });
@@ -832,6 +898,53 @@ $('engine-show').addEventListener('click', () => {
   engineSay(`${engineWho()}’s move is drawn in blue. Your move is taken back, so you can try it.`, 'blue');
   $('engine-show').hidden = true;
   lastBest = null;
+});
+
+// Coach check: the engine judges the learner's numbered line and marks the
+// first move that fails in red pen. It never draws a line of its own.
+$('draw-line-check').addEventListener('click', async () => {
+  if (!shownLine) return;
+  sound.wake();
+  stopLine();
+  pens.showCoach(null);
+  const { fen: start, steps } = shownLine;
+  const fens = replayLine(start, steps).fens;
+  if (fens.length !== steps.length) return coachSay('This line no longer fits its position. Clear it and draw it again.');
+  const key = lineKey(shownLine);
+  const eng = engine;
+  const seq = ++coachSeq;
+  coachLine = key;
+  const btn = $('draw-line-check');
+  btn.disabled = true;
+  let looked = 0;
+  const busy = () => coachSay(`${engineWho()} is checking your line, move ${Math.min(looked + 1, steps.length)} of ${steps.length}…`, 'busy');
+  coachSay(eng.phase === 'ready' ? `${engineWho()} is checking your line…` : `Getting ${engineWho()} ready, then it checks your line…`, 'busy');
+  const alive = () => seq === coachSeq && eng === engine && lineKey(shownLine) === key;
+  try {
+    const r = await checkLine({
+      start,
+      steps,
+      fens,
+      alive,
+      look: async (fen, moves) => {
+        const answer = await eng.look({ fen, moves });
+        looked = moves.length;
+        if (alive()) busy();
+        return answer;
+      },
+    });
+    if (!r || !alive()) return;
+    const at = steps[r.verdicts.length - 1]; // the failing move, or the last one checked (a line can end in mate or a draw early)
+    pens.showCoach({ to: at.to, ok: r.fail < 0 });
+    coachSay(r.note, r.fail < 0 ? 'ok' : '');
+    sound.play(r.fail < 0 ? 'good' : 'hmm');
+  } catch (err) {
+    if (!alive()) return;
+    if (isCancel(err)) coachSay('Download stopped. Tap Check line to start it again, or pick another engine.');
+    else coachSay(`${engineWho()} couldn’t check that line. Try again.`);
+  } finally {
+    if (seq === coachSeq) btn.disabled = false;
+  }
 });
 
 /* -------------------------------------------------------------- Calendar */
@@ -1264,16 +1377,22 @@ function renderMoreGames() {
 /* ------------------------------------------------------------ Setup bits */
 
 $('copy-bm').addEventListener('click', () => copy($('bm').value, 'bm-status', 'Copied. Now follow the steps below.'));
+$('copy-bm-send').addEventListener('click', () => copy($('bm-send').value, 'bm-send-status', 'Copied. Now follow the steps below.'));
 
 /* ----------------------------------------------------------------- Start */
 
 $('desk-coords').innerHTML = coordsHTML('white');
 updateCheckButton();
 renderCalendar();
-const linkFen = new URLSearchParams(window.location.search).get('fen');
+// A position can come after ? (links) or after # (the extension and bookmark, so it never reaches a server).
+const linkParams = new URLSearchParams(window.location.hash.replace(/^#/, '').includes('fen=') ? window.location.hash.slice(1) : window.location.search);
+const linkFen = linkParams.get('fen');
 const linked = linkFen && cleanFen(linkFen);
 if (linked) {
-  showOnDesk({ kind: 'paste', fen: linked.fen, title: 'Your position', source: 'link' });
+  // Sent from a Chess.com puzzle page by the extension or the bookmark.
+  const from = linkParams.get('from');
+  const sent = from === 'chesscom' || from === 'bookmark';
+  showOnDesk({ kind: 'paste', fen: linked.fen, title: sent ? 'From your Chess.com puzzle' : 'Your position', source: sent ? 'Chess.com puzzle page' : 'link' });
   loadToday({ toDesk: false });
 } else {
   loadToday({ toDesk: true });

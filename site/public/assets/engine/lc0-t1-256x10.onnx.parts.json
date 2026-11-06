@@ -1,0 +1,17 @@
+{
+  "file": "lc0-t1-256x10.onnx",
+  "bytes": 40573370,
+  "sha256": "9e206450a4012906da5b29364aaf459f4c7c4af3e1ccb8048666c93a280427a7",
+  "parts": [
+    {
+      "file": "lc0-t1-256x10.onnx.part0",
+      "bytes": 20286685,
+      "sha256": "bcf6c1e7b3c71a70499f5ed07a862288d6b0d3b4a77d614df5b03ab40ccbc2c6"
+    },
+    {
+      "file": "lc0-t1-256x10.onnx.part1",
+      "bytes": 20286685,
+      "sha256": "f42ad2fa099eee5429622e8ac26a1b288322978eaa19315bd54e5b8a2647fa9e"
+    }
+  ]
+}

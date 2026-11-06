@@ -31,17 +31,26 @@ const spread = (rand, amount) => (rand() * 2 - 1) * amount;
 /** Smooth open path through points (Catmull-Rom converted to cubic Béziers). */
 export function smoothPath(pts) {
   if (pts.length < 2) return '';
-  let d = `M${r(pts[0][0])} ${r(pts[0][1])}`;
-  for (let i = 0; i < pts.length - 1; i += 1) {
-    const p0 = pts[i - 1] || pts[i];
-    const p1 = pts[i];
-    const p2 = pts[i + 1];
-    const p3 = pts[i + 2] || p2;
-    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
-    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
-    d += ` C${r(c1[0])} ${r(c1[1])} ${r(c2[0])} ${r(c2[1])} ${r(p2[0])} ${r(p2[1])}`;
-  }
+  let d = pathStart(pts);
+  for (let i = 0; i < pts.length - 1; i += 1) d += smoothSegment(pts, i);
   return d;
+}
+
+export const pathStart = (pts) => `M${r(pts[0][0])} ${r(pts[0][1])}`;
+
+/**
+ * The curve from point i to point i+1. It reads points i-1 to i+2 only, so
+ * once point i+2 exists the segment never changes: a stroke being drawn can
+ * keep its finished segments and redo just the last two.
+ */
+export function smoothSegment(pts, i) {
+  const p0 = pts[i - 1] || pts[i];
+  const p1 = pts[i];
+  const p2 = pts[i + 1];
+  const p3 = pts[i + 2] || p2;
+  const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+  const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+  return ` C${r(c1[0])} ${r(c1[1])} ${r(c2[0])} ${r(c2[1])} ${r(p2[0])} ${r(p2[1])}`;
 }
 
 /**

@@ -10,6 +10,8 @@ import {
   ghostFor,
   pieceForGhost,
   intentFor,
+  inkFor,
+  MODES,
   jiggle,
   markFor,
   markWidth,
@@ -73,16 +75,27 @@ test('draw: a drag between squares is an arrow, on one square a circle', () => {
   assert.ok(!sameMark({ kind: 'circle', sq: 'a1', color: 'red' }, { kind: 'circle', sq: 'a2', color: 'red' }));
 });
 
-test('draw: who draws — right button and stylus always, finger and left button only in Draw mode', () => {
-  assert.equal(intentFor({ pointerType: 'mouse', button: 2 }, false), 'mark');
-  assert.equal(intentFor({ pointerType: 'mouse', button: 0 }, false), null);
+test('draw: who draws — only in Draw mode, and then right button and stylus too', () => {
+  // Move and Faint: nothing draws, not a stylus, not a right-drag.
+  for (const pointerType of ['mouse', 'touch', 'pen']) {
+    for (const button of [0, 1, 2, 5]) assert.equal(intentFor({ pointerType, button }, false), null, `${pointerType} ${button}`);
+  }
+  assert.equal(intentFor({ pointerType: 'mouse', button: 2 }, true), 'mark');
   assert.equal(intentFor({ pointerType: 'mouse', button: 0 }, true), 'tool');
   assert.equal(intentFor({ pointerType: 'mouse', button: 1 }, true), null);
-  assert.equal(intentFor({ pointerType: 'touch', button: 0 }, false), null);
   assert.equal(intentFor({ pointerType: 'touch', button: 0 }, true), 'tool');
-  assert.equal(intentFor({ pointerType: 'pen', button: 0 }, false), 'tool');
-  assert.equal(intentFor({ pointerType: 'pen', button: 2 }, false), 'mark');
+  assert.equal(intentFor({ pointerType: 'pen', button: 0 }, true), 'tool');
+  assert.equal(intentFor({ pointerType: 'pen', button: 2 }, true), 'mark');
   assert.equal(intentFor({ pointerType: 'pen', button: 5 }, true), null);
+});
+
+test('draw: Move hides the drawings, Faint shows them at the chosen level, Draw at full', () => {
+  assert.deepEqual(MODES, ['move', 'faint', 'draw']);
+  assert.deepEqual(inkFor('move', 50), { hidden: true, opacity: 1 });
+  assert.deepEqual(inkFor('faint'), { hidden: false, opacity: 0.5 });
+  assert.deepEqual(inkFor('faint', 30), { hidden: false, opacity: 0.3 });
+  assert.deepEqual(inkFor('faint', 55), { hidden: false, opacity: 0.5 }, 'an odd level falls back to 50%');
+  assert.deepEqual(inkFor('draw', 30), { hidden: false, opacity: 1 });
 });
 
 test('draw: an arrow is never ruler-straight, and the same seed draws it the same', () => {
@@ -265,4 +278,123 @@ test('draw: inks mean Mine, Theirs and Idea, and Theirs differs by shape too', a
   assert.equal(paths('blue'), 3);
   assert.equal(paths('red'), 5, 'a threat chevron: a second head');
   assert.equal((shapeSVG({ kind: 'ghost', from: 'g1', to: 'f3', piece: 'wN', color: 'red', seed: 3 }, 'white').match(/<path /g) || []).length, 3, 'ghosts keep one head');
+});
+
+// createDrawLayer's wiring is checked in a browser (scripts/check-pens.mjs); this only checks
+// that destroy() takes off every listener it put on, with a counting stand-in for the DOM.
+test('draw: destroy() removes every listener the layer added and the groups it drew into', async () => {
+  const { createDrawLayer } = await import('../public/assets/draw.js');
+  const live = new Map();
+  const target = (name) => {
+    const t = {
+      name,
+      children: [],
+      dataset: {},
+      style: {},
+      attrs: {},
+      classList: { toggle() {}, add() {}, remove() {} },
+      setAttribute(k, v) {
+        this.attrs[k] = v;
+      },
+      getAttribute(k) {
+        return this.attrs[k] ?? null;
+      },
+      removeAttribute(k) {
+        delete this.attrs[k];
+      },
+      addEventListener(type, fn, o) {
+        const key = `${name}:${type}:${!!(o && o.capture)}`;
+        live.set(key, [...(live.get(key) || []), fn]);
+      },
+      removeEventListener(type, fn, o) {
+        const key = `${name}:${type}:${!!(o && o.capture)}`;
+        const left = (live.get(key) || []).filter((f) => f !== fn);
+        if (left.length) live.set(key, left);
+        else live.delete(key);
+      },
+      append(...nodes) {
+        for (const n of nodes) {
+          n.parentNode = this;
+          this.children.push(n);
+        }
+      },
+      after(node) {
+        // the live-stroke <svg> sits next to the board svg, not inside it
+        node.parentNode = { children: [node] };
+        node.remove = () => {
+          node.parentNode = null;
+        };
+        this.sibling = node;
+      },
+      insertAdjacentHTML() {
+        const defs = target(`${name}-defs`);
+        defs.parentNode = this;
+        this.children.unshift(defs);
+      },
+      get firstElementChild() {
+        return this.children[0] || null;
+      },
+      remove() {
+        if (this.parentNode) this.parentNode.children = this.parentNode.children.filter((c) => c !== this);
+        this.parentNode = null;
+      },
+      innerHTML: '',
+      textContent: '',
+    };
+    return t;
+  };
+  const saved = { document: globalThis.document, window: globalThis.window };
+  const doc = target('document');
+  doc.createElementNS = () => target('g');
+  const media = target('media');
+  media.matches = true;
+  const win = target('window');
+  win.matchMedia = () => media;
+  globalThis.document = doc;
+  globalThis.window = win;
+  try {
+    const board = target('board');
+    const svg = target('svg');
+    const btn = (n, data = {}) => Object.assign(target(n), { dataset: data });
+    const layer = createDrawLayer({
+      board,
+      svg,
+      modes: ['move', 'faint', 'draw'].map((m) => btn(`mode-${m}`, { mode: m })),
+      fade: Object.assign(btn('fade'), { value: '50' }),
+      undo: btn('undo'),
+      clear: btn('clear'),
+      hint: btn('hint'),
+      tools: [btn('tool', { tool: 'pen' })],
+      colors: [btn('color', { color: 'green' })],
+      sizes: [btn('size', { size: 'thin' })],
+    });
+    for (const key of ['board:pointerdown:true', 'document:contextmenu:false', 'window:blur:false', 'media:change:false', 'mode-draw:click:false']) assert.ok(live.has(key), `${key} is listened to`);
+    assert.equal(svg.children.length, 3, 'the grain, the drawings and the helpers');
+    assert.ok(svg.sibling?.parentNode, 'the live-stroke svg is placed beside the board svg');
+    layer.destroy();
+    assert.equal(svg.sibling.parentNode, null, 'the live-stroke svg is taken out too');
+    assert.deepEqual([...live.keys()], [], 'no listener is left behind');
+    assert.equal(svg.children.length, 0, 'the layer takes its groups out of the SVG');
+    layer.destroy(); // a second call is harmless
+  } finally {
+    globalThis.document = saved.document;
+    globalThis.window = saved.window;
+  }
+});
+
+test('ink: a stroke built segment by segment, as it is drawn, ends up the same curve', async () => {
+  const { pathStart, smoothPath, smoothSegment } = await import('../public/assets/ink.js');
+  const pts = [];
+  let kept = null;
+  let live = '';
+  for (let i = 0; i < 40; i += 1) {
+    pts.push([10 + i * 1.3, 40 + Math.sin(i / 3) * 12]);
+    if (pts.length < 2) continue;
+    // The same steps the page takes each frame: keep finished segments, redo the last two.
+    if (!kept) kept = { d: pathStart(pts), n: 0 };
+    while (kept.n < pts.length - 3) kept.d += smoothSegment(pts, kept.n++);
+    live = kept.d;
+    for (let j = kept.n; j < pts.length - 1; j += 1) live += smoothSegment(pts, j);
+    assert.equal(live, smoothPath(pts), `after ${pts.length} points`);
+  }
 });

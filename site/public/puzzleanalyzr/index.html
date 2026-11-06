@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script type="importmap">{"imports":{"/assets/app.js":"/assets/app.js?v=90fa02be76","/assets/board.js":"/assets/board.js?v=1f62d4f452","/assets/bookpage.js":"/assets/bookpage.js?v=317b20dc69","/assets/coach.js":"/assets/coach.js?v=d14550ff4d","/assets/daily-clock.js":"/assets/daily-clock.js?v=32f24374a4","/assets/demo-data.js":"/assets/demo-data.js?v=3eb10a8ec8","/assets/desk.js":"/assets/desk.js?v=12d1a870ed","/assets/draw.js":"/assets/draw.js?v=2d18fa2593","/assets/engine-catalog.js":"/assets/engine-catalog.js?v=db8ab04e98","/assets/engine-parts.js":"/assets/engine-parts.js?v=a069783ea3","/assets/engine-picker.js":"/assets/engine-picker.js?v=bfa20b7b10","/assets/engine.js":"/assets/engine.js?v=8b3e7728b2","/assets/helpers.js":"/assets/helpers.js?v=28055a8597","/assets/ink.js":"/assets/ink.js?v=be5a18e099","/assets/lc0-search.js":"/assets/lc0-search.js?v=b7848d3b7c","/assets/lc0.js":"/assets/lc0.js?v=7a4ebf132a","/assets/line.js":"/assets/line.js?v=ef28aaa10c","/assets/maia2.js":"/assets/maia2.js?v=93c13c9c93","/assets/maia3.js":"/assets/maia3.js?v=48c5f2bda0","/assets/puzzle.js":"/assets/puzzle.js?v=157ceb2051","/assets/rules.js":"/assets/rules.js?v=01cddd3ef6","/assets/searchless.js":"/assets/searchless.js?v=5602d641ee","/assets/setup.js":"/assets/setup.js?v=a45397756f","/assets/sound.js":"/assets/sound.js?v=8759e04c61","/assets/vendor/chess.js":"/assets/vendor/chess.js?v=0fd3d85b71"}}</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Puzzle analyzr · AskTheMove</title>
@@ -15,7 +16,7 @@
 <link rel="manifest" href="/puzzleanalyzr/manifest.webmanifest">
 <link rel="preload" href="/assets/fonts/vollkorn-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/kalam-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/app.css">
+<link rel="stylesheet" href="/assets/app.css?v=e27df18876">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AskTheMove">
 <meta property="og:title" content="Puzzle analyzr · AskTheMove">
@@ -36,7 +37,7 @@
   https://cloudflareinsights.com to connect-src in scripts/build.mjs (CSP), and rebuild.
   No other trackers, no cookies.
 -->
-<link rel="stylesheet" href="/assets/puzzle.css">
+<link rel="stylesheet" href="/assets/puzzle.css?v=234ab4b09e">
 </head>
 <body class="page-puzzles">
 <a class="skip" href="#main">Skip to content</a>
@@ -81,17 +82,23 @@
         <button class="btn btn--plain btn--small desk__sound" id="tool-sound" type="button" aria-pressed="true">Sound on</button>
       </div>
       <div class="pens" id="pens" role="group" aria-label="Draw on the board">
-        <button class="btn btn--plain btn--small pens__mode" id="draw-mode" type="button" aria-pressed="false" aria-describedby="draw-hint"><svg class="pens__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17 C3.5 15.67 5 9.33 6 9 C7 8.67 7.83 15.33 9 15 C10.17 14.67 11.83 7.17 13 7 C14.17 6.83 14.83 14.17 16 14 C17.17 13.83 19.33 7.33 20 6"/></svg>Draw</button>
-        <div class="pens__set" role="group" aria-label="Drawing tool">
-          <button class="pens__pick" type="button" data-tool="pen" aria-pressed="true" aria-label="Pen: smooth ink, freehand" title="Pen"><svg class="pens__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17 C3.5 15.67 5 9.33 6 9 C7 8.67 7.83 15.33 9 15 C10.17 14.67 11.83 7.17 13 7 C14.17 6.83 14.83 14.17 16 14 C17.17 13.83 19.33 7.33 20 6"/></svg></button>
-          <button class="pens__pick" type="button" data-tool="pencil" aria-pressed="false" aria-label="Pencil: soft grainy line, freehand" title="Pencil"><svg class="pens__icon pens__icon--pencil" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17 C3.5 15.67 5 9.33 6 9 C7 8.67 7.83 15.33 9 15 C10.17 14.67 11.83 7.17 13 7 C14.17 6.83 14.83 14.17 16 14 C17.17 13.83 19.33 7.33 20 6"/></svg></button>
-          <button class="pens__pick" type="button" data-tool="marker" aria-pressed="false" aria-label="Marker: wide see-through highlight, freehand" title="Marker"><svg class="pens__icon pens__icon--marker" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 15 C7 12 9 10.5 12 11 C15 11.5 17 10 20 8"/></svg></button>
-          <button class="pens__pick" type="button" data-tool="arrow" aria-pressed="false" aria-label="Arrow from one square to another" title="Arrow"><svg class="pens__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.99 18.89 C4.34 18.46 5.35 17.09 6.14 16.28 C6.93 15.47 7.9 14.82 8.72 14.03 C9.54 13.24 10.27 12.35 11.08 11.55 C11.89 10.75 12.73 9.98 13.59 9.23 C14.45 8.48 15.33 7.75 16.23 7.05 C17.14 6.34 18.54 5.34 19 5"/><path d="M12.66 6.56 C13.03 6.49 14.17 6.29 14.91 6.13 C15.65 5.97 16.37 5.81 17.1 5.61 C17.82 5.42 18.89 5.05 19.25 4.94"/><path d="M17.13 11.13 C17.26 10.78 17.66 9.71 17.9 9.01 C18.14 8.31 18.38 7.62 18.58 6.91 C18.77 6.2 18.99 5.12 19.07 4.76"/></svg></button>
-          <button class="pens__pick" type="button" data-tool="circle" aria-pressed="false" aria-label="Circle a square" title="Circle"><svg class="pens__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.09 8.99 C4.26 8.7 4.66 7.77 5.1 7.28 C5.55 6.79 6.19 6.39 6.78 6.05 C7.38 5.7 8.02 5.39 8.67 5.2 C9.32 5 10.02 4.94 10.68 4.88 C11.34 4.83 11.99 4.83 12.63 4.87 C13.26 4.92 13.91 4.99 14.5 5.17 C15.08 5.34 15.63 5.64 16.15 5.93 C16.67 6.22 17.14 6.55 17.62 6.9 C18.11 7.25 18.66 7.59 19.04 8.03 C19.42 8.47 19.67 9.03 19.92 9.57 C20.17 10.11 20.42 10.68 20.52 11.27 C20.62 11.86 20.64 12.52 20.52 13.12 C20.39 13.72 20.07 14.3 19.77 14.87 C19.47 15.44 19.18 16.04 18.73 16.51 C18.29 16.98 17.66 17.34 17.1 17.69 C16.53 18.04 15.95 18.39 15.33 18.6 C14.71 18.82 14.02 18.9 13.38 18.97 C12.74 19.04 12.08 19.1 11.46 19.05 C10.84 18.99 10.23 18.82 9.66 18.62 C9.1 18.42 8.62 18.1 8.09 17.85 C7.56 17.6 6.92 17.46 6.46 17.12 C6 16.79 5.71 16.28 5.34 15.84 C4.97 15.39 4.5 14.97 4.24 14.46 C3.98 13.96 3.83 13.36 3.77 12.78 C3.71 12.21 3.77 11.6 3.87 11.01 C3.96 10.43 4.05 9.79 4.33 9.25 C4.61 8.71 5.1 8.23 5.54 7.78 C5.99 7.32 6.46 6.88 6.98 6.52 C7.51 6.16 8.08 5.81 8.69 5.62 C9.3 5.44 10.29 5.44 10.61 5.41"/></svg></button>
-          <button class="pens__pick" type="button" data-tool="ghost" aria-pressed="false" aria-label="Ghost move: try a piece on another square without moving it" title="Ghost move"><svg class="pens__icon pens__icon--ghost" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 20 C8 17 9.5 15.5 9.5 13.5 C8 12.5 7.5 10.5 9 8.5 C10.5 6.5 13.5 6.5 15 8.5 C16.5 10.5 16 12.5 14.5 13.5 C14.5 15.5 16 17 16 20 Z"/><path d="M3 21 L21 21"/></svg></button>
-          <button class="pens__pick" type="button" data-tool="line" aria-pressed="false" aria-label="Numbered line: draw the moves you expect, in order" title="Numbered line"><svg class="pens__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 19 L11 12"/><path d="M8.2 12.4 L11 12 L10.6 14.8"/><path d="M13 11 L20 4"/><path d="M17.2 4.4 L20 4 L19.6 6.8"/><path d="M3.5 7.5 L5 6.5 L5 11"/><path d="M15 15.5 C15.5 14.5 17.8 14.4 18 15.8 C18.2 17 15 18.6 15 20 L18.5 20"/></svg></button>
-          <button class="pens__pick" type="button" data-tool="sticker" aria-pressed="false" aria-label="Sticker: put a move glyph or a word on a square" title="Sticker"><svg class="pens__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 12 A8 8 0 1 1 12 4 L20 12 Z"/><path d="M12 4 L12 12 L20 12"/><path d="M9 9 L9 13.5"/><path d="M9 16.2 L9 16.4"/></svg></button>
-          <button class="pens__pick" type="button" data-tool="tape" aria-pressed="false" aria-label="Tape: lay tape along a rank, file or diagonal" title="Tape"><svg class="pens__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 15.5 L4.5 14 L4 12.5 L5.5 11 L16 4.5 L17 6 L18.5 5.5 L19.5 7 L21 6.5 L20 9 L9 15.5 L8 14 L6.5 15.5 L6 14 Z"/></svg></button>
+        <div class="pens__modes" id="draw-modes" role="radiogroup" aria-label="Board mode" aria-describedby="draw-hint">
+          <button class="pens__modebtn" type="button" role="radio" data-mode="move" aria-checked="true" title="Move pieces only. Drawings hidden; nothing can draw.">Move</button>
+          <button class="pens__modebtn" type="button" role="radio" data-mode="faint" aria-checked="false" title="Move pieces only. Drawings stay, faint; nothing can draw.">Faint</button>
+          <button class="pens__modebtn" type="button" role="radio" data-mode="draw" aria-checked="false" title="Draw on the board."><svg class="pens__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17 C3.5 15.67 5 9.33 6 9 C7 8.67 7.83 15.33 9 15 C10.17 14.67 11.83 7.17 13 7 C14.17 6.83 14.83 14.17 16 14 C17.17 13.83 19.33 7.33 20 6"/></svg>Draw</button>
+        </div>
+        <label class="pens__fade" id="draw-fade-box" hidden><span class="pens__fade-label">How faint</span><input type="range" id="draw-fade" min="10" max="90" step="10" value="50" aria-describedby="draw-fade-out"><output class="pens__fade-out" id="draw-fade-out" for="draw-fade">50%</output></label>
+        <div class="pens__kit" id="draw-kit" hidden>
+        <div class="pens__set pens__tools" role="group" aria-label="Drawing tool">
+          <button class="pens__pick pens__pick--named" type="button" data-tool="pen" aria-pressed="true" aria-label="Pen: smooth ink, freehand" title="Pen"><svg class="pens__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17 C3.5 15.67 5 9.33 6 9 C7 8.67 7.83 15.33 9 15 C10.17 14.67 11.83 7.17 13 7 C14.17 6.83 14.83 14.17 16 14 C17.17 13.83 19.33 7.33 20 6"/></svg><span class="pens__name" aria-hidden="true">Pen</span></button>
+          <button class="pens__pick pens__pick--named" type="button" data-tool="pencil" aria-pressed="false" aria-label="Pencil: soft grainy line, freehand" title="Pencil"><svg class="pens__icon pens__icon--pencil" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17 C3.5 15.67 5 9.33 6 9 C7 8.67 7.83 15.33 9 15 C10.17 14.67 11.83 7.17 13 7 C14.17 6.83 14.83 14.17 16 14 C17.17 13.83 19.33 7.33 20 6"/></svg><span class="pens__name" aria-hidden="true">Pencil</span></button>
+          <button class="pens__pick pens__pick--named" type="button" data-tool="marker" aria-pressed="false" aria-label="Marker: wide see-through highlight, freehand" title="Marker"><svg class="pens__icon pens__icon--marker" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 15 C7 12 9 10.5 12 11 C15 11.5 17 10 20 8"/></svg><span class="pens__name" aria-hidden="true">Marker</span></button>
+          <button class="pens__pick pens__pick--named" type="button" data-tool="arrow" aria-pressed="false" aria-label="Arrow from one square to another" title="Arrow"><svg class="pens__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.99 18.89 C4.34 18.46 5.35 17.09 6.14 16.28 C6.93 15.47 7.9 14.82 8.72 14.03 C9.54 13.24 10.27 12.35 11.08 11.55 C11.89 10.75 12.73 9.98 13.59 9.23 C14.45 8.48 15.33 7.75 16.23 7.05 C17.14 6.34 18.54 5.34 19 5"/><path d="M12.66 6.56 C13.03 6.49 14.17 6.29 14.91 6.13 C15.65 5.97 16.37 5.81 17.1 5.61 C17.82 5.42 18.89 5.05 19.25 4.94"/><path d="M17.13 11.13 C17.26 10.78 17.66 9.71 17.9 9.01 C18.14 8.31 18.38 7.62 18.58 6.91 C18.77 6.2 18.99 5.12 19.07 4.76"/></svg><span class="pens__name" aria-hidden="true">Arrow</span></button>
+          <button class="pens__pick pens__pick--named" type="button" data-tool="circle" aria-pressed="false" aria-label="Circle a square" title="Circle"><svg class="pens__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.09 8.99 C4.26 8.7 4.66 7.77 5.1 7.28 C5.55 6.79 6.19 6.39 6.78 6.05 C7.38 5.7 8.02 5.39 8.67 5.2 C9.32 5 10.02 4.94 10.68 4.88 C11.34 4.83 11.99 4.83 12.63 4.87 C13.26 4.92 13.91 4.99 14.5 5.17 C15.08 5.34 15.63 5.64 16.15 5.93 C16.67 6.22 17.14 6.55 17.62 6.9 C18.11 7.25 18.66 7.59 19.04 8.03 C19.42 8.47 19.67 9.03 19.92 9.57 C20.17 10.11 20.42 10.68 20.52 11.27 C20.62 11.86 20.64 12.52 20.52 13.12 C20.39 13.72 20.07 14.3 19.77 14.87 C19.47 15.44 19.18 16.04 18.73 16.51 C18.29 16.98 17.66 17.34 17.1 17.69 C16.53 18.04 15.95 18.39 15.33 18.6 C14.71 18.82 14.02 18.9 13.38 18.97 C12.74 19.04 12.08 19.1 11.46 19.05 C10.84 18.99 10.23 18.82 9.66 18.62 C9.1 18.42 8.62 18.1 8.09 17.85 C7.56 17.6 6.92 17.46 6.46 17.12 C6 16.79 5.71 16.28 5.34 15.84 C4.97 15.39 4.5 14.97 4.24 14.46 C3.98 13.96 3.83 13.36 3.77 12.78 C3.71 12.21 3.77 11.6 3.87 11.01 C3.96 10.43 4.05 9.79 4.33 9.25 C4.61 8.71 5.1 8.23 5.54 7.78 C5.99 7.32 6.46 6.88 6.98 6.52 C7.51 6.16 8.08 5.81 8.69 5.62 C9.3 5.44 10.29 5.44 10.61 5.41"/></svg><span class="pens__name" aria-hidden="true">Circle</span></button>
+          <button class="pens__pick pens__pick--named" type="button" data-tool="ghost" aria-pressed="false" aria-label="Ghost move: try a piece on another square without moving it" title="Ghost move"><svg class="pens__icon pens__icon--ghost" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 20 C8 17 9.5 15.5 9.5 13.5 C8 12.5 7.5 10.5 9 8.5 C10.5 6.5 13.5 6.5 15 8.5 C16.5 10.5 16 12.5 14.5 13.5 C14.5 15.5 16 17 16 20 Z"/><path d="M3 21 L21 21"/></svg><span class="pens__name" aria-hidden="true">Ghost</span></button>
+          <button class="pens__pick pens__pick--named" type="button" data-tool="line" aria-pressed="false" aria-label="Numbered line: draw the moves you expect, in order" title="Numbered line"><svg class="pens__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 19 L11 12"/><path d="M8.2 12.4 L11 12 L10.6 14.8"/><path d="M13 11 L20 4"/><path d="M17.2 4.4 L20 4 L19.6 6.8"/><path d="M3.5 7.5 L5 6.5 L5 11"/><path d="M15 15.5 C15.5 14.5 17.8 14.4 18 15.8 C18.2 17 15 18.6 15 20 L18.5 20"/></svg><span class="pens__name" aria-hidden="true">Line</span></button>
+          <button class="pens__pick pens__pick--named" type="button" data-tool="sticker" aria-pressed="false" aria-label="Sticker: put a move glyph or a word on a square" title="Sticker"><svg class="pens__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 12 A8 8 0 1 1 12 4 L20 12 Z"/><path d="M12 4 L12 12 L20 12"/><path d="M9 9 L9 13.5"/><path d="M9 16.2 L9 16.4"/></svg><span class="pens__name" aria-hidden="true">Sticker</span></button>
+          <button class="pens__pick pens__pick--named" type="button" data-tool="tape" aria-pressed="false" aria-label="Tape: lay tape along a rank, file or diagonal" title="Tape"><svg class="pens__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 15.5 L4.5 14 L4 12.5 L5.5 11 L16 4.5 L17 6 L18.5 5.5 L19.5 7 L21 6.5 L20 9 L9 15.5 L8 14 L6.5 15.5 L6 14 Z"/></svg><span class="pens__name" aria-hidden="true">Tape</span></button>
         </div>
         <div class="pens__sheet" id="draw-sheet" role="group" aria-label="Sticker sheet" hidden>
           <button class="pens__stk" type="button" data-sticker="!!" aria-pressed="false" aria-label="Brilliant move" title="Brilliant move">!!</button>
@@ -109,24 +116,25 @@
           <button class="pens__stk pens__stk--word" type="button" data-sticker="MATE" aria-pressed="false" aria-label="Mate square" title="Mate square">MATE</button>
         </div>
         <div class="pens__set" role="group" aria-label="Line size">
-          <button class="pens__pick" type="button" data-size="thin" aria-pressed="false" aria-label="Thin line" title="Thin"><span class="pens__size pens__size--thin" aria-hidden="true"></span></button>
-          <button class="pens__pick" type="button" data-size="medium" aria-pressed="true" aria-label="Medium line" title="Medium"><span class="pens__size pens__size--medium" aria-hidden="true"></span></button>
-          <button class="pens__pick" type="button" data-size="thick" aria-pressed="false" aria-label="Thick line" title="Thick"><span class="pens__size pens__size--thick" aria-hidden="true"></span></button>
+          <button class="pens__pick pens__pick--named" type="button" data-size="thin" aria-pressed="false" aria-label="Thin line" title="Thin"><span class="pens__size pens__size--thin" aria-hidden="true"></span><span class="pens__name" aria-hidden="true">Thin</span></button>
+          <button class="pens__pick pens__pick--named" type="button" data-size="medium" aria-pressed="true" aria-label="Medium line" title="Medium"><span class="pens__size pens__size--medium" aria-hidden="true"></span><span class="pens__name" aria-hidden="true">Medium</span></button>
+          <button class="pens__pick pens__pick--named" type="button" data-size="thick" aria-pressed="false" aria-label="Thick line" title="Thick"><span class="pens__size pens__size--thick" aria-hidden="true"></span><span class="pens__name" aria-hidden="true">Thick</span></button>
         </div>
         <div class="pens__set pens__roles" role="group" aria-label="What the ink means">
           <button class="pens__pick pens__ink tone--green" type="button" data-color="green" aria-pressed="true" title="Mine: your plan, in green"><span class="pens__dot" aria-hidden="true"></span><span class="pens__role">Mine</span></button>
           <button class="pens__pick pens__ink tone--red" type="button" data-color="red" aria-pressed="false" title="Theirs: their threats, in red with a double head"><span class="pens__dot" aria-hidden="true"></span><span class="pens__role">Theirs</span></button>
           <button class="pens__pick pens__ink tone--blue" type="button" data-color="blue" aria-pressed="false" title="Idea: a move you're testing, in blue"><span class="pens__dot" aria-hidden="true"></span><span class="pens__role">Idea</span></button>
         </div>
+        <div class="pens__keep">
+          <button class="btn btn--plain btn--small pens__act" id="draw-undo" type="button" aria-label="Undo the last drawing" disabled>Undo</button>
+          <button class="btn btn--plain btn--small pens__act" id="draw-clear" type="button" aria-label="Clear all drawings" disabled>Clear</button>
+          <button class="btn btn--plain btn--small pens__act" id="draw-book" type="button" title="Book page: the board, your drawings and your notes, laid out like a chess book to print or save">Book page</button>
+        </div>
+        </div>
         <div class="pens__set pens__helps" role="group" aria-label="Helpers: answer one question when you tap">
           <button class="pens__help" type="button" data-help="reach" aria-pressed="false" title="Reach: tap a piece to see where it can go">Reach</button>
           <button class="pens__help" type="button" data-help="loose" aria-pressed="false" title="Loose: your attacked, under-defended pieces (tap again for theirs)">Loose</button>
           <button class="pens__help" type="button" data-help="guard" aria-pressed="false" title="Guard count: tap a square to count attackers and defenders">Guard count</button>
-        </div>
-        <div class="pens__keep">
-          <button class="btn btn--plain btn--small pens__act" id="draw-undo" type="button" aria-label="Undo the last drawing" disabled>Undo</button>
-          <button class="btn btn--plain btn--small pens__act" id="draw-clear" type="button" aria-label="Clear all drawings" disabled>Clear</button>
-          <button class="btn btn--plain btn--small pens__show" id="draw-show" type="button" aria-pressed="true">Show drawings</button>
         </div>
         <p class="pens__hint" id="draw-hint" aria-live="polite"></p>
         <div class="pens__line" id="draw-line" hidden>
@@ -134,8 +142,10 @@
           <span class="pens__moves" id="draw-line-text"></span>
           <span class="pens__line-acts">
             <button class="btn btn--plain btn--small" id="draw-line-play" type="button">Play it</button>
+            <button class="btn btn--plain btn--small" id="draw-line-check" type="button" title="Coach check: the engine finds the first move in your line that fails">Check line</button>
             <button class="btn btn--plain btn--small" id="draw-line-clear" type="button">Clear line</button>
           </span>
+          <p class="pens__coach" id="draw-line-note" aria-live="polite" hidden></p>
         </div>
       </div>
       <p class="note-hand desk__say" id="desk-say" aria-live="polite"></p>
@@ -176,10 +186,12 @@
         <p class="printout__line desk__row" id="card-date-row"><span>date</span><span class="desk__dots" aria-hidden="true"></span><span id="card-date">today</span></p>
         <p class="printout__line desk__row" id="card-name-row" hidden><span>name</span><span class="desk__dots" aria-hidden="true"></span><button class="desk__reveal" id="card-name" type="button">tap to show</button></p>
         <p class="printout__line desk__row"><span>to move</span><span class="desk__dots" aria-hidden="true"></span><span id="card-side">…</span></p>
-        <p class="printout__line desk__row" id="card-next-row" hidden title="Your own time. Chess.com changes the daily puzzle at midnight US Pacific time."><span>next one</span><span class="desk__dots" aria-hidden="true"></span><span id="card-next">…</span></p>
+        <p class="printout__line desk__row" id="card-app-row" hidden title="The Chess.com app changes its puzzle at midnight on your own phone."><span>new in the app</span><span class="desk__dots" aria-hidden="true"></span><span>midnight, your time</span></p>
+        <p class="printout__line desk__row" id="card-next-row" hidden title="Your own time. This page reads Chess.com’s public feed, which changes at midnight US Pacific time."><span>new on this page</span><span class="desk__dots" aria-hidden="true"></span><span id="card-next">…</span></p>
         <p class="printout__line desk__row"><span>from</span><span class="desk__dots" aria-hidden="true"></span><span id="card-src">Chess.com daily puzzle</span></p>
         <p class="printout__line desk__row"><span>answer</span><span class="desk__dots" aria-hidden="true"></span><span class="printout__flag">hidden</span></p>
       </div>
+      <p class="note-hand note-hand--red desk__ahead" id="card-ahead" hidden></p>
 
       <div class="desk__swap">
         <p class="note-hand desk__swap-note">Or put another one on the board:</p>
@@ -188,6 +200,7 @@
           <button class="btn btn--plain btn--small" id="load-today" type="button">Today’s</button>
           <button class="btn btn--plain btn--small" id="load-random" type="button">A random one</button>
           <button class="btn btn--plain btn--small" id="load-lichess" type="button">Lichess daily</button>
+          <button class="btn btn--plain btn--small" id="setup-open" type="button" aria-haspopup="dialog" aria-controls="setup-pop">Set one up</button>
         </div>
       </div>
     </div>
@@ -223,6 +236,60 @@
     </div>
   </dialog>
 
+  <dialog class="cal-pop setup" id="setup-pop" aria-labelledby="setup-pop-title">
+    <div class="cal-pop__top">
+      <h2 id="setup-pop-title" class="cal-pop__title">Set up a position</h2>
+      <button class="btn btn--plain btn--small cal-pop__close" type="button" aria-label="Close" data-setup-close>×</button>
+    </div>
+    <div class="setup__body">
+      <p class="setup__lede">Copy a position you can see, like the Chess.com app’s puzzle. Pick a piece, then tap its squares. Tap a square again to take it off.</p>
+      <div class="cal-src setup__side" role="radiogroup" aria-label="Who is to move">
+        <button class="cal-src__opt" type="button" role="radio" aria-checked="true" data-side="w">White to move</button>
+        <button class="cal-src__opt" type="button" role="radio" aria-checked="false" data-side="b">Black to move</button>
+      </div>
+      <div class="setup__board" data-setup-board></div>
+      <div class="setup__tray" role="radiogroup" aria-label="Piece to place" data-setup-tray></div>
+      <p class="note-hand setup__note" aria-live="polite" data-setup-note></p>
+      <div class="setup__tools">
+        <button class="btn btn--plain btn--small" type="button" data-setup-clear>Clear</button>
+        <button class="btn btn--plain btn--small" type="button" data-setup-start>Start position</button>
+        <button class="btn btn--plain btn--small" type="button" data-setup-here>Copy the board</button>
+        <button class="btn btn--plain btn--small" type="button" data-setup-flip>Flip</button>
+      </div>
+      <button class="btn btn--pen setup__done" type="button" data-setup-done disabled>Put it on the board</button>
+    </div>
+  </dialog>
+
+  <dialog class="howto book" id="book-pop" aria-labelledby="book-title">
+    <div class="howto__top book__top">
+      <p class="howto__kicker">book page</p>
+      <button class="btn btn--plain btn--small howto__close" id="book-close" type="button" aria-label="Close">×</button>
+    </div>
+    <article class="book__page">
+      <h2 class="book__title" id="book-title">Puzzle</h2>
+      <div class="book__spread">
+        <figure class="book__fig">
+          <div class="book__board" id="book-diagram"></div>
+          <figcaption class="book__caption" id="book-caption">White to play</figcaption>
+        </figure>
+        <div class="book__margin">
+          <div id="book-margin"></div>
+          <p class="book__own" id="book-own-print" hidden></p>
+        </div>
+      </div>
+      <p class="book__foot">askthemove.online/puzzleanalyzr</p>
+    </article>
+    <div class="book__tools">
+      <label class="book__write" for="book-note">Your note <span>(goes on the page)</span></label>
+      <textarea class="book__textarea" id="book-note" rows="3" placeholder="What did you see? What did you miss?"></textarea>
+      <div class="book__go">
+        <button class="btn btn--pen" id="book-print" type="button">Print or save as PDF</button>
+        <button class="btn btn--plain" id="book-copy" type="button">Copy notes</button>
+      </div>
+      <p class="note-hand book__say" id="book-say" aria-live="polite"></p>
+    </div>
+  </dialog>
+
   <dialog class="howto engines" id="engine-pop" aria-labelledby="engine-title">
     <div class="howto__top">
       <p class="howto__kicker">chess engines</p>
@@ -240,7 +307,7 @@
       <h3 class="engines__group">Coming later</h3>
       <p class="engines__group-note">Listed so you can see what’s out there. They don’t run here yet: the neural models need a runtime (onnxruntime-web) that comes in a later update. Big ones show the same warning first.</p>
       <ul class="engines__list" id="engine-soon"></ul>
-      <p class="engines__foot">Downloaded engines stay on this device for 30 days. On iPhone and iPad, Safari may delete them sooner, after 7 days without a visit, unless this page is on your Home Screen. Stockfish is free software under the <a href="/assets/engine/COPYING.txt">GNU GPL v3</a>. Maia is under the <a href="https://www.gnu.org/licenses/gpl-3.0.html" rel="noopener">GNU GPL v3</a> too. The DeepMind model is under <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>; onnxruntime-web, which runs both, under the <a href="/assets/engine/ort/LICENSE.txt">MIT licence</a>.</p>
+      <p class="engines__foot">Downloaded engines stay on this device for 30 days. On iPhone and iPad, Safari may delete them sooner, after 7 days without a visit, unless this page is on your Home Screen. Stockfish is free software under the <a href="/assets/engine/COPYING.txt">GNU GPL v3</a>. Maia is under the <a href="https://www.gnu.org/licenses/gpl-3.0.html" rel="noopener">GNU GPL v3</a> too, Maia-2 under the <a href="/assets/engine/MAIA2-LICENSE.txt">MIT licence</a>, Maia-3 under the <a href="/assets/engine/MAIA3-LICENSE.txt">GNU AGPL v3</a>, and the Leela (Lc0) nets under the <a href="https://www.gnu.org/licenses/gpl-3.0.html" rel="noopener">GNU GPL v3</a>. The DeepMind model is under <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>; onnxruntime-web, which runs the neural ones, under the <a href="/assets/engine/ort/LICENSE.txt">MIT licence</a>.</p>
     </div>
     <section class="engines__warn" id="engine-warn" aria-labelledby="engine-warn-title" hidden>
       <p class="engines__flag">heavy download</p>
@@ -267,6 +334,7 @@
         <button class="btn btn--pen" id="paste-open" type="button" disabled>Open on Chess.com</button>
         <button class="btn btn--plain" id="paste-board" type="button" hidden>Put it on the board</button>
         <button class="btn btn--plain" id="paste-clip" type="button">Paste from clipboard</button>
+        <button class="btn btn--plain" id="paste-setup" type="button" aria-haspopup="dialog" aria-controls="setup-pop">Set it up by tapping</button>
       </div>
       <p class="desk__status" id="paste-status" role="status" aria-live="polite"></p>
     </div>
@@ -377,9 +445,9 @@
       <details>
         <summary><span>When the daily puzzle changes</span><i class="glyph glyph--plus" data-draw><svg class="ink__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M11.24 51.4 C15.72 51.26 29.27 50.91 38.09 50.56 C46.91 50.21 55.49 49.74 64.19 49.29 C72.89 48.85 85.93 48.12 90.28 47.88"/><path class="stroke" pathLength="1" d="M52.72 9.4 C52.16 14.07 50.05 28.15 49.34 37.4 C48.63 46.65 48.7 55.73 48.45 64.89 C48.21 74.06 47.98 87.82 47.88 92.4"/></svg></i></summary>
         <div class="pz-setup__how">
-          <p>Chess.com changes its daily puzzle at midnight US Pacific time. In India that’s <b>12:30 PM</b> from March to early November, and <b>1:30 PM</b> from early November to March, when the US clocks go back.</p>
-          <p>So in the morning you still see the puzzle dated yesterday. That’s Chess.com’s today, not a stale page.</p>
-          <p>The puzzle card shows when the next one comes out, in your own time. Leave this page open and it switches to the new puzzle by itself.</p>
+          <p>There are two clocks. The <b>Chess.com app</b> changes its puzzle at <b>midnight on your own phone</b>.</p>
+          <p>This page can only read Chess.com’s <b>public feed</b>, which changes at midnight US Pacific time. In India that’s <b>12:30 PM</b> from March to early November, and <b>1:30 PM</b> from early November to March, when the US clocks go back.</p>
+          <p>So from midnight until then, the app already has the new puzzle and this page still shows the one before. The puzzle card says when this page gets it, in your own time. To work on the app’s new puzzle sooner, paste its position into <b>Bring your own position</b>. Leave this page open and it switches to the new puzzle by itself.</p>
         </div>
       </details>
       <details>
@@ -401,6 +469,19 @@
         </div>
       </details>
       <details>
+        <summary><span>Send a Chess.com puzzle here in one tap</span><i class="glyph glyph--plus" data-draw><svg class="ink__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M11.24 51.4 C15.72 51.26 29.27 50.91 38.09 50.56 C46.91 50.21 55.49 49.74 64.19 49.29 C72.89 48.85 85.93 48.12 90.28 47.88"/><path class="stroke" pathLength="1" d="M52.72 9.4 C52.16 14.07 50.05 28.15 49.34 37.4 C48.63 46.65 48.7 55.73 48.45 64.89 C48.21 74.06 47.98 87.82 47.88 92.4"/></svg></i></summary>
+        <div class="pz-setup__how">
+          <p>Handy when the Chess.com app already has a newer puzzle than this page. It reads the board that’s on your screen, on your own device: no login and nothing sent to anyone. It only works on Chess.com’s <b>Daily Puzzle</b> page, which is unrated. Chess.com doesn’t allow engines on rated puzzles, Puzzle Rush or games, so it never runs there.</p>
+          <p><b>On a computer:</b> the AskTheMove extension for Chrome, Edge and Firefox adds an <b>Analyse on AskTheMove</b> button to the Daily Puzzle page. It’s on its way to the extension stores.</p>
+          <p><b>On a phone or tablet</b> (in the browser, not the Chess.com app), use this bookmark:</p>
+          <label class="paste__label" for="bm-send">The bookmark’s address</label>
+          <!-- BOOKMARKLET --><textarea id="bm-send" class="paste__box pz-setup__bm" rows="3" readonly spellcheck="false">javascript:(function(){(function (root) { const FILES = 'abcdefgh'; const BOARD = 'https://askthemove.online/puzzleanalyzr/'; function piecesFromClasses(list) { const out = {}; for (const cls of list) { const names = String(cls).split(/\s+/); if (!names.includes('piece')) continue; const kind = names.find((n) =&gt; /^[wb][kqrbnp]$/.test(n)); const at = names.find((n) =&gt; /^square-[1-8][1-8]$/.test(n)); if (!kind || !at) continue; const sq = FILES[Number(at[7]) - 1] + at[8]; out[sq] = kind[0] === 'w' ? kind[1].toUpperCase() : kind[1]; } return out; } function sideToMove(text, flipped) { const m = /\b(white|black)\s+to\s+move\b/i.exec(text || ''); if (m) return m[1].toLowerCase() === 'black' ? 'b' : 'w'; return flipped ? 'b' : 'w'; } function castling(p) { let out = ''; if (p.e1 === 'K' &amp;&amp; p.h1 === 'R') out += 'K'; if (p.e1 === 'K' &amp;&amp; p.a1 === 'R') out += 'Q'; if (p.e8 === 'k' &amp;&amp; p.h8 === 'r') out += 'k'; if (p.e8 === 'k' &amp;&amp; p.a8 === 'r') out += 'q'; return out || '-'; } function toFen(pieces, side) { const all = Object.values(pieces); if (all.filter((p) =&gt; p === 'K').length !== 1 || all.filter((p) =&gt; p === 'k').length !== 1) { return { error: 'Couldn’t read the board. Open a puzzle so its pieces are on screen, then try again.' }; } const rows = []; for (let r = 8; r &gt;= 1; r -= 1) { let row = ''; let gap = 0; for (const f of FILES) { const p = pieces[f + r]; if (p) { if (gap) row += gap; gap = 0; row += p; } else gap += 1; } rows.push(row + (gap || '')); } return { fen: `${rows.join('/')} ${side} ${castling(pieces)} - 0 1` }; } function allowed(path) { return /^\/daily-chess-puzzle(\/|$)/.test(path || ''); } function readPage(doc) { const path = doc.location ? doc.location.pathname : ''; if (!allowed(path)) return { error: 'This only works on Chess.com’s Daily Puzzle page (it’s unrated). Rated puzzles, Puzzle Rush and games are off limits.' }; const board = doc.querySelector('wc-chess-board, chess-board, .board'); if (!board) return { error: 'No board on this page. Open a Chess.com puzzle first.' }; const classes = [...board.querySelectorAll('.piece')].map((el) =&gt; el.getAttribute('class') || ''); const flipped = /\bflipped\b/.test(board.getAttribute('class') || ''); return toFen(piecesFromClasses(classes), sideToMove(doc.body ? doc.body.innerText : '', flipped)); } function boardUrl(fen, from = 'chesscom') { return `${BOARD}#fen=${encodeURIComponent(fen)}&amp;from=${from}`; } root.AskTheMoveReader = { allowed, piecesFromClasses, sideToMove, toFen, readPage, boardUrl }; })(typeof globalThis !== 'undefined' ? globalThis : this);var R=globalThis.AskTheMoveReader,g=R.readPage(document);if(g.error){alert(g.error)}else{location.href=R.boardUrl(g.fen,'bookmark')}})()</textarea><!-- /BOOKMARKLET -->
+          <p><button class="btn btn--plain btn--small" id="copy-bm-send" type="button">Copy it</button> <span class="desk__status" id="bm-send-status" role="status" aria-live="polite"></span></p>
+          <p><b>iPad / iPhone:</b> bookmark any page and name it To my board. In Bookmarks tap Edit, tap it, replace its address with the code and tap Done. To use it, open the Daily Puzzle on chess.com and tap To my board in your bookmarks.</p>
+          <p><b>Android:</b> bookmark any page with the ☆, tap Edit, name it To my board and replace its URL with the code. To use it, open the Daily Puzzle on chess.com, type To my board in the address bar and tap the bookmark that shows up.</p>
+        </div>
+      </details>
+      <details>
         <summary><span>A bookmark that opens today’s puzzle</span><i class="glyph glyph--plus" data-draw><svg class="ink__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="stroke" pathLength="1" d="M11.24 51.4 C15.72 51.26 29.27 50.91 38.09 50.56 C46.91 50.21 55.49 49.74 64.19 49.29 C72.89 48.85 85.93 48.12 90.28 47.88"/><path class="stroke" pathLength="1" d="M52.72 9.4 C52.16 14.07 50.05 28.15 49.34 37.4 C48.63 46.65 48.7 55.73 48.45 64.89 C48.21 74.06 47.98 87.82 47.88 92.4"/></svg></i></summary>
         <div class="pz-setup__how">
           <p>A backup for when this page isn’t handy. Run it while you’re on any Chess.com page.</p>
@@ -412,7 +493,7 @@
         </div>
       </details>
     </div>
-    <p class="pz-setup__credit">Positions and games come from the <a href="https://www.chess.com/news/view/published-data-api" rel="noopener">Chess.com public API</a> and the <a href="https://lichess.org/api" rel="noopener">Lichess API</a>. This page never shows a puzzle’s answer or its name unless you ask Stockfish for it. It isn’t made by Chess.com or Lichess. Moves are checked by <a href="https://github.com/jhlywa/chess.js" rel="noopener">chess.js</a> (BSD licence). The engines are <a href="https://stockfishchess.org" rel="noopener">Stockfish</a> 19, 18, 17.1, 16 and 11, free software under the <a href="/assets/engine/COPYING.txt">GNU GPL v3</a>, in the <a href="https://github.com/nmrugg/stockfish.js" rel="noopener">stockfish.js</a> browser build, whose source is linked there (17.1’s script has one line changed so it reads its engine from this page; the change is noted beside it). The DeepMind searchless chess 9M model is from “Grandmaster-Level Chess Without Search” (Ruoss et al., 2024), © 2024 DeepMind Technologies Limited, <a href="https://github.com/google-deepmind/searchless_chess" rel="noopener">source</a>, under <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>; it was converted to ONNX, with no change to its weights, by <a href="https://huggingface.co/cstr/searchless-chess-onnx" rel="noopener">cstr</a>, and runs here with <a href="https://github.com/microsoft/onnxruntime" rel="noopener">onnxruntime-web</a> (<a href="/assets/engine/ort/LICENSE.txt">MIT</a>). <a href="https://github.com/CSSLab/maia-chess" rel="noopener">Maia</a> (1100, 1500 and 1900) is by Reid McIlroy-Young, Siddhartha Sen, Jon Kleinberg and Ashton Anderson (CSSLab, University of Toronto), under the <a href="https://www.gnu.org/licenses/gpl-3.0.html" rel="noopener">GNU GPL v3</a>, converted to ONNX by <a href="https://huggingface.co/shermansiu/maia-1500" rel="noopener">shermansiu</a>, and runs with onnxruntime-web too.</p>
+    <p class="pz-setup__credit">Positions and games come from the <a href="https://www.chess.com/news/view/published-data-api" rel="noopener">Chess.com public API</a> and the <a href="https://lichess.org/api" rel="noopener">Lichess API</a>. This page never shows a puzzle’s answer or its name unless you ask Stockfish for it. It isn’t made by Chess.com or Lichess. Moves are checked by <a href="https://github.com/jhlywa/chess.js" rel="noopener">chess.js</a> (BSD licence). The engines are <a href="https://stockfishchess.org" rel="noopener">Stockfish</a> 19, 18, 17.1, 16 and 11, free software under the <a href="/assets/engine/COPYING.txt">GNU GPL v3</a>, in the <a href="https://github.com/nmrugg/stockfish.js" rel="noopener">stockfish.js</a> browser build, whose source is linked there (17.1’s script has one line changed so it reads its engine from this page; the change is noted beside it). The DeepMind searchless chess models (9M, 136M and 270M) are from “Grandmaster-Level Chess Without Search” (Ruoss et al., 2024), © 2024 DeepMind Technologies Limited, <a href="https://github.com/google-deepmind/searchless_chess" rel="noopener">source</a>, under <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a>; it was converted to ONNX, with no change to its weights, by <a href="https://huggingface.co/cstr/searchless-chess-onnx" rel="noopener">cstr</a>, and runs here with <a href="https://github.com/microsoft/onnxruntime" rel="noopener">onnxruntime-web</a> (<a href="/assets/engine/ort/LICENSE.txt">MIT</a>). <a href="https://github.com/CSSLab/maia-chess" rel="noopener">Maia</a> (1100 to 1900) is by Reid McIlroy-Young, Siddhartha Sen, Jon Kleinberg and Ashton Anderson (CSSLab, University of Toronto), under the <a href="https://www.gnu.org/licenses/gpl-3.0.html" rel="noopener">GNU GPL v3</a>, converted to ONNX by <a href="https://huggingface.co/shermansiu/maia-1500" rel="noopener">shermansiu</a>, and runs with onnxruntime-web too. <a href="https://github.com/CSSLab/maia2" rel="noopener">Maia-2</a> (its rapid model) is by Zhenwei Tang, Difan Jiao, Reid McIlroy-Young, Jon Kleinberg, Siddhartha Sen and Ashton Anderson (CSSLab, University of Toronto), under the <a href="/assets/engine/MAIA2-LICENSE.txt">MIT licence</a>; it was exported to ONNX for this page with no change to its weights. <a href="https://github.com/CSSLab/maia3" rel="noopener">Maia-3</a> (3M, 5M, 23M and 79M) is by Daniel Monroe, George Eilender, Philip Chalmers, Zhenwei Tang and Ashton Anderson (CSSLab, University of Toronto), under the <a href="/assets/engine/MAIA3-LICENSE.txt">GNU AGPL v3</a>; its published checkpoints were exported to ONNX for this page with their weights stored as 16-bit floats, and the code that does it, and the code that runs them here, is in <a href="https://github.com/praxstack/ChessLab/tree/main/site/tools/maia3-export" rel="noopener">this site’s source</a> under the same licence. The <a href="https://lczero.org" rel="noopener">Leela Chess Zero (Lc0)</a> nets (T1 256x10, T1 512x15, T82 768x15 and BT3 768x15) are by the LeelaChessZero authors and contributors, under the <a href="https://www.gnu.org/licenses/gpl-3.0.html" rel="noopener">GNU GPL v3</a>, <a href="https://github.com/LeelaChessZero/lc0" rel="noopener">source</a>; they were converted to ONNX by <a href="https://huggingface.co/lczerolens" rel="noopener">lczerolens</a>, are stored here with 16-bit weights, and search with a small Lc0-style search written for this page. Stockfish 19 and 19 Lite (Lichess build) and <a href="https://github.com/fairy-stockfish/Fairy-Stockfish" rel="noopener">Fairy-Stockfish</a> 14 are the Lichess team’s own browser builds (<a href="https://github.com/lichess-org/stockfish-web" rel="noopener">stockfish-web</a>, its package under the <a href="https://www.gnu.org/licenses/agpl-3.0.html" rel="noopener">GNU AGPL v3</a>; Stockfish and Fairy-Stockfish under the <a href="/assets/engine/lichess/LICENSE.txt">GNU GPL v3</a>), unchanged, with nets from <a href="https://tests.stockfishchess.org/nns" rel="noopener">tests.stockfishchess.org</a>.</p>
   </section>
 
 </main>
@@ -438,7 +519,7 @@
     <p class="colophon__base">© 2026 AskTheMove. No cookies. No trackers.</p>
   </div>
 </footer>
-<script type="module" src="/assets/app.js"></script>
-<script type="module" src="/assets/puzzle.js"></script>
+<script type="module" src="/assets/app.js?v=90fa02be76"></script>
+<script type="module" src="/assets/puzzle.js?v=157ceb2051"></script>
 </body>
 </html>

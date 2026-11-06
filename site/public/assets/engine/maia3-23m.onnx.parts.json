@@ -1,0 +1,17 @@
+{
+  "file": "maia3-23m.onnx",
+  "bytes": 45527138,
+  "sha256": "2df4328b15c8d47cb73284cb9fb1fa397d629cef2cf2c47dc27b9ae072fbc665",
+  "parts": [
+    {
+      "file": "maia3-23m.onnx.part0",
+      "bytes": 22763569,
+      "sha256": "c70c4955e3d97acd5a3614923cc10a4e323b760aefb17c5dd4c5fca0e93d64a3"
+    },
+    {
+      "file": "maia3-23m.onnx.part1",
+      "bytes": 22763569,
+      "sha256": "4379044fd92cd2f2fa68a08daa5ba861333d5afca35a51881da4a04070242077"
+    }
+  ]
+}

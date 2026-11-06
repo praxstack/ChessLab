@@ -490,6 +490,7 @@ export function createDesk(els, { onChange = () => {} } = {}) {
   });
   document.addEventListener('keydown', (e) => {
     if (busy || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return; // leave browser shortcuts (Alt+Left is Back) alone
+    if (e.defaultPrevented) return; // a control on the page used the key itself (e.g. the board mode switch)
     if (e.target.closest('input, textarea, select, [contenteditable]')) return;
     if (!els.board.closest('section').matches(':hover') && !els.board.closest('section').contains(document.activeElement)) return;
     if (e.key === 'ArrowLeft') undo();

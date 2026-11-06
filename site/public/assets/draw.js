@@ -18,7 +18,7 @@
 // The top half is pure geometry and bookkeeping (tested with node --test);
 // createDrawLayer below it is the only part that touches the page.
 import { arrowPoints } from './board.js';
-import { arrow, arrowHead, loop, rng, seedFrom, smoothPath } from './ink.js';
+import { arrow, arrowHead, loop, rng, seedFrom, pathStart, smoothPath, smoothSegment } from './ink.js';
 import { lineText, nextStep } from './line.js';
 import { guard, loose, reach } from './helpers.js';
 
@@ -293,6 +293,12 @@ export function aidSVG(aid, o) {
       })
       .join('');
   }
+  if (aid.kind === 'coach') {
+    // Coach check: a red pen cross on the square the failing move goes to, or a blue tick on the last one.
+    const [x, y] = squareCentre(aid.to, o);
+    if (aid.ok) return `<path class="aid-coach is-ok" d="M${r2(x - 3)} ${r2(y + 0.2)} L${r2(x - 0.8)} ${r2(y + 2.6)} L${r2(x + 3.4)} ${r2(y - 2.8)}"/>`;
+    return `<g class="aid-coach"><path d="M${r2(x - 3.2)} ${r2(y - 3.2)} L${r2(x + 3.2)} ${r2(y + 3.2)}"/><path d="M${r2(x + 3.2)} ${r2(y - 3.4)} L${r2(x - 3)} ${r2(y + 3.1)}"/></g>`;
+  }
   if (aid.kind === 'guard' && aid.g) {
     const [x, y] = squareCentre(aid.sq, o);
     const g = aid.g;
@@ -488,16 +494,32 @@ export function createSketch() {
   };
 }
 
-/** What a pointer pressed on the board should do: 'mark' (right button), 'tool', or null (leave it to the pieces). */
+/**
+ * What a pointer pressed on the board should do: 'mark' (right button), 'tool',
+ * or null (leave it to the pieces). Outside Draw nothing draws, not even a
+ * stylus or a right-drag, so moving pieces never leaves a stray mark.
+ */
 export function intentFor({ pointerType, button }, drawMode) {
+  if (!drawMode) return null;
   if (pointerType === 'pen') {
     if (button === 2) return 'mark'; // the barrel button
     if (button === 5) return null; // the eraser end: not a drawing tool here
     return 'tool';
   }
   if (button === 2 && pointerType === 'mouse') return 'mark';
-  if (drawMode && button === 0) return 'tool';
+  if (button === 0) return 'tool';
   return null;
+}
+
+/** The board's three modes: Move (pieces only, drawings hidden), Faint (pieces only, drawings shown faint), Draw. */
+export const MODES = ['move', 'faint', 'draw'];
+export const FADES = [10, 20, 30, 40, 50, 60, 70, 80, 90];
+
+/** How the finished drawings show in a mode: hidden, at the faint level (percent), or full. */
+export function inkFor(mode, fade = 50) {
+  if (mode === 'move') return { hidden: true, opacity: 1 };
+  if (mode === 'faint') return { hidden: false, opacity: (FADES.includes(Number(fade)) ? Number(fade) : 50) / 100 };
+  return { hidden: false, opacity: 1 };
 }
 
 /* ------------------------------------------------------------------ Page */
@@ -534,8 +556,16 @@ const GRAIN = `<defs><filter id="dr-grain" x="-8" y="-8" width="96" height="96" 
  */
 export function createDrawLayer(els, { orientation = () => 'white', pieceAt = () => null, boardFen = () => '', onLine = () => {} } = {}) {
   const sketch = createSketch();
-  let drawMode = false;
-  let visible = true;
+  // Every listener goes through on(), so destroy() can take them all off again.
+  const offs = [];
+  function on(target, type, fn, options) {
+    if (!target || typeof target.addEventListener !== 'function') return; // e.g. an old Safari media query
+    target.addEventListener(type, fn, options);
+    offs.push(() => target.removeEventListener(type, fn, options));
+  }
+  // A page opens in Move or Faint, never Draw, so the first touch can't leave a mark.
+  let mode = remembered('mode', ['move', 'faint'], 'move');
+  let fade = Number(remembered('fade', FADES.map(String), '50'));
   let tool = remembered('tool', TOOLS, 'pen');
   let color = remembered('color', COLORS, 'green');
   let size = remembered('size', Object.keys(SIZES), 'medium');
@@ -551,25 +581,60 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
 
   const done = document.createElementNS(SVGNS, 'g');
   done.setAttribute('class', 'desk__drawn');
+  // The stroke being drawn lives in its own <svg> on top, its own layer on
+  // screen: redrawing it every frame then never makes the browser repaint
+  // (and re-filter) the drawings already on the board.
+  const liveSvg = document.createElementNS(SVGNS, 'svg');
+  liveSvg.setAttribute('class', 'desk__draw desk__draw--live');
+  liveSvg.setAttribute('viewBox', els.svg.getAttribute('viewBox') || '0 0 80 80');
+  liveSvg.setAttribute('aria-hidden', 'true');
+  liveSvg.setAttribute('focusable', 'false');
   const preview = document.createElementNS(SVGNS, 'g');
   preview.setAttribute('class', 'desk__live');
+  liveSvg.append(preview);
+  els.svg.after(liveSvg);
   els.svg.insertAdjacentHTML('afterbegin', GRAIN);
+  const grain = els.svg.firstElementChild;
   const aidLayer = document.createElementNS(SVGNS, 'g');
   aidLayer.setAttribute('class', 'desk__aid');
-  els.svg.append(done, preview, aidLayer);
+  els.svg.append(done, aidLayer);
 
   const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
 
+  // What's on the board now, so a new drawing is added on its own instead of
+  // rebuilding (and restyling) every drawing already there.
+  const drawn = { o: '', shapes: [], steps: null };
+  const shapesLayer = document.createElementNS(SVGNS, 'g');
+  shapesLayer.setAttribute('class', 'desk__shapes');
+  const stepsLayer = document.createElementNS(SVGNS, 'g'); // a line's arrows sit over the other drawings
+  stepsLayer.setAttribute('class', 'desk__steps');
+  done.append(shapesLayer, stepsLayer);
+  const sameList = (a, b, n = b.length) => a.length >= n && b.slice(0, n).every((s, i) => a[i] === s);
+
   function render() {
     const o = orientation();
-    const badges = []; // a line's numbers, placed in order so they don't cover each other
-    const ordered = [...sketch.shapes.filter((s) => s.kind !== 'step'), ...lineSteps(sketch.shapes)];
-    done.innerHTML = ordered.map((s) => shapeSVG(s, o, '', badges)).join('');
+    const shapes = sketch.shapes.filter((s) => s.kind !== 'step');
+    const steps = lineSteps(sketch.shapes);
+    const turned = drawn.o !== o;
+    if (!turned && shapes.length > drawn.shapes.length && sameList(shapes, drawn.shapes)) {
+      shapesLayer.insertAdjacentHTML('beforeend', shapes.slice(drawn.shapes.length).map((s) => shapeSVG(s, o)).join(''));
+    } else if (turned || shapes.length !== drawn.shapes.length || !sameList(shapes, drawn.shapes)) {
+      shapesLayer.innerHTML = shapes.map((s) => shapeSVG(s, o)).join('');
+    }
+    const stepsChanged = turned || !drawn.steps || steps.length !== drawn.steps.length || !sameList(steps, drawn.steps);
+    if (stepsChanged) {
+      const badges = []; // a line's numbers, placed in order so they don't cover each other
+      stepsLayer.innerHTML = steps.map((s) => shapeSVG(s, o, '', badges)).join('');
+    }
+    drawn.o = o;
+    drawn.shapes = shapes;
+    drawn.steps = steps;
     aidLayer.innerHTML = aidSVG(aid, o);
     syncButtons();
-    const steps = lineSteps(sketch.shapes);
-    const start = steps.length ? steps[0].start : '';
-    onLine(steps.length ? { fen: start, steps, text: lineText(start, steps) } : null);
+    if (stepsChanged) {
+      const start = steps.length ? steps[0].start : '';
+      onLine(steps.length ? { fen: start, steps, text: lineText(start, steps) } : null);
+    }
   }
 
   function ask(kind, sq) {
@@ -647,9 +712,22 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
   }
 
   function syncButtons() {
-    els.mode.setAttribute('aria-pressed', String(drawMode));
-    els.show.setAttribute('aria-pressed', String(visible));
-    els.svg.classList.toggle('is-hidden', !visible);
+    const drawMode = mode === 'draw';
+    for (const b of els.modes || []) {
+      const on = b.dataset.mode === mode;
+      b.setAttribute('aria-checked', String(on));
+      b.tabIndex = on ? 0 : -1;
+    }
+    const ink = inkFor(mode, fade);
+    // Only the finished drawings fade or hide; a helper's answer and the stroke being drawn stay clear.
+    if (ink.hidden) done.setAttribute('display', 'none');
+    else done.removeAttribute('display');
+    if (ink.opacity < 1) done.setAttribute('opacity', String(ink.opacity));
+    else done.removeAttribute('opacity');
+    if (els.kit) els.kit.hidden = !drawMode;
+    if (els.fadeBox) els.fadeBox.hidden = mode !== 'faint';
+    if (els.fade && Number(els.fade.value) !== fade) els.fade.value = String(fade);
+    if (els.fadeOut) els.fadeOut.textContent = `${fade}%`;
     els.board.classList.toggle('is-drawing', drawMode);
     els.undo.disabled = !sketch.canUndo;
     els.clear.disabled = !sketch.shapes.length;
@@ -669,12 +747,14 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
   }
 
   function hintText() {
+    const drawMode = mode === 'draw';
+    if (mode === 'move') return sketch.shapes.length ? 'Move: drag pieces. Your drawings are hidden and nothing draws. Faint shows them faintly.' : 'Move: drag pieces. Nothing draws here. Pick Draw to draw on the board.';
+    if (mode === 'faint') return 'Faint: drag pieces with your drawings shown faintly. Nothing new draws. Pick Draw to add more.';
     if (drawMode && tool === 'sticker') return 'Sticker: pick one from the sheet, then tap a square. Tap it again to peel it off.';
     if (drawMode && tool === 'tape') return 'Tape: drag along a rank, file or diagonal. It snaps to the line.';
     if (drawMode && tool === 'line') return 'Line: drag the moves you think come next, both sides, in order. Each arrow gets its number. Then tap Play it.';
     if (drawMode && tool === 'ghost') return 'Ghost: drag a piece to try it on another square. The real position stays put. Drag the ghost on to keep going.';
-    if (drawMode) return fine.matches ? 'Draw is on: drag on the board to draw. Turn it off to move pieces.' : 'Draw is on: your finger draws. Tap Draw again to move pieces.';
-    return fine.matches ? 'Right-drag on the board for an arrow, right-click a square to circle it.' : 'Tap Draw to draw on the board with your finger. A stylus always draws.';
+    return fine.matches ? 'Draw: drag on the board to draw; right-drag for an arrow. Pick Move to move pieces.' : 'Draw: your finger or stylus draws. Pick Move to move pieces.';
   }
 
   // Where the board is on screen, turn included; measured once per stroke.
@@ -698,9 +778,24 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
       const pts = live.pts;
       let d;
       if (pts.length === 1) d = outlinePath(pts, [live.width]);
-      else d = smoothPath(pts);
+      else {
+        // The finished part of the curve is kept; only the last two segments are redone.
+        if (!live.done) live.done = { d: pathStart(pts), n: 0 };
+        while (live.done.n < pts.length - 3) live.done.d += smoothSegment(pts, live.done.n++);
+        d = live.done.d;
+        for (let i = live.done.n; i < pts.length - 1; i += 1) d += smoothSegment(pts, i);
+      }
       const nib = live.nib !== 'pen' ? ` dr--${live.nib}` : '';
-      preview.innerHTML = `<g class="dr dr--free${nib} tone--${color}${pts.length === 1 ? ' dr--fill' : ''}" stroke-width="${live.width}"><path d="${d}"/></g>`;
+      // One <g><path> per stroke, made once; each frame only its d and width change.
+      if (!live.el) {
+        preview.innerHTML = '<g><path/></g>';
+        live.el = preview.firstChild;
+        live.path = live.el.firstChild;
+      }
+      const cls = `dr dr--free${nib} tone--${color}${pts.length === 1 ? ' dr--fill' : ''}`;
+      if (live.cls !== cls) live.el.setAttribute('class', (live.cls = cls));
+      if (live.w !== live.width) live.el.setAttribute('stroke-width', String((live.w = live.width)));
+      live.path.setAttribute('d', d);
       return;
     }
     const at = squareAtPoint(live.pts[live.pts.length - 1], o);
@@ -756,7 +851,7 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
       return;
     }
     if (aid) dropAid(); // a helper's answer fades at the next touch
-    const intent = intentFor(e, drawMode);
+    const intent = intentFor(e, mode === 'draw');
     if (!intent) return;
     stop(e);
     const o = orientation();
@@ -769,7 +864,6 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
     if (kind !== 'free' && !from) return;
     const piece = kind === 'ghost' ? pieceForGhost(from, sketch.shapes, pieceAt(from)) : null;
     if (kind === 'ghost' && !piece) return; // an empty square: nothing to pick up
-    if (!visible) visible = true;
     const pen = e.pointerType === 'pen';
     const base = nibWidth(nib, size);
     // A marker lays down an even band; pen and pencil follow stylus pressure.
@@ -864,11 +958,12 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
   }
 
   const opts = { capture: true };
-  els.board.addEventListener('pointerdown', onDown, opts);
-  els.board.addEventListener('pointermove', onMove, opts);
-  els.board.addEventListener('pointerup', (e) => onUp(e, false), opts);
-  els.board.addEventListener('pointercancel', (e) => onUp(e, true), opts);
-  els.board.addEventListener(
+  on(els.board, 'pointerdown', onDown, opts);
+  on(els.board, 'pointermove', onMove, opts);
+  on(els.board, 'pointerup', (e) => onUp(e, false), opts);
+  on(els.board, 'pointercancel', (e) => onUp(e, true), opts);
+  on(
+    els.board,
     'lostpointercapture',
     (e) => {
       if (live && e.pointerId === live.id) onUp(e, false);
@@ -877,32 +972,51 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
   );
   // The right button draws here, so the browser's menu stays shut over the board,
   // and also just after a right-drag that ended off the board (Windows opens it on mouseup).
-  els.board.addEventListener('contextmenu', (e) => e.preventDefault());
-  document.addEventListener('contextmenu', (e) => {
+  on(els.board, 'contextmenu', (e) => e.preventDefault());
+  on(document, 'contextmenu', (e) => {
     if (live || performance.now() < menuShutUntil) e.preventDefault();
   });
   // Switching windows mid-stroke may swallow the pointerup.
-  window.addEventListener('blur', () => {
+  on(window, 'blur', () => {
     if (live) onUp({ pointerId: live.id, stopImmediatePropagation() {}, cancelable: false }, true);
   });
 
-  els.mode.addEventListener('click', () => {
-    drawMode = !drawMode;
-    if (drawMode) visible = true;
+  function setMode(next) {
+    if (!MODES.includes(next) || next === mode) return;
+    if (live) onUp({ pointerId: live.id, stopImmediatePropagation() {}, cancelable: false }, true);
+    mode = next;
+    note = '';
+    if (mode !== 'draw') remember('mode', mode); // Draw is never where a page opens
+    syncButtons();
+  }
+  const modeButtons = els.modes || [];
+  modeButtons.forEach((b, i) => {
+    on(b, 'click', () => setMode(b.dataset.mode));
+    // A radio group: arrow keys move between the modes.
+    on(b, 'keydown', (e) => {
+      const step = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
+      if (!step) return;
+      e.preventDefault();
+      const next = modeButtons[(i + step + modeButtons.length) % modeButtons.length];
+      setMode(next.dataset.mode);
+      next.focus();
+    });
+  });
+  on(els.fade, 'input', () => {
+    const v = Math.round(Number(els.fade.value) / 10) * 10;
+    if (!FADES.includes(v)) return;
+    fade = v;
+    remember('fade', String(v));
     syncButtons();
   });
-  els.show.addEventListener('click', () => {
-    visible = !visible;
-    syncButtons();
-  });
-  els.undo.addEventListener('click', () => {
+  on(els.undo, 'click', () => {
     if (sketch.undo()) render();
   });
-  els.clear.addEventListener('click', () => {
+  on(els.clear, 'click', () => {
     if (sketch.clear()) render();
   });
   for (const b of els.tools) {
-    b.addEventListener('click', () => {
+    on(b, 'click', () => {
       tool = b.dataset.tool;
       note = '';
       remember('tool', tool);
@@ -910,14 +1024,14 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
     });
   }
   for (const b of els.colors) {
-    b.addEventListener('click', () => {
+    on(b, 'click', () => {
       color = b.dataset.color;
       remember('color', color);
       syncButtons();
     });
   }
   for (const b of els.helps || []) {
-    b.addEventListener('click', () => {
+    on(b, 'click', () => {
       const h = b.dataset.help;
       if (h === 'loose') {
         asking = null;
@@ -940,20 +1054,20 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
     });
   }
   for (const b of els.stickers || []) {
-    b.addEventListener('click', () => {
+    on(b, 'click', () => {
       stickerPick = b.dataset.sticker;
       remember('sticker', stickerPick);
       syncButtons();
     });
   }
   for (const b of els.sizes || []) {
-    b.addEventListener('click', () => {
+    on(b, 'click', () => {
       size = b.dataset.size;
       remember('size', size);
       syncButtons();
     });
   }
-  fine.addEventListener?.('change', syncButtons);
+  on(fine, 'change', syncButtons);
   syncButtons();
 
   return {
@@ -969,6 +1083,20 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
       if (aid || asking) {
         asking = null;
         dropAid();
+      }
+    },
+    /** Coach check's mark on the board: { to, ok } (a red cross, or a blue tick), or null to take it off. */
+    showCoach(mark) {
+      asking = null;
+      looseSide = 0;
+      aid = mark ? { kind: 'coach', to: mark.to, ok: Boolean(mark.ok) } : null;
+      render();
+    },
+    /** Take Coach check's mark off the board, if it's showing (no redraw of the drawings needed). */
+    clearCoach() {
+      if (aid && aid.kind === 'coach') {
+        aid = null;
+        aidLayer.innerHTML = '';
       }
     },
     /** Take the numbered line off the board, as one undo step. */
@@ -989,7 +1117,23 @@ export function createDrawLayer(els, { orientation = () => 'white', pieceAt = ()
       return sketch.shapes;
     },
     get drawMode() {
-      return drawMode;
+      return mode === 'draw';
+    },
+    get mode() {
+      return mode;
+    },
+    /**
+     * Take the layer off the board for good (e.g. a page that unmounts its board): ends a stroke,
+     * stops the frame timer, removes every listener it added (board, buttons, document, window,
+     * media query) and the drawing groups it put in the SVG. Safe to call twice.
+     */
+    destroy() {
+      if (!offs.length && !done.parentNode) return;
+      if (live) onUp({ pointerId: live.id, stopImmediatePropagation() {}, cancelable: false }, true);
+      if (frame) cancelAnimationFrame(frame);
+      frame = 0;
+      for (const off of offs.splice(0)) off();
+      for (const n of [grain, done, liveSvg, aidLayer]) n?.remove?.();
     },
   };
 }
