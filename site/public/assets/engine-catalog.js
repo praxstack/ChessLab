@@ -74,7 +74,7 @@ export const MAIA_CREDIT =
 
 const file = (path, bytes, more = {}) => ({ path, bytes, ...more });
 /** Imported first by every module engine worker: lets iPhone and iPad Safari give the engine its memory. */
-const MEMORY_FIT = file('/assets/engine/wasm-memory-fit.js', 1353, { role: 'runtime' });
+const MEMORY_FIT = file('/assets/engine/wasm-memory-fit.js', 1568, { role: 'runtime' });
 const LICHESS_RUN = [file('/assets/engine/lichess/run.js', 1622, { role: 'runtime' }), MEMORY_FIT];
 const sum = (files) => files.reduce((n, f) => n + f.bytes, 0);
 
@@ -225,7 +225,9 @@ export const ENGINES = [
     status: 'ready',
     threads: true,
     files: [
-      file('/assets/engine/stockfish-19-lite.js', 33426, { role: 'worker' }),
+      file('/assets/engine/stockfish-19-lite-fit.js', 352, { role: 'worker' }),
+      file('/assets/engine/stockfish-19-lite.js', 33426, { role: 'runtime' }),
+      MEMORY_FIT,
       file('/assets/engine/stockfish-19-lite.wasm', 1697617, { role: 'wasm' }),
     ],
   }),
@@ -242,7 +244,9 @@ export const ENGINES = [
     threads: true,
     memory: 'about 200 to 300 MB while it runs (an estimate)',
     files: [
-      file('/assets/engine/stockfish-19.js', 33326, { role: 'worker' }),
+      file('/assets/engine/stockfish-19-fit.js', 342, { role: 'worker' }),
+      file('/assets/engine/stockfish-19.js', 33326, { role: 'runtime' }),
+      MEMORY_FIT,
       file('/assets/engine/stockfish-19.wasm', 99076105, {
         role: 'wasm',
         sha256: 'a599d78d72e0722d8895be84aca8b492d12e8bba3cdfcbcbc4a64017888c6667',
