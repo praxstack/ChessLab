@@ -13,12 +13,12 @@ export default function Settings({settings,tab,onTab,onChange,engines,local=fals
  const select=(key,label,options,numeric=false)=><SettingSelect label={label} value={settings[key]} onChange={value=>onChange(key,numeric?Number(value):value)} options={options.map(([value,label,disabled])=>({value,label,disabled}))}/>;
  const toggle=(key,label)=><SettingToggle label={label} value={settings[key]} onChange={()=>onChange(key,!settings[key])}/>;
  const available=id=>engines.some(e=>e.id===id&&e.available);
- return <><div className="settings-tabs" role="tablist" aria-label="Settings sections">{['board','review','engine',...(browserBuild?['coach']:[])].map(id=><button type="button" role="tab" aria-selected={tab===id} key={id} className={tab===id?'active':''} onClick={()=>onTab(id)}>{id==='review'?'Interface':id}</button>)}</div>
+ return <><div className="settings-tabs" role="tablist" aria-label="Settings sections">{['board','review','engine',...(browserBuild?['coach']:[])].map(id=><button type="button" role="tab" aria-selected={tab===id} key={id} className={tab===id?'active':''} onClick={()=>onTab(id)}>{id==='review'?'Interface':id==='board'?'Appearance':id}</button>)}</div>
  <div className="settings-body">{tab==='coach'&&browserBuild?<CoachSettings onChange={onCoachChange}/>:tab==='board'?<>
-  <h3>Appearance</h3>
+  <h3>Colours</h3>
   {select('theme','Theme',colorThemes)}
   <h3>Board</h3>
-  <label className="setting-row"><span>Pieces</span><select value={pieceSet.id} disabled title="More piece sets are coming"><option value={pieceSet.id}>{pieceSet.label}</option></select></label>
+  <div className="setting-row"><span>Pieces</span><span className="setting-value setting-static">{pieceSet.label} <small>· one set for now</small></span></div>
   {select('boardTheme','Board',boardThemes)}
   {select('orientation','Orientation',[['auto','Your playing color'],['w','White at bottom'],['b','Black at bottom']])}
   {select('coordinates','Coordinates',[[true,'Inside'],[false,'None']])}
