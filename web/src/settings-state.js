@@ -1,6 +1,6 @@
 // Browser preferences. Stored values from older builds are normalized on load.
-export const pieceSet = {id:'cburnett', label:'Classic (cburnett)'};
-export const boardThemes = [['book','Book diagram'],['slate','Slate & sand'],['walnut','Walnut & ivory'],['blue','Blue'],['gray','Gray']];
+export const pieceSet = {id:'cburnett', label:'Classic'};
+export const boardThemes = [['book','Ink & paper'],['hatch','Book diagram (hatched)'],['slate','Slate & sand'],['walnut','Walnut & ivory'],['blue','Blue'],['gray','Gray']];
 const renamedThemes = {green:'slate', brown:'walnut'};
 // Light is the paper notebook, dark is the chalkboard; system follows the device.
 export const colorThemes = [['system','Match this device'],['light','Light (paper)'],['dark','Dark (chalkboard)']];

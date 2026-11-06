@@ -49,7 +49,7 @@ test('board coordinates keep 4.5:1 contrast on plain and highlighted squares in 
   const over=(top,bottom)=>{const t=channels(top),b=channels(bottom);return '#'+t.rgb.map((c,i)=>Math.round(t.alpha*c+(1-t.alpha)*b.rgb[i]).toString(16).padStart(2,'0')).join('');};
   const luminance=hex=>channels(hex).rgb.map(c=>c/255).map(c=>c<=0.04045?c/12.92:((c+0.055)/1.055)**2.4).reduce((sum,c,i)=>sum+c*[0.2126,0.7152,0.0722][i],0);
   const ratio=(a,b)=>{const [high,low]=[luminance(a),luminance(b)].sort((x,y)=>y-x);return (high+0.05)/(low+0.05);};
-  const lastMove=colour('box-shadow','[data-board-theme] .square.last-move'),selection=colour('background','.square.selected:after');
+  const lastMove=colour('background','.square.last-move:before','[data-board-theme] .square.last-move'),selection=colour('background','.square.selected:after');
   for(const [theme] of boardThemes)for(const kind of ['light','dark']){
    const themed=`[data-board-theme=${theme}] .square.${kind}`,plain=colour('background',themed,`.square.${kind}`);
    const moved=over(lastMove,colour('background',themed,`.square.${kind}.last-move`,`.square.${kind}`));
