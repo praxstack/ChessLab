@@ -396,6 +396,60 @@ export const ENGINES = [
       }),
     ],
   }),
+  entry({
+    id: 'sf15',
+    name: 'Stockfish 15',
+    family: 'Stockfish',
+    about: 'Stockfish 15 (2022) with its own net, on several CPU cores. For comparing versions. Its net is a separate 47 MB file it reads after it starts.',
+    license: GPL,
+    licenseUrl: COPYING,
+    source: SFJS,
+    device: 'heavy',
+    status: 'ready',
+    threads: true, // stockfish.js 15.0.0 only came as a several-cores build
+    memory: 'about 1 GB set aside while it runs (the build asks for that much up front)',
+    files: [
+      file('/assets/engine/stockfish-15-fit.js', 319, { role: 'worker' }),
+      file('/assets/engine/stockfish-15.js', 48833, { role: 'runtime' }),
+      MEMORY_FIT,
+      file('/assets/engine/stockfish-15.wasm', 683538, { role: 'wasm' }),
+      file('/assets/engine/nn-6877cd24400e.nnue', 47001499, {
+        role: 'net',
+        sha256: '6877cd24400e01b19ff12ae3068ae242152802bdd330e66f7b6703865251d6e3',
+        parts: [
+          file('/assets/engine/nn-6877cd24400e.nnue.part0', 23500750, { sha256: 'feb5300df3786897a217e445ba4144b9f04e787b324702794c433a53f238450f' }),
+          file('/assets/engine/nn-6877cd24400e.nnue.part1', 23500749, { sha256: '6ef494789ce7657f744ebc1584e712bb7758eef9547b0d8415d6301057a3c080' }),
+        ],
+      }),
+    ],
+  }),
+  entry({
+    id: 'sf14',
+    name: 'Stockfish 14.1',
+    family: 'Stockfish',
+    about: 'Stockfish 14.1 (2021) with its own net, on several CPU cores. For comparing versions. Its net is a separate 47 MB file it reads after it starts.',
+    license: GPL,
+    licenseUrl: COPYING,
+    source: SFJS,
+    device: 'heavy',
+    status: 'ready',
+    threads: true, // stockfish.js 14.1.0 only came as a several-cores build
+    memory: 'about 1 GB set aside while it runs (the build asks for that much up front)',
+    files: [
+      file('/assets/engine/stockfish-14.1-fit.js', 323, { role: 'worker' }),
+      file('/assets/engine/stockfish-14.1.js', 48833, { role: 'runtime' }),
+      MEMORY_FIT,
+      file('/assets/engine/stockfish-14.1.wasm', 679336, { role: 'wasm' }),
+      file('/assets/engine/nn-13406b1dcbe0.nnue', 47001243, {
+        role: 'net',
+        sha256: '13406b1dcbe0a36dfc5e07da51d8db38b7a45d7da43078ec25a7624c2b83236f',
+        parts: [
+          file('/assets/engine/nn-13406b1dcbe0.nnue.part0', 23500622, { sha256: '9dff74286add1e32469ab0ea9061f2d6eb9e4422e87bf5cdaa78c55c69c9325e' }),
+          file('/assets/engine/nn-13406b1dcbe0.nnue.part1', 23500621, { sha256: 'f960a6363b635941383ac50dc163696ff470b9e4a3253398cd9ed27e17cb9fe9' }),
+        ],
+      }),
+    ],
+  }),
   // Lichess's own browser builds (npm @lichess-org/stockfish-web 0.5.0, files unchanged, in
   // /assets/engine/lichess/). They always start extra threads, so they need the cross-origin isolated page.
   // The nets are the ones the builds name (getRecommendedNnue), from tests.stockfishchess.org.
@@ -534,18 +588,6 @@ export const ENGINES = [
   ),
 
   /* ---------------------------------------------------- listed, not yet */
-  entry({
-    id: 'sf15',
-    name: 'Stockfish 15 / 14.1',
-    family: 'Stockfish',
-    about: 'Older Stockfish versions with their nets. Only published as several-core builds, which need page headers this site doesn’t send yet.',
-    license: GPL,
-    licenseUrl: GPL_URL,
-    source: SF_NETS,
-    device: 'heavy',
-    status: 'soon',
-    files: [file('engine', 0.7e6, { approx: true }), file('net', 47e6, { approx: true })],
-  }),
   ...[
     ['3m', 'Maia3-ablate-3M', '3M', 'light', 'the smallest and quickest'],
     ['5m', 'Maia3-5M', '5M', 'light', 'small and quick'],

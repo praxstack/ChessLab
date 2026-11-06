@@ -56,7 +56,7 @@ test('catalog: every entry is complete, ids are unique, and Lite is the ready de
   assert.equal(needsWarning(lite), false);
   assert.deepEqual(
     ENGINES.filter((e) => e.status === 'ready').map((e) => e.id),
-    ['sf19-lite', 'sf19-full', 'sf19-lite-mt', 'sf19-full-mt', 'sf18-lite', 'sf17-lite', 'sf19-asm', 'sf11', 'sf17-full', 'sf18-full', 'sf16', 'sf19-lichess-big', 'sf19-lichess-small', 'fairy-sf14', 'dm-9m', 'maia1-1100', 'maia1-1200', 'maia1-1300', 'maia1-1400', 'maia1-1500', 'maia1-1600', 'maia1-1700', 'maia1-1800', 'maia1-1900', 'maia3-3m-1100', 'maia3-3m-1500', 'maia3-3m-1900', 'maia3-5m-1100', 'maia3-5m-1500', 'maia3-5m-1900', 'maia3-23m-1100', 'maia3-23m-1500', 'maia3-23m-1900', 'maia3-79m-1100', 'maia3-79m-1500', 'maia3-79m-1900', 'maia2-1100', 'maia2-1500', 'maia2-1900', 'dm-136m', 'dm-270m', 'lc0-t1-256x10', 'lc0-t1-512x15', 'lc0-t82', 'lc0-bt3'],
+    ['sf19-lite', 'sf19-full', 'sf19-lite-mt', 'sf19-full-mt', 'sf18-lite', 'sf17-lite', 'sf19-asm', 'sf11', 'sf17-full', 'sf18-full', 'sf16', 'sf15', 'sf14', 'sf19-lichess-big', 'sf19-lichess-small', 'fairy-sf14', 'dm-9m', 'maia1-1100', 'maia1-1200', 'maia1-1300', 'maia1-1400', 'maia1-1500', 'maia1-1600', 'maia1-1700', 'maia1-1800', 'maia1-1900', 'maia3-3m-1100', 'maia3-3m-1500', 'maia3-3m-1900', 'maia3-5m-1100', 'maia3-5m-1500', 'maia3-5m-1900', 'maia3-23m-1100', 'maia3-23m-1500', 'maia3-23m-1900', 'maia3-79m-1100', 'maia3-79m-1500', 'maia3-79m-1900', 'maia2-1100', 'maia2-1500', 'maia2-1900', 'dm-136m', 'dm-270m', 'lc0-t1-256x10', 'lc0-t1-512x15', 'lc0-t82', 'lc0-bt3'],
   );
 });
 
@@ -125,7 +125,7 @@ test('catalog: every split file matches its manifest, each part’s hash and the
   const split = ENGINES.filter((e) => e.status === 'ready').flatMap((e) => e.files.filter((f) => f.parts));
   assert.deepEqual(
     split.map((f) => f.path.replace('/assets/engine/', '')),
-    ['stockfish-19-single.wasm', 'stockfish-19.wasm', 'stockfish-17.1-single.wasm', 'stockfish-18-single.wasm', 'nn-5af11540bbfe.nnue', 'lichess/nn-1a298aa575a0.nnue', 'searchless-9m.onnx', ...['23m', '79m'].flatMap((z) => Array(3).fill(`maia3-${z}.onnx`)), 'maia2-rapid.onnx', 'maia2-rapid.onnx', 'maia2-rapid.onnx', 'searchless-136m.onnx', 'searchless-270m.onnx', 'lc0-t1-256x10.onnx', 'lc0-t1-512x15.onnx', 'lc0-t82-768x15.onnx', 'lc0-bt3-768x15.onnx'],
+    ['stockfish-19-single.wasm', 'stockfish-19.wasm', 'stockfish-17.1-single.wasm', 'stockfish-18-single.wasm', 'nn-5af11540bbfe.nnue', 'nn-6877cd24400e.nnue', 'nn-13406b1dcbe0.nnue', 'lichess/nn-1a298aa575a0.nnue', 'searchless-9m.onnx', ...['23m', '79m'].flatMap((z) => Array(3).fill(`maia3-${z}.onnx`)), 'maia2-rapid.onnx', 'maia2-rapid.onnx', 'maia2-rapid.onnx', 'searchless-136m.onnx', 'searchless-270m.onnx', 'lc0-t1-256x10.onnx', 'lc0-t1-512x15.onnx', 'lc0-t82-768x15.onnx', 'lc0-bt3-768x15.onnx'],
   );
   for (const f of split) {
     const manifest = JSON.parse(readFileSync(pub(`${f.path}.parts.json`), 'utf8'));
@@ -366,7 +366,7 @@ test('choice: a stored id that is unknown or not runnable, or storage that throw
 
 test('several cores: only on a cross-origin isolated page, 2 to 4 threads, and a plain reason when it can’t', () => {
   const mt = ENGINES.filter((e) => e.threads);
-  assert.deepEqual(mt.map((e) => e.id), ['sf19-lite-mt', 'sf19-full-mt', 'sf19-lichess-big', 'sf19-lichess-small', 'fairy-sf14']);
+  assert.deepEqual(mt.map((e) => e.id), ['sf19-lite-mt', 'sf19-full-mt', 'sf15', 'sf14', 'sf19-lichess-big', 'sf19-lichess-small', 'fairy-sf14']);
   for (const e of mt) {
     assert.equal(e.status, 'ready');
     assert.match(cantRun(e, { isolated: false }), /several cores/);
@@ -380,12 +380,13 @@ test('several cores: only on a cross-origin isolated page, 2 to 4 threads, and a
   // Stockfish.js's start from a small classic front that loads the memory fit, then the package's script.
   for (const e of mt) {
     const lichess = e.id.includes('lichess') || e.family === 'Fairy-Stockfish';
-    const script = e.files.find((f) => f.role === 'runtime' && (lichess ? /\/(sf|fsf)_[^/]+\.js$/ : /\/stockfish-19(-lite)?\.js$/).test(f.path));
+    const script = e.files.find((f) => f.role === 'runtime' && (lichess ? /\/(sf|fsf)_[^/]+\.js$/ : /\/stockfish-(19(-lite)?|15|14\.1)\.js$/).test(f.path));
     const js = readFileSync(pub(script.path), 'utf8');
-    assert.match(js, /em-pthread/, e.id);
+    // Stockfish 15 and 14.1 are older Emscripten builds: their pthreads say ENVIRONMENT_IS_PTHREAD, not em-pthread.
+    assert.match(js, /em-pthread|ENVIRONMENT_IS_PTHREAD/, e.id);
     if (!lichess) {
       const front = readFileSync(pub(engineFiles(e).worker.path), 'utf8');
-      assert.match(front, new RegExp(`importScripts\\('wasm-memory-fit\\.js', '${script.path.split('/').pop().replace('.', '\\.')}'\\)`), e.id);
+      assert.match(front, new RegExp(`importScripts\\('wasm-memory-fit\\.js', '${script.path.split('/').pop().replaceAll('.', '\\.')}'\\)`), e.id);
     }
   }
 });

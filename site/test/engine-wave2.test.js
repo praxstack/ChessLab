@@ -249,14 +249,14 @@ test('loader: a net in its own file is downloaded in checked parts, then read th
 });
 
 test('loader: every ready engine in the catalog gives the loader what it needs', () => {
-  for (const id of ['sf17-lite', 'sf17-full', 'sf18-full', 'sf16', 'sf11', 'sf19-asm', 'dm-9m']) {
+  for (const id of ['sf17-lite', 'sf17-full', 'sf18-full', 'sf16', 'sf15', 'sf14', 'sf11', 'sf19-asm', 'dm-9m']) {
     const e = engineById(id);
     assert.equal(e.status, 'ready', id);
     const { worker, wasm, net } = engineFiles(e);
     assert.ok(worker, id);
     if (id === 'sf19-asm') assert.equal(wasm, undefined);
     else assert.ok(wasm, id);
-    assert.equal(Boolean(net), id === 'sf16', id);
+    assert.equal(Boolean(net), ['sf16', 'sf15', 'sf14'].includes(id), id);
   }
 });
 
