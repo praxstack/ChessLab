@@ -66,14 +66,18 @@ Run these from the repository root on your Mac. `npx wrangler` downloads Wrangle
 
    Wrangler prints the Worker's address, such as `https://askthemove-coach.<your-subdomain>.workers.dev`.
 
-8. Build the browser app with that address so it shows the invite code option:
+8. Deploy both copies of the browser app with that address, so they show the invite code option. Each build adds the address to the app's Content Security Policy by itself. From the repository root:
 
    ```sh
    cd ../..
-   VITE_COACH_URL=https://askthemove-coach.<your-subdomain>.workers.dev npm run build:app
+   export VITE_COACH_URL=https://askthemove-coach.<your-subdomain>.workers.dev
+   npm run deploy:app            # askthemove-app.pages.dev
+   cd site && npm run deploy     # askthemove.online, including /betapp
    ```
 
-   The build adds that address to the app's Content Security Policy by itself.
+   Run both again with the same `VITE_COACH_URL` after every app change, or the next deploy drops the coach option. `site/scripts/build-betapp.mjs` passes the variable through to the /betapp build.
+
+9. Check it: open the app, Settings > Coach, enter one invite code, then tap "Explain why" on a move. `npx wrangler tail` (in `deploy/coach-worker`) shows each request's outcome.
 
 ## Everyday changes
 
