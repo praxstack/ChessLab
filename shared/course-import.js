@@ -35,7 +35,8 @@ function linesOf(root, initialFen) {
       if (parsed.comment) noteMap[ply] = parsed.comment.slice(0, 1500);
       if (parsed.marks.length) markMap[ply] = parsed.marks;
     };
-    if (cursor === root) note(root, 0);
+    // The first node of a game or a variation carries the comment written before its first move.
+    note(node, prefix.length);
     while (cursor.variations?.length) {
       // Alternatives wait until the main continuation is recorded, so the author's main line comes first.
       for (const alternative of cursor.variations.slice(1)) deferred.push([alternative, [...moves], {...noteMap}, {...markMap}]);
@@ -66,15 +67,22 @@ export function courseFromPgn(pgn, options = {}, {now} = {}) {
     const lines = linesOf(parsed.root, initialFen).filter(line => line.moves.length);
     if (!lines.length) return;
     total += lines.length;
+    if (chapters.length >= 60 && !(parsed.headers.ChapterName && chapters.some(c => c.title === title))) fail('Import at most 60 chapters per course.');
     if (total > MAX_LINES) fail(`Import at most ${MAX_LINES} lines per course.`);
     const first = replay([], initialFen).turn();
     const side = options.side === 'w' || options.side === 'b' ? options.side : first;
-    const chapterId = `c${index + 1}`;
-    chapters.push({
-      id: chapterId, title, explain: parsed.root?.comment ? [readMarkComment(parsed.root.comment).comment].filter(Boolean) : [],
-      lines: lines.map((line, i) => ({id: `${chapterId}-l${i + 1}`, title: `Line ${i + 1}`, startFen: initialFen, side, moves: line.moves, notes: line.notes, marks: line.marks})),
-      quizzes: [],
-    });
+    // Games that name the same chapter (our own export writes one game per line) join one chapter.
+    let chapter = parsed.headers.ChapterName ? chapters.find(c => c.title === title) : null;
+    if (!chapter) {
+      const chapterId = `c${chapters.length + 1}`;
+      chapter = {id: chapterId, title, explain: parsed.root?.comment ? [readMarkComment(parsed.root.comment).comment].filter(Boolean) : [], lines: [], quizzes: []};
+      chapters.push(chapter);
+    }
+    const lineTitle = parsed.headers.LineTitle;
+    for (const line of lines) {
+      const n = chapter.lines.length + 1;
+      chapter.lines.push({id: `${chapter.id}-l${n}`, title: lineTitle && lines.length === 1 ? lineTitle : `Line ${n}`, startFen: initialFen, side, moves: line.moves, notes: line.notes, marks: line.marks});
+    }
   });
   if (!chapters.length) fail('This PGN has no moves to drill.');
   const title = options.title || games.length === 1 && chapters[0].title !== 'Chapter 1' ? (options.title || chapters[0].title) : 'Imported course';
@@ -96,6 +104,14 @@ export function lichessStudyExportUrl(input) {
   return match ? `https://lichess.org/api/study/${match[1]}.pgn` : null;
 }
 
+// The canonical study link for a study link or bare id, or null.
+export function lichessStudyLink(input) {
+  const url = lichessStudyExportUrl(input);
+  if (!url) return null;
+  const [, id, chapter] = url.match(/study\/([A-Za-z0-9]{8})(?:\/([A-Za-z0-9]{8}))?\.pgn$/);
+  return chapter ? `https://lichess.org/study/${id}/${chapter}` : `https://lichess.org/study/${id}`;
+}
+
 // Writes a course back out as one PGN per chapter (Chessable's export shape), so a course made
 // here can move to any other trainer. Notes and marks travel as comments.
 export function courseToPgn(course) {
@@ -114,9 +130,11 @@ export function courseToPgn(course) {
     out += '\n';
     const head = comment(line.notes?.[0], line.marks?.[0]); if (head) out += head.trim() + ' ';
     line.moves.forEach((move, index) => {
+      // Move numbers come from the board, so a line starting from a FEN keeps its real numbering.
+      const number = board.moveNumber(), colour = board.turn();
       const m = board.move({from: move.slice(0, 2), to: move.slice(2, 4), promotion: move[4]});
-      const ply = index + 1, number = Math.ceil(ply / 2);
-      out += (m.color === 'w' ? `${number}. ` : index === 0 ? `${number}... ` : '') + m.san + comment(line.notes?.[ply], line.marks?.[ply]) + ' ';
+      const ply = index + 1;
+      out += (colour === 'w' ? `${number}. ` : index === 0 ? `${number}... ` : '') + m.san + comment(line.notes?.[ply], line.marks?.[ply]) + ' ';
     });
     return out.trim() + ' *\n';
   }).join('\n')).join('\n');

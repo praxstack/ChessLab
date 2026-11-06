@@ -118,9 +118,9 @@ export function validateCourse(input, {createdAt} = {}) {
     const explain = chapterInput.explain ?? [];
     if (!Array.isArray(explain) || explain.length > LIMITS.explain) fail(`A chapter holds at most ${LIMITS.explain} explain paragraphs.`);
     chapter.explain = explain.map(p => text(p, LIMITS.explainText, 'An explain paragraph'));
+    if (!Array.isArray(chapterInput.lines ?? []) || !Array.isArray(chapterInput.quizzes ?? [])) fail('Chapter lines and quizzes must be lists.');
     chapter.lines = (chapterInput.lines ?? []).map(line => validateLine(line, scope, counter));
     chapter.quizzes = (chapterInput.quizzes ?? []).map(quiz => validateQuiz(quiz, scope));
-    if (!Array.isArray(chapterInput.lines ?? []) || !Array.isArray(chapterInput.quizzes ?? [])) fail('Chapter lines and quizzes must be lists.');
     lines += chapter.lines.length; quizzes += chapter.quizzes.length;
     if (!chapter.lines.length && !chapter.quizzes.length) fail(`Chapter "${chapter.title}" has no lines and no quizzes.`);
     return chapter;

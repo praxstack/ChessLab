@@ -1,6 +1,6 @@
 import {randomUUID, randomInt} from '../../../../shared/random.js';
 import {validateCourse, courseSummary, courseView, courseLines, courseQuizzes, findLine, findQuiz} from '../../../../shared/course.js';
-import {courseFromPgn, lichessStudyExportUrl, courseToPgn, MAX_PGN_BYTES} from '../../../../shared/course-import.js';
+import {courseFromPgn, lichessStudyExportUrl, lichessStudyLink, courseToPgn, MAX_PGN_BYTES} from '../../../../shared/course-import.js';
 import {createCard, review, dueCards, scheduleSummary, stepLabel, MODES} from '../../../../shared/trainer-schedule.js';
 import {createDrill, drillView, playDrillMove, askHint} from '../../../../shared/drill.js';
 import {fail, respond} from '../context.js';
@@ -62,7 +62,7 @@ export default function courseRoutes(ctx) {
       const pgn = await fetchText(url);
       if (typeof pgn !== 'string' || !pgn.trim()) fail(502, 'Lichess returned no PGN for that study. Is it public?');
       if (new TextEncoder().encode(pgn).length > MAX_PGN_BYTES) fail(400, 'That study is larger than 2 MB. Import one chapter at a time.');
-      const options = {title: body.title, side: body.side, level: body.level, stage: body.stage, source: {kind: 'lichess-study', url: body.url.trim(), author: body.author || '', licence: body.licence || 'Lichess study, author credited'}};
+      const options = {title: body.title, side: body.side, level: body.level, stage: body.stage, source: {kind: 'lichess-study', url: lichessStudyLink(body.url), author: body.author || '', licence: body.licence || 'Lichess study, author credited'}};
       return respond(201, await withCards(await save(courseFromPgn(pgn, options, {now: now()}))));
     }],
     ['GET', '/api/courses/:id', async ({params}) => withCards(await course(params.id))],

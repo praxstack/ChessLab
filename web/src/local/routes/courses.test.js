@@ -76,8 +76,11 @@ test('PGN and Lichess study imports become courses, and the backup carries them'
   result = await f.post('/api/courses/lichess', {url: 'https://lichess.org/study/AbCdEf12', author: 'someone'});
   assert.equal(result.status, 201); assert.equal(result.body.course.source.kind, 'lichess-study'); assert.equal(result.body.course.source.url, 'https://lichess.org/study/AbCdEf12');
   assert.equal((await f.post('/api/courses/lichess', {url: 'https://example.com/x'})).status, 400);
+  await f.post('/api/courses/london/delete').catch(() => {});
+  result = await f.post('/api/courses/lichess', {url: 'AbCdEf12', title: 'By id'});
+  assert.equal(result.status, 201, 'a bare study id imports'); assert.equal(result.body.course.source.url, 'https://lichess.org/study/AbCdEf12');
   const backup = await f.store.exportAll();
-  assert.equal(backup.version, 2); assert.equal(backup.collections.courses.length, 2); assert.equal(backup.collections.course_cards.length, 4);
+  assert.equal(backup.version, 2); assert.equal(backup.collections.courses.length, 3); assert.equal(backup.collections.course_cards.length, 6);
   await f.store.importAll(backup);
-  assert.equal((await f.get('/api/courses')).body.courses.length, 2);
+  assert.equal((await f.get('/api/courses')).body.courses.length, 3);
 });

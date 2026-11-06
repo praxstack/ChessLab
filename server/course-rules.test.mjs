@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {validateCourse, courseSummary, courseView, findLine, LIMITS} from '../shared/course.js';
 import {createCard, review, dueCards, scheduleSummary, stepLabel, LADDER, HOUR, DAY} from '../shared/trainer-schedule.js';
 import {createDrill, drillView, playDrillMove, askHint, MAX_MISSES} from '../shared/drill.js';
-import {courseFromPgn, courseToPgn, lichessStudyExportUrl, splitGames} from '../shared/course-import.js';
+import {courseFromPgn, courseToPgn, lichessStudyExportUrl, lichessStudyLink, splitGames} from '../shared/course-import.js';
 
 const vienna = () => ({
   id: 'vienna-starter', title: 'Vienna starter', level: 'beginner', colour: 'w', stage: 'opening',
@@ -37,6 +37,8 @@ test('validateCourse normalises a course and refuses bad lines', () => {
   assert.throws(() => validateCourse(bad(c => { c.chapters = []; })), /1 to 60 chapters/);
   assert.throws(() => validateCourse(bad(c => { c.chapters[0].lines[0].moves = Array(LIMITS.movesPerLine + 1).fill('e2e4'); })), /moves/);
   assert.throws(() => validateCourse({...vienna(), version: 7}), /version 7/);
+  assert.throws(() => validateCourse(bad(c => { c.chapters[0].lines = {}; })), /must be lists/);
+  assert.throws(() => validateCourse(bad(c => { c.chapters[0].quizzes = 'q1'; })), /must be lists/);
 });
 
 test('the ladder climbs on a pass, holds on a hint and drops one step on a miss', () => {
@@ -65,6 +67,11 @@ test('the adaptive schedule stretches easy lines and keeps hard ones close', () 
   assert.ok(hard.stability < 2, `hard stability ${hard.stability} days`);
   assert.ok(easy.difficulty < hard.difficulty);
   assert.ok(hard.due - hard.lastReviewed >= 4 * HOUR, 'never sooner than 4 hours');
+  let long = createCard({id: 'l', courseId: 'c', now: t0});
+  for (let i = 0; i < 12; i++) long = review(long, 'pass', long.due, 'adaptive');
+  assert.ok(long.stability <= 365, `stability is bounded, got ${long.stability}`);
+  long = review(long, 'miss', long.due, 'adaptive');
+  assert.ok(long.due - long.lastReviewed <= 110 * DAY, 'a miss after a long run comes back within months');
   const summary = scheduleSummary([easy, hard, createCard({id: 'n', courseId: 'c', now: t0})], hard.due);
   assert.deepEqual({total: summary.total, fresh: summary.fresh, due: summary.due}, {total: 3, fresh: 1, due: 2});
   assert.deepEqual(dueCards([easy, hard, createCard({id: 'n', courseId: 'c', now: t0})], hard.due).map(c => c.id), ['b', 'n'], 'reviews before new lines');
@@ -136,6 +143,19 @@ test('a PGN with variations becomes a course with one line per leaf, and exports
   assert.throws(() => courseFromPgn('1. e4 e5 2. Ke3', {}), /invalid|illegal/i);
   assert.throws(() => courseFromPgn('[Variant "Chess960"]\n\n1. e4 *', {}), /Standard/);
   assert.equal(courseFromPgn('1. e4 e5 2. Nf3 *', {}).chapters[0].lines[0].side, 'w', 'default side is the first mover');
+
+  // A comment before a variation's first move stays with that line.
+  const withIntro = courseFromPgn('1. e4 ({Try the queen pawn. [%csl Gd4]} 1. d4 d5) e5 *', {});
+  assert.equal(withIntro.chapters[0].lines[1].notes[0], 'Try the queen pawn.');
+  assert.deepEqual(withIntro.chapters[0].lines[1].marks[0], [{color: 'G', from: 'd4', to: 'd4'}]);
+
+  // Lines from a FEN keep their real move numbers on export, and many lines stay in one chapter.
+  const fenCourse = validateCourse({id: 'fen', title: 'From a position', source: {kind: 'own'}, chapters: [{id: 'c1', title: 'Rook endings',
+    lines: Array.from({length: 65}, (_, i) => ({id: `l${i}`, side: 'b', startFen: '8/8/8/8/8/4k3/8/R3K3 b - - 0 9', moves: ['e3d3', 'e1f2']}))}]});
+  const fenPgn = courseToPgn(fenCourse);
+  assert.match(fenPgn, /\[FEN "8\/8\/8\/8\/8\/4k3\/8\/R3K3 b - - 0 9"\]\n\n9\.\.\. Kd3 10\. Kf2 \*/);
+  const back = courseFromPgn(fenPgn, {title: 'back', source: {kind: 'own'}});
+  assert.equal(back.chapters.length, 1); assert.equal(back.chapters[0].lines.length, 65); assert.equal(back.chapters[0].title, 'Rook endings');
 });
 
 test('Lichess study links map to the public PGN export', () => {
@@ -144,4 +164,6 @@ test('Lichess study links map to the public PGN export', () => {
   assert.equal(lichessStudyExportUrl('AbCdEf12'), 'https://lichess.org/api/study/AbCdEf12.pgn');
   assert.equal(lichessStudyExportUrl('https://example.com/study/AbCdEf12'), null);
   assert.equal(lichessStudyExportUrl(42), null);
+  assert.equal(lichessStudyLink('AbCdEf12'), 'https://lichess.org/study/AbCdEf12');
+  assert.equal(lichessStudyLink('https://lichess.org/study/AbCdEf12/XyZ12345#3'), 'https://lichess.org/study/AbCdEf12/XyZ12345');
 });

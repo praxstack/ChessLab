@@ -59,7 +59,9 @@ export function review(card, result, now, mode = 'ladder') {
   next.missRun = result === 'miss' ? card.missRun + 1 : 0;
   next.step = ladderStep(card, result);
   next.difficulty = adaptiveDifficulty(card, result);
-  next.stability = Math.round(adaptiveStability(card, result) * 1000) / 1000;
+  // Stability never exceeds the scheduling horizon, so a miss after a long run of passes still
+  // brings the line back within months, not years.
+  next.stability = Math.min(MAX_INTERVAL / DAY, Math.round(adaptiveStability(card, result) * 1000) / 1000);
   const interval = mode === 'ladder' ? LADDER[next.step] : next.stability * DAY;
   next.due = now + clamp(interval, MIN_INTERVAL, MAX_INTERVAL);
   return next;
