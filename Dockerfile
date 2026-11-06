@@ -15,7 +15,8 @@ COPY scripts/browser-app-hosting.mjs ./scripts/
 COPY shared ./shared
 # The app's board imports the puzzle page's sounds and pens in place: sound.js, draw.js and the
 # modules draw.js pulls in. (Its chess.js import is aliased to the npm package in vite.config.mjs.)
-COPY site/public/assets/sound.js site/public/assets/draw.js site/public/assets/board.js site/public/assets/ink.js site/public/assets/line.js site/public/assets/helpers.js ./site/public/assets/
+# Its engine picker imports the puzzle page's engine catalog and loader the same way.
+COPY site/public/assets/sound.js site/public/assets/draw.js site/public/assets/board.js site/public/assets/ink.js site/public/assets/line.js site/public/assets/helpers.js site/public/assets/engine.js site/public/assets/engine-catalog.js site/public/assets/engine-parts.js ./site/public/assets/
 COPY web ./web
 RUN npm run build
 

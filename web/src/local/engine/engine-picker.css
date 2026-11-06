@@ -1,0 +1,15 @@
+/* Settings > Engine: the engine in use, a download under way, and the list to switch to. */
+.engine-picker { display: flex; flex-direction: column; gap: 10px; }
+.engine-picker .setting-value { font-size: 13px; text-align: right; }
+.engine-progress { display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; align-items: center; font-size: 13px; }
+.engine-progress p { grid-column: 1 / -1; margin: 0; }
+.engine-progress progress { width: 100%; height: 6px; accent-color: var(--action, #79cbbb); }
+.engine-list-toggle { align-self: flex-start; }
+.engine-picker-list { max-height: 320px; }
+.engine-picker-list .engine-card:disabled { opacity: .55; cursor: not-allowed; }
+.engine-picker-list .engine-card.selected:disabled { opacity: 1; cursor: default; }
+.engine-warning { border: 1px solid var(--line, #37445a); border-radius: 8px; padding: 14px; font-size: 13px; line-height: 1.55; }
+.engine-warning h4 { margin: 0 0 8px; font-size: 16px; }
+.engine-warning ul { margin: 0 0 14px; padding-left: 18px; }
+.engine-warning li { margin: 4px 0; }
+.engine-warning-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }

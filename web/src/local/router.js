@@ -10,6 +10,7 @@ import openingRoutes from './routes/openings.js';
 import positionRoutes from './routes/positions.js';
 import collectionRoutes from './routes/collections.js';
 import visionRoutes from './routes/vision.js';
+import engineRoutes from './routes/engines.js';
 
 // Answers the app's /api/* requests in the browser with the same JSON and error statuses as
 // server/app.mjs. A request with no body is a GET, as api() in main.jsx sends it.
@@ -24,7 +25,7 @@ function compile(pattern) {
 export function createLocalRouter({store, engine, coach, now = Date.now, opponent} = {}) {
   const ctx = createContext({store, engine, coach, now});
   ctx.opponent = opponent;
-  const table = [statusRoutes, gameRoutes, reviewRoutes, coachRoutes, trainingRoutes, lessonRoutes, endgameRoutes, openingRoutes, positionRoutes, collectionRoutes, visionRoutes]
+  const table = [statusRoutes, gameRoutes, reviewRoutes, coachRoutes, trainingRoutes, lessonRoutes, endgameRoutes, openingRoutes, positionRoutes, collectionRoutes, visionRoutes, engineRoutes]
     .flatMap(area => area(ctx)).map(([method, pattern, handler]) => ({method, ...compile(pattern), handler}));
 
   // Returns {status, body}. Errors become {status, body: {error}} exactly as the server's error handler sends them.

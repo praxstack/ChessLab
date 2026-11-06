@@ -2,12 +2,14 @@ import {respond} from '../context.js';
 
 // Status, bot roster and the local profile. There are no accounts in the browser: register,
 // login and logout succeed without doing anything and always return the one local profile.
+// The roster has one engine entry: whichever engine the learner chose in Settings > Engine plays
+// and analyses. Its id stays 'stockfish19' so every saved game keeps naming a roster engine.
 export const LOCAL_ENGINES = [{id: 'stockfish19', name: 'Stockfish 19', humanLike: false}];
 
 export async function engineCatalog(engine) {
   const status = await engine.status();
   return LOCAL_ENGINES.map(entry => status.available
-    ? {...entry, available: true, chess960: Boolean(status.chess960), version: status.version || status.name}
+    ? {...entry, ...(status.label ? {name: status.label, humanLike: Boolean(status.humanLike)} : {}), available: true, chess960: Boolean(status.chess960), version: status.version || status.name}
     : {...entry, available: false, reason: status.reason || 'The chess engine is not available in this browser.'});
 }
 
