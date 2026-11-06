@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import Board, {Piece} from './Board.jsx';
 import BotSetup, {BotAvatar, Medal, assistanceDefaults} from './BotSetup.jsx';
@@ -115,11 +115,11 @@ function App() {
       if(alive)setBooting(false);
     });return()=>{alive=false;};
   },[]);
-  useEffect(()=>{
-    let alive=true;
-    api('/api/bots').then(data=>{if(!alive)return;setCatalog(data);setSetup(current=>({...current,engineId:current.engineId||data.engines.find(engine=>engine.available)?.id||''}));}).catch(()=>{if(alive)setCatalogError('Bot roster could not load. Refresh to retry.');}).finally(()=>{if(alive)setCatalogPending(false);});
-    return()=>{alive=false;};
-  },[]);
+  const catalogAlive=useRef(true);
+  const refreshCatalog=useCallback(()=>api('/api/bots').then(data=>{if(!catalogAlive.current)return;setCatalog(data);setSetup(current=>({...current,engineId:current.engineId||data.engines.find(engine=>engine.available)?.id||''}));}).catch(()=>{if(catalogAlive.current)setCatalogError('Bot roster could not load. Refresh to retry.');}).finally(()=>{if(catalogAlive.current)setCatalogPending(false);}),[]);
+  useEffect(()=>{catalogAlive.current=true;refreshCatalog();return()=>{catalogAlive.current=false;};},[refreshCatalog]);
+  // Another engine chosen in Settings: the roster names it, and the header's engine status follows.
+  const engineChanged=useCallback(()=>{refreshCatalog();api('/api/status').then(setStatus).catch(()=>{});},[refreshCatalog]);
   useEffect(()=>{localStorage.setItem('chesslab-settings',JSON.stringify(settings));},[settings]);
   useEffect(()=>followSetting(settings.sound!==false),[settings.sound]);
   useEffect(()=>wakeOnFirstGesture(),[]);
@@ -338,7 +338,7 @@ function App() {
   const note=branch?.question||'';
   const selectedBot=catalog.bots.find(bot=>bot.id===(game?game.botId:setup.botId));
   const selectedEngine=catalog.engines.find(engine=>engine.id===(game?game.engineId:setup.engineId));
-  const setupProps={bots:catalog.bots,engines:catalog.engines,pending:catalogPending,progress,...setup,onChange:patch=>setSetup(current=>({...current,...patch})),onStart:startGame,disabled:busy||booting,busy};
+  const setupProps={bots:catalog.bots,engines:catalog.engines,pending:catalogPending,progress,...setup,onChange:patch=>setSetup(current=>({...current,...patch})),onStart:startGame,disabled:busy||booting,busy,...(serverBackend?{}:{onEngines:()=>{setSettingsTab('engine');setModal('settings');}})};
 
   return <div className="app-shell" data-page={page} data-board-theme={settings.boardTheme}>
     <aside className="navigation"><a className="brand" href="#" aria-label="AskTheMove home" onClick={e=>{e.preventDefault();changePage('play');}}><span className="brand-mark"><Piece type="n" color="w"/></span><span>Ask<span className="brand-light">TheMove</span></span></a>
@@ -388,7 +388,7 @@ function App() {
     {modal==='import'&&<Modal title="Import a game" onClose={()=>setModal(null)} wide><p className="modal-intro">PGN brings in moves, comments and variations. A study file (.chesslab.json) restores the exact tree, questions and return point.</p><form onSubmit={importPgn}><label className="study-import-format">File format<select aria-label="Import format" value={importFormat} onChange={e=>setImportFormat(e.target.value)}><option value="pgn">Annotated PGN</option><option value="study">Study file (.chesslab.json)</option></select></label><label className="file-import">Choose a .pgn or .chesslab.json file<input type="file" accept=".pgn,.json,text/plain,application/json" onChange={async e=>{const file=e.target.files?.[0];if(file){if(file.size>900000){setError('Choose a file smaller than 900 KB.');return;}try{const text=await file.text();setImportFormat(file.name.toLowerCase().endsWith('.json')?'study':'pgn');setPgn(text);}catch{setError('The file could not be read. Your draft is unchanged.');}}}}/></label><label className="sr-only" htmlFor="pgn-input">{importFormat==='pgn'?'PGN text':'Study JSON'}</label><textarea id="pgn-input" className="pgn-input" value={pgn} onChange={e=>setPgn(e.target.value)} maxLength={900000} placeholder={importFormat==='pgn'?'[Event "My game"]\n\n1. e4 {My idea} e5 (1... c5) *':'Paste the contents of a .chesslab.json study file here'} required/>{error&&<p className="form-error" role="alert">{error}</p>}<button className="button primary full-width" disabled={busy||!pgn.trim()}>{busy?'Importing…':user?'Import & review':'Sign in to import'}<Icon name="arrow"/></button><p className="tiny-note">Imports create a separate saved game. Study files preserve exact metadata; PGN normalizes continued and empty variations and comment braces.</p></form></Modal>}
     {modal==='resign'&&<Modal title="Resign this game?" onClose={()=>setModal(null)}><p className="modal-intro">The game will end. You can still review every move and explore variations.</p><button className="button danger full-width" disabled={busy} onClick={resign}>Resign game</button><button className="button secondary full-width" onClick={()=>setModal(null)}>Keep playing</button></Modal>}
     {promotion&&<Modal title="Choose your promotion" onClose={()=>setPromotion(null)}><p className="modal-intro">Your pawn reached the last rank. Choose a piece.</p><div className="promotion-options">{['q','r','b','n'].map(type=><button key={type} aria-label={`Promote to ${{q:'queen',r:'rook',b:'bishop',n:'knight'}[type]}`} onClick={()=>{const value=promotion.from+promotion.to+type;setPromotion(null);submitMove(value);}}><Piece type={type} color={chess.turn()}/><span>{{q:'Queen',r:'Rook',b:'Bishop',n:'Knight'}[type]}</span></button>)}</div></Modal>}
-    {modal==='settings'&&<Modal title="Settings" wide onClose={()=>setModal(null)}><Settings settings={settings} tab={settingsTab} onTab={setSettingsTab} onChange={setPreference} engines={catalog.engines} local={!serverBackend} onCoachChange={refreshCoach}/>{!serverBackend&&<BackupRestore canRestore={status?.storage==='indexeddb'} settings={settings} onRestored={restored=>{if(restored)localStorage.setItem('chesslab-settings',JSON.stringify(restored));localStorage.removeItem('chesslab-game');window.location.reload();}}/>}</Modal>}
+    {modal==='settings'&&<Modal title="Settings" wide onClose={()=>setModal(null)}><Settings settings={settings} tab={settingsTab} onTab={setSettingsTab} onChange={setPreference} engines={catalog.engines} local={!serverBackend} onCoachChange={refreshCoach} request={serverBackend?undefined:api} onEngineChange={engineChanged}/>{!serverBackend&&<BackupRestore canRestore={status?.storage==='indexeddb'} settings={settings} onRestored={restored=>{if(restored)localStorage.setItem('chesslab-settings',JSON.stringify(restored));localStorage.removeItem('chesslab-game');window.location.reload();}}/>}</Modal>}
   </div>;
 }
 createRoot(document.getElementById('root')).render(<App/>);

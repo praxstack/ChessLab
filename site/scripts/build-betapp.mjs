@@ -5,6 +5,8 @@
 // sets their security headers from public/betapp/headers.json.
 //
 // VITE_COACH_URL, when set, is passed through, so the invite-code coach works here too.
+// VITE_ENGINE_CATALOG=site tells the app that the puzzle board's engines (/assets/engine/) are on
+// this same origin, so Settings > Engine can offer them; the app at pages.dev has only its bundled one.
 import { execFileSync } from 'node:child_process';
 import { cpSync, existsSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -18,7 +20,7 @@ const target = join(site, 'public', 'betapp');
 execFileSync('npx', ['vite', 'build', '--outDir', 'dist-betapp'], {
   cwd: repo,
   stdio: 'inherit',
-  env: { ...process.env, VITE_BACKEND: 'local', VITE_BASE: '/betapp/' },
+  env: { ...process.env, VITE_BACKEND: 'local', VITE_BASE: '/betapp/', VITE_ENGINE_CATALOG: 'site' },
 });
 for (const file of ['headers.json', 'index.html', 'manifest.webmanifest']) {
   if (!existsSync(join(built, file))) throw new Error(`The app build has no ${file}; is VITE_BACKEND=local?`);

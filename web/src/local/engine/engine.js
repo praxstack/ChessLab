@@ -16,7 +16,9 @@ const UNAVAILABLE = 'The chess engine could not start in this browser.';
 
 export function createEngine({
   workerUrl = ENGINE_URL,
-  createWorker = url => new Worker(url),
+  createWorker = url => new Worker(url), // may be async: an engine from the site's catalog downloads first
+  expectName = /stockfish/i, // the bundled file must say it is Stockfish; null takes any engine's name
+  name = 'Stockfish', // what the engine is called before it says, or when it never says
   startTimeout = 30000, // download, compile and handshake
   searchGrace = 10000, // allowed beyond movetime before a search counts as stuck
   retryAfter = 15000, // a failed start is reported for this long before the next try
@@ -28,6 +30,7 @@ export function createEngine({
   const options = new Map(); // option values the worker already has
   const queue = [];
   let running = null;
+  let idlers = []; // resolved when no search runs and none waits (idle())
 
   function send(command) { worker?.postMessage(command); }
 
@@ -53,7 +56,7 @@ export function createEngine({
   }
 
   async function boot() {
-    const created = createWorker(workerUrl);
+    const created = await createWorker(workerUrl);
     worker = created;
     created.onmessage = event => {
       if (worker !== created) return;
@@ -72,10 +75,10 @@ export function createEngine({
     }, startTimeout, UNAVAILABLE);
     send('uci');
     await handshake;
-    if (!/stockfish/i.test(found.name)) { reset(); throw failure('The engine file did not identify as Stockfish.', 503); }
+    if (expectName && !expectName.test(found.name)) { reset(); throw failure('The engine file did not identify as Stockfish.', 503); }
     if (found.hash) send('setoption name Hash value 32');
     await ready(startTimeout);
-    return {name: found.name, chess960: found.chess960};
+    return {name: found.name || name, chess960: found.chess960};
   }
 
   async function ready(ms = searchGrace) {
@@ -140,7 +143,11 @@ export function createEngine({
     const job = running = queue.shift();
     try { settle(job, null, await search(job)); }
     catch (error) { settle(job, error.status ? error : failure(error.message || UNAVAILABLE, 503)); }
-    finally { running = null; pump(); }
+    finally {
+      running = null;
+      pump();
+      if (!running && !queue.length) { const waiting = idlers; idlers = []; for (const resolve of waiting) resolve(); }
+    }
   }
 
   function cancel(job) {
@@ -175,11 +182,15 @@ export function createEngine({
     // way counts as available (searches wait for it); only a real failure reports unavailable.
     async status() {
       if (identity) return {available: true, name: identity.name, version: identity.name, chess960: identity.chess960};
-      if (!starting && failedAt !== null && now() - failedAt < retryAfter) return {available: false, name: 'Stockfish', reason: failedReason};
+      if (!starting && failedAt !== null && now() - failedAt < retryAfter) return {available: false, name, reason: failedReason};
       start().catch(() => {}); // warm up in the background
       // The shipped build supports Chess960; a build without it fails that search clearly.
-      return {available: true, starting: true, name: 'Stockfish', version: 'Stockfish', chess960: true};
+      return {available: true, starting: true, name, version: name, chess960: true};
     },
+    // Starts the worker now and resolves once it answers, with {name, chess960}; rejects with the reason it couldn't.
+    ready: () => start(),
+    // Resolves once no search runs and none waits, so an engine being replaced can finish its work first.
+    idle: () => (running || queue.length ? new Promise(resolve => idlers.push(resolve)) : Promise.resolve()),
     // {fen, moves, variant, movetime, lines, skill, signal} -> {engine, bestmove, lines, tablebaseHits, limits}.
     // fen is the game's starting position; scores are from White's side.
     async analyze(input) {
