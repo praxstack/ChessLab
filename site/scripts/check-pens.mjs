@@ -869,6 +869,23 @@ async function runSmallDevice(browserType, base) {
         postMessage('loaded');`,
     }),
   );
+  // The same pretend iPad for Stockfish 19 Lite on several cores: a classic worker, so it loads the front file
+  // with importScripts. It sits next to the engine files, since the front loads its scripts relative to itself.
+  // Its helper threads would start from this same URL, which a worker can't route here, so they start from the
+  // real front instead; they share the first thread's memory and never ask for their own.
+  const fakeIpadSf = `${base}/assets/engine/__check-ipad-sf.js`;
+  await page.route(fakeIpadSf, (route) =>
+    route.fulfill({
+      contentType: 'text/javascript',
+      headers: { 'Cross-Origin-Embedder-Policy': 'require-corp', 'Cross-Origin-Resource-Policy': 'same-origin' },
+      body: `const Real = WebAssembly.Memory;
+        WebAssembly.Memory = function (d) { if (d && d.maximum > 16384) throw new RangeError('Out of memory'); return new Real(d); };
+        WebAssembly.Memory.prototype = Real.prototype;
+        const RealWorker = self.Worker;
+        self.Worker = function (url, opts) { return new RealWorker('stockfish-19-lite-fit.js' + new URL(url).hash, opts); };
+        importScripts('stockfish-19-lite-fit.js');`,
+    }),
+  );
   await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
   const got = await page.evaluate(async (workerUrl) => {
     const model = URL.createObjectURL(await (await fetch('/assets/engine/maia-1100.onnx')).blob());
@@ -901,6 +918,35 @@ async function runSmallDevice(browserType, base) {
   }, fakeIpad);
   const best = got.lines.find((l) => l.startsWith('bestmove')) || '';
   check('iPad memory limit: Maia-1 still starts and plays a move', /^bestmove [a-h][1-8][a-h][1-8]/.test(best), got.error || got.lines.slice(-3).join(' | '));
+  const sf = await page.evaluate(async (workerUrl) => {
+    const wasm = URL.createObjectURL(await (await fetch('/assets/engine/stockfish-19-lite.wasm')).blob());
+    const w = new Worker(`${workerUrl}#${encodeURIComponent(wasm)}`);
+    const lines = [];
+    return new Promise((done) => {
+      const timer = setTimeout(() => done({ lines, error: 'no reply in 2 minutes' }), 120000);
+      w.onerror = (e) => {
+        clearTimeout(timer);
+        done({ lines, error: e.message || 'worker error' });
+      };
+      w.onmessage = (e) => {
+        const line = String(e.data);
+        lines.push(line);
+        if (line === 'uciok') {
+          w.postMessage('setoption name Threads value 2');
+          w.postMessage('position startpos');
+          w.postMessage('go depth 8');
+        }
+        if (line.startsWith('bestmove')) {
+          clearTimeout(timer);
+          w.terminate();
+          done({ lines });
+        }
+      };
+      w.postMessage('uci');
+    });
+  }, fakeIpadSf);
+  const sfBest = sf.lines.find((l) => l.startsWith('bestmove')) || '';
+  check('iPad memory limit: Stockfish 19 Lite on 2 cores still starts and plays a move', /^bestmove [a-h][1-8][a-h][1-8]/.test(sfBest), sf.error || sf.lines.slice(-3).join(' | '));
 
   // Set one up: the Chess.com app's puzzle of 3 Nov 2026, tapped in square by square.
   await page.click('#setup-open');

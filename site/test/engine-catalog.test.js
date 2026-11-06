@@ -377,10 +377,16 @@ test('several cores: only on a cross-origin isolated page, 2 to 4 threads, and a
   assert.deepEqual([undefined, 1, 2, 3, 4, 8, 16].map(threadCount), [2, 2, 2, 2, 3, 4, 4]);
   // The multi-thread scripts are the npm package's, unchanged: they start pthreads, the single ones don't.
   // Lichess's builds start from a small module that imports the package's script; that script starts the pthreads.
+  // Stockfish.js's start from a small classic front that loads the memory fit, then the package's script.
   for (const e of mt) {
-    const script = e.id.includes('lichess') || e.family === 'Fairy-Stockfish' ? e.files.find((f) => f.role === 'runtime' && /\/(sf|fsf)_[^/]+\.js$/.test(f.path)) : engineFiles(e).worker;
+    const lichess = e.id.includes('lichess') || e.family === 'Fairy-Stockfish';
+    const script = e.files.find((f) => f.role === 'runtime' && (lichess ? /\/(sf|fsf)_[^/]+\.js$/ : /\/stockfish-19(-lite)?\.js$/).test(f.path));
     const js = readFileSync(pub(script.path), 'utf8');
     assert.match(js, /em-pthread/, e.id);
+    if (!lichess) {
+      const front = readFileSync(pub(engineFiles(e).worker.path), 'utf8');
+      assert.match(front, new RegExp(`importScripts\\('wasm-memory-fit\\.js', '${script.path.split('/').pop().replace('.', '\\.')}'\\)`), e.id);
+    }
   }
 });
 
