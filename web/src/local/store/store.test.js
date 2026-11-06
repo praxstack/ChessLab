@@ -27,7 +27,11 @@ test('backups from a newer app skip unknown collections and reject damaged lists
   const read = readBackup({format: 'askthemove-backup', version: 1, collections: {...empty, games: [{id: 'g', moves: [], revision: 0}], coach_keys: [{secret: 'x'}]}});
   assert.deepEqual(Object.keys(read), collectionNames);
   assert.equal(read.games.length, 1);
-  assert.throws(() => readBackup({format: 'askthemove-backup', version: 2, collections: {}}), /version 2/);
+  assert.throws(() => readBackup({format: 'askthemove-backup', version: 3, collections: {}}), /version 3/);
+  // A file from before the course trainer restores with empty course collections.
+  const {courses, course_cards, drill_sessions, ...old} = empty;
+  assert.deepEqual(readBackup({format: 'askthemove-backup', version: 1, collections: old}).courses, []);
+  assert.throws(() => readBackup({format: 'askthemove-backup', version: 2, collections: old}), /no courses list/);
   assert.throws(() => readBackup({format: 'askthemove-backup', version: 1, collections: {...empty, games: {}}}), /damaged/);
 });
 

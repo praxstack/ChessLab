@@ -29,7 +29,7 @@ export async function storeContract(store, assert) {
 
   const backup = await store.exportAll();
   assert.equal(backup.format, 'askthemove-backup');
-  assert.equal(backup.version, 1);
+  assert.equal(backup.version, 2);
   assert.deepEqual(Object.keys(backup.collections).sort(), [...collectionNames].sort());
   assert.deepEqual(backup.collections.games.map(game => game.id), ['a']);
 

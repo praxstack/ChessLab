@@ -12,7 +12,7 @@ test('a backup restores games, lesson progress and settings in a fresh browser',
   await f.post('/api/lessons/center/answer', {choice: 1});
   const settings = {...settingDefaults, boardTheme: 'walnut', sound: false};
   const backup = await createBackup(f.store, settings);
-  assert.equal(backup.format, 'askthemove-backup'); assert.equal(backup.version, 1);
+  assert.equal(backup.format, 'askthemove-backup'); assert.equal(backup.version, 2);
   assert.deepEqual(backup.settings, settings);
   const fresh = fixture({store: createMemoryStore()});
   const restored = await restoreBackup(fresh.store, JSON.stringify(backup));
@@ -50,7 +50,7 @@ test('persistent storage is requested once and failures are harmless', async () 
 });
 
 const emptyCollections = () => Object.fromEntries(collectionNames.map(name => [name, []]));
-const backupWith = (collections, extra = {}) => ({format: 'askthemove-backup', version: 1, exportedAt: '2026-10-30T00:00:00.000Z', collections: {...emptyCollections(), ...collections}, ...extra});
+const backupWith = (collections, extra = {}) => ({format: 'askthemove-backup', version: 2, exportedAt: '2026-10-30T00:00:00.000Z', collections: {...emptyCollections(), ...collections}, ...extra});
 
 test('a backup missing any collection is refused, so "collections": {} cannot wipe everything', async () => {
   const f = fixture();
