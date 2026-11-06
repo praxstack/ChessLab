@@ -131,6 +131,48 @@ Everything that moves is the coach drawing or writing. Nothing loops, bounces or
 - **Engine printout.** Courier Prime on `--paper-2`, with a perforated top edge and a slight lift off the page.
 - **Status mark.** A red tick for "Works today", a dashed graphite circle for "In development" and a blue arrow for "Next", each with its word.
 
+## Dark mode: the chalkboard
+
+The site itself stays light (see the anti-pattern below). The app (`web/`) has a dark mode, and this section is the single source for its tokens. The app's `web/src/styles.css` defines them on `:root` (light) and `:root[data-theme="dark"]` (dark, also applied under `prefers-color-scheme: dark` when the learner chose "Match this device").
+
+The idea: the same lesson, given at night on a chalkboard. A deep green-black slate instead of paper, chalk-white text instead of ink, and the coach's marks in coloured chalk: pale blue for explanations and the primary action, soft red for mistakes, yellow for the highlighter and focus. The three typefaces do not change. The faint quad ruling stays, at about 3% chalk, with a little chalk dust (two very soft radial gradients); nothing glows.
+
+- **The board** stays readable for the cburnett pieces: light squares are chalk-dusted (`--sq-light`), dark squares a mid slate under chalk hatching, so both black and white pieces keep their outline against both squares. The frame is a double chalk rule.
+- **Contrast.** Body text is 13:1 on the slate; muted text is at least 5:1 on every surface; the chalk-blue button carries slate text at 9:1. Coordinates keep 4.5:1 on plain, last-move and selected squares (`web/src/settings-state.test.js` checks every board theme in both modes).
+- **Never** pure black or pure white, neon, glass or glow. The chalkboard is matte.
+
+Light values are the app's hex equivalents of the tokens above. The app's colour roles in both modes:
+
+| Token | Light (paper) | Dark (chalkboard) | Use |
+| --- | --- | --- | --- |
+| `--page` | `#fbfaf4` | `#1a2420` | page background |
+| `--rail` | `#f6f2e7` | `#151d1a` | the margin column (the app rail) |
+| `--surface` | `#fefdf8` | `#202b27` | panels and slips |
+| `--well` | `#f5f1e6` | `#17201c` | tab strips, move-list wells |
+| `--raised` | `#f1ede1` | `#29352f` | buttons, chips, hover |
+| `--line` | `#d9d8d0` | `#34423b` | rules between rows |
+| `--line-strong` | `#7d818b` | `#71817a` | field borders, 3:1 or more |
+| `--ink` | `#171d29` | `#eceae0` | text (chalk white) |
+| `--ink-2` | `#3a4150` | `#d3d4ca` | secondary text |
+| `--muted` | `#565a63` | `#a9b1aa` | graphite: labels, metadata |
+| `--note-bg` | `#f4f0e3` | `#263430` | the coach note and speech bubbles |
+| `--coach-ink` | `#1f48ae` | `#a9cbee` | the coach's handwriting: chalk blue |
+| `--action` | `#1f48ae` | `#9fc4ea` | primary button fill: chalk blue |
+| `--on-action` | `#fdfdfa` | `#14201c` | text on the primary button |
+| `--action-soft` | `#e5ebf7` | `#253744` | selected rows and cards |
+| `--danger` | `#c92324` | `#ef9488` | red chalk: mistakes and danger |
+| `--danger-text` | `#b31f20` | `#f3a79c` | red chalk text |
+| `--warn-text` | `#8a5300` | `#efc97c` | yellow chalk: inaccuracies, warnings |
+| `--highlight` | `#f2e35e` | `#eedf86` | yellow chalk highlighter (dark text on it) |
+| `--focus` | `#2350c4` | `#efd772` | focus ring: yellow chalk |
+| `--sq-light` | `#fefdf8` | `#c7d0c8` | light squares: chalk-dusted |
+| `--sq-dark` | `#e6ecf4` | `#83958c` | dark squares: slate under chalk hatching |
+| `--sq-hatch` | `#97a2b5` | `#a9b9b0` | the chalk hatching |
+| `--sq-ink` | `#3a4150` | `#17201c` | board coordinates |
+| `--board-rule` | `#171d29` | `#d3d4ca` | the double frame rule |
+| `--last-move` | `#f2dc3a80` | `#f1df6b85` | last-move highlighter over a square |
+| `--select` | `#7da0ec66` | `#7da0ec66` | the selected square |
+
 ## Anti-patterns (do not ship)
 
 - **Chess.com's look:** green and cream boards, their piece sets, their move-quality icons ("brilliant" and so on).
@@ -142,5 +184,5 @@ Everything that moves is the coach drawing or writing. Nothing loops, bounces or
 - **Calm-wellness softness:** gradients, blobs, glass, pastel pills. That belongs to Praxmodoro, and this site must never look like it.
 - **Invented numbers or quotes.** Engine figures come only from `public/assets/demo-data.js`, which `npm test` verifies.
 - **Em dashes in new copy, and strings of middle dots.** Write two sentences instead.
-- **Dark mode.** This world is paper under a desk lamp, and the page is light by design. It sets `color-scheme: light` so form controls match.
+- **Dark mode on the site.** This world is paper under a desk lamp, and the site's pages are light by design. They set `color-scheme: light` so form controls match. Only the app has a dark mode, the chalkboard above.
 - **Inline `style` or `script`.** The CSP forbids them. Positions come from `data-x` and `data-y` classes, and runtime styles are set through the CSSOM.
