@@ -18,7 +18,7 @@ export default function Settings({settings,tab,onTab,onChange,engines,local=fals
   <h3>Appearance</h3>
   {select('theme','Theme',colorThemes)}
   <h3>Board</h3>
-  <div className="setting-row"><span>Pieces</span><span className="setting-value">{pieceSet.label}</span></div>
+  <label className="setting-row"><span>Pieces</span><select value={pieceSet.id} disabled title="More piece sets are coming"><option value={pieceSet.id}>{pieceSet.label}</option></select></label>
   {select('boardTheme','Board',boardThemes)}
   {select('orientation','Orientation',[['auto','Your playing color'],['w','White at bottom'],['b','Black at bottom']])}
   {select('coordinates','Coordinates',[[true,'Inside'],[false,'None']])}

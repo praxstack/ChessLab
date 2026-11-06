@@ -795,3 +795,43 @@ h1 { font-size: 28px; letter-spacing: -.3px; margin-top: 0; }
 .sn-pens__modebtn[data-mode='draw'][aria-checked='true'] { background: var(--action); color: var(--on-action); }
 .sn-pens__hint { font-family: var(--font-ui); }
 @media (max-width: 520px) { .learning-path-hero > div:first-child > .eyebrow { display: none; } }
+/* Round 2: one action per screen, honest empty states, fewer type families. */
+.eyebrow, .nav-section, .control-label, .roster-caption, .content-category, .player-tag, .section-label, .moves-heading { font-family: var(--font-ui); font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.button, .start-button, .text-button { font-family: var(--font-ui); }
+.player-tag:empty { display: none; }
+:root[data-theme="dark"] { --muted: #b4bcb5; }
+/* Play: the Play button sits under the opponent's name, before the roster, on wide screens. */
+@media (min-width: 1100px) {
+  .bot-setup:not(.compact) { display: flex; flex-direction: column; }
+  .bot-setup:not(.compact) > .opponent-introduction { order: -3; }
+  .bot-setup:not(.compact) > .opponent-name { order: -2; }
+  .bot-setup:not(.compact) > .start-button { order: -1; margin: 0 0 18px; }
+}
+/* Bot roster: whole rows, never a card cut through its avatar. */
+.bot-card .bot-avatar { max-width: 56px; }
+.bot-cards { grid-auto-rows: max-content; }
+.bot-roster { max-height: 292px; padding-bottom: 6px; }
+/* Puzzles without a puzzle set: one card, no dead board, no red banner. */
+.training-empty { max-width: 520px; margin: 24px auto 48px; padding: 36px 32px; text-align: center; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; display: grid; justify-items: center; gap: 10px; }
+.training-empty .piece { height: 56px; opacity: .8; }
+.training-empty h2 { font-size: 26px; margin: 6px 0 0; letter-spacing: -.02em; }
+.training-empty p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.5; max-width: 420px; }
+.training-empty .button { margin-top: 10px; }
+.training-board-foot .text-button { white-space: nowrap; flex: none; }
+/* Pens: the hint only matters once a pen mode is chosen. */
+.sn-pens[data-mode='move'] .sn-pens__hint { display: none; }
+/* Board: a shadow, not a hard rule; the paper grid stops under the board. */
+[data-board-theme=book] .board, .board { box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow) 25%, transparent), 0 12px 28px -14px color-mix(in srgb, var(--shadow) 55%, transparent); }
+[data-board-theme=hatch] .board { box-shadow: 0 0 0 1px var(--board-rule); }
+/* Settings: a fade at the bottom says there is more to scroll. */
+.modal { padding-bottom: 0; }
+.modal::after { content: ''; display: block; position: sticky; bottom: 0; height: 28px; margin: -4px -25px 0; background: linear-gradient(transparent, var(--field)); pointer-events: none; }
+.setting-row select:disabled { opacity: .6; cursor: not-allowed; }
+/* Library: footer actions are buttons; a muted caption, not a disclaimer. */
+.library-footer { gap: 10px; }
+.collection-private { color: var(--muted); font-size: 12px; }
+/* Phone: the Play button stays on screen under the board. */
+@media (max-width: 800px) { .phone-cta { position: sticky; bottom: calc(68px + env(safe-area-inset-bottom)); z-index: 5; background: var(--page); padding: 8px 0; margin: 6px 0 0; } }
+/* Puzzles: the page header already says Practice; the second eyebrow was noise. */
+.training-heading .eyebrow { display: none; }
+.training-lede { font-family: var(--font-ui); color: var(--muted); font-size: 15px; margin: 0; }
