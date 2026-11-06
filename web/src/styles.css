@@ -790,3 +790,8 @@ h1 { font-size: 28px; letter-spacing: -.3px; margin-top: 0; }
 @media (min-width: 1101px) { .training-layout { grid-template-columns: minmax(0, calc(100dvh - 300px)) minmax(330px, 1fr); } }
 .training-stat strong { font-size: 34px; }
 .training-stat > div > span { font-size: 12px; }
+/* Pens: the chosen board mode is ink on paper (and chalk on slate), never paper on paper. */
+.sn-pens__modebtn[aria-checked='true'] { background: var(--ink); color: var(--page); }
+.sn-pens__modebtn[data-mode='draw'][aria-checked='true'] { background: var(--action); color: var(--on-action); }
+.sn-pens__hint { font-family: var(--font-ui); }
+@media (max-width: 520px) { .learning-path-hero > div:first-child > .eyebrow { display: none; } }
