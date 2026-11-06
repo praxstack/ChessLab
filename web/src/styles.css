@@ -56,6 +56,7 @@
   --mate-text: #6a3a9e;
   --good-text: #1d6b43;
   --highlight: #f2e35e;
+  --on-highlight: #171d29; /* text on the highlighter yellow, in both themes */
   --focus: #2350c4;
   --shadow: #3b4252;
   --scrim: #171d296b;
