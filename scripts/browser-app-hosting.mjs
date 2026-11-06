@@ -4,9 +4,10 @@
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 
-// Icons that ship only with the browser app. Rendered once from web/public/favicon.svg.
-const ICON_DIR = fileURLToPath(new URL('../web/app-public/', import.meta.url));
-const ICONS = ['icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
+// Icons that ship only with the browser app: the askthemove.online mark, byte-for-byte the files the
+// site serves (site/public/), so the app and the site never drift apart. A test checks this.
+export const ICON_DIR = fileURLToPath(new URL('../web/app-public/', import.meta.url));
+export const ICONS = ['icon-192.png', 'icon-512.png', 'apple-touch-icon.png', 'favicon-32.png'];
 
 // Public services the browser app talks to: endgame tablebase, Lichess, and Claude with the learner's own key.
 export const APP_CONNECT = ['https://tablebase.lichess.ovh', 'https://lichess.org', 'https://api.anthropic.com'];
@@ -113,6 +114,8 @@ export function browserAppHosting() {
       return [
         {tag: 'link', attrs: {rel: 'manifest', href: `${base}manifest.webmanifest`, crossorigin: 'use-credentials'}, injectTo: 'head'},
         {tag: 'link', attrs: {rel: 'apple-touch-icon', href: `${base}apple-touch-icon.png`}, injectTo: 'head'},
+        // Browsers without SVG favicons (older Safari, some Android) take the 32px PNG, as on the site.
+        {tag: 'link', attrs: {rel: 'icon', href: `${base}favicon-32.png`, sizes: '32x32', type: 'image/png'}, injectTo: 'head'},
       ];
     },
     generateBundle() {
