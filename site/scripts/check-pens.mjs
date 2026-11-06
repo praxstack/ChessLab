@@ -499,23 +499,31 @@ async function runCoach(browserType, base) {
 
 /** Several-cores Stockfish: the page is cross-origin isolated, the engine starts its threads and checks a move. */
 async function runCores(browserType, base) {
+  await runCoresWith(browserType, base, 'sf19-lite-mt', 'Stockfish 19 Lite, several cores', 'several cores');
+  // Stockfish 15 and 14.1 also read a separate net (in two parts) after they start.
+  await runCoresWith(browserType, base, 'sf15', 'Stockfish 15', 'Stockfish 15');
+  await runCoresWith(browserType, base, 'sf14', 'Stockfish 14.1', 'Stockfish 14.1');
+}
+
+async function runCoresWith(browserType, base, id, name, label) {
   let browser;
   try {
     browser = await launch(browserType);
   } catch {
     return;
   }
-  console.log(`- ${browserType.name()}: several-cores Stockfish (real engine)`);
+  console.log(`- ${browserType.name()}: ${name} (real engine)`);
   const page = await browser.newPage({ viewport: { width: 900, height: 2000 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.route('**/*', (route) => (onSite(route.request().url(), base) ? route.continue() : route.abort()));
-  await page.addInitScript(() => localStorage.setItem('pz-engine', 'sf19-lite-mt'));
+  await page.addInitScript((engine) => localStorage.setItem('pz-engine', engine), id);
   await page.goto(`${base}/puzzleanalyzr/?fen=${encodeURIComponent(FEN)}`, { waitUntil: 'load' });
   await page.waitForSelector('#desk-board img.pc');
-  check('the puzzle page is cross-origin isolated', await page.evaluate(() => crossOriginIsolated === true));
-  check('the several-cores engine is the one in use', (await page.textContent('#engine-name')) === 'Stockfish 19 Lite, several cores');
-  await page.waitForFunction(() => /is ready on this device/.test(document.querySelector('#engine-state').textContent), null, { timeout: 60000 });
+  if (id === 'sf19-lite-mt') check('the puzzle page is cross-origin isolated', await page.evaluate(() => crossOriginIsolated === true));
+  check(`${label}: it is the engine in use`, (await page.textContent('#engine-name')) === name);
+  // A light engine starts by itself; a heavy one (with its separate net) waits for Check my move.
+  await page.waitForFunction(() => /is ready on this device|when you tap Check my move/.test(document.querySelector('#engine-state').textContent), null, { timeout: 120000 });
   const box = await page.locator('#desk-board').boundingBox();
   const at = (sq) => [box.x + ('abcdefgh'.indexOf(sq[0]) + 0.5) * (box.width / 8), box.y + (8 - Number(sq[1]) + 0.5) * (box.height / 8)];
   await page.mouse.move(...at('f1'));
@@ -525,11 +533,11 @@ async function runCores(browserType, base) {
   await page.click('#engine-check');
   await page.waitForFunction(() => {
     const t = document.querySelector('#engine-say').textContent;
-    return t && !/looking|ready, then/.test(t);
-  }, null, { timeout: 60000 });
+    return t && !/looking|ready, then|download/i.test(t);
+  }, null, { timeout: 180000 });
   const say = await page.textContent('#engine-say');
-  check('several cores: Check my move gets a verdict', /That’s the move|Good move|Playable|lets something go/.test(say), say);
-  check('several cores: no page errors', errors.length === 0, errors.join(' | '));
+  check(`${label}: Check my move gets a verdict`, /That’s the move|Good move|Playable|lets something go/.test(say), say);
+  check(`${label}: no page errors`, errors.length === 0, errors.join(' | '));
   await browser.close();
 }
 
