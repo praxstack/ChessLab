@@ -200,6 +200,12 @@ test('review fixes: titles and authors survive import, From Position studies imp
   assert.throws(() => courseFromPgn('[Variant "Atomic"]\n\n1. e4 *'), /Only Standard chess/);
   assert.equal(lichessStudyExportUrl('https://lichess.org/study/AbCdEf12EXTRA'), null, 'a longer id is not a study link');
   assert.equal(lichessStudyExportUrl('https://lichess.org/study/AbCdEf12?x=1'), 'https://lichess.org/api/study/AbCdEf12.pgn');
+  // A long main line with short alternatives is refused before prefixes are copied.
+  const shuffle = ['Nf3 (1. e4) Nf6 (1... e5)', 'Ng1 Ng8', 'Nf3 Nf6', 'Ng1 Ng8'];
+  let longPgn = ''; for (let n = 1; n <= 1000; n++) longPgn += `${n}. ${shuffle[(n - 1) % 4].replace(/1\./g, `${n}.`)} `;
+  const begun = Date.now();
+  assert.throws(() => courseFromPgn(longPgn + '*'), /at most (120 moves|600 lines)/);
+  assert.ok(Date.now() - begun < 1000, 'refused quickly');
   const broken = vienna(); broken.chapters[0].lines[0].moves = ['e2e4', 'e7e5', 'e1e3'];
   assert.throws(() => validateCourse(broken), /Line "[^"]+": Illegal move 3/);
 });

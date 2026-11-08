@@ -46,6 +46,7 @@ export function splitGames(pgn) {
 // the chapter's first line is the author's main line.
 function linesOf(root, initialFen) {
   const lines = [];
+  let queued = 0;   // alternatives waiting to be walked; each will become at least one line
   function walk(node, prefix, notes, marks) {
     const board = replay(prefix, initialFen);
     const moves = [...prefix], noteMap = {...notes}, markMap = {...marks};
@@ -60,6 +61,10 @@ function linesOf(root, initialFen) {
     note(node, prefix.length);
     while (cursor.variations?.length) {
       // Alternatives wait until the main continuation is recorded, so the author's main line comes first.
+      // Limits are checked before any prefix is copied, so a huge PGN is refused before it costs memory.
+      queued += cursor.variations.length - 1;
+      if (lines.length + queued > MAX_LINES) fail(`Import at most ${MAX_LINES} lines per course.`);
+      if (moves.length >= LIMITS.movesPerLine) fail(`A line holds at most ${LIMITS.movesPerLine} moves.`);
       for (const alternative of cursor.variations.slice(1)) deferred.push([alternative, [...moves], {...noteMap}, {...markMap}]);
       const next = cursor.variations[0];
       let move; try { move = board.move(next.move, {strict: true}); } catch { fail('This PGN contains an illegal move in a game or a variation.'); }
@@ -67,7 +72,7 @@ function linesOf(root, initialFen) {
       if (lines.length > MAX_LINES) fail(`Import at most ${MAX_LINES} lines per course.`);
     }
     if (moves.length > prefix.length || !lines.length) lines.push({moves, notes: noteMap, marks: markMap});
-    for (const [alternative, prefixMoves, notes2, marks2] of deferred) walk(alternative, prefixMoves, notes2, marks2);
+    for (const [alternative, prefixMoves, notes2, marks2] of deferred) { queued -= 1; walk(alternative, prefixMoves, notes2, marks2); }
   }
   walk(root, [], {}, {});
   return lines;
