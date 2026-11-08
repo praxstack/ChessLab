@@ -1,12 +1,15 @@
 import {replay} from '../../chess-state.js';
+import {validateCourse} from '../../../../shared/course.js';
 
 // Collections replace the server's SQLite tables one to one (design.md seam 4). users, sessions and
 // coach_daily are not needed: the browser holds one local profile and the coach keeps its own limits.
 // key names the field each value is stored under; indexes name fields that list() can filter by quickly.
 export const DATABASE_NAME = 'askthemove';
-export const DATABASE_VERSION = 1;
+export const DATABASE_VERSION = 2;
 export const BACKUP_FORMAT = 'askthemove-backup';
-export const BACKUP_VERSION = 1;
+export const BACKUP_VERSION = 2;
+// Collections added after the first backup format; a version-1 file restores with these empty.
+const ADDED_IN_VERSION_2 = ['courses', 'course_cards', 'drill_sessions'];
 
 export const collections = {
   games: {key: 'id'},
@@ -22,6 +25,11 @@ export const collections = {
   vision_runs: {key: 'id'},
   game_collections: {key: 'id'},
   collection_games: {key: 'key', indexes: ['collectionId', 'gameId']},
+  // Course trainer (Chessly/Chessable parity): courses hold their chapters and lines whole;
+  // one card per line carries the spaced-repetition state; drill sessions are one line in play.
+  courses: {key: 'id'},
+  course_cards: {key: 'id', indexes: ['courseId']},
+  drill_sessions: {key: 'id', indexes: ['courseId', 'state']},
 };
 
 export const collectionNames = Object.keys(collections);
@@ -53,6 +61,11 @@ function checkGame(game) {
   catch { refuse(`The backup's game ${game.id} has moves that can't be played.`); }
 }
 
+// A course must pass the same checks as a new one, so one damaged course can't break the course list.
+function checkCourse(course) {
+  try { validateCourse(course); } catch (error) { refuse(`The backup's course ${course.id} is damaged: ${error.message}`); }
+}
+
 // Validates a backup before anything is replaced, so a bad file leaves the current data untouched.
 // Every collection this app knows must be present as a list, even an empty one: a file that leaves
 // one out (for example "collections": {}) is damaged or hand-made, and restoring it would wipe that
@@ -60,17 +73,18 @@ function checkGame(game) {
 export function readBackup(json) {
   const data = typeof json === 'string' ? JSON.parse(json) : json;
   if (!plain(data) || data.format !== BACKUP_FORMAT) refuse('This file is not an AskTheMove backup.');
-  if (data.version !== BACKUP_VERSION) refuse(`This backup is version ${data.version}; this app reads version ${BACKUP_VERSION}.`);
+  if (data.version !== BACKUP_VERSION && data.version !== 1) refuse(`This backup is version ${data.version}; this app reads version ${BACKUP_VERSION}.`);
   if (!plain(data.collections)) refuse('This backup has no saved data.');
   const result = {};
   for (const name of collectionNames) {
-    const values = data.collections[name];
+    const values = data.collections[name] ?? (data.version === 1 && ADDED_IN_VERSION_2.includes(name) ? [] : undefined);
     if (values === undefined) refuse(`This backup has no ${name} list, so it is incomplete.`);
     if (!Array.isArray(values)) refuse(`The backup's ${name} list is damaged.`);
     for (const value of values) {
       if (!plain(value)) refuse(`The backup's ${name} list is damaged.`);
       try { keyOf(name, value); } catch (error) { refuse(error.message); }
       if (name === 'games') checkGame(value);
+      if (name === 'courses') checkCourse(value);
     }
     result[name] = values;
   }
