@@ -18,19 +18,24 @@ export async function handle(request, env, fetchOrigin = fetch) {
   const asset = ASSETS.get(url.pathname);
   if (asset) return borrow(asset, fetchOrigin);
 
-  let response = null;
-  try { response = await fetchOrigin(request); } catch { response = null; }
-  if (response && !OFFLINE.has(response.status)) return response;
+  // Until launch, ALWAYS_REST=true keeps the app closed: every visit gets the page, even when the Mac is up.
+  const always = String(env?.ALWAYS_REST ?? '').toLowerCase() === 'true';
+  if (!always) {
+    let response = null;
+    try { response = await fetchOrigin(request); } catch { response = null; }
+    if (response && !OFFLINE.has(response.status)) return response;
+  }
 
   const launcher = safeLink(env?.LAUNCHER_URL);
   const wantsPage = (request.method === 'GET' || request.method === 'HEAD')
     && (request.headers.get('accept') || '').includes('text/html');
-  const headers = { 'cache-control': 'no-store', 'retry-after': '60' };
+  const headers = always ? { 'cache-control': 'no-store' } : { 'cache-control': 'no-store', 'retry-after': '60' };
   if (!wantsPage) {
-    return new Response(JSON.stringify({ error: 'AskTheMove is offline right now. Try again in a few minutes.' }),
+    const error = always ? 'AskTheMove is being rebuilt and is closed until launch.' : 'AskTheMove is offline right now. Try again in a few minutes.';
+    return new Response(JSON.stringify({ error }),
       { status: 503, headers: { ...headers, 'content-type': 'application/json; charset=utf-8' } });
   }
-  return new Response(request.method === 'HEAD' ? null : page(launcher), {
+  return new Response(request.method === 'HEAD' ? null : page(launcher, always), {
     status: 503,
     headers: {
       ...headers,
@@ -69,14 +74,18 @@ function safeLink(value) {
 
 const escape = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
-export function page(launcher) {
+export function page(launcher, always = false) {
   const href = escape(launcher);
+  const refresh = always ? '' : '\n<meta http-equiv="refresh" content="60">';
+  const lede = always
+    ? "We're rebuilding the AskTheMove beta: a smarter coach, a better-feeling board and a stronger engine. It opens again at launch. Your games and progress are safe."
+    : "The AskTheMove beta runs on one small computer, and it's switched off right now. Your games and progress are safe. This page checks again every minute and turns back into the app by itself.";
+  const status = always ? 'status: rebuilding · opens at launch' : 'status: offline · retry: every 60 s';
   return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="refresh" content="60">
+<meta name="viewport" content="width=device-width, initial-scale=1">${refresh}
 <meta name="robots" content="noindex">
 <title>The board is resting · AskTheMove</title>
 <style>
@@ -145,13 +154,13 @@ h1 em { font-style: normal; background: linear-gradient(transparent 58%, var(--h
   <hr class="rule">
   <img class="king" src="/__resting/pieces/wK.svg" alt="" width="88" height="88">
   <h1>The board is <em>resting</em>.</h1>
-  <p class="lede">The AskTheMove beta runs on one small computer, and it's switched off right now. Your games and progress are safe. This page checks again every minute and turns back into the app by itself.</p>
+  <p class="lede">${lede}</p>
   <p class="note">While you wait: try today's puzzle in the <b>Puzzle Launcher</b> first, then solve it for real on Chess.com.</p>
   <p class="actions">
     <a class="btn" href="${href}">Open the Puzzle Launcher</a>
     <a class="plain" href="https://askthemove.online/">Back to askthemove.online</a>
   </p>
-  <p class="printout">status: offline · retry: every 60 s</p>
+  <p class="printout">${status}</p>
 </main>
 </body>
 </html>`;
