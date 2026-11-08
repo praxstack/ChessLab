@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {validateCourse, courseSummary, courseView, findLine, LIMITS} from '../shared/course.js';
+import {validateCourse, courseSummary, courseView, findLine, courseLines, LIMITS} from '../shared/course.js';
 import {createCard, review, dueCards, scheduleSummary, stepLabel, LADDER, HOUR, DAY} from '../shared/trainer-schedule.js';
 import {createDrill, drillView, playDrillMove, askHint, MAX_MISSES} from '../shared/drill.js';
 import {courseFromPgn, courseToPgn, lichessStudyExportUrl, lichessStudyLink, splitGames} from '../shared/course-import.js';
@@ -167,6 +167,14 @@ test('a PGN with variations becomes a course with one line per leaf, and exports
   assert.equal(splitGames('1. e4 {An idea.\n\n[%cal Ge2e4]} e5 *').length, 1);
   assert.deepEqual(courseFromPgn('1. e4 {An idea.\n\n[%cal Ge2e4]} e5 *', {}).chapters[0].lines[0].marks[1], [{color: 'G', from: 'e2', to: 'e4'}]);
   assert.equal(splitGames('[Event "a"]\n\n1. e4 *\n\n[Event "b"]\n\n1. d4 *').length, 2);
+  // A brace inside a quoted tag value is text, so a title like "Opening {draft" still round-trips.
+  const braced = validateCourse({...vienna(), title: 'Opening {draft'});
+  assert.equal(splitGames(courseToPgn(braced)).length, courseLines(braced).length);
+  assert.equal(courseFromPgn(courseToPgn(braced), {source: {kind: 'own'}}).chapters[0].lines.length, courseLines(braced).length);
+  // Long runs of blank lines stay linear.
+  const started = Date.now();
+  assert.equal(splitGames('[Event "a"]\n\n1. e4 *' + '\n'.repeat(200000) + '[Event "b"]\n\n1. d4 *').length, 2);
+  assert.ok(Date.now() - started < 500, 'blank-line runs split in linear time');
   assert.equal(back.chapters.length, 1); assert.equal(back.chapters[0].lines.length, 65); assert.equal(back.chapters[0].title, 'Rook endings');
 });
 

@@ -16,23 +16,29 @@ const slug = text => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+
 export const MAX_PGN_BYTES = 2_000_000;
 export const MAX_LINES = 600;
 
-// Splits a multi-game PGN at a blank line followed by a tag section. Text inside {...} comments
-// and after ; to the end of a line is skipped, so a note with a blank line never splits a game.
+// Splits a multi-game PGN at a blank line followed by a tag line. Works one line at a time, so it
+// stays linear on long runs of blank lines. Tag lines are never scanned for comment delimiters (a
+// brace inside a quoted tag value is just text); in movetext, {...} comments and ; to the end of a
+// line are skipped, so a note with a blank line or a [ at the start of a line never splits a game.
 export function splitGames(pgn) {
-  const text = pgn.replace(/\r\n?/g, '\n'), games = [];
-  let start = 0, inBrace = false, inLine = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (inBrace) { if (c === '}') inBrace = false; continue; }
-    if (inLine) { if (c === '\n') inLine = false; else continue; }
-    if (c === '{') { inBrace = true; continue; }
-    if (c === ';') { inLine = true; continue; }
-    if (c === '\n') {
-      const rest = text.slice(i + 1).match(/^[ \t]*\n\s*\[/);
-      if (rest) { games.push(text.slice(start, i)); start = i + 1; }
+  const games = [];
+  let current = [], inBrace = false, blank = false;
+  for (const line of pgn.replace(/\r\n?/g, '\n').split('\n')) {
+    if (!inBrace && /^\s*\[/.test(line)) {
+      if (blank && current.some(l => l.trim())) { games.push(current.join('\n')); current = []; }
+      blank = false; current.push(line); continue;
+    }
+    current.push(line);
+    if (!inBrace && !line.trim()) { blank = true; continue; }
+    blank = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (inBrace) { if (c === '}') inBrace = false; }
+      else if (c === '{') inBrace = true;
+      else if (c === ';') break;
     }
   }
-  games.push(text.slice(start));
+  games.push(current.join('\n'));
   return games.map(game => game.trim()).filter(Boolean);
 }
 
