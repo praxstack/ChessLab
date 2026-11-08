@@ -1,5 +1,5 @@
 import React from 'react';
-import {pieceSet, boardThemes, colorThemes, thinkingTimes, settingDefaults} from './settings-state.js';
+import {boardThemes, colorThemes, thinkingTimes, settingDefaults} from './settings-state.js';
 import CoachSettings from './local/coach/CoachSettings.jsx';
 import {publicUrl} from './public-url.js';
 
@@ -15,11 +15,10 @@ export default function Settings({settings,tab,onTab,onChange,engines,local=fals
  const available=id=>engines.some(e=>e.id===id&&e.available);
  return <><div className="settings-tabs" role="tablist" aria-label="Settings sections">{['board','review','engine',...(browserBuild?['coach']:[])].map(id=><button type="button" role="tab" aria-selected={tab===id} key={id} className={tab===id?'active':''} onClick={()=>onTab(id)}>{id==='review'?'Interface':id==='board'?'Appearance':id}</button>)}</div>
  <div className="settings-body">{tab==='coach'&&browserBuild?<CoachSettings onChange={onCoachChange}/>:tab==='board'?<>
-  <h3>Colours</h3>
+  <h3>Theme</h3>
   {select('theme','Theme',colorThemes)}
   <h3>Board</h3>
-  <div className="setting-row"><span>Pieces</span><span className="setting-value setting-static">{pieceSet.label} <small>· one set for now</small></span></div>
-  {select('boardTheme','Board',boardThemes)}
+  {select('boardTheme','Board theme',boardThemes)}
   {select('orientation','Orientation',[['auto','Your playing color'],['w','White at bottom'],['b','Black at bottom']])}
   {select('coordinates','Coordinates',[[true,'Inside'],[false,'None']])}
   {select('notation','Move notation',[['figurine','Figurine'],['text','Text']])}

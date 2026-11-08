@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {appCsp, appHeaders, appManifest, coachOrigin} from './browser-app-hosting.mjs';
+import {readFileSync} from 'node:fs';
+import {fileURLToPath} from 'node:url';
+import {appCsp, appHeaders, appManifest, coachOrigin, ICONS, ICON_DIR} from './browser-app-hosting.mjs';
 import {parseHeaders, headersFor} from './smoke-browser-app.mjs';
 
 const directives = csp => Object.fromEntries(csp.split('; ').map(part => { const [name, ...values] = part.split(' '); return [name, values]; }));
@@ -48,4 +50,14 @@ test('the manifest names the app and its icons', () => {
   assert.equal(manifest.name, 'AskTheMove');
   assert.equal(manifest.start_url, '/');
   assert.deepEqual(manifest.icons.map(icon => icon.sizes), ['any', '192x192', '512x512']);
+});
+
+test('the app icons are the site\'s brand mark, byte for byte', () => {
+  // One source of truth: site/public/ holds the askthemove.online mark at every size. The app ships copies,
+  // so if the site's mark changes this fails until the copies are refreshed (cp site/public/<file> web/app-public/).
+  const site = fileURLToPath(new URL('../site/public/', import.meta.url));
+  for (const icon of ICONS) assert.ok(readFileSync(ICON_DIR + icon).equals(readFileSync(site + icon)), `${icon} matches the site's`);
+  const appSvg = fileURLToPath(new URL('../web/public/favicon.svg', import.meta.url));
+  assert.equal(readFileSync(appSvg, 'utf8'), readFileSync(site + 'favicon.svg', 'utf8'), 'favicon.svg matches the site\'s');
+  assert.ok(ICONS.includes('favicon-32.png'), 'the 32px PNG fallback ships too');
 });

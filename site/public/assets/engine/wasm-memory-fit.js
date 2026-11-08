@@ -9,26 +9,30 @@
 // accepts a memory with a lower ceiling than it declares, so nothing else
 // changes. Browsers that grant the first request never get here.
 //
-// Import this before the engine's own code, so it is in place first.
+// Import this before the engine's own code, so it is in place first. Module workers import it;
+// classic workers load it with importScripts, so it keeps its names inside a block, out of the
+// worker's shared global scope.
 
-const Real = WebAssembly.Memory;
-const CEILINGS = [32768, 16384, 8192, 4096]; // in 64 KB pages: 2 GB, 1 GB, 512 MB, 256 MB
+{
+  const Real = WebAssembly.Memory;
+  const CEILINGS = [32768, 16384, 8192, 4096]; // in 64 KB pages: 2 GB, 1 GB, 512 MB, 256 MB
 
-function Memory(desc) {
-  try {
-    return new Real(desc);
-  } catch (err) {
-    if (!(err instanceof RangeError) || !desc || !(desc.maximum > 0)) throw err;
-    for (const maximum of CEILINGS) {
-      if (maximum >= desc.maximum || maximum < (desc.initial || 0)) continue;
-      try {
-        return new Real({ ...desc, maximum });
-      } catch (e) {
-        if (!(e instanceof RangeError)) throw e;
+  const Memory = function Memory(desc) {
+    try {
+      return new Real(desc);
+    } catch (err) {
+      if (!(err instanceof RangeError) || !desc || !(desc.maximum > 0)) throw err;
+      for (const maximum of CEILINGS) {
+        if (maximum >= desc.maximum || maximum < (desc.initial || 0)) continue;
+        try {
+          return new Real({ ...desc, maximum });
+        } catch (e) {
+          if (!(e instanceof RangeError)) throw e;
+        }
       }
+      throw err;
     }
-    throw err;
-  }
+  };
+  Memory.prototype = Real.prototype;
+  WebAssembly.Memory = Memory;
 }
-Memory.prototype = Real.prototype;
-WebAssembly.Memory = Memory;

@@ -20,10 +20,10 @@ import CoachExplain from './CoachExplain.jsx';
 import {toggleMark} from '../../shared/board-marks.js';
 import {localApi, localExportFile} from './local/index.js';
 import BackupRestore from './local/BackupRestore.jsx';
-import {usePens, PenToolbar} from './sensory/Pens.jsx';
-import {cue, followSetting, wakeOnFirstGesture} from './sensory/sounds.js';
 import BrandMark from './BrandMark.jsx';
 import {applyTheme} from './theme.js';
+import {usePens, PenToolbar} from './sensory/Pens.jsx';
+import {cue, followSetting, wakeOnFirstGesture} from './sensory/sounds.js';
 import './styles.css';
 import {publicUrl} from './public-url.js';
 
@@ -123,12 +123,12 @@ function App() {
     return()=>{alive=false;};
   },[]);
   useEffect(()=>{localStorage.setItem('chesslab-settings',JSON.stringify(settings));},[settings]);
+  useEffect(()=>{applyTheme(settings.theme);},[settings.theme]);
   useEffect(()=>followSetting(settings.sound!==false),[settings.sound]);
   useEffect(()=>wakeOnFirstGesture(),[]);
   // The end of a game (mate, resignation, time, a draw) gets its chime once, as it happens.
   const endedRef=useRef(null);
   useEffect(()=>{const key=game?`${game.id}:${game.result||''}`:null,before=endedRef.current;endedRef.current=key;if(game?.result&&before===`${game.id}:`)setTimeout(()=>cue('end'),260);},[game?.id,game?.result]);
-  useEffect(()=>{applyTheme(settings.theme);},[settings.theme]);
   useEffect(()=>{studyRef.current=study;},[study]);
   useEffect(()=>{if(!dirty)return;const warn=e=>{e.preventDefault();e.returnValue='';};window.addEventListener('beforeunload',warn);return()=>window.removeEventListener('beforeunload',warn);},[dirty]);
   useEffect(()=>{reviewingRef.current=mode==='review'||!!branchId||page!=='play';},[mode,branchId,page]);

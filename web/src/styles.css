@@ -56,6 +56,7 @@
   --mate-text: #6a3a9e;
   --good-text: #1d6b43;
   --highlight: #f2e35e;
+  --on-highlight: #171d29; /* text on the highlighter yellow, in both themes */
   --focus: #2350c4;
   --shadow: #3b4252;
   --scrim: #171d296b;
@@ -879,3 +880,30 @@ h1, h2, h3 { text-wrap: balance; }
 @media (min-width: 801px) and (max-width: 1099px) { .board-column { max-width: min(100%, calc(100dvh - 520px)); } }
 .library-page:has(.library-empty) { min-height: 0; }
 @media (max-width: 800px) { .board-column:has(.phone-cta) > .player-row:not(.own-player) { display: none; } }
+/* The setup column never squeezes its parts; the panel scrolls instead. */
+.bot-setup:not(.compact) > *, .bot-roster > * { flex-shrink: 0; }
+/* Desktop: the panel grows with the open bot group; Play stays at its top, so nothing is clipped. */
+@media (min-width: 1100px) {
+  .bot-welcome { height: auto; min-height: 0; }
+  .bot-setup:not(.compact) .bot-roster { flex: none; overflow: visible; }
+}
+/* Round 4: a clearer paper board, a steady phone nav, toggles that read as on, one knight. */
+:root { --sq-light: #f3eddf; --sq-dark: #9eb0d3; }
+.toggle.on span { background: #fff; }
+.training-empty .piece { filter: none; }
+.path-progress > i { min-width: 0; }
+.main { display: flex; flex-direction: column; min-height: 100dvh; }
+.main > .workspace-footer { margin-top: auto; }
+@media (max-width: 520px) {
+  .navigation nav { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .nav-item { min-width: 0; margin: 6px 2px; }
+  .nav-item.active { margin: 6px 2px; }
+}
+@media (max-width: 800px) {
+  .phone-cta { margin-bottom: 28px; }
+  .course-header { flex-wrap: wrap; }
+  .course-header > div { flex: 1 1 0; min-width: 0; }
+  .course-count { flex-basis: 100%; margin-left: 54px; }
+}
+.main > * { width: 100%; }
+.main > section, .main > .workspace { margin-top: 0; margin-bottom: 0; }
