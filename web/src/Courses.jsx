@@ -9,6 +9,8 @@ import {STARTER_COURSES} from '../../shared/starter-courses.js';
 
 const SIDE={w:'White',b:'Black',both:'Both sides'};
 const plural=(n,word)=>`${n} ${word}${n===1?'':'s'}`;
+// Plain words for the time left until a due date ("in 3 hours", "in 2 days").
+function timeLeft(ms){const h=Math.max(1,Math.round(ms/3600000)),d=Math.round(ms/86400000);if(h<24)return plural(h,'hour');if(d<7)return plural(d,'day');if(d<30)return plural(Math.round(d/7),'week');if(d<365)return plural(Math.round(d/30),'month');return 'a year';}
 const boardFrom=(fen)=>{const b=new Chess();if(fen)b.load(fen);return b;};
 
 export default function Courses({request,settings}){
@@ -79,7 +81,7 @@ function CourseDetail({data,busy,error,onBack,onStart,onReview,onShuffle,onMode,
    <label className="course-mode">Schedule<select value={data.course.mode||'ladder'} disabled={busy} onChange={e=>onMode(e.target.value)}><option value="ladder">Ladder: 4 hours to 6 months</option><option value="adaptive">Adaptive: easy lines stretch out</option></select></label></div>
   {course.chapters.map(chapter=><article key={chapter.id} className="course-chapter"><header><h3>{chapter.title}</h3><button className="text-button" disabled={busy} onClick={()=>onShuffle(chapter.id)}>Shuffle this chapter</button></header>
    {chapter.explain.map((p,i)=><p key={i} className="course-explain">{p}</p>)}
-   <ul className="course-items">{chapter.lines.map(line=>{const card=cardOf[line.id],due=card&&card.due<=now;return <li key={line.id}><span><strong>{line.title||'Line'}</strong><small>{line.side==='w'?'White':'Black'} · {line.moves.length} moves · {!card||card.reps===0?'new':due?'due now':`next in ${card.label}`}{card?.lapses?` · ${plural(card.lapses,'miss')}`:''}</small></span><button className="button small secondary" disabled={busy} onClick={()=>onStart([{kind:'line',id:line.id}])}>Drill</button></li>;})}
+   <ul className="course-items">{chapter.lines.map(line=>{const card=cardOf[line.id],due=card&&card.due<=now;return <li key={line.id}><span><strong>{line.title||'Line'}</strong><small>{line.side==='w'?'White':'Black'} · {line.moves.length} moves · {!card||card.reps===0?'new':due?'due now':`next in ${timeLeft(card.due-now)}`}{card?.lapses?` · ${plural(card.lapses,'miss')}`:''}</small></span><button className="button small secondary" disabled={busy} onClick={()=>onStart([{kind:'line',id:line.id}])}>Drill</button></li>;})}
     {chapter.quizzes.map(quiz=><li key={quiz.id}><span><strong>{quiz.question}</strong><small>Quiz · {quizzes.includes(quiz.id)?'answered':'not answered yet'}</small></span><button className="button small secondary" disabled={busy} onClick={()=>onStart([{kind:'quiz',id:quiz.id}])}>Answer</button></li>)}</ul></article>)}
   <div className="courses-actions course-footer"><button className="button small secondary" disabled={busy} onClick={onExport}>Export PGN</button><button className="button small danger" disabled={busy} onClick={onDelete}>Delete course</button></div>
  </section>;
@@ -101,7 +103,7 @@ function Practice({request,settings,course,session,onExit}){
 }
 
 function DrillCard({request,settings,course,lineId,progress,onNext,onExit}){
- const [drill,setDrill]=useState(null),[selected,setSelected]=useState(null),[feedback,setFeedback]=useState(null),[card,setCard]=useState(null),[busy,setBusy]=useState(false),[error,setError]=useState('');
+ const [drill,setDrill]=useState(null),[promotion,setPromotion]=useState(null),[selected,setSelected]=useState(null),[feedback,setFeedback]=useState(null),[card,setCard]=useState(null),[busy,setBusy]=useState(false),[error,setError]=useState('');
  const id=course.course.id;
  useEffect(()=>{let live=true;request(`/api/courses/${id}/drills/start`,{lineId,restart:true}).then(d=>{if(live)setDrill(d.drill);}).catch(e=>live&&setError(e.message));return()=>{live=false;};},[lineId]);
  const board=useMemo(()=>boardFrom(drill?.fen),[drill?.fen]);
@@ -111,9 +113,10 @@ function DrillCard({request,settings,course,lineId,progress,onNext,onExit}){
    if(r.done)setCard(r.card);}
   catch(e){setError(e.message);}finally{setBusy(false);}}
  async function hint(){if(!drill||busy)return;setBusy(true);try{const r=await request(`/api/courses/${id}/drills/${drill.id}/hint`,{});setDrill(r.drill);}catch(e){setError(e.message);}finally{setBusy(false);}}
+ // A pawn reaching the last rank asks which piece to promote to; the book may want a knight.
+ function attempt(from,to){const moving=board.get(from);if(moving?.type==='p'&&(to[1]==='8'||to[1]==='1')){setSelected(null);setPromotion({from,to});return;}play(from+to);}
  function choose(square){if(!drill||drill.state!=='active'||busy)return;const piece=board.get(square);
-  if(selected&&selected!==square){const moving=board.get(selected);const promo=moving?.type==='p'&&(square[1]==='8'||square[1]==='1')?'q':'';
-   if(board.moves({square:selected,verbose:true}).some(m=>m.to===square)){play(selected+square+promo);return;}}
+  if(selected&&selected!==square&&board.moves({square:selected,verbose:true}).some(m=>m.to===square)){attempt(selected,square);return;}
   setSelected(piece&&piece.color===board.turn()?square:null);}
  const turnName=drill?(drill.toMove==='w'?'White':'Black'):'';
  // Notes for the learner's last move and the book's reply both stay on screen until the next move.
@@ -123,10 +126,11 @@ function DrillCard({request,settings,course,lineId,progress,onNext,onExit}){
  const arrows=drill?.required?[drill.required]:drill?.hint?.move?[drill.hint.move]:[];
  const last=drill?.lastMove?[drill.lastMove.slice(0,2),drill.lastMove.slice(2,4)]:null;
  return <section className="vision-layout course-drill" aria-label="Drill"><div className="vision-board-column"><div className="vision-board-heading"><strong>{drill?.title||'Loading line…'}</strong><span>{progress}</span></div>
-  <div className="vision-board-wrap"><Board chess={board} orientation={drill?.side||'w'} selected={selected} onSquare={choose} onMove={(from,to)=>{const moving=board.get(from);play(from+to+(moving?.type==='p'&&(to[1]==='8'||to[1]==='1')?'q':''));}} enabled={!!drill&&drill.state==='active'&&!busy} settings={settings} arrows={arrows} marks={[...marks,...hintMarks]} lastMove={last} positionKey={drill?.fen} label="Drill board"/></div></div>
+  <div className="vision-board-wrap"><Board chess={board} orientation={drill?.side||'w'} selected={selected} onSquare={choose} onMove={(from,to)=>attempt(from,to)} enabled={!!drill&&drill.state==='active'&&!busy&&!promotion} settings={{...settings,arrows:true}} arrows={arrows} marks={[...marks,...hintMarks]} lastMove={last} positionKey={drill?.fen} label="Drill board"/></div></div>
   <div className="vision-panel"><p className="eyebrow">DRILL · {course.course.title}</p><h2>{!drill?'…':drill.state==='done'?(drill.result==='pass'?'Perfect.':drill.result==='hinted'?'Done, with a hint.':'Done. It comes back soon.'):`Your move as ${turnName}`}</h2>
    {error&&<p className="form-error" role="alert">{error}</p>}
    {feedback&&drill?.state==='active'&&<p className={`vision-feedback ${feedback.good?'':'incorrect'}`} role="status">{feedback.text}</p>}
+   {promotion&&<div className="course-promotion" role="group" aria-label="Promote to"><span>Promote to</span>{[['q','Queen'],['r','Rook'],['b','Bishop'],['n','Knight']].map(([k,name])=><button key={k} className="button small secondary" onClick={()=>{const {from,to}=promotion;setPromotion(null);play(from+to+k);}}>{name}</button>)}<button className="text-button" onClick={()=>setPromotion(null)}>Cancel</button></div>}
    {note&&<div className="vision-prompt course-note"><small>NOTE</small><p>{note}</p></div>}
    <div className="vision-metrics"><div><strong>{drill?`${drill.ply}/${drill.total}`:'–'}</strong><span>moves</span></div><div><strong>{drill?.misses??0}</strong><span>misses</span></div><div><strong>{drill?.hints??0}</strong><span>hints</span></div></div>
    {drill?.state==='done'&&card&&<div className="vision-result"><strong>{card.label}</strong><p>until this line comes back{card.lapses?` · ${plural(card.lapses,'miss')} so far`:''}</p></div>}

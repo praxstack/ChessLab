@@ -940,3 +940,4 @@ h1, h2, h3 { text-wrap: balance; }
 .button.danger{color:var(--danger-text);border-color:var(--danger-line);background:var(--surface)}
 .courses-grid .empty-state{grid-column:1/-1;margin:8px 0;max-width:none;align-items:flex-start;text-align:left}.courses-grid .empty-state h3{font-size:22px;margin-bottom:6px}.courses-grid .empty-state p{margin:0}.course-starter-action{display:block;margin-top:12px}
 .course-items li .button,.course-footer .button,.courses-actions .button{width:auto;flex:0 0 auto}
+.course-promotion{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0;font-size:13px;color:var(--muted)}
