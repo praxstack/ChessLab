@@ -98,14 +98,14 @@ function Practice({request,settings,course,session,onExit}){
    <div className="courses-actions">{missed.length>0&&<button className="button primary" onClick={()=>{setStats({done:0,perfect:0,missed:[]});session.items=missed;setIndex(0);}}>Redo the {plural(missed.length,'miss')}</button>}<button className="button secondary" onClick={onExit}>Back to the course</button></div></section>;}
  const progress=`${index+1} of ${session.items.length}`;
  return item.kind==='quiz'
-  ?<QuizCard key={`${index}-${item.id}`} request={request} course={course} quizId={item.id} progress={progress} onNext={next} onExit={onExit}/>
+  ?<QuizCard key={`${index}-${item.id}`} request={request} settings={settings} course={course} quizId={item.id} progress={progress} onNext={next} onExit={onExit}/>
   :<DrillCard key={`${index}-${item.id}`} request={request} settings={settings} course={course} lineId={item.id} progress={progress} onNext={next} onExit={onExit}/>;
 }
 
 function DrillCard({request,settings,course,lineId,progress,onNext,onExit}){
  const [drill,setDrill]=useState(null),[promotion,setPromotion]=useState(null),[selected,setSelected]=useState(null),[feedback,setFeedback]=useState(null),[card,setCard]=useState(null),[busy,setBusy]=useState(false),[error,setError]=useState('');
  const id=course.course.id;
- useEffect(()=>{let live=true;request(`/api/courses/${id}/drills/start`,{lineId,restart:true}).then(d=>{if(live)setDrill(d.drill);}).catch(e=>live&&setError(e.message));return()=>{live=false;};},[lineId]);
+ useEffect(()=>{let live=true;request(`/api/courses/${id}/drills/start`,{lineId}).then(d=>{if(live)setDrill(d.drill);}).catch(e=>live&&setError(e.message));return()=>{live=false;};},[lineId]);
  const board=useMemo(()=>boardFrom(drill?.fen),[drill?.fen]);
  async function play(uci){if(!drill||busy||drill.state!=='active')return;setBusy(true);setError('');setSelected(null);
   try{const r=await request(`/api/courses/${id}/drills/${drill.id}/move`,{move:uci,revision:drill.revision});setDrill(r.drill);
@@ -138,13 +138,14 @@ function DrillCard({request,settings,course,lineId,progress,onNext,onExit}){
   </div></section>;
 }
 
-function QuizCard({request,course,quizId,progress,onNext,onExit}){
+function QuizCard({request,settings,course,quizId,progress,onNext,onExit}){
  const quiz=useMemo(()=>course.course.chapters.flatMap(c=>c.quizzes).find(q=>q.id===quizId),[course,quizId]);
+ const position=useMemo(()=>quiz?.fen?boardFrom(quiz.fen):null,[quiz?.fen]);
  const [answer,setAnswer]=useState(null),[tries,setTries]=useState(0),[busy,setBusy]=useState(false),[error,setError]=useState('');
  async function choose(i){if(busy||answer?.correct)return;setBusy(true);setError('');try{const r=await request(`/api/courses/${course.course.id}/quizzes/${quizId}/answer`,{choice:i});setAnswer({...r,choice:i});setTries(t=>t+1);}catch(e){setError(e.message);}finally{setBusy(false);}}
  if(!quiz)return <section className="courses-page"><p>This quiz is no longer in the course.</p><button className="button primary" onClick={()=>onNext('miss')}>Next →</button></section>;
  return <section className="courses-page course-quiz" aria-label="Quiz"><div className="vision-board-heading"><strong>Quiz · {course.course.title}</strong><span>{progress}</span></div>
-  <h2>{quiz.question}</h2>{error&&<p className="form-error" role="alert">{error}</p>}
+  <h2>{quiz.question}</h2>{position&&<div className="course-quiz-board"><Board chess={position} orientation={position.turn()} enabled={false} onSquare={()=>{}} onMove={()=>{}} settings={settings} label="Quiz position"/></div>}{error&&<p className="form-error" role="alert">{error}</p>}
   <div className="course-choices">{quiz.choices.map((choice,i)=><button key={i} className={`endgame-card ${answer?.choice===i?(answer.correct?'chosen':'wrong'):''}`} disabled={busy||answer?.correct} aria-pressed={answer?.choice===i} onClick={()=>choose(i)}><span>{choice}</span></button>)}</div>
   {answer&&<div className={`vision-result ${answer.correct?'':'course-wrong'}`}><strong>{answer.correct?'Right.':'Not quite.'}</strong>{answer.correct?<p>{answer.why}</p>:<p>Try another answer.</p>}</div>}
   <div className="courses-actions">{answer?.correct&&<button className="button primary" onClick={()=>onNext(tries===1?'pass':'miss')}>Next →</button>}<button className="text-button" onClick={onExit}>End session</button></div></section>;

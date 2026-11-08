@@ -41,6 +41,7 @@ export const STARTER_COURSES = [
         ],
         quizzes: [
           {id: 'legal-idea', question: 'In the first trap, why can White give up the queen?', choices: ['Because the bishop and knights deliver mate', 'Because the queen was attacked anyway', 'Because Black cannot recapture'], answer: 0, why: 'After Bxf7+ Ke7 Nd5 the king is mated. A pin against the queen is not a pin if moving the piece wins more.'},
+          {id: 'legal-spot', fen: 'rn1qkbnr/ppp2p1p/3p2p1/4p3/2B1P1b1/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 5', question: 'White to move. Which move springs the trap?', choices: ['Nxe5, letting the queen go', 'h3, asking the bishop', 'd3, quiet development'], answer: 0, why: 'Nxe5 drops the queen on purpose. If Black takes it, Bxf7+ Ke7 Nd5 is mate.'},
         ],
       },
     ],
