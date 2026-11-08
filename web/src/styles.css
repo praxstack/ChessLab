@@ -642,3 +642,290 @@ input, select, textarea { border-color: var(--line-strong); border-radius: 4px; 
 .study-square-mark[data-color=G] { background: var(--mark-g) !important; }
 .study-square-mark[data-color=Y] { background: var(--mark-y) !important; }
 .study-square-mark[data-color=B] { background: var(--mark-b) !important; }
+
+/* ── Polish layer (council round 1, 6 Nov 2026) ──────────────────────────────────────────
+ * Two voices in the chrome: Vollkorn for headings, body copy and the coach; the system sans for
+ * every control, label, tab and nav item. Courier Prime stays for eyebrows and engine numbers.
+ * The board is a solid two-tone diagram again; the hatched book diagram is an opt-in board theme. */
+:root {
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --sq-light: #f6f2e7;
+  --sq-dark: #b9c6dd;
+  --sq-ink: #2d3a55;
+  --last-move: #f0d64b8c;
+  --control-w: 220px;
+}
+:root[data-theme="dark"] { --sq-light: #d2d8ce; --sq-dark: #7a9084; --sq-ink: #1a2420; --surface: #243029; --raised: #2d3a33; --line: #3b4a43; --last-move: #e8d55a80; --select: #9fc4ea73; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --sq-light: #d2d8ce; --sq-dark: #7a9084; --sq-ink: #1a2420; --surface: #243029; --raised: #2d3a33; --line: #3b4a43; --last-move: #e8d55a80; --select: #9fc4ea73; } }
+
+/* Controls and labels in the UI sans; headings, paragraphs and the coach keep the book voice. */
+button, input, select, textarea, .nav-item, .panel-tabs button, .opponent-tabs button, .settings-tabs button, .setting-row, .bot-card, .engine-card, .text-button, .button, .player-copy, .player-tag, .local-workspace, .library-filters, .library-selection, .training-mode-picker button, .move-row, .game-card-copy, .tiny-note, .keyboard-hint, .move-entry input, .collection-link, .toggle, .form-error, .feedback, .toast, .roster-caption, .opponent-name span, .training-board-foot, .training-position-title, .setting-value, .credits, .options-body, .assistance-options, .color-options, .time-controls, .rating-label, .learning-feedback strong, .content-item strong, .content-item p, .library-summary, .training-stat, .training-daily-progress { font-family: var(--font-ui); }
+h1, h2, h3, .brand, .coach-message h2, .opponent-name strong, .player-copy strong, .start-button, .training-panel h2, .learning-path-hero h2, .collection-heading h2, .empty-state h3, .modal > header h2 { font-family: var(--font-book); }
+.start-button { font-weight: 700; }
+.eyebrow, .nav-section, .control-label, .roster-caption, .content-category, .player-tag { font-family: var(--font-print); }
+.player-copy strong { font-size: 15px; }
+.player-copy > span { font-size: 12.5px; }
+
+/* Page header: one line of eyebrow, a smaller title, less air above the board. */
+.page-header { margin-bottom: 14px; }
+h1 { font-size: 28px; letter-spacing: -.3px; margin-top: 0; }
+.eyebrow { font-size: 11px; }
+.page-header .eyebrow { margin-bottom: 2px; }
+.phone-only { display: none; }
+.engine-status { font-family: var(--font-ui); font-size: 12px; }
+
+/* Nav rail: filled pill for the active page, no detached indicator bar, no section eyebrow. */
+.nav-section { display: none; }
+.navigation { padding-top: 24px; }
+.brand { margin-bottom: 30px; }
+.nav-item { font-size: 15px; font-weight: 600; padding: 10px 12px; border-radius: 8px; margin-bottom: 3px; min-height: 40px; }
+.nav-item.active { background: var(--action-soft); color: var(--action-text); }
+.nav-item.active:before { display: none; }
+.nav-item svg, .nav-asset, .nav-asset-svg { width: 22px; height: 22px; }
+.nav-asset-svg { flex: none; }
+.nav-more, .more-sheet { display: none; }
+@media (min-width: 801px) { .nav-item { font-size: 15px; } }
+
+/* The board: a solid two-tone diagram with a clean rule; coordinates small, upright and clear of the pieces. */
+.square.dark { background: var(--sq-dark); }
+[data-board-theme=hatch] .square.light { background: #fefdf8; }
+[data-board-theme=hatch] .square.dark { background: repeating-linear-gradient(-45deg, #97a2b5 0 1px, transparent 1px 4.5px), #e6ecf4; color: #3a4150; }
+:root[data-theme="dark"] [data-board-theme=hatch] .square.light, :root[data-theme="dark"] [data-board-theme=hatch] .square.dark { color: #1a2420; }
+.board { box-shadow: 0 0 0 1.5px var(--board-rule), 0 10px 24px -12px color-mix(in srgb, var(--shadow) 45%, transparent); }
+.rank, .file { font-family: var(--font-ui); font-style: normal; font-weight: 700; font-size: clamp(9px, .85vw, 11.5px); letter-spacing: 0; }
+.rank { left: 3px; top: 2px; }
+.file { right: 3px; bottom: 1px; }
+.piece { width: 92%; height: 92%; margin: auto; }
+:root[data-theme="dark"] .piece { filter: drop-shadow(0 1px 1px #0000004d); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .piece { filter: drop-shadow(0 1px 1px #0000004d); } }
+.square.selected:after { background: var(--select); }
+.square.last-move:before { content: ''; position: absolute; inset: 0; background: var(--last-move); z-index: 0; pointer-events: none; }
+[data-board-theme] .square.last-move { box-shadow: none; }
+.legal-dot { width: 26%; height: 26%; border-radius: 50%; background: color-mix(in srgb, var(--sq-ink) 28%, transparent); position: absolute; z-index: 2; pointer-events: none; }
+.legal-capture { position: absolute; inset: 3%; border-radius: 50%; border: 5px solid color-mix(in srgb, var(--sq-ink) 28%, transparent); box-sizing: border-box; z-index: 2; pointer-events: none; }
+
+/* Desktop vertical budget: board plus both player rows and the move entry fit a 900px tall window. */
+@media (min-width: 801px) { .board-column { max-width: calc(100dvh - 262px); } }
+@media (min-width: 1100px) and (max-height: 850px) { .board-column { max-width: calc(100dvh - 250px); } }
+.board-wrap { margin: 2px 0; }
+.player-row { height: 42px; margin-bottom: 8px; }
+.own-player { margin-top: 8px; }
+
+/* Right panel: one primary action, two equal secondaries, ratings on every bot card. */
+.welcome-secondary { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.welcome-secondary .button { min-height: 42px; font-size: 13.5px; padding: 8px 10px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.welcome-secondary .button svg { width: 16px; height: 16px; }
+.bot-card small { display: block; font-size: 11px; color: var(--muted); }
+.bot-card.selected { outline: 2px solid var(--action); outline-offset: 1px; border-color: transparent; background: var(--action-soft); }
+.bot-roster { -webkit-mask-image: linear-gradient(#000 calc(100% - 28px), transparent); mask-image: linear-gradient(#000 calc(100% - 28px), transparent); }
+.bot-group-title { font-family: var(--font-ui); }
+.panel-tabs button { font-size: 14px; }
+.play-options > summary { font-family: var(--font-ui); }
+
+/* Buttons and messages: disabled looks disabled, errors are callouts, not raw red lines. */
+.button:disabled, .start-button:disabled { opacity: .45; cursor: not-allowed; filter: grayscale(.4); }
+.form-error, .play-blocked { margin: 12px 0; padding: 10px 12px; border-left: 3px solid var(--danger); background: var(--danger-soft); color: var(--danger-text); border-radius: 0 4px 4px 0; font-size: 13px; line-height: 1.45; }
+.form-error .text-button { margin-left: 8px; }
+
+/* Settings: controls share one width so their left edges line up; tabs underline the active one only. */
+.setting-row select, .setting-row .setting-value { width: var(--control-w); max-width: 55%; }
+.setting-row .setting-value { text-align: right; color: var(--muted); }
+.settings-tabs button { background: transparent; border-radius: 0; }
+.settings-tabs button.active { background: transparent; box-shadow: inset 0 -2px 0 var(--action); color: var(--action-text); }
+.settings-body h3 { margin-top: 26px; }
+.settings-body h3:first-child { margin-top: 0; }
+
+/* Puzzles, Learn, Library: one header each; the tool comes first. */
+.training-lede { color: var(--muted); font-size: 15px; margin-top: 2px; }
+.training-heading { margin-bottom: 16px; align-items: flex-end; }
+.training-mode-picker { margin-bottom: 16px; }
+.training-mode-picker button strong { font-size: 15px; white-space: nowrap; }
+.training-mode-picker button span { font-size: 12px; }
+.training-panel h2 { font-size: 22px; }
+.training-stat strong { font-family: var(--font-print); }
+.learning-path-hero h2 { font-size: 26px; }
+.learning-path-hero > div:first-child > p:last-child { font-size: 15px; }
+.collection-heading h2 { font-size: 26px; }
+.collection-heading p { font-size: 15px; }
+.library-selection:has(input:disabled:first-child), .library-selection:has(> label > input:disabled) { display: none; }
+.library-footer { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); display: flex; gap: 16px; flex-wrap: wrap; }
+.empty-state { padding: 28px 20px; }
+.empty-state .button { margin-top: 12px; }
+
+/* Pens: the chosen tool reads as chosen in both themes. */
+.sn-pens__pick[aria-pressed='true'] { background: var(--action-soft); box-shadow: inset 0 0 0 1.5px var(--action); color: var(--action-text); }
+.sn-pens__pick--named[aria-pressed='true'] .sn-pens__name { color: var(--action-text); font-weight: 700; }
+
+/* Dark theme: cards lift off the slate; no paper grid on a chalkboard. */
+:root[data-theme="dark"] .app-shell, :root:not([data-theme="light"]) .app-shell { }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .app-shell { background-image: radial-gradient(120% 80% at 70% 0%, #ffffff08, transparent 60%); background-size: auto; } }
+:root[data-theme="dark"] .app-shell { background-image: radial-gradient(120% 80% at 70% 0%, #ffffff08, transparent 60%); background-size: auto; }
+:root[data-theme="light"] .app-shell { background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 26px 26px; }
+
+/* Phones: five tabs, the three study pages behind More, nothing hides under the bar. */
+@media (max-width: 520px) {
+  .phone-only { display: inline-grid; }
+  .nav-item[data-phone="more"] { display: none; }
+  .nav-more { display: flex; }
+  .navigation { height: calc(62px + env(safe-area-inset-bottom)); padding: 0 4px env(safe-area-inset-bottom); }
+  .navigation nav { gap: 0; }
+  .nav-item { font-size: 11px; font-weight: 600; gap: 3px; padding: 8px 2px 6px; white-space: nowrap; border-radius: 10px; min-height: 0; margin: 6px 2px; }
+  .nav-item.active { background: var(--action-soft); }
+  .nav-asset, .nav-item svg, .nav-asset-svg { width: 24px; height: 24px; }
+  .app-shell { padding-bottom: calc(70px + env(safe-area-inset-bottom)); }
+  .main { padding: 14px 12px 12px; }
+  .page-header { margin-bottom: 10px; }
+  .page-header h1 { font-size: 24px; }
+  .more-sheet { display: grid; gap: 4px; }
+  .more-sheet .nav-item { flex-direction: row; justify-content: flex-start; font-size: 16px; padding: 14px 12px; margin: 0; gap: 12px; }
+  .more-sheet .tiny-note { margin-top: 10px; }
+  .learning-path-hero > div:first-child > h2, .learning-path-hero > div:first-child > p:last-child { display: none; }
+  .collection-heading p, .training-lede { display: none; }
+  .training-mode-picker { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .welcome-secondary .button { font-size: 13px; }
+}
+@media (min-width: 521px) and (max-width: 800px) { .nav-more { display: none; } }
+/* Phones: the one action a first visit needs sits right under the board, not below the fold. */
+.phone-cta { display: none; }
+@media (max-width: 800px) { .phone-cta { display: block; margin: 10px 0 2px; } .phone-cta .start-button { width: 100%; min-height: 50px; font-size: 18px; } }
+@media (min-width: 1101px) { .training-layout { grid-template-columns: minmax(0, calc(100dvh - 300px)) minmax(330px, 1fr); } }
+.training-stat strong { font-size: 34px; }
+.training-stat > div > span { font-size: 12px; }
+/* Pens: the chosen board mode is ink on paper (and chalk on slate), never paper on paper. */
+.sn-pens__modebtn[aria-checked='true'] { background: var(--ink); color: var(--page); }
+.sn-pens__modebtn[data-mode='draw'][aria-checked='true'] { background: var(--action); color: var(--on-action); }
+.sn-pens__hint { font-family: var(--font-ui); }
+@media (max-width: 520px) { .learning-path-hero > div:first-child > .eyebrow { display: none; } }
+/* Round 2: one action per screen, honest empty states, fewer type families. */
+.eyebrow, .nav-section, .control-label, .roster-caption, .content-category, .player-tag, .section-label, .moves-heading { font-family: var(--font-ui); font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.button, .start-button, .text-button { font-family: var(--font-ui); }
+.player-tag:empty { display: none; }
+:root[data-theme="dark"] { --muted: #b4bcb5; }
+/* Play: the Play button sits under the opponent's name, before the roster, on wide screens. */
+@media (min-width: 1100px) {
+  .bot-setup:not(.compact) { display: flex; flex-direction: column; }
+  .bot-setup:not(.compact) > .opponent-introduction { order: -3; }
+  .bot-setup:not(.compact) > .opponent-name { order: -2; }
+  .bot-setup:not(.compact) > .start-button { order: -1; margin: 0 0 18px; }
+}
+/* Bot roster: whole rows, never a card cut through its avatar. */
+.bot-card .bot-avatar { max-width: 56px; }
+.bot-cards { grid-auto-rows: max-content; }
+.bot-roster { max-height: 292px; padding-bottom: 6px; }
+/* Puzzles without a puzzle set: one card, no dead board, no red banner. */
+.training-empty { max-width: 520px; margin: 24px auto 48px; padding: 36px 32px; text-align: center; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; display: grid; justify-items: center; gap: 10px; }
+.training-empty .piece { height: 56px; opacity: .8; }
+.training-empty h2 { font-size: 26px; margin: 6px 0 0; letter-spacing: -.02em; }
+.training-empty p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.5; max-width: 420px; }
+.training-empty .button { margin-top: 10px; }
+.training-board-foot .text-button { white-space: nowrap; flex: none; }
+/* Pens: the hint only matters once a pen mode is chosen. */
+.sn-pens[data-mode='move'] .sn-pens__hint { display: none; }
+/* Board: a shadow, not a hard rule; the paper grid stops under the board. */
+[data-board-theme=book] .board, .board { box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow) 25%, transparent), 0 12px 28px -14px color-mix(in srgb, var(--shadow) 55%, transparent); }
+[data-board-theme=hatch] .board { box-shadow: 0 0 0 1px var(--board-rule); }
+/* Settings: a fade at the bottom says there is more to scroll. */
+.modal { padding-bottom: 0; }
+.modal::after { content: ''; display: block; position: sticky; bottom: 0; height: 28px; margin: -4px -25px 0; background: linear-gradient(transparent, var(--field)); pointer-events: none; }
+.setting-row select:disabled { opacity: .6; cursor: not-allowed; }
+/* Library: footer actions are buttons; a muted caption, not a disclaimer. */
+.library-footer { gap: 10px; }
+.collection-private { color: var(--muted); font-size: 12px; }
+/* Phone: the Play button stays on screen under the board. */
+@media (max-width: 800px) { .phone-cta { position: sticky; bottom: calc(68px + env(safe-area-inset-bottom)); z-index: 5; background: var(--page); padding: 8px 0; margin: 6px 0 0; } }
+/* Puzzles: the page header already says Practice; the second eyebrow was noise. */
+.training-heading .eyebrow { display: none; }
+.training-lede { font-family: var(--font-ui); color: var(--muted); font-size: 15px; margin: 0; }
+/* Round 3: serif for headings only, the same panel order on every width, a bigger iPad board. */
+body { font-family: var(--font-ui); }
+h1, h2, h3 { text-wrap: balance; }
+.coach-promise { font-size: 13px; line-height: 1.45; color: var(--muted); margin: 14px 0 0; }
+.panel-tabs:has(> button:nth-child(2):disabled) { display: none; }
+.bot-setup:not(.compact) { display: flex; flex-direction: column; }
+.bot-setup:not(.compact) > .opponent-introduction { order: -3; }
+.bot-setup:not(.compact) > .opponent-name { order: -2; }
+.bot-setup:not(.compact) > .start-button { order: -1; margin: 0 0 18px; }
+.bot-roster, .bot-setup .bot-roster { max-height: none; overflow: visible; -webkit-mask-image: none; mask-image: none; padding-bottom: 0; }
+.setting-static small { color: var(--muted); font-size: 12px; }
+.path-progress { height: 6px; border-radius: 3px; background: var(--raised-2, var(--line)); overflow: hidden; margin: 8px 0 6px; min-width: 180px; }
+.path-progress > i { display: block; height: 100%; min-width: 6px; background: var(--action); border-radius: 3px; }
+.learning-path-total > span:first-child { font-size: 15px; font-weight: 650; color: var(--ink); }
+.library-empty { max-width: 560px; margin: 24px auto; text-align: center; }
+.library-empty-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 16px; }
+.opponent-chip { display: none; }
+@media (min-width: 801px) and (max-width: 1099px) {
+  .workspace { grid-template-columns: minmax(0, 1fr); max-width: 760px; }
+  .page-header, .workspace-footer { max-width: 760px; margin-left: auto; margin-right: auto; }
+  .board-column { position: static; max-width: min(100%, calc(100dvh - 330px)); }
+}
+@media (max-width: 800px) {
+  .board-column:has(.phone-cta) .own-player { display: none; }
+  .phone-cta { display: grid; gap: 8px; }
+  .opponent-chip { display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 12px 6px 6px; min-height: 52px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); text-align: left; color: var(--ink); }
+  .opponent-chip .bot-avatar { width: 40px; height: 40px; flex: none; border-radius: 8px; }
+  .opponent-chip > span:nth-child(2) { display: grid; gap: 1px; flex: 1; min-width: 0; }
+  .opponent-chip strong { font-size: 15px; }
+  .opponent-chip small { font-size: 12px; color: var(--muted); }
+  .opponent-chip > span:last-child { color: var(--muted); }
+  .main { padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 520px) {
+  .nav-item.active { margin: 7px 6px; border-radius: 12px; }
+  .navigation { height: calc(58px + env(safe-area-inset-bottom)); }
+  .app-shell { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
+}
+:root[data-theme="dark"] { --sq-light: #b9c4b7; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --sq-light: #b9c4b7; } }
+@media (max-width: 800px) { .phone-cta { position: static; padding: 0; margin: 12px 0 0; background: none; } }
+@media (min-width: 801px) and (max-width: 1099px) { .board-column { max-width: min(100%, calc(100dvh - 520px)); } }
+.library-page:has(.library-empty) { min-height: 0; }
+@media (max-width: 800px) { .board-column:has(.phone-cta) > .player-row:not(.own-player) { display: none; } }
+/* The setup column never squeezes its parts; the panel scrolls instead. */
+.bot-setup:not(.compact) > *, .bot-roster > * { flex-shrink: 0; }
+/* Desktop: the panel grows with the open bot group; Play stays at its top, so nothing is clipped. */
+@media (min-width: 1100px) {
+  .bot-welcome { height: auto; min-height: 0; }
+  .bot-setup:not(.compact) .bot-roster { flex: none; overflow: visible; }
+}
+/* Round 4: a clearer paper board, a steady phone nav, toggles that read as on, one knight. */
+:root { --sq-light: #f3eddf; --sq-dark: #9eb0d3; }
+.toggle.on span { background: #fff; }
+.training-empty .piece { filter: none; }
+.path-progress > i { min-width: 0; }
+.main { display: flex; flex-direction: column; min-height: 100dvh; }
+.main > .workspace-footer { margin-top: auto; }
+@media (max-width: 520px) {
+  .navigation nav { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .nav-item { min-width: 0; margin: 6px 2px; }
+  .nav-item.active { margin: 6px 2px; }
+}
+@media (max-width: 800px) {
+  .phone-cta { margin-bottom: 28px; }
+  .course-header { flex-wrap: wrap; }
+  .course-header > div { flex: 1 1 0; min-width: 0; }
+  .course-count { flex-basis: 100%; margin-left: 54px; }
+}
+.main > * { width: 100%; }
+.main > section, .main > .workspace { margin-top: 0; margin-bottom: 0; }
+/* Round 5 */
+:root { --sq-light: #efe6d3; }
+.board { box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 22%, transparent), 0 10px 26px -14px color-mix(in srgb, var(--shadow) 55%, transparent); }
+.settings-body { padding-bottom: 32px; }
+.toggle.on span { background: #fff; box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--ink) 55%, transparent); }
+@media (max-width: 520px) { .library-empty-actions { flex-direction: column; align-items: stretch; } .library-empty-actions .button { min-height: 48px; } }
+/* Chalkboard: a deeper dark square with light coordinates on it, so both square colours read. */
+:root { --sq-dark-ink: var(--sq-ink); }
+:root[data-theme="dark"] { --sq-light: #bac5b4; --sq-dark: #58725f; --sq-dark-ink: #f1f4ee; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --sq-light: #bac5b4; --sq-dark: #58725f; --sq-dark-ink: #f1f4ee; } }
+.square.dark { color: var(--sq-dark-ink); }
+.rank, .file { font-size: clamp(10px, 1vw, 13px); font-weight: 700; }
+.bot-group:has(.bot-card.selected) { order: 0; }
+:root[data-theme="dark"] .toggle.on { background: #3d6fb8; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .toggle.on { background: #3d6fb8; } }
+.opponent-tabs button.active { box-shadow: inset 0 0 0 1.5px var(--action-line); }
+@media (min-width: 801px) and (max-width: 1099px) { .board-column { max-width: min(100%, max(480px, calc(100dvh - 600px))); } }
+@media (min-width: 801px) and (max-width: 1199px) {
+  .navigation .nav-item { flex-direction: column; gap: 3px; padding: 8px 2px; }
+  .navigation .nav-item > span:not(.nav-asset):not(.nav-dot) { display: block; font-size: 10.5px; line-height: 1.1; text-align: center; }
+}
+[data-board-theme=book] .square.dark.last-move .rank, [data-board-theme=book] .square.dark.last-move .file, [data-board-theme=book] .square.dark.selected .rank, [data-board-theme=book] .square.dark.selected .file { color: var(--sq-ink); }
