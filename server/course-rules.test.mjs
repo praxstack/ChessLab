@@ -197,6 +197,8 @@ test('review fixes: titles and authors survive import, From Position studies imp
   const imported = courseFromPgn(study, {source: {kind: 'lichess-study', url: 'https://lichess.org/study/AbCdEf12'}});
   assert.equal(imported.source.author, 'https://lichess.org/@/coach', 'the Annotator header fills an empty author');
   assert.equal(courseFromPgn(study, {source: {kind: 'pgn', author: 'Me'}}).source.author, 'Me', 'a given author wins');
+  assert.equal(courseFromPgn(courseToPgn(imported), {source: {kind: 'pgn'}}).source.author, 'https://lichess.org/@/coach', 'the author survives export and re-import');
+  assert.match(courseFromPgn(study, {}, {now: 0}).id, /-0$/, 'the default id uses the injected clock');
   assert.throws(() => courseFromPgn('[Variant "Atomic"]\n\n1. e4 *'), /Only Standard chess/);
   assert.equal(lichessStudyExportUrl('https://lichess.org/study/AbCdEf12EXTRA'), null, 'a longer id is not a study link');
   assert.equal(lichessStudyExportUrl('https://lichess.org/study/AbCdEf12?x=1'), 'https://lichess.org/api/study/AbCdEf12.pgn');

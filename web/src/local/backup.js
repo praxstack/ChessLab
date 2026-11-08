@@ -30,7 +30,7 @@ function parseBackup(text) {
 // Checks a backup file without changing anything, so the app can describe it before replacing.
 export function inspectBackup(text) {
   const {data, collections} = parseBackup(text);
-  return {games: collections.games.length, exportedAt: typeof data.exportedAt === 'string' ? data.exportedAt : null, hasSettings: plain(data.settings)};
+  return {games: collections.games.length, courses: collections.courses?.length ?? 0, exportedAt: typeof data.exportedAt === 'string' ? data.exportedAt : null, hasSettings: plain(data.settings)};
 }
 
 export async function hasSavedData(store) {
