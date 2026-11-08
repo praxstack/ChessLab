@@ -210,3 +210,15 @@ test('review fixes: titles and authors survive import, From Position studies imp
   assert.throws(() => validateCourse(broken), /Line "[^"]+": Illegal move 3/);
 });
 
+
+test('starter courses are valid and every line can be drilled to the end', async () => {
+  const {STARTER_COURSES} = await import('../shared/starter-courses.js');
+  for (const input of STARTER_COURSES) {
+    const course = validateCourse(input);
+    for (const line of courseLines(course)) {
+      let session = createDrill({id: 'd', course, line, now: 0});
+      while (session.state === 'active') session = playDrillMove(session, line, line.moves[session.ply], 0).session;
+      assert.equal(session.result, 'pass', `${course.id}/${line.id} plays through cleanly`);
+    }
+  }
+});
