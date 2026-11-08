@@ -16,7 +16,7 @@ export default function Settings({settings,tab,onTab,onChange,engines,local=fals
  return <><div className="settings-tabs" role="tablist" aria-label="Settings sections">{['board','review','engine',...(browserBuild?['coach']:[])].map(id=><button type="button" role="tab" aria-selected={tab===id} key={id} className={tab===id?'active':''} onClick={()=>onTab(id)}>{id==='review'?'Interface':id==='board'?'Appearance':id}</button>)}</div>
  <div className="settings-body">{tab==='coach'&&browserBuild?<CoachSettings onChange={onCoachChange}/>:tab==='board'?<>
   <h3>Theme</h3>
-  {select('theme','Theme',colorThemes)}
+  {select('theme','Light or dark',colorThemes)}
   <h3>Board</h3>
   {select('boardTheme','Board theme',boardThemes)}
   {select('orientation','Orientation',[['auto','Your playing color'],['w','White at bottom'],['b','Black at bottom']])}
