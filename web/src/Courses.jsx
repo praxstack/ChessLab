@@ -26,7 +26,7 @@ export default function Courses({request,settings}){
  if(course)return <CourseDetail data={course} busy={busy} error={error}
    onBack={async()=>{setCourse(null);await refresh();}}
    onStart={items=>setSession({items,index:0,stats:{done:0,perfect:0,missed:[]}})}
-   onReview={async()=>{const data=await call(`/api/courses/${course.course.id}/review`);if(data){if(!data.queue.length){setError('Nothing is due. Shuffle the course or come back later.');return;}setSession({items:data.queue.map(card=>({kind:'line',id:card.lineId})),index:0,stats:{done:0,perfect:0,missed:[]}});}}}
+   onReview={async()=>{const data=await call(`/api/courses/${course.course.id}/review?limit=${Math.min(200,Math.max(1,course.schedule.due))}`);if(data){if(!data.queue.length){setError('Nothing is due. Shuffle the course or come back later.');return;}setSession({items:data.queue.map(card=>({kind:'line',id:card.lineId})),index:0,stats:{done:0,perfect:0,missed:[]}});}}}
    onShuffle={async chapterId=>{const data=await call(`/api/courses/${course.course.id}/shuffle`,chapterId?{chapterId}:{});if(data)setSession({items:data.items,index:0,stats:{done:0,perfect:0,missed:[]}});}}
    onMode={async mode=>{if(await call(`/api/courses/${course.course.id}/mode`,{mode}))await open(course.course.id);}}
    onExport={async()=>{const data=await call(`/api/courses/${course.course.id}/pgn`);if(!data)return;const url=URL.createObjectURL(new Blob([data.pgn],{type:'application/x-chess-pgn'}));const a=document.createElement('a');a.href=url;a.download=`${course.course.id}.pgn`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}}
@@ -40,7 +40,7 @@ export default function Courses({request,settings}){
   {adding==='pgn'&&<ImportPgn busy={busy} onImport={async payload=>added(await call('/api/courses/import',payload))}/>}
   {adding==='lichess'&&<ImportLichess busy={busy} onImport={async payload=>added(await call('/api/courses/lichess',payload))}/>}
   <p className="section-label" role="status">{list?plural(list.courses.length,'course'):'Loading…'}</p>
-  <div className="courses-grid">{(list?.courses||[]).map(c=><button key={c.id} className="endgame-card course-card" onClick={()=>open(c.id)} aria-label={`Open ${c.title}`}>
+  <div className="courses-grid">{(list?.courses||[]).map(c=><button key={c.id} className="endgame-card course-card" onClick={()=>open(c.id)}>
    <span className="course-colour" aria-hidden="true">{c.colour==='b'?'♚':c.colour==='w'?'♔':'♔♚'}</span>
    <span><small>{SIDE[c.colour]} · {c.level} · {c.mode==='adaptive'?'adaptive schedule':'ladder schedule'}</small><strong>{c.title}</strong><small>{plural(c.lines,'line')} · {c.schedule.known} known · {c.schedule.learning} learning · {c.schedule.fresh} new</small></span>
    <span className={`course-due ${c.schedule.due?'':'quiet'}`}>{c.schedule.due?`${c.schedule.due} due`:'Up to date'}</span></button>)}
@@ -76,7 +76,7 @@ function CourseDetail({data,busy,error,onBack,onStart,onReview,onShuffle,onMode,
   <div className="opening-intro"><div><p className="eyebrow">{SIDE[course.colour]} · {course.level} · {course.source?.kind==='own'?'AskTheMove course':course.source?.author?`by ${course.source.author}`:'imported'}</p><h2>{course.title}</h2>{course.blurb&&<p>{course.blurb}</p>}</div><span className="opening-local-count">{schedule.due}<small>due now</small></span></div>
   {error&&<p className="form-error" role="alert">{error}</p>}
   <div className="course-progress" aria-label="Progress"><span style={{'--part':schedule.total?schedule.known/schedule.total:0}} className="known"/><span style={{'--part':schedule.total?schedule.learning/schedule.total:0}} className="learning"/></div>
-  <p className="course-progress-label">{schedule.known} known · {schedule.learning} learning · {schedule.fresh} new{schedule.nextDue&&!schedule.due?` · next review ${new Date(schedule.nextDue).toLocaleString([], {weekday:'short',hour:'numeric',minute:'2-digit'})}`:''}</p>
+  <p className="course-progress-label">{schedule.known} known · {schedule.learning} learning · {schedule.fresh} new{schedule.nextDue&&!schedule.due?` · next review ${new Date(schedule.nextDue).toLocaleString([], {weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}`:''}</p>
   <div className="courses-actions"><button className="button primary" disabled={busy} onClick={onReview}>Review due lines ({schedule.due})</button><button className="button secondary" disabled={busy} onClick={()=>onShuffle()}>Shuffle the whole course</button>
    <label className="course-mode">Schedule<select value={data.course.mode||'ladder'} disabled={busy} onChange={e=>onMode(e.target.value)}><option value="ladder">Ladder: 4 hours to 6 months</option><option value="adaptive">Adaptive: easy lines stretch out</option></select></label></div>
   {course.chapters.map(chapter=><article key={chapter.id} className="course-chapter"><header><h3>{chapter.title}</h3><button className="text-button" disabled={busy} onClick={()=>onShuffle(chapter.id)}>Shuffle this chapter</button></header>
@@ -91,7 +91,7 @@ function CourseDetail({data,busy,error,onBack,onStart,onReview,onShuffle,onMode,
 function Practice({request,settings,course,session,onExit}){
  const [index,setIndex]=useState(0),[stats,setStats]=useState({done:0,perfect:0,missed:[]});
  const item=session.items[index];
- function next(result){setStats(s=>({done:s.done+1,perfect:s.perfect+(result==='pass'?1:0),missed:result==='miss'?[...s.missed,item]:s.missed}));setIndex(i=>i+1);}
+ function next(result){setStats(s=>({done:s.done+1,perfect:s.perfect+(result==='pass'?1:0),missed:result==='pass'?s.missed:[...s.missed,item]}));setIndex(i=>i+1);}
  if(!item){const total=session.items.length,missed=stats.missed;
   return <section className="courses-page course-results" aria-label="Session results"><p className="eyebrow">SESSION DONE</p><h2>{stats.perfect===total?'Clean sweep.':missed.length===0?'All done.':stats.perfect?'Good work, a few to fix.':'Tough one. Again tomorrow.'}</h2>
    <div className="vision-metrics"><div><strong>{total}</strong><span>items</span></div><div><strong>{stats.perfect}</strong><span>perfect</span></div><div><strong>{missed.length}</strong><span>missed</span></div></div>
@@ -114,8 +114,8 @@ function DrillCard({request,settings,course,lineId,progress,onNext,onExit}){
   catch(e){setError(e.message);}finally{setBusy(false);}}
  async function hint(){if(!drill||busy)return;setBusy(true);try{const r=await request(`/api/courses/${id}/drills/${drill.id}/hint`,{});setDrill(r.drill);}catch(e){setError(e.message);}finally{setBusy(false);}}
  // A pawn reaching the last rank asks which piece to promote to; the book may want a knight.
- function attempt(from,to){const moving=board.get(from);if(moving?.type==='p'&&(to[1]==='8'||to[1]==='1')){setSelected(null);setPromotion({from,to});return;}play(from+to);}
- function choose(square){if(!drill||drill.state!=='active'||busy)return;const piece=board.get(square);
+ function attempt(from,to){if(!board.moves({square:from,verbose:true}).some(m=>m.to===to)){play(from+to);return;}const moving=board.get(from);if(moving?.type==='p'&&(to[1]==='8'||to[1]==='1')){setSelected(null);setPromotion({from,to});return;}play(from+to);}
+ function choose(square){if(!drill||drill.state!=='active'||busy||promotion)return;const piece=board.get(square);
   if(selected&&selected!==square&&board.moves({square:selected,verbose:true}).some(m=>m.to===square)){attempt(selected,square);return;}
   setSelected(piece&&piece.color===board.turn()?square:null);}
  const turnName=drill?(drill.toMove==='w'?'White':'Black'):'';

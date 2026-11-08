@@ -123,7 +123,7 @@ export function courseFromPgn(pgn, options = {}, {now} = {}) {
   const source = options.source ? {...options.source} : {kind: 'pgn'};
   if (!source.author && annotator) source.author = annotator.slice(0, LIMITS.title);
   return validateCourse({
-    id: options.id || `${slug(title)}-${Date.now().toString(36)}`, title, blurb: options.blurb || '',
+    id: options.id || `${slug(title)}-${(now ?? Date.now()).toString(36)}`, title, blurb: options.blurb || '',
     level: options.level || 'all', colour: options.side === 'w' ? 'w' : options.side === 'b' ? 'b' : 'both', stage: options.stage || 'opening',
     source, chapters,
   }, {createdAt: now ? new Date(now).toISOString() : undefined});
@@ -162,6 +162,7 @@ export function courseToPgn(course) {
   return course.chapters.map(chapter => chapter.lines.map(line => {
     const board = replay([], line.startFen);
     let out = `[Event "${course.title.replace(/"/g, "'")}"]\n[ChapterName "${chapter.title.replace(/"/g, "'")}"]\n[LineTitle "${(line.title || '').replace(/"/g, "'")}"]\n[Side "${line.side === 'w' ? 'White' : 'Black'}"]\n`;
+    if (course.source?.author) out += `[Annotator "${course.source.author.replace(/"/g, "'")}"]\n`;
     if (line.startFen) out += `[SetUp "1"]\n[FEN "${line.startFen}"]\n`;
     out += '\n';
     const head = comment(line.notes?.[0], line.marks?.[0]); if (head) out += head.trim() + ' ';

@@ -654,6 +654,8 @@ input, select, textarea { border-color: var(--line-strong); border-radius: 4px; 
   --sq-ink: #2d3a55;
   --last-move: #f0d64b8c;
   --control-w: 220px;
+  --hatch-light: #fefdf8; --hatch-line: #97a2b5; --hatch-dark: #e6ecf4; --hatch-ink: #3a4150; --hatch-ink-dark: #1a2420;
+  --knob-on: #fff;
 }
 :root[data-theme="dark"] { --sq-light: #d2d8ce; --sq-dark: #7a9084; --sq-ink: #1a2420; --surface: #243029; --raised: #2d3a33; --line: #3b4a43; --last-move: #e8d55a80; --select: #9fc4ea73; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --sq-light: #d2d8ce; --sq-dark: #7a9084; --sq-ink: #1a2420; --surface: #243029; --raised: #2d3a33; --line: #3b4a43; --last-move: #e8d55a80; --select: #9fc4ea73; } }
@@ -688,9 +690,9 @@ h1 { font-size: 28px; letter-spacing: -.3px; margin-top: 0; }
 
 /* The board: a solid two-tone diagram with a clean rule; coordinates small, upright and clear of the pieces. */
 .square.dark { background: var(--sq-dark); }
-[data-board-theme=hatch] .square.light { background: #fefdf8; }
-[data-board-theme=hatch] .square.dark { background: repeating-linear-gradient(-45deg, #97a2b5 0 1px, transparent 1px 4.5px), #e6ecf4; color: #3a4150; }
-:root[data-theme="dark"] [data-board-theme=hatch] .square.light, :root[data-theme="dark"] [data-board-theme=hatch] .square.dark { color: #1a2420; }
+[data-board-theme=hatch] .square.light { background: var(--hatch-light); }
+[data-board-theme=hatch] .square.dark { background: repeating-linear-gradient(-45deg, var(--hatch-line) 0 1px, transparent 1px 4.5px), var(--hatch-dark); color: var(--hatch-ink); }
+:root[data-theme="dark"] [data-board-theme=hatch] .square.light, :root[data-theme="dark"] [data-board-theme=hatch] .square.dark { color: var(--hatch-ink-dark); }
 .board { box-shadow: 0 0 0 1.5px var(--board-rule), 0 10px 24px -12px color-mix(in srgb, var(--shadow) 45%, transparent); }
 .rank, .file { font-family: var(--font-ui); font-style: normal; font-weight: 700; font-size: clamp(9px, .85vw, 11.5px); letter-spacing: 0; }
 .rank { left: 3px; top: 2px; }
@@ -757,7 +759,6 @@ h1 { font-size: 28px; letter-spacing: -.3px; margin-top: 0; }
 .sn-pens__pick--named[aria-pressed='true'] .sn-pens__name { color: var(--action-text); font-weight: 700; }
 
 /* Dark theme: cards lift off the slate; no paper grid on a chalkboard. */
-:root[data-theme="dark"] .app-shell, :root:not([data-theme="light"]) .app-shell { }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .app-shell { background-image: radial-gradient(120% 80% at 70% 0%, #ffffff08, transparent 60%); background-size: auto; } }
 :root[data-theme="dark"] .app-shell { background-image: radial-gradient(120% 80% at 70% 0%, #ffffff08, transparent 60%); background-size: auto; }
 :root[data-theme="light"] .app-shell { background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 26px 26px; }
@@ -889,7 +890,7 @@ h1, h2, h3 { text-wrap: balance; }
 }
 /* Round 4: a clearer paper board, a steady phone nav, toggles that read as on, one knight. */
 :root { --sq-light: #f3eddf; --sq-dark: #9eb0d3; }
-.toggle.on span { background: #fff; }
+.toggle.on span { background: var(--knob-on); }
 .training-empty .piece { filter: none; }
 .path-progress > i { min-width: 0; }
 .main { display: flex; flex-direction: column; min-height: 100dvh; }
@@ -911,7 +912,7 @@ h1, h2, h3 { text-wrap: balance; }
 :root { --sq-light: #efe6d3; }
 .board { box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 22%, transparent), 0 10px 26px -14px color-mix(in srgb, var(--shadow) 55%, transparent); }
 .settings-body { padding-bottom: 32px; }
-.toggle.on span { background: #fff; box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--ink) 55%, transparent); }
+.toggle.on span { background: var(--knob-on); box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--ink) 55%, transparent); }
 @media (max-width: 520px) { .library-empty-actions { flex-direction: column; align-items: stretch; } .library-empty-actions .button { min-height: 48px; } }
 /* Chalkboard: a deeper dark square with light coordinates on it, so both square colours read. */
 :root { --sq-dark-ink: var(--sq-ink); }
@@ -920,8 +921,9 @@ h1, h2, h3 { text-wrap: balance; }
 .square.dark { color: var(--sq-dark-ink); }
 .rank, .file { font-size: clamp(10px, 1vw, 13px); font-weight: 700; }
 .bot-group:has(.bot-card.selected) { order: 0; }
-:root[data-theme="dark"] .toggle.on { background: #3d6fb8; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .toggle.on { background: #3d6fb8; } }
+:root[data-theme="dark"] { --toggle-on: #3d6fb8; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --toggle-on: #3d6fb8; } }
+.toggle.on { background: var(--toggle-on, var(--action)); }
 .opponent-tabs button.active { box-shadow: inset 0 0 0 1.5px var(--action-line); }
 @media (min-width: 801px) and (max-width: 1099px) { .board-column { max-width: min(100%, max(480px, calc(100dvh - 600px))); } }
 @media (min-width: 801px) and (max-width: 1199px) {

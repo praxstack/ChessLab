@@ -4,7 +4,7 @@
 // The same id, category and style always produce the same SVG. --check fails when a committed
 // portrait differs or when any other file is in web/public/bots.
 import {createHash} from 'node:crypto';
-import {readFileSync, writeFileSync, existsSync, readdirSync, statSync, unlinkSync} from 'node:fs';
+import {readFileSync, writeFileSync, existsSync, readdirSync, statSync, unlinkSync, realpathSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -112,7 +112,7 @@ export function avatarSvg(profile) {
 
 export function avatarPath(profile) { return `web/public/bots/${profile.id}.svg`; }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+if (process.argv[1] && realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url))) {
   const profiles = JSON.parse(readFileSync(new URL('../shared/bot-profiles.json', import.meta.url), 'utf8'));
   const check = process.argv.includes('--check');
   const expected = new Set(profiles.map(profile => `${profile.id}.svg`));

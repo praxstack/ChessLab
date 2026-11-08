@@ -73,6 +73,7 @@ test('a backup with a malformed game is refused whole', async () => {
   }
   assert.deepEqual((await f.get('/api/games')).body.games.map(game => game.id), [kept.id]);
   assert.equal(inspectBackup(JSON.stringify(backupWith({games: [good]}))).games, 1);
+  assert.equal(inspectBackup(JSON.stringify(backupWith({games: [good]}))).courses, 0, 'the restore prompt can say how many courses it brings');
 });
 
 test('settings are left alone when the backup has none', async () => {
