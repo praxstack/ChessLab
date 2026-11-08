@@ -10,7 +10,11 @@ import {fail, respond} from '../context.js';
 // per course, saved on the course.
 export default function courseRoutes(ctx) {
   const {store, now, atomic, addProgress} = ctx;
-  const fetchText = ctx.fetchText || (async url => { const r = await globalThis.fetch(url); if (!r.ok) throw Object.assign(new Error(`Lichess answered ${r.status}.`), {status: 502}); return r.text(); });
+  const fetchText = ctx.fetchText || (async url => {
+    let r; try { r = await globalThis.fetch(url); } catch { fail(502, 'Lichess could not be reached. Check your connection and try again.'); }
+    if (!r.ok) fail(502, `Lichess answered ${r.status}.`);
+    return r.text();
+  });
 
   async function course(id) {
     const saved = typeof id === 'string' ? await store.get('courses', id) : null;
@@ -26,17 +30,22 @@ export default function courseRoutes(ctx) {
   async function quizProgress(courseId) {
     return (await store.list('progress', {index: 'kind', value: 'quiz'})).filter(row => row.itemId.startsWith(courseId + ':')).map(row => row.itemId.slice(courseId.length + 1)).sort();
   }
-  // Saves a validated course and a fresh card for every line it did not have before.
-  async function save(validated) {
+  const newCard = (courseId, lineId) => createCard({id: cardId(courseId, lineId), courseId, lineId, now: now()});
+  // Saves a new validated course with a fresh card for every line.
+  async function save(course) {
     return atomic(async () => {
-      const previous = await store.get('courses', validated.id);
-      if (previous && !validated.replace) fail(409, `A course with id "${validated.id}" already exists.`);
-      const {replace, ...clean} = validated;
-      await store.put('courses', clean);
-      const existing = new Set((await cards(clean.id)).map(card => card.lineId));
-      for (const line of courseLines(clean)) if (!existing.has(line.id)) await store.put('course_cards', createCard({id: cardId(clean.id, line.id), courseId: clean.id, lineId: line.id, now: now()}));
-      return clean;
+      if (await store.get('courses', course.id)) fail(409, `A course with id "${course.id}" already exists.`);
+      await store.put('courses', course);
+      for (const line of courseLines(course)) await store.put('course_cards', newCard(course.id, line.id));
+      return course;
     });
+  }
+  // Loads a drill of this course and its line, or answers 404.
+  async function openDrill(saved, drillId) {
+    const session = await store.get('drill_sessions', drillId);
+    if (!session || session.courseId !== saved.id) fail(404, 'This drill was not found.');
+    const line = findLine(saved, session.lineId); if (!line) fail(404, 'This line is no longer in the course.');
+    return {session, line};
   }
   async function listAll() {
     const saved = await store.list('courses'), at = now();
@@ -46,7 +55,7 @@ export default function courseRoutes(ctx) {
   }
 
   return [
-    ['GET', '/api/courses', async () => ({courses: await listAll(), due: (await listAll()).reduce((sum, c) => sum + c.schedule.due, 0)})],
+    ['GET', '/api/courses', async () => { const courses = await listAll(); return {courses, due: courses.reduce((sum, c) => sum + c.schedule.due, 0)}; }],
     ['POST', '/api/courses', async ({body}) => {
       const validated = validateCourse(body.course, {createdAt: new Date(now()).toISOString()});
       return respond(201, await withCards(await save(validated)));
@@ -88,8 +97,9 @@ export default function courseRoutes(ctx) {
       const saved = await course(params.id), at = now();
       const limit = query.limit === undefined ? 20 : Number(query.limit);
       if (!Number.isInteger(limit) || limit < 1 || limit > 200) fail(400, 'limit must be 1 to 200.');
-      const due = dueCards(await cards(saved.id), at, limit).map(card => ({...card, label: stepLabel(card), title: findLine(saved, card.lineId)?.title || ''}));
-      return {queue: due, schedule: scheduleSummary(await cards(saved.id), at)};
+      const all = await cards(saved.id);
+      const due = dueCards(all, at, limit).map(card => ({...card, label: stepLabel(card), title: findLine(saved, card.lineId)?.title || ''}));
+      return {queue: due, schedule: scheduleSummary(all, at)};
     }],
     // Shuffle: every line and quiz of the course (or one chapter) in a random order.
     ['POST', '/api/courses/:id/shuffle', async ({params, body}) => {
@@ -105,9 +115,11 @@ export default function courseRoutes(ctx) {
       const saved = await course(params.id), line = findLine(saved, body.lineId);
       if (!line) fail(404, 'This line was not found in the course.');
       const session = await atomic(async () => {
-        const open = (await store.list('drill_sessions', {index: 'state', value: 'active'})).find(d => d.lineId === line.id && d.courseId === saved.id);
+        const mine = (await store.list('drill_sessions', {index: 'courseId', value: saved.id})).filter(d => d.lineId === line.id);
+        const open = mine.find(d => d.state === 'active');
         if (open && !body.restart) return open;
-        if (open) await store.delete('drill_sessions', open.id);
+        // Only the drill in progress is worth keeping; finished ones already updated the card.
+        for (const old of mine) await store.delete('drill_sessions', old.id);
         const fresh = createDrill({id: randomUUID(), course: saved, line, now: now()});
         await store.put('drill_sessions', fresh);
         return fresh;
@@ -117,15 +129,13 @@ export default function courseRoutes(ctx) {
     ['POST', '/api/courses/:id/drills/:drillId/move', async ({params, body}) => {
       const saved = await course(params.id);
       return atomic(async () => {
-        const session = await store.get('drill_sessions', params.drillId);
-        if (!session || session.courseId !== saved.id) fail(404, 'This drill was not found.');
+        const {session, line} = await openDrill(saved, params.drillId);
         if (!Number.isInteger(body.revision) || body.revision !== session.revision) fail(409, 'This drill changed. Reload it before moving again.');
-        const line = findLine(saved, session.lineId); if (!line) fail(404, 'This line is no longer in the course.');
         const {session: next, correct, done, reply, expectedShown} = playDrillMove(session, line, body.move, now());
         await store.put('drill_sessions', next);
         let card = null;
         if (done) {
-          const previous = await store.get('course_cards', cardId(saved.id, line.id)) || createCard({id: cardId(saved.id, line.id), courseId: saved.id, lineId: line.id, now: now()});
+          const previous = await store.get('course_cards', cardId(saved.id, line.id)) || newCard(saved.id, line.id);
           card = review(previous, next.result, now(), saved.mode || 'ladder');
           await store.put('course_cards', card);
           if (next.result !== 'miss') await addProgress('line', `${saved.id}:${line.id}`);
@@ -136,9 +146,7 @@ export default function courseRoutes(ctx) {
     ['POST', '/api/courses/:id/drills/:drillId/hint', async ({params}) => {
       const saved = await course(params.id);
       return atomic(async () => {
-        const session = await store.get('drill_sessions', params.drillId);
-        if (!session || session.courseId !== saved.id) fail(404, 'This drill was not found.');
-        const line = findLine(saved, session.lineId); if (!line) fail(404, 'This line is no longer in the course.');
+        const {session, line} = await openDrill(saved, params.drillId);
         const next = askHint(session);
         await store.put('drill_sessions', next);
         return {drill: drillView(next, line)};

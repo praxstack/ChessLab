@@ -31,6 +31,8 @@ const clamp = (value, low, high) => Math.min(high, Math.max(low, value));
 const checkResult = result => { if (!RESULTS.includes(result)) fail(`A review result must be ${RESULTS.join(', ')}.`); };
 
 function ladderStep(card, result) {
+  // A line seen for the first time starts at the bottom rung (4 hours), as Chessable does.
+  if (card.reps === 0) return 0;
   if (result === 'pass') return Math.min(LADDER.length - 1, card.step + 1);
   if (result === 'hinted') return card.step;
   return card.missRun >= 1 ? 0 : Math.max(0, card.step - 1);
@@ -78,14 +80,23 @@ export function scheduleSummary(cards, now) {
   const summary = {total: cards.length, due: 0, fresh: 0, learning: 0, known: 0, nextDue: null};
   for (const card of cards) {
     if (isDue(card, now)) summary.due += 1;
-    if (card.reps === 0) summary.fresh += 1; else if (card.step < KNOWN_STEP) summary.learning += 1; else summary.known += 1;
+    if (card.reps === 0) summary.fresh += 1; else if (interval(card) < LADDER[KNOWN_STEP]) summary.learning += 1; else summary.known += 1;
     if (!isDue(card, now) && (summary.nextDue === null || card.due < summary.nextDue)) summary.nextDue = card.due;
   }
   return summary;
 }
 
-// What a learner reads on the card: the plain words for a step.
+// The gap the last review set, in either mode. Ladder and adaptive cards both read from it.
+const interval = card => card.due - (card.lastReviewed ?? card.due);
+
+// What a learner reads on the card: the plain words for the gap until the next review.
 export function stepLabel(card) {
   if (card.reps === 0) return 'new';
-  return ['4 hours', '1 day', '3 days', '1 week', '2 weeks', '1 month', '3 months', '6 months'][card.step];
+  const hours = Math.round(interval(card) / HOUR), days = Math.round(interval(card) / DAY);
+  const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
+  if (hours < 24) return plural(hours, 'hour');
+  if (days < 7) return plural(days, 'day');
+  if (days < 30) return plural(Math.round(days / 7), 'week');
+  if (days < 365) return plural(Math.round(days / 30), 'month');
+  return '1 year';
 }

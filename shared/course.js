@@ -47,8 +47,8 @@ export function validateLine(input, scope, counter) {
   if (!Array.isArray(input.moves) || !input.moves.length || input.moves.length > LIMITS.movesPerLine) fail(`A line needs 1 to ${LIMITS.movesPerLine} moves.`);
   counter.moves += input.moves.length;
   if (counter.moves > LIMITS.totalMoves) fail(`A course holds at most ${LIMITS.totalMoves} moves in total.`);
-  // replay throws with a 400 status on any illegal move or bad FEN; the message says which.
-  const board = replay(input.moves, line.startFen);
+  // replay throws with a 400 status on any illegal move or bad FEN; the message says which line.
+  let board; try { board = replay(input.moves, line.startFen); } catch (error) { fail(`Line "${line.id}": ${error.message}`); }
   line.moves = [...input.moves];
   line.notes = {}; line.marks = {};
   for (const [key, value] of Object.entries(input.notes || {})) {

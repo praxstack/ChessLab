@@ -46,8 +46,9 @@ test('the ladder climbs on a pass, holds on a hint and drops one step on a miss'
   let card = createCard({id: 'main', courseId: 'vienna-starter', now: t0});
   assert.equal(stepLabel(card), 'new');
   assert.ok(dueCards([card], t0).length, 'a new card is due at once');
-  card = review(card, 'pass', t0); assert.equal(card.step, 1); assert.equal(card.due, t0 + DAY); assert.equal(stepLabel(card), '1 day');
-  card = review(card, 'pass', card.due); assert.equal(card.step, 2); assert.equal(card.due - t0 - DAY, 3 * DAY);
+  card = review(card, 'pass', t0); assert.equal(card.step, 0, 'a first look lands on 4 hours'); assert.equal(card.due, t0 + 4 * HOUR); assert.equal(stepLabel(card), '4 hours');
+  card = review(card, 'pass', card.due); assert.equal(card.step, 1); assert.equal(stepLabel(card), '1 day');
+  card = review(card, 'pass', card.due); assert.equal(card.step, 2); assert.equal(card.due - card.lastReviewed, 3 * DAY); assert.equal(stepLabel(card), '3 days');
   card = review(card, 'hinted', card.due); assert.equal(card.step, 2, 'a hinted pass holds the step');
   card = review(card, 'pass', card.due); card = review(card, 'pass', card.due); assert.equal(card.step, 4);
   const beforeMiss = card.due;
@@ -64,6 +65,7 @@ test('the adaptive schedule stretches easy lines and keeps hard ones close', () 
   for (let i = 0; i < 4; i++) easy = review(easy, 'pass', easy.due, 'adaptive');
   for (let i = 0; i < 4; i++) hard = review(hard, i % 2 ? 'miss' : 'hinted', hard.due, 'adaptive');
   assert.ok(easy.stability > 20, `easy stability ${easy.stability} days`);
+  assert.match(stepLabel(easy), /month/, 'adaptive labels read the real gap, not the ladder step');
   assert.ok(hard.stability < 2, `hard stability ${hard.stability} days`);
   assert.ok(easy.difficulty < hard.difficulty);
   assert.ok(hard.due - hard.lastReviewed >= 4 * HOUR, 'never sooner than 4 hours');
@@ -187,3 +189,18 @@ test('Lichess study links map to the public PGN export', () => {
   assert.equal(lichessStudyLink('AbCdEf12'), 'https://lichess.org/study/AbCdEf12');
   assert.equal(lichessStudyLink('https://lichess.org/study/AbCdEf12/XyZ12345#3'), 'https://lichess.org/study/AbCdEf12/XyZ12345');
 });
+
+test('review fixes: titles and authors survive import, From Position studies import, lines name their errors', () => {
+  const two = validateCourse({...vienna(), title: 'My Repertoire'});
+  assert.equal(courseFromPgn(courseToPgn(two), {source: {kind: 'own'}}).title, 'My Repertoire', 'a multi-game export keeps its course title');
+  const study = '[Event "Study: Ch 1"]\n[Annotator "https://lichess.org/@/coach"]\n[Variant "From Position"]\n[FEN "8/8/8/8/8/4k3/8/R3K3 w - - 0 1"]\n\n1. Ra3+ Kd4 *';
+  const imported = courseFromPgn(study, {source: {kind: 'lichess-study', url: 'https://lichess.org/study/AbCdEf12'}});
+  assert.equal(imported.source.author, 'https://lichess.org/@/coach', 'the Annotator header fills an empty author');
+  assert.equal(courseFromPgn(study, {source: {kind: 'pgn', author: 'Me'}}).source.author, 'Me', 'a given author wins');
+  assert.throws(() => courseFromPgn('[Variant "Atomic"]\n\n1. e4 *'), /Only Standard chess/);
+  assert.equal(lichessStudyExportUrl('https://lichess.org/study/AbCdEf12EXTRA'), null, 'a longer id is not a study link');
+  assert.equal(lichessStudyExportUrl('https://lichess.org/study/AbCdEf12?x=1'), 'https://lichess.org/api/study/AbCdEf12.pgn');
+  const broken = vienna(); broken.chapters[0].lines[0].moves = ['e2e4', 'e7e5', 'e1e3'];
+  assert.throws(() => validateCourse(broken), /Line "[^"]+": Illegal move 3/);
+});
+

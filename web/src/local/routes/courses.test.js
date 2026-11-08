@@ -37,14 +37,14 @@ test('courses are saved with one card per line, listed, drilled, scheduled and d
   assert.equal(result.body.card.step, 0); assert.equal(result.body.card.lapses, 1); assert.equal(result.body.card.due, clock + 4 * HOUR);
   assert.equal((await f.post(`/api/courses/london/drills/${drill.id}/move`, {move: 'a2a3', revision: drill.revision})).status, 409, 'a finished drill refuses moves');
 
-  // A clean pass on the other line climbs to one day and counts as progress.
+  // A clean first pass on the other line lands on 4 hours and counts as progress.
   result = await f.post('/api/courses/london/drills/start', {lineId: 'l2'}); drill = result.body.drill;
   result = await f.post(`/api/courses/london/drills/${drill.id}/move`, {move: 'd2d4', revision: 0}); drill = result.body.drill;
   result = await f.post(`/api/courses/london/drills/${drill.id}/move`, {move: 'c1f4', revision: drill.revision});
-  assert.equal(result.body.drill.result, 'pass'); assert.equal(result.body.card.due, clock + DAY);
+  assert.equal(result.body.drill.result, 'pass'); assert.equal(result.body.card.due, clock + 4 * HOUR); assert.equal(result.body.card.label, '4 hours');
   let detail = await f.get('/api/courses/london'); assert.equal(detail.body.schedule.due, 0);
   clock += 5 * HOUR;
-  f.reload(); detail = await f.get('/api/courses/london'); assert.equal(detail.body.schedule.due, 1, 'the missed line is due again after 4 hours');
+  f.reload(); detail = await f.get('/api/courses/london'); assert.equal(detail.body.schedule.due, 2, 'both lines are due again after 4 hours');
 
   // Hints are their own route and the mode is a course setting.
   result = await f.post('/api/courses/london/drills/start', {lineId: 'l1', restart: true}); drill = result.body.drill;
@@ -87,3 +87,20 @@ test('PGN and Lichess study imports become courses, and the backup carries them'
   await f.store.importAll(backup);
   assert.equal((await f.get('/api/courses')).body.courses.length, 3);
 });
+
+test('review fixes: a Lichess outage answers 502, old drills are cleared, damaged courses never restore', async () => {
+  const f = fixture({fetchText: async () => { throw Object.assign(new Error('Lichess could not be reached.'), {status: 502}); }});
+  assert.equal((await f.post('/api/courses/lichess', {url: 'AbCdEf12'})).status, 502);
+  await f.post('/api/courses', {course: course()});
+  for (let i = 0; i < 3; i++) {
+    let {body: {drill}} = await f.post('/api/courses/london/drills/start', {lineId: 'l2', restart: true});
+    drill = (await f.post(`/api/courses/london/drills/${drill.id}/move`, {move: 'd2d4', revision: 0})).body.drill;
+    await f.post(`/api/courses/london/drills/${drill.id}/move`, {move: 'c1f4', revision: drill.revision});
+  }
+  await f.post('/api/courses/london/drills/start', {lineId: 'l2'});
+  assert.equal((await f.store.list('drill_sessions')).length, 1, 'finished drills do not pile up');
+  const backup = await f.store.exportAll();
+  backup.collections.courses[0].chapters = 'oops';
+  await assert.rejects(f.store.importAll(backup), /course london is damaged/);
+});
+

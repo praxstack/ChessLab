@@ -1,4 +1,5 @@
 import {replay} from '../../chess-state.js';
+import {validateCourse} from '../../../../shared/course.js';
 
 // Collections replace the server's SQLite tables one to one (design.md seam 4). users, sessions and
 // coach_daily are not needed: the browser holds one local profile and the coach keeps its own limits.
@@ -60,6 +61,11 @@ function checkGame(game) {
   catch { refuse(`The backup's game ${game.id} has moves that can't be played.`); }
 }
 
+// A course must pass the same checks as a new one, so one damaged course can't break the course list.
+function checkCourse(course) {
+  try { validateCourse(course); } catch (error) { refuse(`The backup's course ${course.id} is damaged: ${error.message}`); }
+}
+
 // Validates a backup before anything is replaced, so a bad file leaves the current data untouched.
 // Every collection this app knows must be present as a list, even an empty one: a file that leaves
 // one out (for example "collections": {}) is damaged or hand-made, and restoring it would wipe that
@@ -78,6 +84,7 @@ export function readBackup(json) {
       if (!plain(value)) refuse(`The backup's ${name} list is damaged.`);
       try { keyOf(name, value); } catch (error) { refuse(error.message); }
       if (name === 'games') checkGame(value);
+      if (name === 'courses') checkCourse(value);
     }
     result[name] = values;
   }

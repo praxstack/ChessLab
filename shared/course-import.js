@@ -1,7 +1,7 @@
 import {parse} from 'chess.js/src/pgn.js';
 import {replay} from './replay.js';
 import {readMarkComment} from './board-marks.js';
-import {validateCourse} from './course.js';
+import {validateCourse, LIMITS} from './course.js';
 
 // Turns a PGN (one or many games) or a Lichess study export into a course. Each game becomes a
 // chapter; each leaf of its variation tree becomes a drillable line; comments become notes and
@@ -14,7 +14,7 @@ const uci = m => m.from + m.to + (m.promotion || '');
 const slug = text => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'course';
 
 export const MAX_PGN_BYTES = 2_000_000;
-export const MAX_LINES = 600;
+export const MAX_LINES = LIMITS.linesPerCourse;
 
 // Splits a multi-game PGN at a blank line followed by a tag line. Works one line at a time, so it
 // stays linear on long runs of blank lines. Tag lines are never scanned for comment delimiters (a
@@ -53,7 +53,7 @@ function linesOf(root, initialFen) {
     const deferred = [];
     const note = (n, ply) => {
       let parsed; try { parsed = readMarkComment(n.comment || ''); } catch (error) { fail(error.message); }
-      if (parsed.comment) noteMap[ply] = parsed.comment.slice(0, 1500);
+      if (parsed.comment) noteMap[ply] = parsed.comment.slice(0, LIMITS.note);
       if (parsed.marks.length) markMap[ply] = parsed.marks;
     };
     // The first node of a game or a variation carries the comment written before its first move.
@@ -78,17 +78,19 @@ export function courseFromPgn(pgn, options = {}, {now} = {}) {
   if (typeof pgn !== 'string' || pgn.length < 3 || byteLength(pgn) > MAX_PGN_BYTES) fail('Import a PGN between 3 characters and 2 MB.');
   const games = splitGames(pgn);
   if (!games.length) fail('This PGN has no games.');
-  const chapters = [];
-  let total = 0;
+  const chapters = [], events = new Set();
+  let total = 0, annotator = '';
   games.forEach((text, index) => {
     let parsed; try { parsed = parse(text); } catch { fail(`Game ${index + 1} of this PGN has an invalid position, move or variation.`); }
-    if (parsed.headers.Variant && parsed.headers.Variant !== 'Standard') fail('Only Standard chess PGNs can become a course.');
+    // Lichess labels a study chapter set up from a position "From Position"; it is still standard chess.
+    if (parsed.headers.Variant && !['Standard', 'From Position'].includes(parsed.headers.Variant)) fail('Only Standard chess PGNs can become a course.');
     const initialFen = parsed.headers.FEN || null;
-    const title = (parsed.headers.ChapterName || parsed.headers.Event || `Chapter ${index + 1}`).slice(0, 120);
+    const title = (parsed.headers.ChapterName || parsed.headers.Event || `Chapter ${index + 1}`).slice(0, LIMITS.title);
+    events.add(parsed.headers.Event || ''); if (!annotator && parsed.headers.Annotator) annotator = parsed.headers.Annotator;
     const lines = linesOf(parsed.root, initialFen).filter(line => line.moves.length);
     if (!lines.length) return;
     total += lines.length;
-    if (chapters.length >= 60 && !(parsed.headers.ChapterName && chapters.some(c => c.title === title))) fail('Import at most 60 chapters per course.');
+    if (chapters.length >= LIMITS.chapters && !(parsed.headers.ChapterName && chapters.some(c => c.title === title))) fail(`Import at most ${LIMITS.chapters} chapters per course.`);
     if (total > MAX_LINES) fail(`Import at most ${MAX_LINES} lines per course.`);
     const first = replay([], initialFen).turn();
     // An explicit choice wins, then the Side header our own export writes, then the first mover.
@@ -108,11 +110,17 @@ export function courseFromPgn(pgn, options = {}, {now} = {}) {
     }
   });
   if (!chapters.length) fail('This PGN has no moves to drill.');
-  const title = options.title || games.length === 1 && chapters[0].title !== 'Chapter 1' ? (options.title || chapters[0].title) : 'Imported course';
+  // An explicit title wins. A one-game PGN takes its chapter's name; a multi-game PGN whose games all
+  // share one Event (our own export writes the course title there) takes that Event.
+  const sharedEvent = events.size === 1 && ![...events][0].match(/^\??$/) ? [...events][0] : '';
+  const title = options.title || (games.length === 1 && chapters[0].title !== 'Chapter 1' ? chapters[0].title : sharedEvent || 'Imported course');
+  // A study's Annotator header names its author when the caller gave none.
+  const source = options.source ? {...options.source} : {kind: 'pgn'};
+  if (!source.author && annotator) source.author = annotator.slice(0, LIMITS.title);
   return validateCourse({
     id: options.id || `${slug(title)}-${Date.now().toString(36)}`, title, blurb: options.blurb || '',
     level: options.level || 'all', colour: options.side === 'w' ? 'w' : options.side === 'b' ? 'b' : 'both', stage: options.stage || 'opening',
-    source: options.source || {kind: 'pgn'}, chapters,
+    source, chapters,
   }, {createdAt: now ? new Date(now).toISOString() : undefined});
 }
 
@@ -121,7 +129,7 @@ export function courseFromPgn(pgn, options = {}, {now} = {}) {
 export function lichessStudyExportUrl(input) {
   if (typeof input !== 'string') return null;
   const text = input.trim();
-  let match = text.match(/^https:\/\/lichess\.org\/study\/([A-Za-z0-9]{8})(?:\/([A-Za-z0-9]{8}))?/);
+  let match = text.match(/^https:\/\/lichess\.org\/study\/([A-Za-z0-9]{8})(?:\/([A-Za-z0-9]{8}))?(?:[/?#]|$)/);
   if (match) return match[2] ? `https://lichess.org/api/study/${match[1]}/${match[2]}.pgn` : `https://lichess.org/api/study/${match[1]}.pgn`;
   match = text.match(/^([A-Za-z0-9]{8})$/);
   return match ? `https://lichess.org/api/study/${match[1]}.pgn` : null;
