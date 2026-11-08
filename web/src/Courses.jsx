@@ -25,9 +25,9 @@ export default function Courses({request,settings}){
  if(session&&course)return <Practice request={request} settings={settings} course={course} session={session} onExit={async()=>{setSession(null);await open(course.course.id);await refresh();}}/>;
  if(course)return <CourseDetail data={course} busy={busy} error={error}
    onBack={async()=>{setCourse(null);await refresh();}}
-   onStart={items=>setSession({items,index:0,stats:{done:0,perfect:0,missed:[]}})}
-   onReview={async()=>{const data=await call(`/api/courses/${course.course.id}/review?limit=${Math.min(200,Math.max(1,course.schedule.due))}`);if(data){if(!data.queue.length){setError('Nothing is due. Shuffle the course or come back later.');return;}setSession({items:data.queue.map(card=>({kind:'line',id:card.lineId})),index:0,stats:{done:0,perfect:0,missed:[]}});}}}
-   onShuffle={async chapterId=>{const data=await call(`/api/courses/${course.course.id}/shuffle`,chapterId?{chapterId}:{});if(data)setSession({items:data.items,index:0,stats:{done:0,perfect:0,missed:[]}});}}
+   onStart={items=>setSession({items,index:0,stats:{done:0,perfect:0,hinted:0,missed:0,redo:[]}})}
+   onReview={async()=>{const data=await call(`/api/courses/${course.course.id}/review?limit=200`);if(data){if(!data.queue.length){setError('Nothing is due. Shuffle the course or come back later.');return;}setSession({items:data.queue.map(card=>({kind:'line',id:card.lineId})),index:0,stats:{done:0,perfect:0,hinted:0,missed:0,redo:[]}});}}}
+   onShuffle={async chapterId=>{const data=await call(`/api/courses/${course.course.id}/shuffle`,chapterId?{chapterId}:{});if(data)setSession({items:data.items,index:0,stats:{done:0,perfect:0,hinted:0,missed:0,redo:[]}});}}
    onMode={async mode=>{if(await call(`/api/courses/${course.course.id}/mode`,{mode}))await open(course.course.id);}}
    onExport={async()=>{const data=await call(`/api/courses/${course.course.id}/pgn`);if(!data)return;const url=URL.createObjectURL(new Blob([data.pgn],{type:'application/x-chess-pgn'}));const a=document.createElement('a');a.href=url;a.download=`${course.course.id}.pgn`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}}
    onDelete={async()=>{if(!window.confirm(`Delete "${course.course.title}" and its progress from this browser? This can't be undone.`))return;if(await call(`/api/courses/${course.course.id}/delete`,{})){setCourse(null);await refresh();}}}/>;
@@ -89,13 +89,14 @@ function CourseDetail({data,busy,error,onBack,onStart,onReview,onShuffle,onMode,
 
 // Runs a queue of lines and quizzes, one at a time, then shows the session result.
 function Practice({request,settings,course,session,onExit}){
- const [index,setIndex]=useState(0),[stats,setStats]=useState({done:0,perfect:0,missed:[]});
+ const [index,setIndex]=useState(0),[stats,setStats]=useState({done:0,perfect:0,hinted:0,missed:0,redo:[]});
  const item=session.items[index];
- function next(result){setStats(s=>({done:s.done+1,perfect:s.perfect+(result==='pass'?1:0),missed:result==='pass'?s.missed:[...s.missed,item]}));setIndex(i=>i+1);}
- if(!item){const total=session.items.length,missed=stats.missed;
-  return <section className="courses-page course-results" aria-label="Session results"><p className="eyebrow">SESSION DONE</p><h2>{stats.perfect===total?'Clean sweep.':missed.length===0?'All done.':stats.perfect?'Good work, a few to fix.':'Tough one. Again tomorrow.'}</h2>
-   <div className="vision-metrics"><div><strong>{total}</strong><span>items</span></div><div><strong>{stats.perfect}</strong><span>perfect</span></div><div><strong>{missed.length}</strong><span>missed</span></div></div>
-   <div className="courses-actions">{missed.length>0&&<button className="button primary" onClick={()=>{setStats({done:0,perfect:0,missed:[]});session.items=missed;setIndex(0);}}>Redo the {plural(missed.length,'miss')}</button>}<button className="button secondary" onClick={onExit}>Back to the course</button></div></section>;}
+ // Hinted and missed items are counted apart, and both go on the redo list.
+ function next(result){setStats(s=>({done:s.done+1,perfect:s.perfect+(result==='pass'?1:0),hinted:s.hinted+(result==='hinted'?1:0),missed:s.missed+(result==='miss'?1:0),redo:result==='pass'?s.redo:[...s.redo,item]}));setIndex(i=>i+1);}
+ if(!item){const total=session.items.length,redo=stats.redo;
+  return <section className="courses-page course-results" aria-label="Session results"><p className="eyebrow">SESSION DONE</p><h2>{stats.perfect===total?'Clean sweep.':redo.length===0?'All done.':stats.perfect?'Good work, a few to fix.':'Tough one. Again tomorrow.'}</h2>
+   <div className="vision-metrics"><div><strong>{total}</strong><span>items</span></div><div><strong>{stats.perfect}</strong><span>perfect</span></div>{stats.hinted>0&&<div><strong>{stats.hinted}</strong><span>hinted</span></div>}<div><strong>{stats.missed}</strong><span>missed</span></div></div>
+   <div className="courses-actions">{redo.length>0&&<button className="button primary" onClick={()=>{setStats({done:0,perfect:0,hinted:0,missed:0,redo:[]});session.items=redo;setIndex(0);}}>Redo the {redo.length} to fix</button>}<button className="button secondary" onClick={onExit}>Back to the course</button></div></section>;}
  const progress=`${index+1} of ${session.items.length}`;
  return item.kind==='quiz'
   ?<QuizCard key={`${index}-${item.id}`} request={request} settings={settings} course={course} quizId={item.id} progress={progress} onNext={next} onExit={onExit}/>

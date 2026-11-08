@@ -112,7 +112,10 @@ export function avatarSvg(profile) {
 
 export function avatarPath(profile) { return `web/public/bots/${profile.id}.svg`; }
 
-if (process.argv[1] && realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url))) {
+// Run as a script only when this file is the entry point. Paths are compared as real paths so a
+// symlinked folder (macOS /var -> /private/var) still matches; an argument that is not a file never does.
+const isEntry = () => { try { return realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url)); } catch { return false; } };
+if (process.argv[1] && isEntry()) {
   const profiles = JSON.parse(readFileSync(new URL('../shared/bot-profiles.json', import.meta.url), 'utf8'));
   const check = process.argv.includes('--check');
   const expected = new Set(profiles.map(profile => `${profile.id}.svg`));
