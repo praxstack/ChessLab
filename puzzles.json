@@ -286,6 +286,7 @@
 "2011-06-03":"8/7Q/2r1p3/2rkr3/2rrr2Q/7K/8/8 w KQkq - 0 1",
 "2011-06-07":"rnbr4/2q1kp1Q/p1P1p3/1P3p2/1PP4N/5BP1/5P1P/4R1K1 w - - 0 1",
 "2011-06-09":"7r/8/8/3b3p/7p/7p/2B4P/2k1K2R w Kk - 0 1",
+"2011-06-10":"8/R1Q4p/5pk1/6p1/3P1r2/1PN1qP1P/1PP3PK/4b3 b - - 0 1",
 "2011-06-14":"r2Nqb1r/pQ1bp1pp/1pn1p3/2kp4/P1p2B2/2P5/1PP2PPP/R3KB1R w - - 0 1",
 "2011-06-27":"3b2k1/p5p1/3q3p/2pn1p2/7P/P1B1RQ2/1P4P1/2K5 w - - 0 1",
 "2011-07-14":"k7/8/K5r1/PQ2B3/8/8/8/8 w - - 0 1",
@@ -814,6 +815,7 @@
 "2019-02-22":"8/7k/5K1p/6p1/6P1/7P/8/8 w - - 0 1",
 "2019-02-24":"6k1/pb1q1p1p/4pQp1/2B1P1N1/8/5PK1/2q3PP/8 w - - 0 1",
 "2019-03-17":"6k1/3Q4/3K4/3P2p1/p5Pp/P3r3/8/2q5 w - - 0 1",
+"2019-03-20":"r1r5/pbnp1k1p/3b1qpB/1ppP2Q1/2B5/2P5/P1P1RPPP/4R1K1 w q - 0 1",
 "2019-03-29":"5k2/rP6/n4N2/2P1n3/bP2K3/B7/8/8 w - - 0 1",
 "2019-04-04":"6qk/4KQ2/6P1/8/8/8/p7/8 w - - 0 1",
 "2019-04-10":"r4rk1/ppq2ppp/2n2b2/2P2b2/1PB5/2Q1Pp2/PB1N1P2/2KR3R w Kq - 0 1",
@@ -1654,6 +1656,7 @@
 "2011-06-03":"Filipp S. Bondarenko, Feenschach 1960",
 "2011-06-07":"Mate in 3",
 "2011-06-09":"White to Draw",
+"2011-06-10":"Black Draws",
 "2011-06-14":"Mate in 2",
 "2011-06-27":"Adding a Second Participant",
 "2011-07-14":"Down to a Clear Resolution",
@@ -2182,6 +2185,7 @@
 "2019-02-22":"Frank M. Teed,  1885",
 "2019-02-24":"Hasler-Kusano, Bern 1993",
 "2019-03-17":"Titenko-Murei, Moscow 1961",
+"2019-03-20":"Separation Anxiety",
 "2019-03-29":"Every Half Point Matters",
 "2019-04-04":"Sneaky Good",
 "2019-04-10":"Aiming Pieces in the Right Direction",
@@ -2821,6 +2825,10 @@
 "2026-11-18":{
 "id":"HofO6",
 "fen":"8/5n1k/8/1P3p2/3P1Np1/4PPbp/3BK2P/8 b - - 1 1"
+},
+"2026-11-19":{
+"id":"kxyRP",
+"fen":"8/8/2p1p3/pp1p1k1p/1P1P2pP/P1P1P1K1/6P1/8 b - - 0 1"
 }
 }
 }
