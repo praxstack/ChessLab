@@ -481,6 +481,7 @@
 "2014-05-10":"6rk/7p/Ppb3qb/4p3/8/2N1B1PP/2n2R1K/1RQ5 w - - 0 1",
 "2014-05-17":"4kbr1/1rp1n2p/p1q1P3/B4pp1/N3p3/4P3/PPQ2P2/2KR2R1 w - - 0 1",
 "2014-05-22":"6k1/p4p2/2Q3pp/3Br3/Pq6/4P1P1/7P/4R1K1 w - - 0 1",
+"2014-05-28":"b1q1r1k1/2pn1Nbp/nr1p2p1/4p3/3PBB2/1Q2P3/PP3PPP/R4RK1 w - - 0 1",
 "2014-06-08":"r3r3/pbq3kp/1pp2pp1/2n1p3/2P1P3/1PN1QN1P/P2R1PP1/3R2K1 w - - 0 1",
 "2014-06-09":"r5rk/pp3n1p/4b3/3q1pp1/3P4/PP1Q1N1P/1B5K/4RR2 w - - 0 1",
 "2014-06-12":"r1b1r1k1/p4pBp/1p1qpPpQ/2pp4/4PR2/2NPb3/PPP3KP/R7 w - - 0 1",
@@ -769,6 +770,7 @@
 "2018-04-14":"8/8/4p3/R2p1p2/2bP1P2/2k1K3/1pp5/2B5 w - - 0 1",
 "2018-04-20":"8/2k5/3r2p1/1p1PKp1p/1PbR1P1P/2N3P1/8/8 w - - 0 1",
 "2018-05-09":"3r4/p1kq2p1/2n2p2/1QP3p1/2Pp4/P5P1/5PBP/4R1K1 w - - 0 1",
+"2018-05-24":"5rk1/r1q2p1p/2b1pQ2/p1Pp1p2/1R6/3BP3/P4PPP/1R4K1 w - - 0 1",
 "2018-06-04":"r1q2n1k/1b2rBpp/1QpR1p2/4p3/p3P3/1P6/PB3PPP/3R2K1 w - - 0 1",
 "2018-06-13":"r3rn1k/1bqnb1pp/ppp2p2/2P2P2/2BPQ2N/P3PR2/1P4PP/R1B3K1 w - - 0 1",
 "2018-06-20":"2r5/pb3pk1/5qp1/2p5/2P1p3/1N1rP1P1/PQ3PK1/2R4R w - - 0 1",
@@ -1380,7 +1382,8 @@
 "2026-11-17":"7k/p2n4/1b3R1p/3pB2P/P2P2K1/5P2/R5P1/1q6 w - - 0 1",
 "2026-11-18":"4rr2/p1b2kpp/1pp2p2/3q1N2/1PnP4/2PQ2P1/1P3P1P/R3R1K1 w - - 0 1",
 "2026-11-19":"4r1k1/1pp1qp1p/p5p1/8/P1PP4/Nn1B4/1P3PPQ/3R1K1R b - - 0 20",
-"2026-11-20":"r1b1k2r/1p3ppp/p2Q1n2/q1pPp3/1n2B3/1P1N4/P1PB1PPP/R3K2R b Qkq - 0 1"
+"2026-11-20":"r1b1k2r/1p3ppp/p2Q1n2/q1pPp3/1n2B3/1P1N4/P1PB1PPP/R3K2R b Qkq - 0 1",
+"2026-11-21":"4r3/R1R5/1p3n2/1kb1p3/6p1/2P3Pr/PP2P2P/5K2 w - - 0 1"
 },
 "names":{
 "2007-05-13":"Just in Time...",
@@ -1863,6 +1866,7 @@
 "2014-05-10":"Wang - Green, U.S. Amateur West Championship 2011",
 "2014-05-17":"The Long Journey",
 "2014-05-22":"Inch By Inch",
+"2014-05-28":"The Old Trick",
 "2014-06-08":"No Place To Go",
 "2014-06-09":"Capablanca- Corzo; 11th Match Game, Havana 1901",
 "2014-06-12":"Mate in 4",
@@ -2151,6 +2155,7 @@
 "2018-04-14":"Evgeny Libek, 2007",
 "2018-04-20":"Finesse With The Knight",
 "2018-05-09":"Open Scope",
+"2018-05-24":"Hort-Portisch, Madrid 1973",
 "2018-06-04":"Mecking - Juarex, Sao 1972",
 "2018-06-13":"Papantoniou-Koutilin, Athens 1935",
 "2018-06-20":"Favorable Exchange",
@@ -2759,7 +2764,8 @@
 "2026-11-17":"Seeing Double \ud83d\ude35",
 "2026-11-18":"Tilted",
 "2026-11-19":"Decoy, Deflection, Oh My!",
-"2026-11-20":"That's Forking Deep \ud83e\udd2f"
+"2026-11-20":"That's Forking Deep \ud83e\udd2f",
+"2026-11-21":"Stay Calm, Weave On"
 },
 "lichess":{
 "2026-10-28":{
