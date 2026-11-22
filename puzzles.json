@@ -627,6 +627,7 @@
 "2016-06-10":"r1b1k2r/1p1nppbp/p1nq2p1/2ppN3/5P2/1P2P3/PBPPB1PP/RN1Q1RK1 w kq - 0 1",
 "2016-06-11":"8/p6b/8/P7/4kppp/KB6/5PPP/8 w - - 0 1",
 "2016-06-13":"r2k3r/3b4/p2Q1K1p/3N4/8/8/8/3R4 w - - 0 1",
+"2016-06-19":"r2qr3/2pbb1k1/p1p5/2P3p1/3Pp1p1/1Q2P1P1/PP1B1PK1/R6R w - - 0 1",
 "2016-06-27":"r1bqkbnr/pppnppp1/7p/6N1/3Pp3/8/PPP2PPP/RNBQKB1R w KQkq - 0 1",
 "2016-06-29":"r4bk1/p4p2/Bpbr2p1/n2Np3/1Q2P1q1/4B1P1/7P/3R1RK1 w - - 0 1",
 "2016-07-01":"2b1r1k1/r1q2ppp/p3pb2/8/8/B2B1Q2/P1P2PPP/3RR1K1 w - - 0 1",
@@ -1007,6 +1008,7 @@
 "2021-10-24":"5rk1/3R4/RP3r2/8/5p2/8/6K1/8 w - - 0 1",
 "2021-10-29":"2r2rk1/1pqb1pp1/p3p1P1/3Pn2P/8/bNN3Q1/1PP1B3/2KR3R b - - 0 1",
 "2021-11-01":"8/K5p1/2b5/8/8/8/3k2B1/4N3 b - - 0 1",
+"2021-11-04":"7r/p2R1ppp/kp2p3/8/PP6/4b3/1KP2pnP/3R4 w - - 0 25",
 "2021-11-14":"5K2/8/8/P3pkp1/p6p/4P2P/1nN5/8 w - - 0 1",
 "2021-11-16":"r1b1kb1r/ppp2ppp/2n1p3/6B1/3P2q1/3B1N2/PPP2PPP/R2QK2R w KQkq - 6 9",
 "2021-11-21":"r5k1/4r1bp/p5p1/qpnb2B1/2p5/P1P2N1P/1P1N1PP1/2RQ2K1 w - - 0 1",
@@ -2014,6 +2016,7 @@
 "2016-06-10":"Bishop Pair Power",
 "2016-06-11":"Endgame Finesse",
 "2016-06-13":"Jeff Green, 2012",
+"2016-06-19":"Infiltration Has Occurred",
 "2016-06-27":"Clutter Leads to Failure",
 "2016-06-29":"Danner - Schnabel Hradec Kralove 1992",
 "2016-07-01":"Unusual Placement",
@@ -2393,6 +2396,7 @@
 "2021-10-24":"Genrikh's Rooks",
 "2021-10-29":"Hanging Around",
 "2021-11-01":"Broken Spring",
+"2021-11-04":"Curtain Call",
 "2021-11-14":"Icing the Endgame with Rinck",
 "2021-11-16":"A Bird in the Hand",
 "2021-11-21":"Navigating the Jungle",
@@ -2871,6 +2875,10 @@
 "2026-11-21":{
 "id":"GjqO9",
 "fen":"5k2/8/5PPK/1p6/1P2p3/3b1P2/8/8 w - - 0 1"
+},
+"2026-11-22":{
+"id":"xrteQ",
+"fen":"8/p7/1p2R3/2pbNpk1/8/7P/r4PP1/6K1 w - - 1 1"
 }
 }
 }
