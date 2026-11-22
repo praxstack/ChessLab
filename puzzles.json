@@ -840,6 +840,7 @@
 "2019-05-11":"8/8/5p2/8/8/2K5/P5k1/8 w - - 0 1",
 "2019-05-13":"8/1p6/p3kn1r/4pp2/1PP5/6NP/P5K1/3R4 w - - 0 1",
 "2019-05-16":"r1bq1rk1/1p2ppbp/p5p1/3N4/1P1N2n1/P5P1/3RPPBP/3QK2R w K - 0 1",
+"2019-05-22":"8/5R2/4ppp1/3p1k1p/3P1P1P/r3PK2/3r1P2/5R2 w - - 0 1",
 "2019-05-27":"1R4nk/p1qN2rp/3b4/2p5/2P1Q3/P2B3P/5PP1/6K1 w - - 0 1",
 "2019-05-28":"3q2k1/p5pp/2r1p3/1bR1QPb1/3p4/7B/PP5P/4R1K1 b - - 0 1",
 "2019-06-01":"2r3k1/2r2ppp/8/8/p7/1p6/PP3RPP/1K3R2 b - - 0 1",
@@ -1159,6 +1160,7 @@
 "2023-12-06":"r1bq1rk1/pp3ppp/B4n2/b1p1p3/8/P1N2Q1P/1PPP1PP1/R1B1R1K1 b - - 0 1",
 "2023-12-08":"5rk1/r1q2p1p/p3pQ2/1bPp1p2/1R6/3BP3/P4PPP/1R4K1 w - - 0 30",
 "2023-12-12":"6k1/b4R2/6p1/pN1r4/P7/4P2P/1r4PK/3q1R2 w - - 0 1",
+"2023-12-13":"r2q1rk1/4bpp1/pn2pn2/1pp4p/4P3/1B1PB2P/PPP1N1P1/R2Q1RK1 b - - 0 1",
 "2023-12-26":"2k3r1/1p6/6p1/4Bp1p/1P3P2/1K1Rn1PB/n6P/r5NR b - - 0 1",
 "2024-01-03":"r3rb1k/1b4pp/q7/p1N4Q/PpP1P3/5PB1/6PP/R3R1K1 b - - 0 1",
 "2024-01-09":"1rb1r1k1/2qn1pbp/3p2p1/1p1P4/2p1PPP1/1P1BB2P/P1Q3K1/1R1NR3 b - - 0 1",
@@ -1389,7 +1391,8 @@
 "2026-11-18":"4rr2/p1b2kpp/1pp2p2/3q1N2/1PnP4/2PQ2P1/1P3P1P/R3R1K1 w - - 0 1",
 "2026-11-19":"4r1k1/1pp1qp1p/p5p1/8/P1PP4/Nn1B4/1P3PPQ/3R1K1R b - - 0 20",
 "2026-11-20":"r1b1k2r/1p3ppp/p2Q1n2/q1pPp3/1n2B3/1P1N4/P1PB1PPP/R3K2R b Qkq - 0 1",
-"2026-11-21":"4r3/R1R5/1p3n2/1kb1p3/6p1/2P3Pr/PP2P2P/5K2 w - - 0 1"
+"2026-11-21":"4r3/R1R5/1p3n2/1kb1p3/6p1/2P3Pr/PP2P2P/5K2 w - - 0 1",
+"2026-11-22":"1R6/4r1pk/2p3Rp/1b1p3P/3BP3/r4PP1/p1P4K/8 w - - 0 1"
 },
 "names":{
 "2007-05-13":"Just in Time...",
@@ -2231,6 +2234,7 @@
 "2019-05-11":"Vinje, British Chess Magazine 1938",
 "2019-05-13":"All For A Pawn",
 "2019-05-16":"Double Discovery",
+"2019-05-22":"One Move Threat",
 "2019-05-27":"Quiet Knight Playing Strong Role",
 "2019-05-28":"Taking Squares and Material",
 "2019-06-01":"Approaching The Corner",
@@ -2548,6 +2552,7 @@
 "2023-12-06":"Provocative Bishop, Loose Underpinning",
 "2023-12-08":"Looming Kingside Loose Ends",
 "2023-12-12":"The Great Chase",
+"2023-12-13":"Springing a Delicate Trap",
 "2023-12-26":"Horseplay",
 "2024-01-03":"Between a Fork and a Forcing Move",
 "2024-01-09":"Eluding the Pin's Shadow",
@@ -2777,7 +2782,8 @@
 "2026-11-18":"Tilted",
 "2026-11-19":"Decoy, Deflection, Oh My!",
 "2026-11-20":"That's Forking Deep \ud83e\udd2f",
-"2026-11-21":"Stay Calm, Weave On"
+"2026-11-21":"Stay Calm, Weave On",
+"2026-11-22":"Lock In!"
 },
 "lichess":{
 "2026-10-28":{
