@@ -215,6 +215,7 @@
 "2010-04-25":"2r4r/bpqbkp2/p3pp2/7p/P1n5/1NN3PP/1PPRQPB1/5R1K w - - 0 1",
 "2010-04-28":"r3r1k1/5ppp/2pR1q2/2P5/1p2B3/1Q4Pb/1P3P1P/4R1K1 b - - 0 1",
 "2010-05-07":"5k2/7p/6PP/8/B1pB4/8/3q2Pp/6bK w KQkq - 0 1",
+"2010-05-08":"1R6/5p2/4P1pb/2K4p/2pB1N1k/4P3/6PP/2q5 w KQkq - 0 1",
 "2010-05-09":"7k/2q4p/5ppP/3rp3/Q2p4/P5P1/5P2/5BK1 w - - 0 1",
 "2010-05-12":"2r5/3kb3/2rp2p1/1p2Bp2/1pq5/4Q3/5PP1/3RR1K1 w - - 0 1",
 "2010-05-23":"r3rk2/pp3ppQ/2n2q1p/3bN3/1b3B2/4P3/PPB1KPPP/R7 w - - 0 1",
@@ -1029,6 +1030,7 @@
 "2022-01-01":"2q2nr1/b4p1k/6p1/1Pr4p/1R2pP1B/1Q5P/4B1P1/1R5K b - - 0 1",
 "2022-01-03":"5rk1/1p5p/pb2b3/3R2p1/4p3/2r3P1/Pn2PPBP/4BRK1 w - - 0 25",
 "2022-01-06":"3r1bk1/ppq3pp/2p5/2P2Q1B/8/1P4P1/P6P/5RK1 w - - 2 24",
+"2022-01-08":"r1bqr1k1/pp1nbppp/2pp1n2/4p3/2B1P3/2PP1N2/PP1N1PPP/R1BQR1K1 w - - 1 9",
 "2022-01-24":"5bk1/2p2p1p/1rq1bnp1/Qp2p3/4P3/2P2N1P/PP3PP1/R2R1NK1 b - - 1 1",
 "2022-02-01":"8/8/2p5/pn1p1pp1/N2P1k1p/1PP2P1P/5KP1/8 w - - 0 46",
 "2022-02-13":"r3r1k1/3qbp2/p3b1pB/1p1pP3/2np4/2P3Q1/P1B3PP/R4RK1 w - - 0 22",
@@ -1393,7 +1395,8 @@
 "2026-11-19":"4r1k1/1pp1qp1p/p5p1/8/P1PP4/Nn1B4/1P3PPQ/3R1K1R b - - 0 20",
 "2026-11-20":"r1b1k2r/1p3ppp/p2Q1n2/q1pPp3/1n2B3/1P1N4/P1PB1PPP/R3K2R b Qkq - 0 1",
 "2026-11-21":"4r3/R1R5/1p3n2/1kb1p3/6p1/2P3Pr/PP2P2P/5K2 w - - 0 1",
-"2026-11-22":"1R6/4r1pk/2p3Rp/1b1p3P/3BP3/r4PP1/p1P4K/8 w - - 0 1"
+"2026-11-22":"1R6/4r1pk/2p3Rp/1b1p3P/3BP3/r4PP1/p1P4K/8 w - - 0 1",
+"2026-11-23":"7R/8/4k2b/7P/1P4P1/1KP5/4q3/8 w - - 0 1"
 },
 "names":{
 "2007-05-13":"Just in Time...",
@@ -1610,6 +1613,7 @@
 "2010-04-25":"Multi Themed Tactic",
 "2010-04-28":"Fatal Light Squares",
 "2010-05-07":"White to Draw",
+"2010-05-08":"Creative Power",
 "2010-05-09":"Thematic Weakness",
 "2010-05-12":"Obvious Target",
 "2010-05-23":"Basic Tactical Training",
@@ -2423,6 +2427,7 @@
 "2022-01-01":"Happy New Year!",
 "2022-01-03":"When a Grandmaster Blinks",
 "2022-01-06":"No-Go for Bogo",
+"2022-01-08":"Band on the Run",
 "2022-01-24":"Shrinking the Box",
 "2022-02-01":"Leaving So Soon?",
 "2022-02-13":"Averbakh Revisited",
@@ -2785,7 +2790,8 @@
 "2026-11-19":"Decoy, Deflection, Oh My!",
 "2026-11-20":"That's Forking Deep \ud83e\udd2f",
 "2026-11-21":"Stay Calm, Weave On",
-"2026-11-22":"Lock In!"
+"2026-11-22":"Lock In!",
+"2026-11-23":"Don't Settle for Less"
 },
 "lichess":{
 "2026-10-28":{
