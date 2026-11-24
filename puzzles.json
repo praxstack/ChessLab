@@ -111,6 +111,7 @@
 "2008-10-19":"r3r1k1/pp3ppp/5n2/2p1q3/Q7/P1PBPP2/6PP/R1B1R1K1 b - - 0 1",
 "2008-10-21":"5rk1/1p3qpp/8/pNrn1p2/P3p3/1Q6/2P2PPP/3R1RK1 w - - 0 1",
 "2008-10-25":"3kr2q/6Q1/8/8/8/4R3/8/K7 w - - 0 1",
+"2008-11-07":"1r3r2/2Q2q1k/7p/1b6/pp6/8/PP6/K5RR w - - 0 1",
 "2008-11-15":"4Q1b1/n3Pp2/1pR2n1K/1B1Ppk2/R7/B2P1pq1/2N5/r3r3 w - - 0 1",
 "2008-11-22":"8/4qp2/7b/7p/1RKB1N1k/4P3/6PP/8 w - - 0 1",
 "2008-11-28":"5rk1/ppq2ppp/2p5/4bN2/4P3/6Q1/PPP2PPP/3R2K1 w - - 0 1",
@@ -1398,7 +1399,8 @@
 "2026-11-20":"r1b1k2r/1p3ppp/p2Q1n2/q1pPp3/1n2B3/1P1N4/P1PB1PPP/R3K2R b Qkq - 0 1",
 "2026-11-21":"4r3/R1R5/1p3n2/1kb1p3/6p1/2P3Pr/PP2P2P/5K2 w - - 0 1",
 "2026-11-22":"1R6/4r1pk/2p3Rp/1b1p3P/3BP3/r4PP1/p1P4K/8 w - - 0 1",
-"2026-11-23":"7R/8/4k2b/7P/1P4P1/1KP5/4q3/8 w - - 0 1"
+"2026-11-23":"7R/8/4k2b/7P/1P4P1/1KP5/4q3/8 w - - 0 1",
+"2026-11-24":"8/5Rp1/3Bn2p/4N1k1/3p4/3P2P1/q7/7K w - - 0 43"
 },
 "names":{
 "2007-05-13":"Just in Time...",
@@ -1511,6 +1513,7 @@
 "2008-10-19":"Regain Material",
 "2008-10-21":"Target Practice",
 "2008-10-25":"Mate in 8",
+"2008-11-07":"Look Until You See It",
 "2008-11-15":"Mate in 4",
 "2008-11-22":"Spectacular Ending",
 "2008-11-28":"Capablanca Tactic",
@@ -2795,7 +2798,8 @@
 "2026-11-20":"That's Forking Deep \ud83e\udd2f",
 "2026-11-21":"Stay Calm, Weave On",
 "2026-11-22":"Lock In!",
-"2026-11-23":"Don't Settle for Less"
+"2026-11-23":"Don't Settle for Less",
+"2026-11-24":"Clincher"
 },
 "lichess":{
 "2026-10-28":{
