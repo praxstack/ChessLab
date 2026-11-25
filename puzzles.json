@@ -202,6 +202,7 @@
 "2010-02-11":"7n/3P4/p6R/1k4p1/2pK4/8/6r1/8 w - - 0 1",
 "2010-02-12":"8/8/8/2p2k2/3p4/1K1P4/3P2P1/b7 b - - 0 1",
 "2010-02-20":"5b2/5rQ1/6K1/4p3/2b1rBk1/4pR2/6P1/8 w - - 0 1",
+"2010-02-27":"6kn/5pN1/5PpK/8/8/B7/8/8 w KQkq - 0 1",
 "2010-03-05":"5k2/1R6/5pp1/8/3pP2q/pPbB1P2/P4P1r/1K4Q1 w - - 0 1",
 "2010-03-07":"8/8/5k2/5n2/6K1/8/6Q1/8 b - - 0 1",
 "2010-03-09":"2r4r/4k1p1/pp1Npp2/2n2P1p/1P4n1/Qq6/6PP/3R1RBK w - - 0 1",
@@ -630,6 +631,7 @@
 "2016-05-07":"8/8/1kp2n1P/1p6/3P2B1/K7/8/8 w - - 0 1",
 "2016-05-08":"5k2/R7/4PN2/8/8/8/8/4K3 w - - 0 1",
 "2016-06-01":"r6k/p4B1p/2p5/1p2q3/2p1n3/2n5/PB4PP/R3Q2K w - b6 0 1",
+"2016-06-03":"5r2/pp3k1p/q2b4/3Pp3/1Pnp2Q1/P2R3P/2P2PP1/1R4K1 w - - 0 1",
 "2016-06-10":"r1b1k2r/1p1nppbp/p1nq2p1/2ppN3/5P2/1P2P3/PBPPB1PP/RN1Q1RK1 w kq - 0 1",
 "2016-06-11":"8/p6b/8/P7/4kppp/KB6/5PPP/8 w - - 0 1",
 "2016-06-13":"r2k3r/3b4/p2Q1K1p/3N4/8/8/8/3R4 w - - 0 1",
@@ -1404,7 +1406,8 @@
 "2026-11-21":"4r3/R1R5/1p3n2/1kb1p3/6p1/2P3Pr/PP2P2P/5K2 w - - 0 1",
 "2026-11-22":"1R6/4r1pk/2p3Rp/1b1p3P/3BP3/r4PP1/p1P4K/8 w - - 0 1",
 "2026-11-23":"7R/8/4k2b/7P/1P4P1/1KP5/4q3/8 w - - 0 1",
-"2026-11-24":"8/5Rp1/3Bn2p/4N1k1/3p4/3P2P1/q7/7K w - - 0 43"
+"2026-11-24":"8/5Rp1/3Bn2p/4N1k1/3p4/3P2P1/q7/7K w - - 0 43",
+"2026-11-25":"q7/1Q2p3/r3k2p/7p/1P6/1K6/6R1/8 w - - 0 1"
 },
 "names":{
 "2007-05-13":"Just in Time...",
@@ -1608,6 +1611,7 @@
 "2010-02-11":"Endgame Flare",
 "2010-02-12":"Endgame Creativity",
 "2010-02-20":"E. Pogosjants, 1970",
+"2010-02-27":"Mate in 8",
 "2010-03-05":"Seeing Through",
 "2010-03-07":"Saved at the Last Minute",
 "2010-03-09":"Removing the Guard",
@@ -2036,6 +2040,7 @@
 "2016-05-07":"Endgame Technicians",
 "2016-05-08":"Linear Mating Pattern",
 "2016-06-01":"Defended or Not Defended?",
+"2016-06-03":"Forced Into The Corner",
 "2016-06-10":"Bishop Pair Power",
 "2016-06-11":"Endgame Finesse",
 "2016-06-13":"Jeff Green, 2012",
@@ -2807,7 +2812,8 @@
 "2026-11-21":"Stay Calm, Weave On",
 "2026-11-22":"Lock In!",
 "2026-11-23":"Don't Settle for Less",
-"2026-11-24":"Clincher"
+"2026-11-24":"Clincher",
+"2026-11-25":"Check Twice..."
 },
 "lichess":{
 "2026-10-28":{
