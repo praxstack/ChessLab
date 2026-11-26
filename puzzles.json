@@ -817,6 +817,7 @@
 "2018-10-30":"2r2nk1/1pp2q1p/p2p2pn/P2P1p2/1PRNrP2/6PB/5P1P/3Q1RK1 w - - 0 1",
 "2018-11-15":"5rk1/5ppp/6q1/4B3/r1B2Q2/4P3/2n2PPP/5RK1 w - - 0 1",
 "2018-11-17":"5rk1/p4pp1/P2p1n1p/1r1P1N2/4P1q1/2P1B3/2Q3PP/5RK1 w - - 0 1",
+"2018-11-21":"5rk1/r4ppp/p1R1p3/3nn1q1/8/1QN3PP/PP3PB1/4R1K1 w - - 0 1",
 "2018-12-04":"3r1rk1/pp1bn1pp/4pn2/q2p4/5P2/P1N2B2/1PPQ1BPP/3R1RK1 w - - 0 1",
 "2018-12-10":"R7/4q1pk/4p2r/1p1rNPQp/1bpP4/8/1P4P1/5RK1 w - - 0 1",
 "2018-12-13":"1k5r/1p2bppp/pN1pq3/4p3/2Pn4/4B3/P1P2PPP/1R3QK1 w - - 0 1",
@@ -1409,7 +1410,8 @@
 "2026-11-22":"1R6/4r1pk/2p3Rp/1b1p3P/3BP3/r4PP1/p1P4K/8 w - - 0 1",
 "2026-11-23":"7R/8/4k2b/7P/1P4P1/1KP5/4q3/8 w - - 0 1",
 "2026-11-24":"8/5Rp1/3Bn2p/4N1k1/3p4/3P2P1/q7/7K w - - 0 43",
-"2026-11-25":"q7/1Q2p3/r3k2p/7p/1P6/1K6/6R1/8 w - - 0 1"
+"2026-11-25":"q7/1Q2p3/r3k2p/7p/1P6/1K6/6R1/8 w - - 0 1",
+"2026-11-26":"3r4/pk3b1p/1ppbqPp1/4n1P1/1P2P3/3P1NB1/1PP4Q/1K1R1R2 b - - 0 27"
 },
 "names":{
 "2007-05-13":"Just in Time...",
@@ -2228,6 +2230,7 @@
 "2018-10-30":"Imaginary Protection",
 "2018-11-15":"Kamikaze Moves",
 "2018-11-17":"A.Shirov - V.Savon, 1991",
+"2018-11-21":"GM Wesley So - IM Bosboom, Corus, 2009",
 "2018-12-04":"Yermolinsky vs Shabalov, Tulsa, 2008",
 "2018-12-10":"Hanging Queens",
 "2018-12-13":"Not Easily Defendable",
@@ -2817,7 +2820,8 @@
 "2026-11-22":"Lock In!",
 "2026-11-23":"Don't Settle for Less",
 "2026-11-24":"Clincher",
-"2026-11-25":"Check Twice..."
+"2026-11-25":"Check Twice...",
+"2026-11-26":"Gobble, Gobble, Mate! \ud83e\udd83"
 },
 "lichess":{
 "2026-10-28":{
