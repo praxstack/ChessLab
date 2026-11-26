@@ -132,6 +132,7 @@
 "2009-01-28":"r1r4k/1p2BRpp/p7/b2Bp3/1P5q/4P3/6PP/3Q2K1 b - - 0 1",
 "2009-01-30":"1kb5/1p1p4/1P1K4/1B6/8/8/8/8 w KQkq - 0 1",
 "2009-01-31":"r4q1k/1p3n2/p1p3pp/7r/3P2QP/4B1R1/PP3P2/6RK w - - 0 1",
+"2009-02-03":"8/pk1R1p2/1n6/2Q5/2q5/4BKP1/2p2P1r/8 b - - 0 1",
 "2009-02-05":"2rr2k1/p3bppp/bpnqpn2/8/2PP4/5N2/PB1NQPPP/1BR1R1K1 w - - 0 1",
 "2009-02-15":"4r1k1/ppQ2pp1/3P3p/n7/1p2q3/1P4P1/P3PP1P/3R2K1 w - - 0 1",
 "2009-02-17":"r1b2rk1/1p4b1/p2p4/P2Pp3/1PN1P3/R2n2q1/5RB1/6QK w - - 0 1",
@@ -1311,6 +1312,7 @@
 "2025-12-04":"5qrk/pb5p/1p2pPp1/2rp2P1/3B3Q/P2n2N1/1P4PK/7R w - - 0 26",
 "2025-12-06":"2rr4/1b2R2N/6kp/4P1p1/pp1P4/q6P/B2Q1P2/6K1 w - - 0 31",
 "2025-12-11":"r5k1/1p3pp1/7p/bR6/Pn1Q3P/1P3P2/1BP2rq1/1K1R4 w - - 0 1",
+"2025-12-29":"8/N1p5/p4r2/2k3r1/3Rp3/P1N1P2P/KP3q2/8 w - - 0 1",
 "2026-01-27":"1R6/8/1p2kN1K/4PpP1/8/p7/6r1/2r5 w - - 1 49",
 "2026-01-28":"r1b1r1k1/ppp2pp1/2P1qn1p/b7/2PQ3P/P4P1N/1P1B1KP1/RN3BR1 b - - 0 1",
 "2026-01-30":"Q2RNk2/2b2ppB/4q3/1r2n3/2pB4/2P4P/5PP1/6K1 b - - 0 23",
@@ -1541,6 +1543,7 @@
 "2009-01-28":"Countering Threats With Threats",
 "2009-01-30":"Mate Practice",
 "2009-01-31":"Corus Tactic",
+"2009-02-03":"All is Not Lost",
 "2009-02-05":"Trading to Win",
 "2009-02-15":"Authoritative Advance",
 "2009-02-17":"Recovering Material",
@@ -2717,6 +2720,7 @@
 "2025-12-04":"Outta My Way!",
 "2025-12-06":"Reeling in the Catch",
 "2025-12-11":"Dropped Call",
+"2025-12-29":"Find Your Center of Attention",
 "2026-01-27":"All Together Now",
 "2026-01-28":"Score!",
 "2026-01-30":"Discovering Harmony",
@@ -2931,6 +2935,10 @@
 "2026-11-25":{
 "id":"bNUjA",
 "fen":"r1b2rk1/p5p1/2pq3p/n7/4P3/5p2/PPP1BPPP/R1BQK2R b KQ - 0 1"
+},
+"2026-11-26":{
+"id":"p8UOi",
+"fen":"3r1rk1/ppp1p2p/4b1p1/1PP2p2/4p3/q1b1P3/2QNBPPP/1R3RK1 w - - 1 1"
 }
 }
 }
