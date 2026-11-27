@@ -24,6 +24,7 @@
 "2007-08-04":"r2qk2r/1p1bbp2/1P2p3/p2pPp2/n2N1N2/3PB3/5QPP/R4RK1 w kq - 0 1",
 "2007-08-14":"2b2r2/1rq2k2/3p1BR1/p1pP1Pn1/PpP2pP1/1P3B2/8/4Q2K w - - 0 1",
 "2007-08-18":"2r2rk1/pbq2p2/1pp1p1p1/4R2p/2PP4/1P3Q1P/PB3PP1/3R2K1 w - - 0 1",
+"2007-08-21":"2rqk2r/pp2bR2/4p2p/4p2Q/3pN3/8/PPP3PP/6K1 w k - 0 1",
 "2007-08-24":"1nr3k1/p4pbp/1n1Rp1p1/2pb2N1/5B2/P5PB/1P3P1P/R5K1 w - - 0 1",
 "2007-09-06":"7k/3b4/1p5P/2p3K1/3pp1P1/1P2p3/P1P1B3/8 b - - 0 1",
 "2007-09-08":"1R2r1k1/6pp/p2Q1P2/1p1P4/6KP/P3q3/1P6/8 b - - 0 1",
@@ -541,6 +542,7 @@
 "2015-01-15":"2r1qrk1/1b2bp2/pp2p3/2npP1BQ/3N4/2P4P/PP3PP1/R5K1 w Q - 0 1",
 "2015-01-18":"k2r3r/p3Rppp/1p4q1/1P1b4/3Q1B2/6N1/PP3PPP/6K1 w - - 0 1",
 "2015-01-26":"rn2kb1r/pp3ppp/4p1qn/1p4B1/2B5/3P2QP/PPP2PP1/R3K2R w KQkq - 0 1",
+"2015-01-30":"6rk/3PbRp1/6Qp/8/3p4/q2P4/6KP/8 w - - 0 1",
 "2015-02-02":"r3rknQ/1p1R1pb1/p3pqBB/2p5/8/6P1/PPP2P1P/4R1K1 w q - 0 1",
 "2015-02-06":"7k/2p1q2p/3p2pP/8/4bQ2/1BP5/1P4P1/6K1 w - - 0 1",
 "2015-02-08":"1k1r4/3b1p2/QP1b3p/1p1p4/3P2pN/1R4P1/KPPq1PP1/4r2R w - - 0 1",
@@ -1438,6 +1440,7 @@
 "2007-08-04":"Eighteen moves :)",
 "2007-08-14":"Short, but Tough!",
 "2007-08-18":"No Hint - Best Moves",
+"2007-08-21":"Yes, But What Is The FIRST Move?",
 "2007-08-24":"Awkwardly Placed Pieces",
 "2007-09-06":"Endgame Beauty",
 "2007-09-08":"Long But Forced",
@@ -1955,6 +1958,7 @@
 "2015-01-15":"Mate in 5",
 "2015-01-18":"Mate in 3",
 "2015-01-26":"Richard Teichmann vs. NN, Berlin, 1914",
+"2015-01-30":"White Draws",
 "2015-02-02":"Onslaught",
 "2015-02-06":"Ivanovic-Popov, Yugoslavia 1973",
 "2015-02-08":"Mate in 3",
@@ -2945,6 +2949,10 @@
 "2026-11-26":{
 "id":"p8UOi",
 "fen":"3r1rk1/ppp1p2p/4b1p1/1PP2p2/4p3/q1b1P3/2QNBPPP/1R3RK1 w - - 1 1"
+},
+"2026-11-27":{
+"id":"3Ksou",
+"fen":"r5k1/p4ppp/1p2r1n1/3p2q1/P2P4/1Q2P2K/1B1NBP1P/2R3R1 b - - 1 1"
 }
 }
 }
