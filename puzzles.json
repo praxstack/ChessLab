@@ -1211,6 +1211,7 @@
 "2024-05-29":"1r2r2k/5p1p/ppbp1P1B/2n2P2/2P3Rp/1N6/Pb4RP/6K1 w - - 0 1",
 "2024-06-23":"2r1r1k1/1p3pb1/8/p2R3p/P3N1pq/1Q3P2/1P4PP/R5K1 w - - 0 26",
 "2024-06-27":"r1b1k2r/bpp2ppp/p2p4/8/P1B1P1nq/5N2/1P3PPP/RNBQR1K1 b kq - 0 12",
+"2024-06-30":"8/2R1Q1pk/3N1r1p/3P4/8/1q4P1/2R3KP/r7 b - - 0 1",
 "2024-07-03":"5r2/1pqbppkp/p4np1/4p3/6P1/1NP2P2/P1PQ4/2KR3R w - - 0 1",
 "2024-07-25":"6k1/6P1/5b1P/4p2K/8/5P2/8/8 w - - 0 1",
 "2024-08-01":"8/6P1/1k2p3/p2pP3/P1pKnP2/2P4p/1P6/8 b - - 0 1",
@@ -1414,7 +1415,8 @@
 "2026-11-23":"7R/8/4k2b/7P/1P4P1/1KP5/4q3/8 w - - 0 1",
 "2026-11-24":"8/5Rp1/3Bn2p/4N1k1/3p4/3P2P1/q7/7K w - - 0 43",
 "2026-11-25":"q7/1Q2p3/r3k2p/7p/1P6/1K6/6R1/8 w - - 0 1",
-"2026-11-26":"3r4/pk3b1p/1ppbqPp1/4n1P1/1P2P3/3P1NB1/1PP4Q/1K1R1R2 b - - 0 27"
+"2026-11-26":"3r4/pk3b1p/1ppbqPp1/4n1P1/1P2P3/3P1NB1/1PP4Q/1K1R1R2 b - - 0 27",
+"2026-11-27":"3r3k/1b5p/1p5B/p1b2p2/Pn3Np1/1Bq2pP1/2PrP3/4RK1R w - - 0 1"
 },
 "names":{
 "2007-05-13":"Just in Time...",
@@ -2624,6 +2626,7 @@
 "2024-05-29":"A Guided Checkmate Tour",
 "2024-06-23":"Trapped Between a Pattern & The Best Move",
 "2024-06-27":"A Royal Lullaby",
+"2024-06-30":"The Rocky Road to f1",
 "2024-07-03":"Which Battery Should You Charge?",
 "2024-07-25":"Winning the Race, Losing the Game",
 "2024-08-01":"About That Promotion...",
@@ -2827,7 +2830,8 @@
 "2026-11-23":"Don't Settle for Less",
 "2026-11-24":"Clincher",
 "2026-11-25":"Check Twice...",
-"2026-11-26":"Gobble, Gobble, Mate! \ud83e\udd83"
+"2026-11-26":"Gobble, Gobble, Mate! \ud83e\udd83",
+"2026-11-27":"Hop, Drop and Roll"
 },
 "lichess":{
 "2026-10-28":{
