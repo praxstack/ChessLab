@@ -837,6 +837,7 @@
 "2019-02-02":"8/8/7n/8/5Qn1/7K/4p1p1/7k w - - 0 1",
 "2019-02-10":"1k3r1r/ppp5/6p1/4B2p/1n5P/P3PQP1/1Pq5/R2R2K1 w - - 0 1",
 "2019-02-12":"r2b1r1k/pppq2pn/2npb1Q1/3N1N1p/2B1PP1P/8/PPP5/2K3RR w - - 0 1",
+"2019-02-14":"4r1k1/p1R3p1/1p5p/3ppp2/1P1r4/P2q1PP1/2R2PKP/2Q5 w - - 0 1",
 "2019-02-18":"3rr1k1/pp3ppb/4p1np/3p4/P1qP1bP1/2PN1P1P/1PB1RBK1/R3Q3 w - - 0 1",
 "2019-02-22":"8/7k/5K1p/6p1/6P1/7P/8/8 w - - 0 1",
 "2019-02-24":"6k1/pb1q1p1p/4pQp1/2B1P1N1/8/5PK1/2q3PP/8 w - - 0 1",
@@ -1099,6 +1100,7 @@
 "2022-09-02":"r1b2rk1/2qnbppp/p1npp3/8/1p1NPP2/2N1B1P1/PPP1Q1BP/3R1RK1 w - - 0 1",
 "2022-09-05":"Q3nk2/7r/P2N4/2pPpp2/2p1P3/3n1P2/1P6/K7 b - - 0 1",
 "2022-09-14":"3r4/6p1/1R2pk2/1bp1p2p/1p1bP2P/1R2NP2/1P1K2P1/8 b - - 0 32",
+"2022-09-16":"7r/1p6/k1bB4/1p2P3/P2Q1K1P/1P1B2P1/8/3q1N2 b - - 0 1",
 "2022-09-27":"2r3k1/4Rpp1/4q2p/8/4B3/4Q1PP/P4P1K/2r5 b - - 0 35",
 "2022-09-29":"1r1q1rk1/1bp2ppp/n2bp3/p2Pn3/2P1NB2/6P1/4NPBP/R2Q1RK1 w - - 0 1",
 "2022-10-02":"1rb1r1k1/p3pp1p/6pB/qpP1P3/2B4Q/2b2N2/P4PPP/5RK1 w - - 0 1",
@@ -2257,6 +2259,7 @@
 "2019-02-02":"I.Bondar, Special Prize, Simkhovich-100MT, 1995",
 "2019-02-10":"Not So Pinned",
 "2019-02-12":"Cutting Off Lines",
+"2019-02-14":"Unshielding The Majesty",
 "2019-02-18":"Christiansen-Kovacevic, Nivi Sad 1990",
 "2019-02-22":"Frank M. Teed,  1885",
 "2019-02-24":"Hasler-Kusano, Bern 1993",
@@ -2518,6 +2521,7 @@
 "2022-09-02":"A Vulnerable Knight",
 "2022-09-05":"Outfoxing the Pin",
 "2022-09-14":"Blind Diagonal",
+"2022-09-16":"Three-Part Harmony",
 "2022-09-27":"Missed Opportunity: Trusting Your Opponent",
 "2022-09-29":"Pawns Are Not Pieces",
 "2022-10-02":"When the Defense Takes a Vacation",
@@ -2961,6 +2965,10 @@
 "2026-11-27":{
 "id":"3Ksou",
 "fen":"r5k1/p4ppp/1p2r1n1/3p2q1/P2P4/1Q2P2K/1B1NBP1P/2R3R1 b - - 1 1"
+},
+"2026-11-28":{
+"id":"9jL9E",
+"fen":"r1b1r1k1/pp3qb1/5nQR/3p2p1/3P4/3BP1P1/PPP2PP1/R3K3 w Q - 1 1"
 }
 }
 }
